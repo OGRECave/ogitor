@@ -8,17 +8,18 @@ set(Ogitor_hdrs
 	./include/BillboardSetEditor.h
 	./include/CameraEditor.h
 	./include/CameraVisualHelper.h
-  ./include/AxisGizmo.h
-  ./include/BaseEditor.h
-  ./include/BaseSerializer.h
-  ./include/BillboardSetEditor.h
-  ./include/CameraEditor.h
-  ./include/CameraVisualHelper.h
-  ./include/DefaultEvents.h
+	./include/AxisGizmo.h
+	./include/BaseEditor.h
+	./include/BaseSerializer.h
+	./include/BillboardSetEditor.h
+	./include/CameraEditor.h
+	./include/CameraVisualHelper.h
+	./include/DefaultEvents.h
+	./include/EditableMeshEditor.h
 	./include/EntityEditor.h
-  ./include/Event.h
-  ./include/EventManager.h
-  ./include/FolderEditor.h
+	./include/Event.h
+	./include/EventManager.h
+	./include/FolderEditor.h
 	./include/LightEditor.h
 	./include/LightVisualHelper.h
 	./include/MarkerEditor.h
@@ -57,7 +58,7 @@ set(Ogitor_hdrs
 	./include/ParticleEditor.h
 	./include/PlaneEditor.h
 	./include/SceneManagerEditor.h
-  ./include/StringId.h
+	./include/StringId.h
 	./include/TerrainEditor.h
 	./include/ViewGrid.h
 	./include/ViewportEditor.h
@@ -72,10 +73,12 @@ set(Ogitor_srcs
 	./src/BillboardSetEditor.cpp
 	./src/CameraEditor.cpp
 	./src/CameraVisualHelper.cpp
-  ./src/DefaultEvents.cpp
+	./src/DefaultEvents.cpp
+	./src/EditableMeshEditor.cpp
+	./src/EditableMeshEditorEditing.cpp
 	./src/EntityEditor.cpp
-  ./src/EventManager.cpp
-  ./src/FolderEditor.cpp
+	./src/EventManager.cpp
+	./src/FolderEditor.cpp
 	./src/LightEditor.cpp
 	./src/LightVisualHelper.cpp
 	./src/MarkerEditor.cpp

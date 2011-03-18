@@ -55,6 +55,7 @@
 #include "TerrainPageEditor.h"
 #include "TerrainGroupEditor.h"
 #include "PagingEditor.h"
+#include "EditableMeshEditor.h"
 #include "OgitorsPaging.h"
 #include "OgitorsUndoManager.h"
 #include "OgitorsClipboardManager.h"
@@ -510,6 +511,7 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
     _RegisterEditorFactory(OGRE_NEW CPagingManagerFactory());
     _RegisterEditorFactory(OGRE_NEW CPGInstanceEditorFactory());
     _RegisterEditorFactory(OGRE_NEW CPGInstanceManagerFactory());
+    _RegisterEditorFactory(OGRE_NEW CEditableMeshEditorFactory());
     Ogre::StringVector ScriptPluginList, PluginList;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
