@@ -1178,8 +1178,6 @@ CBaseEditor *CHydraxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPro
       Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/HYDRAX/";
       OgitorsUtils::CopyDirOfs(copydir, value + "/");
 
-      params.erase(params.find("init"));
-
       OgitorsPropertyValue propValue;
       propValue.propType = PROP_STRING;
       propValue.val = Ogre::Any(Ogre::String("Hydrax.hdx"));
