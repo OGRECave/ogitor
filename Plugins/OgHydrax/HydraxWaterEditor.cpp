@@ -1175,7 +1175,7 @@ CBaseEditor *CHydraxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPro
   if(params.find("init") != params.end())
   {
       mFile->createDirectory(value.c_str());   
-      Ogre::String copydir = OgitorsUtils::GetEdito77rResourcesPath() + "/HYDRAX/";
+      Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/HYDRAX/";
       OgitorsUtils::CopyDirOfs(copydir, value + "/");
 
       params.erase(params.find("init"));
