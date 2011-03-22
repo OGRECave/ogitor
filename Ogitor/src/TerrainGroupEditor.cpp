@@ -756,9 +756,8 @@ CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, Ogit
 
     if ((ni = params.find("init")) != params.end())
     {
-        Ogre::String value = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectDir + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory + "/";
-        Ogre::String dirname = OgitorsUtils::QualifyPath(value);
-        OgitorsSystem::getSingletonPtr()->MakeDirectory(dirname);
+        Ogre::String value = "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
+        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory(value.c_str());
         params.erase(ni);
     }
 

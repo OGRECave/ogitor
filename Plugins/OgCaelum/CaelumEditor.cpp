@@ -584,14 +584,14 @@ CBaseEditorFactory *CCaelumEditorFactory::duplicate(OgitorsView *view)
 CBaseEditor *CCaelumEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)
 {
   Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-  Ogre::String value = "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->CaelumDirectory + "/";
+  Ogre::String value = "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->CaelumDirectory;
   OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
     
   if(params.find("init") != params.end())
   {
       mFile->createDirectory(value.c_str());   
       Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/CAELUM/";
-      OgitorsUtils::CopyDirOfs(copydir, value);
+      OgitorsUtils::CopyDirOfs(copydir, value + "/");
 
       params.erase(params.find("init"));
   }

@@ -360,8 +360,6 @@ void SettingsDialog::onAccept()
     { 
         Ogre::String strTemp = mResourceListBox->item(i)->text().toStdString();
         int stype = mResourceFileTypes[i];
-        if(strTemp.substr(0,1) != ".")
-            strTemp = OgitorsUtils::GetRelativePath(pathTo,strTemp);
 
         Ogre::String val;
         if(stype == RES_LOC_DIR)

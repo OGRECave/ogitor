@@ -1167,7 +1167,7 @@ CBaseEditor *CHydraxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPro
 {
   OgitorsRoot *ogroot = OgitorsRoot::getSingletonPtr();
   Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-  Ogre::String value = "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->HydraxDirectory + "/";
+  Ogre::String value = "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->HydraxDirectory;
   OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
     
   CHydraxEditor *object = OGRE_NEW CHydraxEditor(this);
@@ -1175,8 +1175,8 @@ CBaseEditor *CHydraxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPro
   if(params.find("init") != params.end())
   {
       mFile->createDirectory(value.c_str());   
-      Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/HYDRAX/";
-      OgitorsUtils::CopyDirOfs(copydir, value);
+      Ogre::String copydir = OgitorsUtils::GetEdito77rResourcesPath() + "/HYDRAX/";
+      OgitorsUtils::CopyDirOfs(copydir, value + "/");
 
       params.erase(params.find("init"));
 

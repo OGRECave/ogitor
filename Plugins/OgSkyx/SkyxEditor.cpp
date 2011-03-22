@@ -363,7 +363,7 @@ CBaseEditor *CSkyxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPrope
 {
   OgitorsRoot *ogroot = OgitorsRoot::getSingletonPtr();
   Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-  Ogre::String value = "/SkyX/";
+  Ogre::String value = "/SkyX";
   OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
     
   CSkyxEditor *object = OGRE_NEW CSkyxEditor(this);
@@ -372,7 +372,7 @@ CBaseEditor *CSkyxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPrope
   {
       mFile->createDirectory(value.c_str());   
       Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/SKYX/";
-      OgitorsUtils::CopyDirOfs(copydir, value);
+      OgitorsUtils::CopyDirOfs(copydir, value + "/");
 
       params.erase(params.find("init"));
   }
