@@ -22,6 +22,8 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QStringList>
 #include "tinyxml.h"
+#include "ofs.h"
+#include "OgitorsUtils.h"
 
 using namespace Ogitors;
 using namespace MZP;
@@ -81,65 +83,57 @@ void ModularZoneFactory::loadZoneTemplates(void)
 	{
 		//scene is loaded, we can get the project directories
 
-		//TODO: parse all the .zone files from the project directory
+		//parse all the .zone files from the project directory
 		//if I had a custom zone resmanager I could get them this way
 		//pList = Ogre::ResourceGroupManager::getSingleton().findResourceNames(PROJECT_RESOURCE_GROUP,"*.zone",false);
 		//maybe TODO: create .zone resourcemanager
 
 		//Because my.zone files are not a resource I have to manaully get them:
-		Ogitors::PROJECTOPTIONS* opt = OgitorsRoot::getSingletonPtr()->GetProjectOptions();
+		OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
-		Ogre::StringVectorPtr pList;
-		Ogre::StringVector::iterator itr;
-		QStringList list;
- 
-		for (itr = opt->ResourceDirectories.begin();itr!=opt->ResourceDirectories.end();++itr)
+		OFS::FileList list;
+
+		ofsFile->listFilesRecursive("/", list);
+
+		//TODO: make this functor nicer
+		class not_a_zonefile
 		{
-
-			QString path((*itr).c_str());
-			path.remove(0,3);
-			if(path.startsWith("./"))
+			Ogre::String getExtension(Ogre::String filename)
 			{
-				//QDirIterator won't play nice with "./dirname/subdir"
-				//so we make it absolute
-				QString projectpath(opt->ProjectDir.c_str());
-				path.remove(0,2);
-				path = projectpath + path;
-				
+				int dotpos = filename.find_last_of(".");
+				if(dotpos == Ogre::String::npos)return "";
+				else return filename.substr(dotpos, filename.length() - dotpos);
 			}
-
-			if(path.startsWith("../"))
+		public:
+			bool operator()(OFS::FileEntry entry)
 			{
-				//fixes a problem with some paths
-				QString projectpath(opt->ProjectDir.c_str());
-				path = projectpath + path;
-				
+				if(getExtension(entry.name)==".zone")return false;
+				else return true;
 			}
-			QDirIterator directory_walker(path, QDir::Files| QDir::NoSymLinks);
+		};
 
-			while(directory_walker.hasNext())
-			{
-				// then we tell our directory_walker object to explicitly take next element until the loop finishes
-				directory_walker.next();
-				if(directory_walker.fileInfo().completeSuffix() == "zone")
-				{
-					list<<(directory_walker.filePath());
-				}
-			}
-		}
+		//get rid of everthing except .zone files
+		list.erase(std::remove_if(list.begin(),list.end(),not_a_zonefile()),list.end());
 
 		int key = 0;
-		QStringList::iterator zonefile;
+		OFS::FileList::iterator zonefile;
 		for(zonefile = list.begin();zonefile!=list.end();++zonefile)
 		{
 			//load the .zone XML file and get the zone info
 			//.
-			ZoneInfo zone = this->_loadZoneDescription((*zonefile).toStdString());
+			ZoneInfo zone = this->_loadZoneDescription((*zonefile).name);
 			if(!zone.mName.empty())
 			{
-				//add to map
-				mZoneTemplates.insert(ZoneInfoMap::value_type(key,zone));
-				++key;
+				//make sure dependencies are available
+				bool resources = false;
+				//mesh:
+				resources = Ogre::ResourceGroupManager::getSingletonPtr()->resourceExistsInAnyGroup(zone.mMesh);
+				if(resources)
+				{
+					//add to map
+					mZoneTemplates.insert(ZoneInfoMap::value_type(key,zone));
+					++key;
+				}
 			}
 		}		
 	}
@@ -214,8 +208,22 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
 	int portal_count = 0; //number of portals to the zone
 	const char* pFilename = filename.c_str();
 
-	TiXmlDocument doc(pFilename);
-	if (!doc.LoadFile()) return zone;
+	//TiXmlDocument doc(pFilename);
+	//if (!doc.LoadFile()) return zone;
+	OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+	OFS::OFSHANDLE handle;
+	OFS::OfsResult result = ofsFile->openFile(handle,pFilename);
+
+	char* dest = 0;
+	unsigned int len;
+
+	ofsFile->getFileSize(handle,len);
+	dest = new char[len];
+	ofsFile->read(handle,dest,len);
+	
+	TiXmlDocument doc;
+	doc.Parse(dest);
+	//if (!doc.LoadFile(dest)) return zone;
 
 	TiXmlElement* pElem,*pRoot;
 
@@ -345,6 +353,7 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
 		}
 	}
 
+	delete [] dest;
 	return zone;
 }
 //-----------------------------------------------------------------------------------------
