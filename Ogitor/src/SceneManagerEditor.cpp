@@ -38,6 +38,7 @@
 #include "CameraEditor.h"
 #include "ViewportEditor.h"
 #include "tinyxml.h"
+#include "ofs.h"
 
 using namespace Ogitors;
 
@@ -272,7 +273,7 @@ bool CSceneManagerEditor::setNameImpl(Ogre::String name)
     if(mSystem->DisplayMessageDialog(OTR("Renaming a Scene Manager requires Save and Reload of the Scene.\nDo you want to continue?"),DLGTYPE_YESNO) == DLGRET_YES)
     {
         mOgitorsRoot->SaveScene();
-        Ogre::String filename = mOgitorsRoot->GetProjectOptions()->ProjectDir + mOgitorsRoot->GetProjectOptions()->ProjectName + ".ogscene";
+        Ogre::String filename = mOgitorsRoot->GetProjectFile()->getFileSystemName();
         mOgitorsRoot->TerminateScene();
         mOgitorsRoot->LoadScene(filename);
         return true;

@@ -1471,7 +1471,7 @@ bool OgitorsRoot::AfterLoadScene()
 {
     OgitorsPropertyValueMap params;
 
-    Ogre::UTFString entry = OgitorsUtils::QualifyPath(mProjectOptions.ProjectDir + "/" + mProjectOptions.ProjectName + ".ogscene");
+    Ogre::UTFString entry = OgitorsUtils::QualifyPath((*mProjectFile)->getFileSystemName());
     AddToRecentFiles(entry);
 
     mProjectOptions.CameraSaveCount--;

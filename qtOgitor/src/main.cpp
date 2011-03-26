@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
     QFileInfo info(a.arguments().last());
     if(info.exists() && info.isFile())
     {
-        if(info.suffix() == "ogscene")
+        if(info.suffix() == "ofs")
         {
             // Yes we've got an ogscene file to load.
             fileArg = info.absoluteFilePath();
