@@ -362,6 +362,7 @@ namespace Ogitors
 
         void importFullTerrainFromHeightMap();
         void exportHeightMaps();
+        void exportCompositeMaps();
     };
 
     //! Paged terrain manager factory class
