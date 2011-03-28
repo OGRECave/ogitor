@@ -154,6 +154,7 @@ namespace Ogitors
         virtual bool                 importBlendMap(int layerID, Ogre::String filename = Ogre::String(""));
         virtual bool                 importBlendMap(Ogre::String filename = Ogre::String(""));
         virtual bool                 exportHeightMap(Ogre::String path = Ogre::String(""), Ogre::String filename = Ogre::String(""), Ogre::Real fMin = 0.0f, Ogre::Real fMax = 0.0f);
+        virtual bool                 exportCompositeMap(Ogre::String path = Ogre::String(""), Ogre::String filename = Ogre::String(""));
 
         float                       *getGrassPointer(unsigned int layerID);
         void                         updateGrassLayer(unsigned int layerID);

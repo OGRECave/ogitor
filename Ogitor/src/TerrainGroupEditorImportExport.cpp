@@ -219,3 +219,20 @@ void CTerrainGroupEditor::exportHeightMaps()
     }
 }
 //-----------------------------------------------------------------------------------------
+void CTerrainGroupEditor::exportCompositeMaps()
+{
+    Ogre::String directory = mSystem->DisplayDirectorySelector(OTR("Select a Directory to Export"));
+
+    if(directory.empty())
+        return;
+
+    NameObjectPairList::iterator it = mChildren.begin();
+
+    while(it != mChildren.end())
+    {
+        CTerrainPageEditor *ed = static_cast<CTerrainPageEditor*>(it->second);
+        ed->exportCompositeMap(directory);
+        it++;
+    }
+}
+//-----------------------------------------------------------------------------------------

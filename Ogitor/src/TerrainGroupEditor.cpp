@@ -135,6 +135,7 @@ bool CTerrainGroupEditor::getObjectContextMenu(UTFStringVector &menuitems)
     menuitems.push_back(OTR("Add Page") + ";:/icons/additional.svg");
     menuitems.push_back(OTR("Import Terrain From Heightmap"));
     menuitems.push_back(OTR("Export Heightmaps"));
+    menuitems.push_back(OTR("Export Compositemaps"));
 
     return true;
 }
@@ -239,6 +240,10 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
     else if(menuresult == 2)
     {
         exportHeightMaps();
+    }
+    else if(menuresult == 3)
+    {
+        exportCompositeMaps();
     }
 }
 //-----------------------------------------------------------------------------------------

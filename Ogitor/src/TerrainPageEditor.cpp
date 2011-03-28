@@ -198,6 +198,7 @@ bool CTerrainPageEditor::getObjectContextMenu(UTFStringVector &menuitems)
         menuitems.push_back("-");
         menuitems.push_back(OTR("Import Heightmap"));
         menuitems.push_back(OTR("Export Heightmap"));
+        menuitems.push_back(OTR("Export Compositemap"));
         menuitems.push_back("-");
         menuitems.push_back(OTR("Import Blendmaps") +  Ogre::UTFString(" (RGB+A)"));
 
@@ -257,11 +258,15 @@ void CTerrainPageEditor::onObjectContextMenu(int menuresult)
     }
     else if(menuresult == 5)
     {
+        exportCompositeMap();
+    }
+    else if(menuresult == 6)
+    {
         importBlendMap();
     }
-    else if(menuresult > 5)
+    else if(menuresult > 6)
     {
-        int lyID = menuresult - 5;
+        int lyID = menuresult - 6;
         importBlendMap(lyID);
     }
 }
