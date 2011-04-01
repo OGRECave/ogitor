@@ -56,6 +56,7 @@ FileSystemViewWidget::FileSystemViewWidget(QWidget *parent) : QWidget(parent)
     mAllowedExtensions.append("xml");
     mAllowedExtensions.append("log");
     mAllowedExtensions.append("cfg");
+    mAllowedExtensions.append("ofs");
 
     connect(mTree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onDoubleClicked(const QModelIndex&)));
 }

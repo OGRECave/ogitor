@@ -130,7 +130,7 @@ void GenericTextEditor::closeTab(int index)
         int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         switch(result)
         {
-        case QMessageBox::Yes:	document->saveFile(); break;
+        case QMessageBox::Yes: document->saveFile(); break;
         case QMessageBox::No: break;
         case QMessageBox::Cancel: return;
         }
@@ -187,6 +187,7 @@ void GenericTextEditorDocument::displayTextFromFile(Ogre::String docName, Ogre::
     QFile* pFile = new QFile(filePath.c_str());
     pFile->open(QIODevice::ReadOnly);
     setPlainText(pFile->readAll().data());
+    pFile->close();
 
     Ogre::String tabTitle = OgitorsUtils::ExtractFileName(filePath);
     if(tabTitle.length() > 25)
@@ -337,6 +338,8 @@ QStringListModel* GenericTextEditorDocument::modelFromFile(const QString& fileNa
     QMap<QString, QString> strMap;
     foreach(QString str, words) 
         strMap.insert(str.toLower(), str);
+
+    file.close();
     return new QStringListModel(strMap.values(), mCompleter);
 }
 //-----------------------------------------------------------------------------------------
