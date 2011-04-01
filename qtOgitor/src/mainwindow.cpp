@@ -232,7 +232,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     createSceneRenderWindow();
 
-    mGenericTextEditor = new GenericTextEditor(":/icons/files.svg", this);
+    mGenericTextEditor = new GenericTextEditor("GenericTextEditor", ":/icons/files.svg", this);
     mEditorTab->addTab(mGenericTextEditor, tr("Generic Text Editor"));
 
     createCustomTabWindows();

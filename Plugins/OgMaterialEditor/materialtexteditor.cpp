@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (mCompleter) 2008-2010 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+/// Copyright (mCompleter) 2008-2011 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -47,7 +47,7 @@ using namespace Ogitors;
 
 MaterialTextEditor *mMaterialTextEditor = 0;
 //-----------------------------------------------------------------------------------------
-Ogre::String getMaterialText(const Ogre::String& input, const Ogre::String& find)
+QString getMaterialText(const Ogre::String& input, const Ogre::String& find)
 {
     Ogre::String buffer = input;
 
@@ -57,7 +57,7 @@ Ogre::String getMaterialText(const Ogre::String& input, const Ogre::String& find
 
     const char *curposend = curpos + buffer.size();
 
-    // Fill all comment lines with SPACE so they dont interfere with our search, example: //material X
+    // Fill all comment lines with SPACE so they don't interfere with our search, example: //material X
     while(curpos < curposend)
     {
         if(curpos[0] == '/' && (curpos + 1) < curposend && curpos[1] == '/')
@@ -103,25 +103,19 @@ Ogre::String getMaterialText(const Ogre::String& input, const Ogre::String& find
 
         end = curpos;
 
-        return input.substr(start - buffer.c_str(), end - start);
+        Ogre::String res = input.substr(start - buffer.c_str(), end - start);
+        return res.c_str();
     }
     else
         return "";
 }
 //-----------------------------------------------------------------------------------------
-MaterialTextEditor::MaterialTextEditor(QWidget *parent) : QMdiArea(parent)
+MaterialTextEditor::MaterialTextEditor(QWidget *parent) : 
+GenericTextEditor("MaterialEditor", ":/icons/material.svg", parent)
 {
-    setObjectName("MaterialTextEditor");
-    setViewMode(QMdiArea::TabbedView);
-
-    QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-    tabBar->setTabsClosable(true);
-    connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
-    connect(this, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditor::displayMaterialFromFile(Ogre::String fileName)
+void MaterialTextEditor::displayMaterial(QString materialName, QString resourceGroup, QString materialFileName)
 {
     bool alreadyShowing = false;
     MaterialTextEditorDocument* document;
@@ -129,39 +123,7 @@ void MaterialTextEditor::displayMaterialFromFile(Ogre::String fileName)
     foreach(QMdiSubWindow *window, subWindowList()) 
     {
         document = qobject_cast<MaterialTextEditorDocument*>(window->widget());
-        if(document->getMaterialFileName() == fileName)
-        {
-            alreadyShowing = true;
-            break;
-        }
-    }
-
-    if(!alreadyShowing)
-    {
-        MaterialTextEditorDocument* document = new MaterialTextEditorDocument(this);
-        document->displayMaterialFromFile(fileName);
-        QMdiSubWindow *window = addSubWindow(document);
-        window->setWindowIcon(QIcon(":/icons/material.svg"));
-        document->showMaximized();
-        QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, OgitorsUtils::ExtractFileName(fileName).c_str());
-    }
-    else
-    {
-        setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
-        document->setFocus(Qt::ActiveWindowFocusReason);
-    }
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditor::displayMaterial(Ogre::String materialName, Ogre::String resourceGroup, Ogre::String materialFileName)
-{
-    bool alreadyShowing = false;
-    MaterialTextEditorDocument* document;
-
-    foreach(QMdiSubWindow *window, subWindowList()) 
-    {
-        document = qobject_cast<MaterialTextEditorDocument*>(window->widget());
-        if(document->getMaterialName() == materialName)
+        if(document->getDocName() == materialName)
         {
             alreadyShowing = true;
             break;
@@ -176,7 +138,7 @@ void MaterialTextEditor::displayMaterial(Ogre::String materialName, Ogre::String
         window->setWindowIcon(QIcon(":/icons/material.svg"));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, materialName.c_str());
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, materialName);
     }
     else
     {
@@ -185,69 +147,31 @@ void MaterialTextEditor::displayMaterial(Ogre::String materialName, Ogre::String
     }
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditor::closeTab(int index)
-{
-    QMdiSubWindow *sub = subWindowList()[index];
-    setActiveSubWindow(sub);
-    MaterialTextEditorDocument* document = static_cast<MaterialTextEditorDocument*>(sub->widget());
-    if(document->isTextModified())
-    {	
-        int result = QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        switch(result)
-        {
-        case QMessageBox::Yes:	document->saveMaterial(); break;
-        case QMessageBox::No: break;
-        case QMessageBox::Cancel: return;
-        }
-    }
-    sub->close();
-    document->close();
-    
-    emit currentChanged(subWindowList().indexOf(activeSubWindow()));
-}
-//-----------------------------------------------------------------------------------------
 void MaterialTextEditor::tabChanged(int index)
 {
     QTreeWidget *tree = mMaterialViewWidget->getTreeWidget();
     
     if(index == -1)
-    {
         tree->selectionModel()->clearSelection();
-    }
     else
     {
         QMdiSubWindow *wnd = subWindowList()[index];
         MaterialTextEditorDocument *document = static_cast<MaterialTextEditorDocument*>(wnd->widget());
         if(document)
         {
-            QList<QTreeWidgetItem*> list = tree->findItems(document->getMaterialName().c_str(), Qt::MatchRecursive | Qt::MatchCaseSensitive);
+            QList<QTreeWidgetItem*> list = tree->findItems(document->getDocName(), Qt::MatchRecursive | Qt::MatchCaseSensitive);
             if(list.size())
-            {
                 tree->setCurrentItem(list[0]);
-            }
         }
     }
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditor::closeEvent(QCloseEvent *event)
+MaterialTextEditorDocument::MaterialTextEditorDocument(QWidget *parent) : GenericTextEditorDocument(parent), 
+mLastMaterialSource(""), mResourceGroup("")
 {
-    QList<QMdiSubWindow*> list = subWindowList();
-    for(int i = 0; i < list.size(); i++)
-        closeTab(i);
-}
-//-----------------------------------------------------------------------------------------
-MaterialTextEditorDocument::MaterialTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
-mCompleter(0), mHighlighter(0), mMaterialName(""), mMaterialFileName(""), mLastMaterialSource(""), 
-mResourceGroup(""), mTextModified(false)
-{
-   QSettings settings;
-   settings.beginGroup(mMaterialPrefsEditor->getPrefsSectionName().c_str());
+    QSettings settings;
+    settings.beginGroup(mMaterialPrefsEditor->getPrefsSectionName().c_str());
 
-    QFont fnt = font();
-    fnt.setFamily("Courier New");
-    fnt.setPointSize(settings.value("fontSize", 10).toUInt());
-    setFont(fnt);
-    
     if(settings.value("lineWrapping", false).toBool() == false)
         setLineWrapMode(QPlainTextEdit::NoWrap);
     else
@@ -255,221 +179,38 @@ mResourceGroup(""), mTextModified(false)
 
     settings.endGroup();
 
-    QFontMetrics fm(fnt);
-    setTabStopWidth(fm.width("abcd"));
-    mLineNumberArea = new LineNumberArea(this);
-
     mHighlighter = new MaterialHighlighter(modelFromFile(":/syntax_highlightning/material.txt"), document());
-
-    mCompleter = new QCompleter(modelFromFile(":/syntax_highlightning/material.txt")->stringList(), this);
-    mCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
-    mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-    mCompleter->setCompletionMode(QCompleter::PopupCompletion);
-    mCompleter->setWrapAround(false);
-    mCompleter->setWidget(this);
 
     Ogre::ScriptCompilerManager::getSingletonPtr()->setListener(this);
 
-    connect(mCompleter, SIGNAL(activated(const QString&)), this, SLOT(insertCompletion(const QString&)));
-    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-    connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateLineNumberArea(const QRect &, int)));
-    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
-
-    updateLineNumberAreaWidth(0);
-    highlightCurrentLine();
+    addCompleter(":/syntax_highlightning/material.txt");
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::displayMaterialFromFile(Ogre::String fileName)
-{
-    mMaterialFileName = fileName;
-    QFile* pFile = new QFile(fileName.c_str());
-    pFile->open(QIODevice::ReadOnly);
-    setPlainText(pFile->readAll().data());
-
-    Ogre::String tabTitle = OgitorsUtils::ExtractFileName(fileName);
-    if(tabTitle.length() > 25)
-        tabTitle = tabTitle.substr(0, 12) + "..." + tabTitle.substr(tabTitle.length() - 10, 10);
-    setWindowTitle(tabTitle.c_str() + QString("[*]"));
-    
-    connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::displayMaterial(Ogre::String materialName, Ogre::String resourceGroup, Ogre::String materialFileName)
+void MaterialTextEditorDocument::displayMaterial(QString materialName, QString resourceGroup, QString materialFilePath)
 {
     mResourceGroup = resourceGroup;
-    mMaterialName = materialName;
-    mMaterialFileName = materialFileName;
-    Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(materialFileName, resourceGroup);                
-    mLastMaterialSource = getMaterialText(stream->getAsString().c_str(), materialName);
-    setPlainText(mLastMaterialSource.c_str());
+    mDocName = materialName;
+    mFilePath = materialFilePath;
+    Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(mFilePath.toStdString(), resourceGroup.toStdString());                
+    mLastMaterialSource = getMaterialText(stream->getAsString().c_str(), materialName.toStdString());
+    setPlainText(mLastMaterialSource);
 
-    Ogre::String tabTitle = materialName;
+    QString tabTitle = materialName;
     if(tabTitle.length() > 25)
-        tabTitle = tabTitle.substr(0, 12) + "..." + tabTitle.substr(tabTitle.length() - 10, 10);
-    setWindowTitle(tabTitle.c_str() + QString("[*]"));
+        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
+    setWindowTitle(tabTitle + QString("[*]"));
 
     connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
-}
-//-----------------------------------------------------------------------------------------
-int MaterialTextEditorDocument::lineNumberAreaWidth()
-{
-    int digits = 1;
-    int max = qMax(1, blockCount());
-    while(max >= 10) 
-    {
-        max /= 10;
-        ++digits;
-    }
-
-    int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
-
-    return space;
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::updateLineNumberAreaWidth(int /* newBlockCount */)
-{
-    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::updateLineNumberArea(const QRect &rect, int dy)
-{
-    if(dy)
-        mLineNumberArea->scroll(0, dy);
-    else
-        mLineNumberArea->update(0, rect.y(), mLineNumberArea->width(), rect.height());
-
-    if (rect.contains(viewport()->rect()))
-        updateLineNumberAreaWidth(0);
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::resizeEvent(QResizeEvent *e)
-{
-    QPlainTextEdit::resizeEvent(e);
-
-    QRect cr = contentsRect();
-    mLineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::highlightCurrentLine()
-{
-    QList<QTextEdit::ExtraSelection> extraSelections;
-
-    if(!isReadOnly()) 
-    {
-        QTextEdit::ExtraSelection selection;
-
-        QColor lineColor = QColor(Qt::yellow).lighter(160);
-
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = textCursor();
-        selection.cursor.clearSelection();
-        extraSelections.append(selection);
-    }
-
-    setExtraSelections(extraSelections);
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::lineNumberAreaPaintEvent(QPaintEvent *event)
-{
-    QPainter painter(mLineNumberArea);
-    painter.fillRect(event->rect(), Qt::lightGray);
-
-    QTextBlock block = firstVisibleBlock();
-    int blockNumber = block.blockNumber();
-    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
-    int bottom = top + (int) blockBoundingRect(block).height();
-
-    while(block.isValid() && top <= event->rect().bottom()) 
-    {
-        if(block.isVisible() && bottom >= event->rect().top()) 
-        {
-            QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::black);
-            painter.drawText(0, top, mLineNumberArea->width(), fontMetrics().height(),
-                Qt::AlignRight, number);
-        }
-
-        block = block.next();
-        top = bottom;
-        bottom = top + (int) blockBoundingRect(block).height();
-        ++blockNumber;
-    }
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::insertCompletion(const QString& completion)
-{
-    if(mCompleter->widget() != this)
-        return;
-    QTextCursor tc = textCursor();
-    int extra = completion.length() - mCompleter->completionPrefix().length();
-    tc.movePosition(QTextCursor::Left);
-    tc.movePosition(QTextCursor::EndOfWord);
-    tc.insertText(completion.right(extra));
-    setTextCursor(tc);
-}
-//-----------------------------------------------------------------------------------------
-QString MaterialTextEditorDocument::textUnderCursor() const
-{
-    QTextCursor tc = textCursor();
-    tc.select(QTextCursor::WordUnderCursor);
-    return tc.selectedText();
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::focusInEvent(QFocusEvent *event)
-{
-    if(mCompleter)
-        mCompleter->setWidget(this);
-    QPlainTextEdit::focusInEvent(event);
-}
-//-----------------------------------------------------------------------------------------
-QStringListModel* MaterialTextEditorDocument::modelFromFile(const QString& fileName)
-{
-    QFile file(fileName);
-    if(!file.open(QFile::ReadOnly))
-        return new QStringListModel(mCompleter);
-
-    QStringList words;
-    while (!file.atEnd()) 
-    {
-        QByteArray line = file.readLine();
-        if(!line.isEmpty())
-            words << line.trimmed();
-    }
-    QMap<QString, QString> strMap;
-    foreach(QString str, words) 
-        strMap.insert(str.toLower(), str);
-    return new QStringListModel(strMap.values(), mCompleter);
-}
-//-----------------------------------------------------------------------------------------
-int calculateIndentation(const Ogre::String& str)
-{
-    int indent = 0;
-    int str_len = str.length();
-    const char *chr = str.c_str();
-
-    for(int i = 0;i < str_len;i++)
-    {
-        if(chr[i] == '{')
-            ++indent;
-        else if(chr[i] == '}')
-            --indent;
-    }
-
-    if(indent < 0)
-        indent = 0;
-
-    return (indent * 4);
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorDocument::keyPressEvent(QKeyEvent *event)
 {
     if((event->key() == Qt::Key_F5 || event->key() == Qt::Key_F6) && event->modifiers() == Qt::AltModifier)
     {
-        Ogre::String newMaterialName = saveMaterial();
+        //QString newMaterialName = saveMaterial();
 
-        if(event->key() == Qt::Key_F5)
-            OgitorsRoot::getSingletonPtr()->UpdateMaterialInScene(newMaterialName);
+        //if(event->key() == Qt::Key_F5)
+            //OgitorsRoot::getSingletonPtr()->UpdateMaterialInScene(newMaterialName);
     }
 
     if(mCompleter && mCompleter->popup()->isVisible()) 
@@ -488,14 +229,14 @@ void MaterialTextEditorDocument::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    //Auto start next line with the indetation of previous line...
+    //Auto start next line with the indentation of previous line...
     if(event->key() == Qt::Key_Return)
     {
         QTextCursor tc = textCursor();
         int savePos = tc.position();
         //Get Previous bracket position
         tc.movePosition(QTextCursor::Start, QTextCursor::KeepAnchor);
-        Ogre::String tmpStr = tc.selectedText().toStdString();
+        QString tmpStr = tc.selectedText();
 
         int count = calculateIndentation(tmpStr);
 
@@ -579,7 +320,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
             cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
             setTextCursor(cursor);
 
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterialName);
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
             Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getAmbient();
 
             QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
@@ -587,7 +328,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 
             // If the user pressed cancel, use our previous colour
             if(!newColour.isValid())
-                newColour = oldColour;
+                return;
 
             cursor.removeSelectedText();
             char temp[128];
@@ -608,7 +349,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
             cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
             setTextCursor(cursor);
 
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterialName);
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
             Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getDiffuse();
 
             QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
@@ -616,7 +357,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 
             // If the user pressed cancel, use our previous colour
             if(!newColour.isValid())
-                newColour = oldColour;
+                return;
 
             cursor.removeSelectedText();
             char temp[128];
@@ -637,7 +378,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
             cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
             setTextCursor(cursor);
 
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterialName);
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
             Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getSpecular();
 
             QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
@@ -645,7 +386,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 
             // If the user pressed cancel, use our previous colour
             if(!newColour.isValid())
-                newColour = oldColour;
+                return;
 
             cursor.removeSelectedText();
             char temp[128];
@@ -666,7 +407,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
             cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
             setTextCursor(cursor);
 
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterialName);
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
             Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getSelfIllumination();
 
             QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
@@ -674,7 +415,7 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 
             // If the user pressed cancel, use our previous colour
             if(!newColour.isValid())
-                newColour = oldColour;
+                return;
 
             cursor.removeSelectedText();
             char temp[128];
@@ -706,81 +447,83 @@ void MaterialTextEditorDocument::mousePressEvent(QMouseEvent *event)
     QPlainTextEdit::mousePressEvent(event);
 }
 //-----------------------------------------------------------------------------------------
-Ogre::String MaterialTextEditorDocument::saveMaterial()
+bool MaterialTextEditorDocument::saveFile()
 {
-    bool reLoad = false;
+    //bool reLoad = false;
 
-    Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(mMaterialFileName, mResourceGroup);				
-    Ogre::String contents = stream->getAsString();
-    stream.setNull();
+    //Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(mFilePath.toStdString(), mResourceGroup.toStdString());				
+    //QString contents = stream->getAsString().c_str();
+    //stream.setNull();
 
-    int pos = contents.find(mLastMaterialSource);
-    contents.erase(pos, mLastMaterialSource.size());
-    contents.insert(pos, document()->toPlainText().toAscii());
+    //int pos = contents.indexOf(mLastMaterialSource);
+    //contents.erase(pos, mLastMaterialSource.size());
+    //contents.insert(pos, document()->toPlainText().toAscii());
 
-    Ogre::Material* material = static_cast<Ogre::Material*>(mMaterialViewWidget->getMaterialEditor()->getHandle());
+    //Ogre::Material* material = static_cast<Ogre::Material*>(mMaterialViewWidget->getMaterialEditor()->getHandle());
 
-    Ogre::FileInfoListPtr fileInfoList;
-    Ogre::String matOrigin = material->getOrigin();
+    //Ogre::FileInfoListPtr fileInfoList;
+    //QString matOrigin = material->getOrigin();
 
-    try
-    {
-        fileInfoList = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo(material->getGroup(), material->getOrigin());
+    //try
+    //{
+    //    fileInfoList = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo(material->getGroup(), material->getOrigin());
 
-        stream = fileInfoList.getPointer()->at(0).archive->create(matOrigin);
+    //    stream = fileInfoList.getPointer()->at(0).archive->create(matOrigin);
 
-        if(!stream.isNull())
-        {
-            int content_size = contents.length();
-            stream->write(contents.c_str(), content_size);
-            stream->close();
-            reLoad = true;
-        }
-    }
-    catch(...)
-    {
-    }
+    //    if(!stream.isNull())
+    //    {
+    //        int content_size = contents.length();
+    //        stream->write(contents.c_str(), content_size);
+    //        stream->close();
+    //        reLoad = true;
+    //    }
+    //}
+    //catch(...)
+    //{
+    //}
 
 
-    if(reLoad)
-    {
-        Ogre::String matName = material->getName();
-        material->unload();
-        Ogre::MaterialManager::getSingletonPtr()->remove(matName);
+    //if(reLoad)
+    //{
+    //    QString matName = material->getName();
+    //    material->unload();
+    //    Ogre::MaterialManager::getSingletonPtr()->remove(matName);
 
-        stream = fileInfoList.getPointer()->at(0).archive->open(matOrigin);
+    //    stream = fileInfoList.getPointer()->at(0).archive->open(matOrigin);
 
-        if(!stream.isNull())
-        {	
-            mScriptError = false;
-            Ogre::MaterialManager::getSingleton().parseScript(stream, material->getGroup());
+    //    if(!stream.isNull())
+    //    {	
+    //        mScriptError = false;
+    //        Ogre::MaterialManager::getSingleton().parseScript(stream, material->getGroup());
 
-            if(!mScriptError)
-            {
-                Ogre::MaterialPtr reloadedMaterial = Ogre::MaterialManager::getSingleton().getByName(matName);
-                if (!reloadedMaterial.isNull())
-                {
-                    reloadedMaterial->compile();
-                    reloadedMaterial->load();
-                    mMaterialViewWidget->getMaterialEditor()->setHandle(reloadedMaterial);
-                }
+    //        if(!mScriptError)
+    //        {
+    //            Ogre::MaterialPtr reloadedMaterial = Ogre::MaterialManager::getSingleton().getByName(matName);
+    //            if (!reloadedMaterial.isNull())
+    //            {
+    //                reloadedMaterial->compile();
+    //                reloadedMaterial->load();
+    //                mMaterialViewWidget->getMaterialEditor()->setHandle(reloadedMaterial);
+    //            }
 
-                stream->close();
-                setTextModified(false);
-                setWindowModified(false);
-                return matName;
-            }
-        }
-    }
-    else
-    {
-        QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Error saving material script"));
-    }
+    //            stream->close();
+    //            setTextModified(false);
+    //            setWindowModified(false);
+    //            //return matName;
+    //        }
+    //    }
+    //}
+    //else
+    //{
+    //    QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Error saving material script"));
+    //}
 
-    return Ogre::String("");
+    ////return QString("");
+
+    return true;
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const Ogre::String &file, int line, const Ogre::String &msg)
+void MaterialTextEditorDocument::handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const QString &file, int line, const QString &msg)
 {
     mScriptError = true;
     QList<QTextEdit::ExtraSelection> extraSelections;
@@ -802,13 +545,7 @@ void MaterialTextEditorDocument::handleError(Ogre::ScriptCompiler *compiler, Ogr
     extraSelections.append(selection);
     setExtraSelections(extraSelections);
 
-    QString message = QString("Script Compiler error: %1\nLine: %2").arg(QString::fromStdString(msg)).arg(line);
+    QString message = QString("Script Compiler error: %1\nLine: %2").arg(msg).arg(line);
     QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr(message.toAscii()));
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorDocument::documentWasModified()
-{
-    setTextModified(true);
-    setWindowModified(isTextModified());
 }
 //-----------------------------------------------------------------------------------------

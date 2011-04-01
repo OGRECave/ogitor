@@ -35,16 +35,15 @@
 #include <QtGui/QMessageBox>
 #include <QtSvg>
 
-
 #include "generictexteditor.hxx"
 
 //-----------------------------------------------------------------------------------------
-GenericTextEditor::GenericTextEditor(QString documentIcon, QWidget *parent) : QMdiArea(parent)
+GenericTextEditor::GenericTextEditor(QString editorName, QString documentIcon, QWidget *parent) : QMdiArea(parent)
 {
     mDocumentIcon = documentIcon;
     mAllowDoubleDisplay = false;
-    
-    setObjectName("GenericTextEditor");
+
+    setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
 
     QTabBar* tabBar = findChildren<QTabBar*>().at(0);
@@ -73,13 +72,12 @@ void GenericTextEditor::displayTextFromFile(QString filePath)
     if(!alreadyShowing || mAllowDoubleDisplay)
     {
         GenericTextEditorDocument* document = new GenericTextEditorDocument(this);
-        QFileInfo file(filePath);
-        document->displayTextFromFile(file.fileName(), filePath);
+        document->displayTextFromFile(QFile(filePath).fileName(), filePath);
         QMdiSubWindow *window = addSubWindow(document);
         window->setWindowIcon(QIcon(mDocumentIcon));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, file.fileName());
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName());
     }
     else
     {
@@ -138,8 +136,12 @@ void GenericTextEditor::closeTab(int index)
     sub->close();
     document->releaseFile();
     document->close();
-    
+
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::tabChanged(int index)
+{
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeEvent(QCloseEvent *event)
@@ -150,29 +152,19 @@ void GenericTextEditor::closeEvent(QCloseEvent *event)
 }
 //-----------------------------------------------------------------------------------------
 GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
-mCompleter(0), mHighlighter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0)
+mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0)
 {
     QFont fnt = font();
     fnt.setFamily("Courier New");
     fnt.setPointSize(10);
     setFont(fnt);
-    
+
     setLineWrapMode(QPlainTextEdit::WidgetWidth);
 
     QFontMetrics fm(fnt);
     setTabStopWidth(fm.width("abcd"));
     mLineNumberArea = new LineNumberArea(this);
 
-    //mHighlighter = new QSyntaxHighlighter(modelFromFile(":/syntax_highlightning/material.txt"), document());
-
-    mCompleter = new QCompleter(modelFromFile(":/syntax_highlightning/material.txt")->stringList(), this);
-    mCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
-    mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-    mCompleter->setCompletionMode(QCompleter::PopupCompletion);
-    mCompleter->setWrapAround(false);
-    mCompleter->setWidget(this);
-
-    connect(mCompleter, SIGNAL(activated(const QString&)),          this, SLOT(insertCompletion(const QString&)));
     connect(this,       SIGNAL(blockCountChanged(int)),             this, SLOT(updateLineNumberAreaWidth(int)));
     connect(this,       SIGNAL(updateRequest(const QRect &, int)),  this, SLOT(updateLineNumberArea(const QRect &, int)));
     connect(this,       SIGNAL(cursorPositionChanged()),            this, SLOT(highlightCurrentLine()));
@@ -189,11 +181,11 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
     mFile.open(QIODevice::ReadOnly);
     setPlainText(mFile.readAll().data());
 
-    QString tabTitle = mFile.fileName();
+    QString tabTitle = QFile(filePath).fileName();
     if(tabTitle.length() > 25)
-        tabTitle = tabTitle.mid(0, 12) + "..." + tabTitle.mid(tabTitle.length() - 10, 10);
+        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
     setWindowTitle(tabTitle + QString("[*]"));
-    
+
     connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
 }
 //-----------------------------------------------------------------------------------------
@@ -204,7 +196,7 @@ void GenericTextEditorDocument::displayText(QString docName, QString text)
 
     QString tabTitle = docName;
     if(tabTitle.length() > 25)
-        tabTitle = tabTitle.mid(0, 12) + "..." + tabTitle.mid(tabTitle.length() - 10, 10);
+        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
     setWindowTitle(tabTitle + QString("[*]"));
 
     connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
@@ -322,9 +314,9 @@ void GenericTextEditorDocument::focusInEvent(QFocusEvent *event)
     QPlainTextEdit::focusInEvent(event);
 }
 //-----------------------------------------------------------------------------------------
-QStringListModel* GenericTextEditorDocument::modelFromFile(const QString& fileName)
+QStringListModel* GenericTextEditorDocument::modelFromFile(const QString& filePath)
 {
-    QFile file(fileName);
+    QFile file(filePath);
     if(!file.open(QFile::ReadOnly))
         return new QStringListModel(mCompleter);
 
@@ -377,16 +369,29 @@ void GenericTextEditorDocument::releaseFile()
     mFile.close();
 }
 //-----------------------------------------------------------------------------------------
-int calculateIndentation(const char *str)
+void GenericTextEditorDocument::addCompleter(const QString keywordListFilePath)
+{
+    mCompleter = new QCompleter(modelFromFile(keywordListFilePath)->stringList(), this);
+    mCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+    mCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    mCompleter->setWrapAround(false);
+    mCompleter->setWidget(this);
+
+    connect(mCompleter, SIGNAL(activated(const QString&)), this, SLOT(insertCompletion(const QString&)));
+}
+//-----------------------------------------------------------------------------------------
+int GenericTextEditorDocument::calculateIndentation(const QString& str)
 {
     int indent = 0;
-    int str_len = strlen(str);
+    int str_len = str.length();
+    const char *chr = str.toStdString().c_str();
 
     for(int i = 0;i < str_len;i++)
     {
-        if(str[i] == '{')
+        if(chr[i] == '{')
             ++indent;
-        else if(str[i] == '}')
+        else if(chr[i] == '}')
             --indent;
     }
 
@@ -395,3 +400,4 @@ int calculateIndentation(const char *str)
 
     return (indent * 4);
 }
+//-----------------------------------------------------------------------------------------

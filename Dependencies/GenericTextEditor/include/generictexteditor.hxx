@@ -77,7 +77,7 @@ class GTEExport GenericTextEditor : public QMdiArea
     Q_OBJECT
 
 public:
-    GenericTextEditor(QString documentIcon, QWidget *parent = 0);
+    GenericTextEditor(QString editorName, QString documentIcon, QWidget *parent = 0);
 
     void    displayTextFromFile(QString fileName);
     void    displayText(QString docName, QString text);
@@ -91,12 +91,13 @@ signals:
 protected:
     void    closeEvent(QCloseEvent *event);
 
-private slots:
-    void    closeTab(int index);
+    private slots:
+        void    closeTab(int index);
+        void    tabChanged(int index);
 
 private:
-    QString     mDocumentIcon;
-    bool        mAllowDoubleDisplay;
+    QString mDocumentIcon;
+    bool    mAllowDoubleDisplay;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -119,6 +120,7 @@ public:
     inline bool isTextModified(){return mTextModified;}
     inline void setTextModified(bool modified) {mTextModified = modified;}
     void releaseFile();
+    void addCompleter(const QString keywordListFilePath);
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -126,27 +128,24 @@ protected:
     void focusInEvent(QFocusEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    QString textUnderCursor() const;
+    QStringListModel* modelFromFile(const QString& fileName);
+    int  calculateIndentation(const QString& str);
 
-private slots:
+protected slots:
     void updateLineNumberAreaWidth(int newBlockCount);
     void highlightCurrentLine();
     void updateLineNumberArea(const QRect &, int);
     void insertCompletion(const QString &completion);
     void documentWasModified();
 
-private:
-    QString textUnderCursor() const;
-    QStringListModel* modelFromFile(const QString& fileName);
-    
-private:
-    QString                 mDocName;
-    QString                 mFilePath;
-    QFile                   mFile;
-    QWidget*                mLineNumberArea;
-    QSyntaxHighlighter*     mHighlighter;
-    QCompleter*             mCompleter;
-
-    bool                    mTextModified;
+protected:
+    QString            mDocName;
+    QString            mFilePath;
+    QFile              mFile;
+    QWidget*           mLineNumberArea;
+    QCompleter*        mCompleter;
+    bool               mTextModified;
 };
 
 //-----------------------------------------------------------------------------------------

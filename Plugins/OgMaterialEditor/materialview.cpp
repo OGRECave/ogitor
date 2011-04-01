@@ -189,7 +189,7 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 
         mMaterialEditor->setMaterialPath(materialPath);
 
-        mMaterialTextEditor->displayMaterial(material->getName(), resourceGroup, fileInfoList.getPointer()->at(0).filename);
+        mMaterialTextEditor->displayMaterial(material->getName().c_str(), resourceGroup.c_str(), fileInfoList.getPointer()->at(0).filename.c_str());
     }
     catch(Ogre::Exception e)
     {

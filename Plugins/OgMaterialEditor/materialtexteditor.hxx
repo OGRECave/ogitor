@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2010 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+/// Copyright (c) 2008-2011 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -46,113 +46,53 @@
 
 #include <OgreScriptCompiler.h>
 
+#include <generictexteditor.hxx>
 #include "materialhighlighter.hxx"
 
-class QPaintEvent;
-class QResizeEvent;
-class QSize;
-class QWidget;
-class QTextDocument;
-class QTextFormat;
-class QPainter;
-class QRectF;
-class QSizeF;
-
 class MaterialTextEditorDocument;
-class LineNumberArea;
 
 //-----------------------------------------------------------------------------------------
 
-class MaterialTextEditor : public QMdiArea
+class MaterialTextEditor : public GenericTextEditor
 {
     Q_OBJECT
 
 public:
     MaterialTextEditor(QWidget *parent = 0);
 
-    void    displayMaterialFromFile(Ogre::String fileName);
-    void    displayMaterial(Ogre::String materialName, Ogre::String resourceGroup, Ogre::String materialFileName);
-
-signals:
-    void    currentChanged(int);
-
-protected:
-    void    closeEvent(QCloseEvent *event);
+    void    displayMaterial(QString materialName, QString resourceGroup, QString materialFileName);
 
 private slots:
-    void    closeTab(int index);
     void    tabChanged(int index);
 };
 
 //-----------------------------------------------------------------------------------------
 
-class MaterialTextEditorDocument : public QPlainTextEdit, Ogre::ScriptCompilerListener 
+class MaterialTextEditorDocument : public GenericTextEditorDocument, Ogre::ScriptCompilerListener 
 {
     Q_OBJECT
 
 public:
     MaterialTextEditorDocument(QWidget *parent = 0);
 
-    void lineNumberAreaPaintEvent(QPaintEvent *event);
-    int lineNumberAreaWidth();
-
-    Ogre::String saveMaterial();
-    void displayMaterialFromFile(Ogre::String fileName);
-    void displayMaterial(Ogre::String materialName, Ogre::String resourceGroup, Ogre::String materialFileName);
-    inline Ogre::String getMaterialName(){return mMaterialName;}
-    inline Ogre::String getMaterialFileName() {return mMaterialFileName;}
-    inline bool isTextModified(){return mTextModified;}
-    inline void setTextModified(bool modified){mTextModified = modified;}
+    bool saveFile();
+    void displayMaterial(QString materialName, QString resourceGroup, QString materialFilePath);
 
 protected:
-    void resizeEvent(QResizeEvent *event);
     void keyPressEvent(QKeyEvent *event);
-    void focusInEvent(QFocusEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     void mousePressEvent(QMouseEvent *event);
 
-private slots:
-    void updateLineNumberAreaWidth(int newBlockCount);
-    void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
-    void insertCompletion(const QString &completion);
-    void documentWasModified();
-
 private:
-    QString textUnderCursor() const;
-    QStringListModel* modelFromFile(const QString& fileName);
-    void handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const Ogre::String &file, int line, const Ogre::String &msg);
+    void handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const QString &file, int line, const QString &msg);
     
 private:
-    Ogre::String            mMaterialName;
-    Ogre::String            mMaterialFileName;
-    Ogre::String            mLastMaterialSource;
-    Ogre::String            mResourceGroup;
-    QWidget*                mLineNumberArea;
+    QString            mLastMaterialSource;
+    QString            mResourceGroup;
     MaterialHighlighter*    mHighlighter;
-    QCompleter*             mCompleter;
 
     bool                    mTextModified;
     bool                    mScriptError;
-};
-
-//-----------------------------------------------------------------------------------------
-
-class LineNumberArea : public QWidget
-{
-public:
-    LineNumberArea(MaterialTextEditorDocument *document) : QWidget(document) 
-    {
-        materialTextEditorDocument = document;
-    }
-
-    QSize sizeHint() const {return QSize(materialTextEditorDocument->lineNumberAreaWidth(), 0);}
-
-protected:
-    void paintEvent(QPaintEvent *event){materialTextEditorDocument->lineNumberAreaPaintEvent(event);}
-
-private:
-    MaterialTextEditorDocument *materialTextEditorDocument;
 };
 
 //-----------------------------------------------------------------------------------------
