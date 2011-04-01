@@ -372,6 +372,26 @@ namespace OFS
             unsigned int NextBlock;   /* Position of Next Block in file */
         };
 
+        struct OfsEntryDesc;
+
+        typedef void (*CallBackFunction)(void *userData, OfsEntryDesc* arg1, const char *arg2);
+
+        enum CallBackType
+        {
+            CLBK_CONTENT = 0,
+            CLBK_RENAME = 1,
+            CLBK_CREATE = 2,
+            CLBK_DELETE = 3
+        };
+        
+        struct CallBackData
+        {
+            CallBackType      type;
+            CallBackFunction  func;
+            void             *data;
+            void             *owner;
+        };
+             
         /* Entry Descriptor, contains all information needed for entry (in memory) */
         struct OfsEntryDesc
         {
@@ -387,6 +407,7 @@ namespace OFS
             bool          WriteLocked;            /* If true, Entry is not suitable for WRITE operations */
             std::vector<BlockData> UsedBlocks;    /* Vector of BlockData used by this entry */
             std::vector<OfsEntryDesc*> Children;  /* Vector of Entry's children */
+            std::vector<CallBackData> Triggers;   /* Vector of Entry's triggers */
         };
 
         typedef std::map<unsigned int, BlockData> PosBlockDataMap;
@@ -414,6 +435,38 @@ namespace OFS
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    getFileSystemStats(FileSystemStats& stats);
+        /**
+        * Adds a new file system trigger
+        * @param _owner The owner class or id for the trigger
+        * @param _type Type of events to get notified about
+        * @param _func Function to call for notification
+        * @param _data User data to be passed to notification function
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    addTrigger(void *_owner, CallBackType _type, CallBackFunction _func, void *_data = 0);
+        /**
+        * Removes a file system trigger
+        * @param _owner The owner class or id for the trigger
+        * @param _type Type of events to remove notification about
+        */
+        void         removeTrigger(void *_owner, CallBackType _type);
+        /**
+        * Adds a new file trigger
+        * @param filename Name of the file to add trigger for
+        * @param _owner The owner class or id for the trigger
+        * @param _type Type of events to get notified about
+        * @param _func Function to call for notification
+        * @param _data User data to be passed to notification function
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    addFileTrigger(const char *filename, void *_owner, CallBackType _type, CallBackFunction _func, void *_data = 0);
+        /**
+        * Removes a file trigger
+        * @param filename Name of the file to remove trigger for
+        * @param _owner The owner class or id for the trigger
+        * @param _type Type of events to remove notification about
+        */
+        void         removeFileTrigger(const char *filename, void *_owner, CallBackType _type);
         /**
         * Makes a defragmented copy of the file system
         * @param dest path of the destination file
@@ -763,6 +816,7 @@ namespace OFS
         UuidDescMap               mUuidMap;      // Map holding entry descriptors indexed with UUID
         int                       mUseCount;     // Number of objects using this file system instance
         bool                      mRecoveryMode; // Is recovery mode activated?
+        std::vector<CallBackData> mTriggers;     // Vector of File System Triggers */
 
         static NameOfsHandleMap   mAllocatedHandles; // Static map containing all file system instances
 
