@@ -136,6 +136,7 @@ void GenericTextEditor::closeTab(int index)
         }
     }
     sub->close();
+    document->releaseFile();
     document->close();
     
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
@@ -149,7 +150,7 @@ void GenericTextEditor::closeEvent(QCloseEvent *event)
 }
 //-----------------------------------------------------------------------------------------
 GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
-mCompleter(0), mHighlighter(0), mDocName(""), mFilePath(""), mTextModified(false)
+mCompleter(0), mHighlighter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0)
 {
     QFont fnt = font();
     fnt.setFamily("Courier New");
@@ -184,10 +185,9 @@ void GenericTextEditorDocument::displayTextFromFile(Ogre::String docName, Ogre::
 {
     mDocName = docName;
     mFilePath = filePath;
-    QFile* pFile = new QFile(filePath.c_str());
-    pFile->open(QIODevice::ReadOnly);
-    setPlainText(pFile->readAll().data());
-    pFile->close();
+    mFile.setFileName(filePath.c_str());
+    mFile.open(QIODevice::ReadOnly);
+    setPlainText(mFile.readAll().data());
 
     Ogre::String tabTitle = OgitorsUtils::ExtractFileName(filePath);
     if(tabTitle.length() > 25)
@@ -343,26 +343,6 @@ QStringListModel* GenericTextEditorDocument::modelFromFile(const QString& fileNa
     return new QStringListModel(strMap.values(), mCompleter);
 }
 //-----------------------------------------------------------------------------------------
-int calculateIndentation(const Ogre::String& str)
-{
-    int indent = 0;
-    int str_len = str.length();
-    const char *chr = str.c_str();
-
-    for(int i = 0;i < str_len;i++)
-    {
-        if(chr[i] == '{')
-            ++indent;
-        else if(chr[i] == '}')
-            --indent;
-    }
-
-    if(indent < 0)
-        indent = 0;
-
-    return (indent * 4);
-}
-//-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::keyPressEvent(QKeyEvent *event)
 {
     QPlainTextEdit::keyPressEvent(event);
@@ -392,3 +372,27 @@ bool GenericTextEditorDocument::saveFile()
     return true;
 }
 //-----------------------------------------------------------------------------------------
+void GenericTextEditorDocument::releaseFile()
+{
+    mFile.close();
+}
+//-----------------------------------------------------------------------------------------
+int calculateIndentation(const Ogre::String& str)
+{
+    int indent = 0;
+    int str_len = str.length();
+    const char *chr = str.c_str();
+
+    for(int i = 0;i < str_len;i++)
+    {
+        if(chr[i] == '{')
+            ++indent;
+        else if(chr[i] == '}')
+            --indent;
+    }
+
+    if(indent < 0)
+        indent = 0;
+
+    return (indent * 4);
+}

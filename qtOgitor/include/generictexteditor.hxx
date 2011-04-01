@@ -109,6 +109,7 @@ public:
     inline Ogre::String getFilePath() {return mFilePath;}
     inline bool isTextModified(){return mTextModified;}
     inline void setTextModified(bool modified) {mTextModified = modified;}
+    void releaseFile();
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -131,6 +132,7 @@ private:
 private:
     Ogre::String            mDocName;
     Ogre::String            mFilePath;
+    QFile                   mFile;
     QWidget*                mLineNumberArea;
     QSyntaxHighlighter*     mHighlighter;
     QCompleter*             mCompleter;
