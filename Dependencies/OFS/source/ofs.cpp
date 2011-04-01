@@ -656,6 +656,7 @@ namespace OFS
         mFreeBlocks.clear();
         mActiveFiles.clear();
         mUuidMap.clear();
+        mTriggers.clear();
         mRecoveryMode = false;
     }
 
@@ -1260,11 +1261,32 @@ namespace OFS
         if(fileDesc == NULL)
             return OFS_FILE_NOT_FOUND;
 
+        std::vector<_Ofs::CallBackData> saveTrigs = fileDesc->Triggers;
+
         OfsResult ret = _deleteFile(fileDesc);
 
         mStream.flush();
 
-        std::sort(mFreeBlocks.begin(), mFreeBlocks.end(), BlockCompare);
+        if(ret == OFS_OK)
+        {
+            std::sort(mFreeBlocks.begin(), mFreeBlocks.end(), BlockCompare);
+
+            for(unsigned int i = 0;i < saveTrigs.size();i++)
+            {
+                if(saveTrigs[i].type == CLBK_DELETE)
+                {
+                    saveTrigs[i].func(saveTrigs[i].data, 0, filename);
+                }
+            }
+
+            for(unsigned int i = 0;i < mTriggers.size();i++)
+            {
+                if(mTriggers[i].type == CLBK_DELETE)
+                {
+                    mTriggers[i].func(mTriggers[i].data, 0, filename);
+                }
+            }
+        }
 
         return ret;
     }
@@ -1415,6 +1437,22 @@ namespace OFS
         mStream.write(fileDesc->Name.c_str(), fileDesc->Name.length() + 1);
 
         mStream.flush();
+
+        for(unsigned int i = 0;i < fileDesc->Triggers.size();i++)
+        {
+            if(fileDesc->Triggers[i].type == CLBK_RENAME)
+            {
+                fileDesc->Triggers[i].func(fileDesc->Triggers[i].data, fileDesc, filename);
+            }
+        }
+
+        for(unsigned int i = 0;i < mTriggers.size();i++)
+        {
+            if(mTriggers[i].type == CLBK_RENAME)
+            {
+                mTriggers[i].func(mTriggers[i].data, fileDesc, filename);
+            }
+        }
 
         return OFS_OK;
     }
@@ -1709,6 +1747,14 @@ namespace OFS
         handle.mAccessFlags = OFS_READWRITE;
         handle._prepareReadWritePointers(true);
 
+        for(unsigned int i = 0;i < mTriggers.size();i++)
+        {
+            if(mTriggers[i].type == CLBK_CREATE)
+            {
+                mTriggers[i].func(mTriggers[i].data, fileDesc, 0);
+            }
+        }
+
         return OFS_OK;
     }
 
@@ -1739,6 +1785,25 @@ namespace OFS
             {
                 handle.mEntryDesc->WriteLocked = false;
                 mActiveFiles.erase(it);
+            }
+        }
+
+        if(handle.mAccessFlags & OFS_WRITE)
+        {
+            for(unsigned int i = 0;i < handle.mEntryDesc->Triggers.size();i++)
+            {
+                if(handle.mEntryDesc->Triggers[i].type == CLBK_CONTENT)
+                {
+                    handle.mEntryDesc->Triggers[i].func(handle.mEntryDesc->Triggers[i].data, handle.mEntryDesc, 0);
+                }
+            }
+
+            for(unsigned int i = 0;i < mTriggers.size();i++)
+            {
+                if(mTriggers[i].type == CLBK_CONTENT)
+                {
+                    mTriggers[i].func(mTriggers[i].data, handle.mEntryDesc, 0);
+                }
             }
         }
 
@@ -3122,6 +3187,124 @@ namespace OFS
         return file_size;
     }
 
+//------------------------------------------------------------------------------------------
+    OfsResult _Ofs::addTrigger(void *_owner, _Ofs::CallBackType _type, _Ofs::CallBackFunction _func, void *_data)
+    {
+        assert(_owner != 0);
+
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::addTrigger, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        _Ofs::CallBackData tdata;
+        tdata.owner = _owner;
+        tdata.type = _type;
+        tdata.func = _func;
+        tdata.data = _data;
+
+        mTriggers.push_back(tdata);
+
+        return OFS_OK;
+    }
+//------------------------------------------------------------------------------------------
+    void _Ofs::removeTrigger(void *_owner, _Ofs::CallBackType _type)
+    {
+        assert(_owner != 0);
+
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::removeTrigger, Operation called on an unmounted file system.");
+            return;
+        }
+
+        for(unsigned int i = 0;i < mTriggers.size();i++)
+        {
+            if(mTriggers[i].owner == _owner && mTriggers[i].type == _type)
+            {
+                mTriggers.erase(mTriggers.begin() + i);
+                return;
+            }
+        }
+
+        assert("removeTrigger: The trigger could not be found!!");
+    }
+//------------------------------------------------------------------------------------------
+    OfsResult _Ofs::addFileTrigger(const char *filename, void *_owner, _Ofs::CallBackType _type, _Ofs::CallBackFunction _func, void *_data)
+    {
+        assert(_owner != 0);
+
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::addFileTrigger, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(filename);
+
+        if(dirDesc == NULL)
+            return OFS_FILE_NOT_FOUND;
+
+        std::string fName = _extractFileName(filename);
+
+        OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
+
+        if(fileDesc == NULL)
+            return OFS_FILE_NOT_FOUND;
+        
+        _Ofs::CallBackData tdata;
+        tdata.owner = _owner;
+        tdata.type = _type;
+        tdata.func = _func;
+        tdata.data = _data;
+
+        fileDesc->Triggers.push_back(tdata);
+
+        return OFS_OK;
+    }
+//------------------------------------------------------------------------------------------
+    void _Ofs::removeFileTrigger(const char *filename, void *_owner, _Ofs::CallBackType _type)
+    {
+        assert(_owner != 0);
+
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::removeFileTrigger, Operation called on an unmounted file system.");
+            return;
+        }
+
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(filename);
+
+        if(dirDesc == NULL)
+            return;
+
+        std::string fName = _extractFileName(filename);
+
+        OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
+
+        if(fileDesc == NULL)
+            return;
+
+        for(unsigned int i = 0;i < fileDesc->Triggers.size();i++)
+        {
+            if(fileDesc->Triggers[i].owner == _owner && fileDesc->Triggers[i].type == _type)
+            {
+                fileDesc->Triggers.erase(fileDesc->Triggers.begin() + i);
+                return;
+            }
+        }
+
+        assert("removeFileTrigger: The trigger could not be found!!");
+    }
 //------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------
