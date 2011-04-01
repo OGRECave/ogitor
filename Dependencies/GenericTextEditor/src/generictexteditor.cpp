@@ -35,9 +35,8 @@
 #include <QtGui/QMessageBox>
 #include <QtSvg>
 
-#include "generictexteditor.hxx"
 
-using namespace Ogitors;
+#include "generictexteditor.hxx"
 
 //-----------------------------------------------------------------------------------------
 GenericTextEditor::GenericTextEditor(QString documentIcon, QWidget *parent) : QMdiArea(parent)
@@ -56,7 +55,7 @@ GenericTextEditor::GenericTextEditor(QString documentIcon, QWidget *parent) : QM
     connect(this,   SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::displayTextFromFile(Ogre::String filePath)
+void GenericTextEditor::displayTextFromFile(QString filePath)
 {
     bool alreadyShowing = false;
     GenericTextEditorDocument* document;
@@ -74,12 +73,13 @@ void GenericTextEditor::displayTextFromFile(Ogre::String filePath)
     if(!alreadyShowing || mAllowDoubleDisplay)
     {
         GenericTextEditorDocument* document = new GenericTextEditorDocument(this);
-        document->displayTextFromFile(OgitorsUtils::ExtractFileName(filePath), filePath);
+        QFileInfo file(filePath);
+        document->displayTextFromFile(file.fileName(), filePath);
         QMdiSubWindow *window = addSubWindow(document);
         window->setWindowIcon(QIcon(mDocumentIcon));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, OgitorsUtils::ExtractFileName(filePath).c_str());
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, file.fileName());
     }
     else
     {
@@ -88,7 +88,7 @@ void GenericTextEditor::displayTextFromFile(Ogre::String filePath)
     }
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::displayText(Ogre::String docName, Ogre::String text)
+void GenericTextEditor::displayText(QString docName, QString text)
 {
     bool alreadyShowing = false;
     GenericTextEditorDocument* document;
@@ -111,7 +111,7 @@ void GenericTextEditor::displayText(Ogre::String docName, Ogre::String text)
         window->setWindowIcon(QIcon(mDocumentIcon));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName.c_str());
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName);
     }
     else
     {
@@ -181,31 +181,31 @@ mCompleter(0), mHighlighter(0), mDocName(""), mFilePath(""), mTextModified(false
     highlightCurrentLine();
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::displayTextFromFile(Ogre::String docName, Ogre::String filePath)
+void GenericTextEditorDocument::displayTextFromFile(QString docName, QString filePath)
 {
     mDocName = docName;
     mFilePath = filePath;
-    mFile.setFileName(filePath.c_str());
+    mFile.setFileName(filePath);
     mFile.open(QIODevice::ReadOnly);
     setPlainText(mFile.readAll().data());
 
-    Ogre::String tabTitle = OgitorsUtils::ExtractFileName(filePath);
+    QString tabTitle = mFile.fileName();
     if(tabTitle.length() > 25)
-        tabTitle = tabTitle.substr(0, 12) + "..." + tabTitle.substr(tabTitle.length() - 10, 10);
-    setWindowTitle(tabTitle.c_str() + QString("[*]"));
+        tabTitle = tabTitle.mid(0, 12) + "..." + tabTitle.mid(tabTitle.length() - 10, 10);
+    setWindowTitle(tabTitle + QString("[*]"));
     
     connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::displayText(Ogre::String docName, Ogre::String text)
+void GenericTextEditorDocument::displayText(QString docName, QString text)
 {
     mDocName = docName;
-    setPlainText(text.c_str());
+    setPlainText(text);
 
-    Ogre::String tabTitle = docName;
+    QString tabTitle = docName;
     if(tabTitle.length() > 25)
-        tabTitle = tabTitle.substr(0, 12) + "..." + tabTitle.substr(tabTitle.length() - 10, 10);
-    setWindowTitle(tabTitle.c_str() + QString("[*]"));
+        tabTitle = tabTitle.mid(0, 12) + "..." + tabTitle.mid(tabTitle.length() - 10, 10);
+    setWindowTitle(tabTitle + QString("[*]"));
 
     connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
 }
@@ -377,17 +377,16 @@ void GenericTextEditorDocument::releaseFile()
     mFile.close();
 }
 //-----------------------------------------------------------------------------------------
-int calculateIndentation(const Ogre::String& str)
+int calculateIndentation(const char *str)
 {
     int indent = 0;
-    int str_len = str.length();
-    const char *chr = str.c_str();
+    int str_len = strlen(str);
 
     for(int i = 0;i < str_len;i++)
     {
-        if(chr[i] == '{')
+        if(str[i] == '{')
             ++indent;
-        else if(chr[i] == '}')
+        else if(str[i] == '}')
             --indent;
     }
 
