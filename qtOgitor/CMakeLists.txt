@@ -31,8 +31,6 @@ else(NOT QT4_FOUND)
 		./src/entityview.cpp
 		./include/filesystemview.hxx
 		./src/filesystemview.cpp
-		./include/generictexteditor.hxx
-		./src/generictexteditor.cpp
 		./include/importheightmapdialog.hxx
 		./src/importheightmapdialog.cpp
 		./include/layerview.hxx
@@ -92,7 +90,6 @@ else(NOT QT4_FOUND)
 		./include/complexproperties.hxx
 		./include/entityview.hxx
 		./include/filesystemview.hxx
-		./include/generictexteditor.hxx
 		./include/importheightmapdialog.hxx
 		./include/layerview.hxx
 		./include/lineeditwithhistory.hxx
@@ -180,6 +177,8 @@ else(NOT QT4_FOUND)
     add_dependencies(qtOgitor OgSkyx)
     add_dependencies(qtOgitor OgModularZone)
     add_dependencies(qtOgitor DotSceneSerializer)
+    add_dependencies(qtOgitor OFS)
+    add_dependencies(qtOGitor GenericTextEditor)
     include(BundleUtilities)
     get_target_property(qtOgitorLocation qtOgitor LOCATION)
     get_dotapp_dir(${qtOgitorLocation} qtOgitorLocationAppdir)
@@ -193,7 +192,7 @@ else(NOT QT4_FOUND)
 	if(OGITOR_MESHMAGICK_INTERFACE)
         TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ${Boost_REGEX_LIBRARY})
 	else(OGITOR_MESHMAGICK_INTERFACE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor ${Boost_REGEX_LIBRARY})
+        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor GenericTextEditor ${Boost_REGEX_LIBRARY})
     endif(OGITOR_MESHMAGICK_INTERFACE)
     if(UNIX AND NOT APPLE)
         TARGET_LINK_LIBRARIES(qtOgitor optimized QtSolutions_PropertyBrowser ${Boost_LIBRARIES})

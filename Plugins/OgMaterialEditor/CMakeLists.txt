@@ -68,7 +68,7 @@ else(NOT QT4_FOUND)
 	link_directories(${OGITOR_LIBPATH})
 	link_directories(${DEPENDENCIES_LIBPATH})
 
-	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
+	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor GenericTextEditor)
 	add_library(OgMaterialEditor SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 

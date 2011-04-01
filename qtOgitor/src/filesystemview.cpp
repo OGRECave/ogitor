@@ -87,7 +87,7 @@ void FileSystemViewWidget::onDoubleClicked(const QModelIndex& index)
 
     if(mAllowedExtensions.indexOf(extension) != -1) 
     {
-        mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(mModel->filePath(index).toStdString());
+        mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(mModel->filePath(index));
         mOgitorMainWindow->mEditorTab->setCurrentIndex(mOgitorMainWindow->mEditorTab->indexOf(mOgitorMainWindow->getGenericTextEditor()));
     }
 }

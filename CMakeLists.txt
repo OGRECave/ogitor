@@ -110,6 +110,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/quaternion"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/vector3"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
 )
 set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
 
@@ -141,6 +142,7 @@ add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
+add_subdirectory(Dependencies/GenericTextEditor)
 IF(OGITOR_MESHMAGICK_INTERFACE)
 	add_subdirectory(Dependencies/MeshMagick)
 ENDIF(OGITOR_MESHMAGICK_INTERFACE)

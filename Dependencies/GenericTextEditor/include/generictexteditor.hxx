@@ -33,8 +33,6 @@
 #ifndef GENERIC_TEXT_EDITOR_HXX
 #define GENERIC_TEXT_EDITOR_HXX
 
-#include "OgitorsPrerequisites.h"
-
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
@@ -61,17 +59,28 @@ class QSizeF;
 class MaterialTextEditorDocument;
 class LineNumberArea;
 
+#if defined( __WIN32__ ) || defined( _WIN32 )
+   #ifdef GENERICTEXTEDITOR_EXPORT
+     #define GTEExport __declspec (dllexport)
+   #else
+     #define GTEExport __declspec (dllimport)
+   #endif
+#else
+   #define GTEExport
+#endif
+
+
 //-----------------------------------------------------------------------------------------
 
-class GenericTextEditor : public QMdiArea
+class GTEExport GenericTextEditor : public QMdiArea
 {
     Q_OBJECT
 
 public:
     GenericTextEditor(QString documentIcon, QWidget *parent = 0);
 
-    void    displayTextFromFile(Ogre::String fileName);
-    void    displayText(Ogre::String docName, Ogre::String text);
+    void    displayTextFromFile(QString fileName);
+    void    displayText(QString docName, QString text);
 
     void    setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
     bool    isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
@@ -92,7 +101,7 @@ private:
 
 //-----------------------------------------------------------------------------------------
 
-class GenericTextEditorDocument : public QPlainTextEdit
+class GTEExport GenericTextEditorDocument : public QPlainTextEdit
 {
     Q_OBJECT
 
@@ -103,10 +112,10 @@ public:
     int lineNumberAreaWidth();
 
     bool saveFile();
-    void displayTextFromFile(Ogre::String docName, Ogre::String filePath);
-    void displayText(Ogre::String docName, Ogre::String text);
-    inline Ogre::String getDocName( ){return mDocName;}
-    inline Ogre::String getFilePath() {return mFilePath;}
+    void displayTextFromFile(QString docName, QString filePath);
+    void displayText(QString docName, QString text);
+    inline QString getDocName( ){return mDocName;}
+    inline QString getFilePath() {return mFilePath;}
     inline bool isTextModified(){return mTextModified;}
     inline void setTextModified(bool modified) {mTextModified = modified;}
     void releaseFile();
@@ -130,8 +139,8 @@ private:
     QStringListModel* modelFromFile(const QString& fileName);
     
 private:
-    Ogre::String            mDocName;
-    Ogre::String            mFilePath;
+    QString                 mDocName;
+    QString                 mFilePath;
     QFile                   mFile;
     QWidget*                mLineNumberArea;
     QSyntaxHighlighter*     mHighlighter;
@@ -142,7 +151,7 @@ private:
 
 //-----------------------------------------------------------------------------------------
 
-class LineNumberArea : public QWidget
+class GTEExport LineNumberArea : public QWidget
 {
 public:
     LineNumberArea(GenericTextEditorDocument *document) : QWidget(document) 
