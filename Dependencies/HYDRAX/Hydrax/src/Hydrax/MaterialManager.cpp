@@ -143,6 +143,11 @@ namespace Hydrax
 		{
 			setCompositorEnable(COMP_UNDERWATER, false);
 
+            Ogre::CompositorChain *compChain = Ogre::CompositorManager::getSingleton().getCompositorChain(mHydrax->getViewport());
+            Ogre::CompositorInstance *inst = compChain->getCompositor(_def_Underwater_Compositor_Name);
+            if(inst != NULL)
+                inst->removeListener(&mUnderwaterCompositorListener);
+
 			Ogre::CompositorManager::getSingleton().removeCompositor(mHydrax->getViewport(), _def_Underwater_Compositor_Name);
 			Ogre::CompositorManager::getSingleton().remove(_def_Underwater_Compositor_Name);
 	

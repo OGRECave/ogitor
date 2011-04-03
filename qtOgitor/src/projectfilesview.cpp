@@ -30,22 +30,20 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "filesystemview.hxx"
+#include "projectfilesview.hxx"
+#include "ofstreewidget.hxx"
 #include "mainwindow.hxx"
+#include "generictexteditor.hxx"
 
-using namespace Ogitors;
+#include "OgitorsPrerequisites.h"
+#include "OgitorsRoot.h"
 
 //----------------------------------------------------------------------------------------
-FileSystemViewWidget::FileSystemViewWidget(QWidget *parent) : QWidget(parent)
+ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
+    QWidget(parent), ofsWidget(0)
 {
-    QVBoxLayout *pBoxlayout = new QVBoxLayout(this);
-    pBoxlayout->setMargin(0);
-    
-    mModel = new QFileSystemModel();
-    mTree = new QTreeView(parent);
-    mTree->setModel(mModel);
-   
-    pBoxlayout->addWidget(mTree);
+    vboxLayout = new QVBoxLayout(this);
+    vboxLayout->setMargin(0);
 
     mAllowedExtensions.append("txt");
     mAllowedExtensions.append("html");
@@ -56,39 +54,50 @@ FileSystemViewWidget::FileSystemViewWidget(QWidget *parent) : QWidget(parent)
     mAllowedExtensions.append("xml");
     mAllowedExtensions.append("log");
     mAllowedExtensions.append("cfg");
-    mAllowedExtensions.append("ofs");
-
-    connect(mTree, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onDoubleClicked(const QModelIndex&)));
 }
 //----------------------------------------------------------------------------------------
-FileSystemViewWidget::~FileSystemViewWidget()
+ProjectFilesViewWidget::~ProjectFilesViewWidget()
 {
 }
 //----------------------------------------------------------------------------------------
-void FileSystemViewWidget::prepareView()
+void ProjectFilesViewWidget::prepareView()
 {
-   mModel->setRootPath(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectDir.c_str());
+    ofsWidget = new OfsTreeWidget(this, OfsTreeWidget::CAP_FULL_FUNCTIONS);
+    
+    vboxLayout->addWidget(ofsWidget);
 
-   QModelIndex index = mModel->index(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectDir.c_str());
-   mTree->setRootIndex(index);
+    bool ret = connect(ofsWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked ( QTreeWidgetItem *, int)));
+    ret = false;
 }
 //----------------------------------------------------------------------------------------
-void FileSystemViewWidget::clearView()
+void ProjectFilesViewWidget::clearView()
 {
-    mModel = new QFileSystemModel();
-    mTree->reset();
-}
-//----------------------------------------------------------------------------------------
-void FileSystemViewWidget::onDoubleClicked(const QModelIndex& index)
-{   
-    QString filePath = mModel->filePath(index);
-    int pos = filePath.lastIndexOf(".");
-    QString extension = filePath.right(filePath.size() - pos - 1);
-
-    if(mAllowedExtensions.indexOf(extension) != -1) 
+    if(ofsWidget != 0)
     {
-        mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(mModel->filePath(index));
-        mOgitorMainWindow->mEditorTab->setCurrentIndex(mOgitorMainWindow->mEditorTab->indexOf(mOgitorMainWindow->getGenericTextEditor()));
+        disconnect(ofsWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked ( QTreeWidgetItem *, int)));
+        delete ofsWidget;
+        ofsWidget = 0;
+    }
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::itemDoubleClicked ( QTreeWidgetItem * item, int column )
+{
+    if(item != NULL)
+    {
+        QString path = item->whatsThis(0);
+
+        if(!path.endsWith("/"))
+        {
+            int pos = path.lastIndexOf(".");
+            QString extension = path.right(path.size() - pos - 1);
+
+            if(mAllowedExtensions.indexOf(extension) != -1) 
+            {
+                path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
+                mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
+                mOgitorMainWindow->mEditorTab->setCurrentIndex(mOgitorMainWindow->mEditorTab->indexOf(mOgitorMainWindow->getGenericTextEditor()));
+            }
+        }
     }
 }
 //----------------------------------------------------------------------------------------

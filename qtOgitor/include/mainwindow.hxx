@@ -53,8 +53,8 @@ class OgitorPreferencesWidget;
 class PreferencesManager;
 class LineEditWithHistory;
 class TerrainToolsWidget;
-class FileSystemViewWidget;
 class GenericTextEditor;
+class ProjectFilesViewWidget;
 
 extern int FPSLIST[12];
 extern int BrushValueTable[25];
@@ -110,6 +110,7 @@ public:
     QDockWidget* resourcesDockWidget;
     QDockWidget* propertiesDockWidget;
     QDockWidget* toolsDockWidget;
+    QDockWidget* projectFilesDockWidget;
     QTabWidget*  mLogTabs;
     QDockWidget* logDockWidget;
     TerrainToolsWidget* mTerrainToolsWidget;
@@ -155,6 +156,7 @@ public:
     QAction*  actToggleProperties;
     QAction*  actToggleResources;
     QAction*  actOpenPreferences;
+    QAction*  actToggleProjectFiles;
     QAction*  actToggleLog;
     QAction*  actUndo;
     QAction*  actRedo;
@@ -243,7 +245,7 @@ public:
     GeneralPropertiesViewWidget     *getGeneralPropertiesViewWidget() {return mGeneralPropertiesViewWidget;}; 
     OgreWidget                      *getOgreWidget() {return mOgreWidget;};
     TerrainToolsWidget              *getTerrainToolsWidget() {return mTerrainToolsWidget;};
-    FileSystemViewWidget            *getFileSystemViewWidget() {return mFileSystemViewWidget;};
+    ProjectFilesViewWidget          *getProjectFilesViewWidget() {return mProjectFilesViewWidget;};
     GenericTextEditor               *getGenericTextEditor() {return mGenericTextEditor;};
     QTimer                          *getAutoBackupTimer() {return mAutoBackupTimer;};
 
@@ -334,7 +336,7 @@ private:
     EntityViewWidget                *mEntityViewWidget;
     ObjectsViewWidget               *mObjectsViewWidget;
     TemplateViewWidget              *mTemplatesViewWidget;
-    FileSystemViewWidget            *mFileSystemViewWidget;
+    ProjectFilesViewWidget          *mProjectFilesViewWidget;
     PreferencesManager              *mPrefManager;
     OgitorAssistant                 *mOgitorAssistant;
     GenericTextEditor               *mGenericTextEditor;
