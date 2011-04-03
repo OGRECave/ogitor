@@ -38,7 +38,7 @@ ModularZoneFactory::ModularZoneFactory(OgitorsView *view) : CNodeEditorFactory(v
     mAddToObjectList = false;//use the dragndrop widget
     mRequirePlacement = true;
     mIcon = "../Plugins/Icons/zone.svg";//"Icons/zone.svg";
-    mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
+    mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_DROP| CAN_UNDO | CAN_ACCEPTCOPY;
 
 	AddPropertyDefinition("zonetemplate","Zone::Description File","XML file that defines this zone",PROP_INT, true, false);
 	AddPropertyDefinition("portalcount","Zone::Portal Count","Number of portals in this zone",PROP_INT, true, false);

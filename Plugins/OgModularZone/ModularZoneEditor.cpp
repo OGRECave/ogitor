@@ -259,6 +259,27 @@ TiXmlElement* ModularZoneEditor::exportDotScene(TiXmlElement *pParent)
     pScale->SetAttribute("y", Ogre::StringConverter::toString(mScale->get().y).c_str());
     pScale->SetAttribute("z", Ogre::StringConverter::toString(mScale->get().z).c_str());
     
+	//zone info
+	//A normal dotScene loader will ignore this 
+	//but a specialised one should use this to set up zone
+	//ideally portal info should hang of this element
+    TiXmlElement *pZone = pNode->InsertEndChild(TiXmlElement("zone"))->ToElement();
+    pZone->SetAttribute("name", mName->get().c_str());
+	pZone->SetAttribute("portals", Ogre::StringConverter::toString(mPortalCount->get()).c_str());
+
+	NameObjectPairList::const_iterator itrPortal = mChildren.begin();
+    while(itrPortal != mChildren.end())
+    {
+		//TODO: need to create nodes and then attach objects to these
+		//rather than attaching directly to zone node 
+		//(as everything needs a node in PCZSM)
+		if(itrPortal->second->getTypeName() == "MZ Portal Object")
+		{
+			itrPortal->second->exportDotScene(pZone);
+		}
+        itrPortal++;
+    }
+
 	
 	//retrieve zone mesh and export as entity
 
@@ -285,15 +306,24 @@ TiXmlElement* ModularZoneEditor::exportDotScene(TiXmlElement *pParent)
         pSubEntity->SetAttribute("materialName", material.c_str());
     }
 
-	//TODO: portals as userData ?
-	//TODO: child nodes for entities in this zone
-    //// loop over children
-    //NameObjectPairList::const_iterator it = mChildren.begin();
-    //while(it != mChildren.end())
-    //{
-    //    it->second->exportDotScene(pNode);
-    //    it++;
-    //}
+
+
+	//child nodes for entities in this zone
+	
+    //// loop over children eg lights, entities, markers, 
+	//(also portals at the moment. all they'd be better in a block in zone section)
+    NameObjectPairList::const_iterator it = mChildren.begin();
+    while(it != mChildren.end())
+    {
+		//TODO: need to create nodes and then attach objects to these
+		//rather than attaching directly to zone node 
+		//(as everything needs a node in PCZSM)
+		if(it->second->getTypeName() != "MZ Portal Object")
+		{
+			it->second->exportDotScene(pNode);
+		}
+        ++it;
+    }
 
     return pNode;
 }
