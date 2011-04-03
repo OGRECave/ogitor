@@ -275,15 +275,18 @@ void OgitorsRoot::ClearEditors()
 
     DestroyGizmo();
 
-    //Make sure to unLoad all the viewports first, since they are dependent on SceneManager
-    //but they share the same parent with scene manager and scene manager may get deleted before they do
-    NameObjectPairList::iterator vit = mNamesByType[ETYPE_VIEWPORT].begin();
-    while(vit != mNamesByType[ETYPE_VIEWPORT].end())
+    // UnLoad editors in inverse load order
+    // End at 1, since 0 means all objects
+    for(unsigned int i = LAST_EDITOR - 1;i > 0;i--)
     {
-        vit->second->unLoad();
-        vit++;
+        NameObjectPairList::iterator unldit = mNamesByType[i].begin();
+        while(unldit != mNamesByType[i].end())
+        {
+            unldit->second->unLoad();
+            unldit++;
+        }
     }
-
+    
     mRootEditor->destroy();
     mRootEditor = 0;
 

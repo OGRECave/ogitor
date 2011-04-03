@@ -203,17 +203,31 @@ void OfsTreeWidget::onItemCollapsed( QTreeWidgetItem * item )
 
         for(int i = 0;i < total;i++)
         {
-            if(item->child(i)->whatsThis(0).endsWith("/"))
-                deleteList.push_back(item);
+            if(!item->child(i)->whatsThis(0).endsWith("/"))
+                deleteList.push_back(item->child(i));
         }
+
+        NameTreeWidgetMap::iterator it;
 
         for(unsigned int i = 0;i < deleteList.size();i++)
         {
             QTreeWidgetItem *chItem = deleteList[i];
 
-            mItemMap.erase(mItemMap.find(chItem->whatsThis(0).toStdString()));
+            QString value = chItem->whatsThis(0);
+
+            it = mItemMap.find(value.toStdString());
+
+            mItemMap.erase(it);
 
             item->removeChild(chItem);
+        }
+
+        if(total > 0 && item->childCount() == 0)
+        {
+            QTreeWidgetItem* chItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(".")));
+            chItem->setTextColor(0, Qt::black);
+            chItem->setWhatsThis(0, item->whatsThis(0));
+            item->addChild(chItem);
         }
     }
 
@@ -259,11 +273,6 @@ void OfsTreeWidget::dropEvent(QDropEvent *evt)
 }
 //----------------------------------------------------------------------------------------
 void OfsTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
-{
-    evt->ignore();
-}
-//----------------------------------------------------------------------------------------
-void OfsTreeWidget::mouseDoubleClickEvent(QMouseEvent *evt)
 {
     evt->ignore();
 }

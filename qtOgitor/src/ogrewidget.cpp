@@ -36,7 +36,7 @@
 #include "objectsview.hxx"
 #include "templateview.hxx"
 #include "propertiesviewgeneral.hxx"
-#include "filesystemview.hxx"
+#include "projectfilesview.hxx"
 
 #include "MultiSelEditor.h"
 #include "NodeEditor.h"
@@ -639,7 +639,7 @@ void OgreWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
             mOgitorMainWindow->getObjectsViewWidget()->prepareView();
             mOgitorMainWindow->getEntityViewWidget()->prepareView();
             mOgitorMainWindow->getTemplatesViewWidget()->prepareView();
-            mOgitorMainWindow->getFileSystemViewWidget()->prepareView();
+            mOgitorMainWindow->getProjectFilesViewWidget()->prepareView();
             mOgitorMainWindow->toggleGrid();
 
             mOgitorMainWindow->getLayersViewWidget()->updateLayerNames();
@@ -695,7 +695,8 @@ void OgreWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
             mOgitorMainWindow->getObjectsViewWidget()->clearView();
             mOgitorMainWindow->getEntityViewWidget()->clearView();
             mOgitorMainWindow->getTemplatesViewWidget()->destroyScene();
-            mOgitorMainWindow->getFileSystemViewWidget()->clearView();
+            mOgitorMainWindow->getProjectFilesViewWidget()->clearView();
+
             mOgitorMainWindow->mCamPosLabel->setText("");
             mOgitorMainWindow->mTriangleCountLabel->setText("");
             getOverlayWidget()->show();

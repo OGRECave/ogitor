@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2010 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+/// Copyright (c) 2008-2011 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -30,44 +30,29 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef FILE_SYSTEM_VIEW_HXX
-#define FILE_SYSTEM_VIEW_HXX
+#ifndef PROJECTFILESVIEW_HXX
+#define PROJECTFILESVIEW_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QSplitter>
-#include <QtGui/QFileSystemModel>
-#include <QtGui/QTreeView>
-#include <QtGui/QListView>
-#include <QtGui/QVBoxLayout>
+#include <QtGui/QtGui>
 
-#include "OgitorsPrerequisites.h"
-#include "OgitorsRoot.h"
+class OfsTreeWidget;
 
-#include "generictexteditor.hxx"
-
-//----------------------------------------------------------------------------------------
-
-class FileSystemViewWidget : public QWidget
+class ProjectFilesViewWidget : public QWidget
 {
     Q_OBJECT;
 public:
-    explicit FileSystemViewWidget(QWidget *parent = 0);
-    virtual ~FileSystemViewWidget();
+    explicit ProjectFilesViewWidget(QWidget *parent = 0);
+    virtual ~ProjectFilesViewWidget();
+    void prepareView();
+    void clearView();
 
-    void        prepareView();
-    void        clearView();
-
-private Q_SLOTS:
-    void onDoubleClicked(const QModelIndex& index);
+public Q_SLOTS:
+    void itemDoubleClicked ( QTreeWidgetItem * item, int column );
 
 protected:
-    QFileSystemModel    *mModel;
-    QTreeView           *mTree;
-    QStringList         mAllowedExtensions;
+    OfsTreeWidget *ofsWidget;
+    QVBoxLayout   *vboxLayout;
+    QStringList    mAllowedExtensions;
 };
 
-//----------------------------------------------------------------------------------------
-
-#endif // FILE_SYSTEM_VIEW_HXX
-
-//----------------------------------------------------------------------------------------
+#endif // PROJECTFILESVIEW_HXX
