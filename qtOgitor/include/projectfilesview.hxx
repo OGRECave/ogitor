@@ -33,9 +33,13 @@
 #ifndef PROJECTFILESVIEW_HXX
 #define PROJECTFILESVIEW_HXX
 
+//------------------------------------------------------------------------------
+
 #include <QtGui/QtGui>
 
 class OfsTreeWidget;
+
+//------------------------------------------------------------------------------
 
 class ProjectFilesViewWidget : public QWidget
 {
@@ -47,12 +51,19 @@ public:
     void clearView();
 
 public Q_SLOTS:
-    void itemDoubleClicked ( QTreeWidgetItem * item, int column );
+    void itemDoubleClicked(QTreeWidgetItem * item, int column);
 
 protected:
     OfsTreeWidget *ofsWidget;
     QVBoxLayout   *vboxLayout;
-    QStringList    mAllowedExtensions;
+    QStringList    mAllowedCombinedExtensions;
+    QStringList    mAllowedGenericExtensions;
+    QStringList    mAllowedMaterialExtensions;
+    QStringList    mAllowedScriptExtensions;
 };
 
+//------------------------------------------------------------------------------
+
 #endif // PROJECTFILESVIEW_HXX
+
+//------------------------------------------------------------------------------
