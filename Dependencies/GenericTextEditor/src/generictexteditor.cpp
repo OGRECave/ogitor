@@ -184,8 +184,7 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
     {
         QString ofsFile = filePath.mid(0, pos);
         filePath.remove(0, pos + 2);
-        tabTitle = filePath;
-
+        
         if(mOfsPtr.mount(ofsFile.toStdString().c_str()) != OFS::OFS_OK)
             return;
 
@@ -205,8 +204,6 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
 
         mOfsPtr->read(mOfsFileHandle, buf, cont_len);
         mOfsPtr->closeFile(mOfsFileHandle);
-        
-        setPlainText(buf);
         
         displayText(filePath, buf);
         delete [] buf;

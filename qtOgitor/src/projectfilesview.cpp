@@ -45,15 +45,34 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     vboxLayout = new QVBoxLayout(this);
     vboxLayout->setMargin(0);
 
-    mAllowedExtensions.append("txt");
-    mAllowedExtensions.append("html");
-    mAllowedExtensions.append("htm");
-    mAllowedExtensions.append("scene");
-    mAllowedExtensions.append("ogscene");
-    mAllowedExtensions.append("ini");
-    mAllowedExtensions.append("xml");
-    mAllowedExtensions.append("log");
-    mAllowedExtensions.append("cfg");
+    // Generic text editor extensions
+    mAllowedGenericExtensions.append("txt");
+    mAllowedGenericExtensions.append("html");
+    mAllowedGenericExtensions.append("htm");
+    mAllowedGenericExtensions.append("scene");
+    mAllowedGenericExtensions.append("ogscene");
+    mAllowedGenericExtensions.append("ini");
+    mAllowedGenericExtensions.append("xml");
+    mAllowedGenericExtensions.append("log");
+    mAllowedGenericExtensions.append("cfg");
+
+    // Material editor extensions
+    mAllowedMaterialExtensions.append("cg");
+    mAllowedMaterialExtensions.append("hlsl");
+    mAllowedMaterialExtensions.append("glsl");
+    mAllowedMaterialExtensions.append("frag");
+    mAllowedMaterialExtensions.append("vert");
+    mAllowedMaterialExtensions.append("material");
+    mAllowedMaterialExtensions.append("program");
+    mAllowedMaterialExtensions.append("compositor");
+
+    // Script editor extensions
+    mAllowedScriptExtensions.append("as");
+
+    // Combine into one joined list
+    mAllowedCombinedExtensions.append(mAllowedGenericExtensions);
+    mAllowedCombinedExtensions.append(mAllowedMaterialExtensions);
+    mAllowedCombinedExtensions.append(mAllowedScriptExtensions);
 }
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::~ProjectFilesViewWidget()
@@ -66,7 +85,7 @@ void ProjectFilesViewWidget::prepareView()
     
     vboxLayout->addWidget(ofsWidget);
 
-    bool ret = connect(ofsWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked ( QTreeWidgetItem *, int)));
+    bool ret = connect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
     ret = false;
 }
 //----------------------------------------------------------------------------------------
@@ -74,13 +93,13 @@ void ProjectFilesViewWidget::clearView()
 {
     if(ofsWidget != 0)
     {
-        disconnect(ofsWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked ( QTreeWidgetItem *, int)));
+        disconnect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
         delete ofsWidget;
         ofsWidget = 0;
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::itemDoubleClicked ( QTreeWidgetItem * item, int column )
+void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int column)
 {
     if(item != NULL)
     {
@@ -91,11 +110,23 @@ void ProjectFilesViewWidget::itemDoubleClicked ( QTreeWidgetItem * item, int col
             int pos = path.lastIndexOf(".");
             QString extension = path.right(path.size() - pos - 1);
 
-            if(mAllowedExtensions.indexOf(extension) != -1) 
+            if(mAllowedCombinedExtensions.indexOf(extension) != -1) 
             {
                 path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
-                mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
-                mOgitorMainWindow->mEditorTab->setCurrentIndex(mOgitorMainWindow->mEditorTab->indexOf(mOgitorMainWindow->getGenericTextEditor()));
+                
+                if(mAllowedGenericExtensions.indexOf(extension) != -1) 
+                {
+                    mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
+                    mOgitorMainWindow->mEditorTab->setCurrentIndex(mOgitorMainWindow->mEditorTab->indexOf(mOgitorMainWindow->getGenericTextEditor()));
+                }
+                else if(mAllowedMaterialExtensions.indexOf(extension) != -1)
+                {
+                    // ToDo: Call the material editor plugin if available
+                }
+                else if(mAllowedScriptExtensions.indexOf(extension) != -1)
+                {
+                    // ToDo: Call the script editor plugin if available
+                }
             }
         }
     }
