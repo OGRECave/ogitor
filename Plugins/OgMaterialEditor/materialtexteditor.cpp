@@ -33,11 +33,8 @@
 #include <QtGui/QtGui>
 #include <QtGui/QColorDialog>
 #include <QtGui/QMessageBox>
-#include <QtSvg>
 
 #include "OgitorsPrerequisites.h"
-#include "BaseEditor.h"
-#include "MaterialEditor.h"
 
 #include "materialtexteditor.hxx"
 #include "materialview.hxx"
@@ -46,6 +43,15 @@
 using namespace Ogitors;
 
 MaterialTextEditor *mMaterialTextEditor = 0;
+//-----------------------------------------------------------------------------------------
+enum ColorType
+{
+    NONE = 0,
+    AMBIENT,
+    DIFFUSE,
+    SPECULAR,
+    EMISSIVE
+};
 //-----------------------------------------------------------------------------------------
 QString getMaterialText(const Ogre::String& input, const Ogre::String& find)
 {
@@ -117,25 +123,13 @@ GenericTextEditor("MaterialEditor", ":/icons/material.svg", parent)
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditor::displayMaterial(QString materialName, QString resourceGroup, QString materialFileName)
 {
-    bool alreadyShowing = false;
-    MaterialTextEditorDocument* document;
-
-    foreach(QMdiSubWindow *window, subWindowList()) 
-    {
-        document = qobject_cast<MaterialTextEditorDocument*>(window->widget());
-        if(document->getDocName() == materialName)
-        {
-            alreadyShowing = true;
-            break;
-        }
-    }
-
-    if(!alreadyShowing)
+    GenericTextEditorDocument* document = 0;
+    if(!isDocAlreadyShowing(materialName, document) || mAllowDoubleDisplay)
     {
         MaterialTextEditorDocument* document = new MaterialTextEditorDocument(this);
         document->displayMaterial(materialName, resourceGroup, materialFileName);
         QMdiSubWindow *window = addSubWindow(document);
-        window->setWindowIcon(QIcon(":/icons/material.svg"));
+        window->setWindowIcon(QIcon(mDocumentIcon));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
         tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, materialName);
@@ -179,11 +173,11 @@ mLastMaterialSource(""), mResourceGroup("")
 
     settings.endGroup();
 
-    mHighlighter = new MaterialHighlighter(modelFromFile(":/syntax_highlightning/material.txt"), document());
+    mHighlighter = new MaterialHighlighter(modelFromFile(":/syntax_highlighting/material.txt"), document());
 
     Ogre::ScriptCompilerManager::getSingletonPtr()->setListener(this);
 
-    addCompleter(":/syntax_highlightning/material.txt");
+    addCompleter(":/syntax_highlighting/material.txt");
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorDocument::displayMaterial(QString materialName, QString resourceGroup, QString materialFilePath)
@@ -191,16 +185,11 @@ void MaterialTextEditorDocument::displayMaterial(QString materialName, QString r
     mResourceGroup = resourceGroup;
     mDocName = materialName;
     mFilePath = materialFilePath;
+
     Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(mFilePath.toStdString(), resourceGroup.toStdString());                
     mLastMaterialSource = getMaterialText(stream->getAsString().c_str(), materialName.toStdString());
-    setPlainText(mLastMaterialSource);
-
-    QString tabTitle = materialName;
-    if(tabTitle.length() > 25)
-        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
-    setWindowTitle(tabTitle + QString("[*]"));
-
-    connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
+    
+    displayText(materialName, mLastMaterialSource);
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorDocument::keyPressEvent(QKeyEvent *event)
@@ -229,7 +218,7 @@ void MaterialTextEditorDocument::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    //Auto start next line with the indentation of previous line...
+    // Auto start next line with the indentation of previous line...
     if(event->key() == Qt::Key_Return)
     {
         QTextCursor tc = textCursor();
@@ -309,69 +298,38 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
         cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, lineNumber);
         int startPos = cursor.position();
 
-        // Offer color dialog help for the ambient light term
-        QRegExp expression("ambient[^_](.+)$");
-        int index = lineText.indexOf(expression);
-        if(index >= 0)
-        {
-            int length = expression.matchedLength();
-            cursor = textCursor();
-            cursor.setPosition(startPos + index + length - expression.cap(1).length());
-            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
-            setTextCursor(cursor);
-
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
-            Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getAmbient();
-
-            QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
-            QColor newColour = QColorDialog::getColor(oldColour, this);
-
-            // If the user pressed cancel, use our previous colour
-            if(!newColour.isValid())
-                return;
-
-            cursor.removeSelectedText();
-            char temp[128];
-            sprintf(temp, "%.4f %.4f %.4f %.4f", newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF());
-            cursor.insertText(QString(temp));
-            mat->getTechnique(0)->getPass(0)->setAmbient(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
-            return;
-        }
-
-        // Offer color dialog help for the diffuse light term
-        expression = QRegExp("diffuse[^_](.+)$");
+        // Offer color dialog help for the light terms
+        int colourType = NONE;
+        int index;
+        QRegExp expression;
+        expression.setPattern("ambient[^_](.+)$");
         index = lineText.indexOf(expression);
         if(index >= 0)
+            colourType = AMBIENT;
+        else
         {
-            int length = expression.matchedLength();
-            cursor = textCursor();
-            cursor.setPosition(startPos + index + length - expression.cap(1).length());
-            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
-            setTextCursor(cursor);
-
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
-            Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getDiffuse();
-
-            QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
-            QColor newColour = QColorDialog::getColor(oldColour, this);
-
-            // If the user pressed cancel, use our previous colour
-            if(!newColour.isValid())
-                return;
-
-            cursor.removeSelectedText();
-            char temp[128];
-            sprintf(temp, "%.4f %.4f %.4f %.4f", newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF());
-            cursor.insertText(QString(temp));
-            mat->getTechnique(0)->getPass(0)->setDiffuse(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
-            return;
+            expression.setPattern("diffuse[^_](.+)$");
+            index = lineText.indexOf(expression);
+            if(index >= 0)
+                colourType = DIFFUSE;
+            else
+            {
+                expression.setPattern("specular[^_](.+)$");
+                index = lineText.indexOf(expression);
+                if(index >= 0)
+                    colourType = SPECULAR;
+                else
+                {
+                    expression.setPattern("emissive[^_](.+)$");
+                    index = lineText.indexOf(expression);
+                    if(index >= 0)
+                        colourType = EMISSIVE;
+                }
+            }
         }
-
-        // Offer color dialog help for the specular light term
-        expression = QRegExp("specular[^_](.+)$");
-        index = lineText.indexOf(expression);
-        if(index >= 0)
-        {
+            
+        if(colourType != NONE)
+        {         
             int length = expression.matchedLength();
             cursor = textCursor();
             cursor.setPosition(startPos + index + length - expression.cap(1).length());
@@ -379,7 +337,16 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
             setTextCursor(cursor);
 
             Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
-            Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getSpecular();
+            
+            Ogre::ColourValue colour;
+            if(colourType == AMBIENT)
+                colour = mat->getBestTechnique(0)->getPass(0)->getAmbient();
+            else if(colourType == DIFFUSE)
+                colour = mat->getBestTechnique(0)->getPass(0)->getDiffuse();
+            else if(colourType == SPECULAR)
+                colour = mat->getBestTechnique(0)->getPass(0)->getSpecular();
+            else if(colourType == EMISSIVE)
+                colour = mat->getBestTechnique(0)->getPass(0)->getSelfIllumination();
 
             QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
             QColor newColour = QColorDialog::getColor(oldColour, this);
@@ -392,36 +359,15 @@ void MaterialTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
             char temp[128];
             sprintf(temp, "%.4f %.4f %.4f %.4f", newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF());
             cursor.insertText(QString(temp));
-            mat->getTechnique(0)->getPass(0)->setSpecular(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
-            return;
-        }
+            if(colourType == AMBIENT)
+                mat->getTechnique(0)->getPass(0)->setAmbient(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
+            else if(colourType == DIFFUSE)
+                mat->getTechnique(0)->getPass(0)->setDiffuse(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
+            else if(colourType == SPECULAR)
+                mat->getTechnique(0)->getPass(0)->setSpecular(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
+            else if(colourType == EMISSIVE)
+                mat->getTechnique(0)->getPass(0)->setSelfIllumination(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
 
-        // Offer color dialog help for the emissive light term   
-        expression = QRegExp("emissive[^_](.+)$");
-        index = lineText.indexOf(expression);
-        if(index >= 0)
-        {
-            int length = expression.matchedLength();
-            cursor = textCursor();
-            cursor.setPosition(startPos + index + length - expression.cap(1).length());
-            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
-            setTextCursor(cursor);
-
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mDocName.toStdString());
-            Ogre::ColourValue colour = mat->getBestTechnique(0)->getPass(0)->getSelfIllumination();
-
-            QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
-            QColor newColour = QColorDialog::getColor(oldColour, this);
-
-            // If the user pressed cancel, use our previous colour
-            if(!newColour.isValid())
-                return;
-
-            cursor.removeSelectedText();
-            char temp[128];
-            sprintf(temp, "%.4f %.4f %.4f %.4f", newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF());
-            cursor.insertText(QString(temp));
-            mat->getTechnique(0)->getPass(0)->setSelfIllumination(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
             return;
         }
 
@@ -546,6 +492,6 @@ void MaterialTextEditorDocument::handleError(Ogre::ScriptCompiler *compiler, Ogr
     setExtraSelections(extraSelections);
 
     QString message = QString("Script Compiler error: %1\nLine: %2").arg(msg).arg(line);
-    QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr(message.toAscii()));
+    QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr(message.toAscii()));
 }
 //-----------------------------------------------------------------------------------------
