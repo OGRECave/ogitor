@@ -6,7 +6,6 @@
         <file>stylesheets/obsidian.qss</file>
         <file>stylesheets/KDE4.qss</file>
         <file>stylesheets/dark.qss</file>
-        <file>syntax_highlightning/material.txt</file>
         <file>about/project.html</file>
         <file>about/people.html</file>
         <file>about/license.html</file>
@@ -123,5 +122,6 @@
         <file>UI/spinbox_up.png</file>
         <file>UI/treeview_arrow_down.png</file>
         <file>UI/treeview_arrow_right.png</file>
+        <file>syntax_highlighting/material.txt</file>
     </qresource>
 </RCC>

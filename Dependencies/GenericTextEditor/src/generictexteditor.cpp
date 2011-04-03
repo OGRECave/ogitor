@@ -33,7 +33,6 @@
 #include <QtGui/QtGui>
 #include <QtGui/QColorDialog>
 #include <QtGui/QMessageBox>
-#include <QtSvg>
 
 #include "generictexteditor.hxx"
 
@@ -56,22 +55,10 @@ GenericTextEditor::GenericTextEditor(QString editorName, QString documentIcon, Q
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::displayTextFromFile(QString filePath)
 {
-    bool alreadyShowing = false;
-    GenericTextEditorDocument* document;
-
-    foreach(QMdiSubWindow *window, subWindowList()) 
+    GenericTextEditorDocument* document = 0;
+    if(!isPathAlreadyShowing(filePath, document) || mAllowDoubleDisplay)
     {
-        document = qobject_cast<GenericTextEditorDocument*>(window->widget());
-        if(document->getFilePath() == filePath)
-        {
-            alreadyShowing = true;
-            break;
-        }
-    }
-
-    if(!alreadyShowing || mAllowDoubleDisplay)
-    {
-        GenericTextEditorDocument* document = new GenericTextEditorDocument(this);
+        document = new GenericTextEditorDocument(this);
         document->displayTextFromFile(QFile(filePath).fileName(), filePath);
         QMdiSubWindow *window = addSubWindow(document);
         window->setWindowIcon(QIcon(mDocumentIcon));
@@ -88,22 +75,10 @@ void GenericTextEditor::displayTextFromFile(QString filePath)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::displayText(QString docName, QString text)
 {
-    bool alreadyShowing = false;
-    GenericTextEditorDocument* document;
-
-    foreach(QMdiSubWindow *window, subWindowList()) 
+    GenericTextEditorDocument* document = 0;
+    if(!isDocAlreadyShowing(docName, document) || mAllowDoubleDisplay)
     {
-        document = qobject_cast<GenericTextEditorDocument*>(window->widget());
-        if(document->getDocName() == docName)
-        {
-            alreadyShowing = true;
-            break;
-        }
-    }
-
-    if(!alreadyShowing || mAllowDoubleDisplay)
-    {
-        GenericTextEditorDocument* document = new GenericTextEditorDocument(this);
+        document = new GenericTextEditorDocument(this);
         document->displayText(docName, text);
         QMdiSubWindow *window = addSubWindow(document);
         window->setWindowIcon(QIcon(mDocumentIcon));
@@ -116,6 +91,30 @@ void GenericTextEditor::displayText(QString docName, QString text)
         setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
         document->setFocus(Qt::ActiveWindowFocusReason);
     }
+}
+//-----------------------------------------------------------------------------------------
+bool GenericTextEditor::isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document)
+{
+    foreach(QMdiSubWindow *window, subWindowList()) 
+    {
+        document = qobject_cast<GenericTextEditorDocument*>(window->widget());
+        if(document->getFilePath() == filePath)
+            return true;
+    }
+
+    return false;
+}
+//-----------------------------------------------------------------------------------------
+bool GenericTextEditor::isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document)
+{
+    foreach(QMdiSubWindow *window, subWindowList()) 
+    {
+        document = qobject_cast<GenericTextEditorDocument*>(window->widget());
+        if(document->getDocName() == docName)
+            return true;
+    }
+
+    return false;
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
@@ -179,14 +178,8 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
     mFilePath = filePath;
     mFile.setFileName(filePath);
     mFile.open(QIODevice::ReadOnly);
-    setPlainText(mFile.readAll().data());
-
-    QString tabTitle = QFile(filePath).fileName();
-    if(tabTitle.length() > 25)
-        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
-    setWindowTitle(tabTitle + QString("[*]"));
-
-    connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
+    
+    displayText(docName, mFile.readAll().data());
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::displayText(QString docName, QString text)

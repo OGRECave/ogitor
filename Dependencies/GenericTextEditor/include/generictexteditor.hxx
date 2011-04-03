@@ -56,7 +56,7 @@ class QPainter;
 class QRectF;
 class QSizeF;
 
-class MaterialTextEditorDocument;
+class GenericTextEditorDocument;
 class LineNumberArea;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
@@ -82,20 +82,22 @@ public:
     void    displayTextFromFile(QString fileName);
     void    displayText(QString docName, QString text);
 
-    void    setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
-    bool    isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
+    inline void    setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
+    inline bool    isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
 
 signals:
     void    currentChanged(int);
 
 protected:
+    bool    isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
+    bool    isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
     void    closeEvent(QCloseEvent *event);
 
-    private slots:
-        void    closeTab(int index);
-        void    tabChanged(int index);
+private slots:
+    void    closeTab(int index);
+    void    tabChanged(int index);
 
-private:
+protected:
     QString mDocumentIcon;
     bool    mAllowDoubleDisplay;
 };
@@ -110,17 +112,18 @@ public:
     GenericTextEditorDocument(QWidget *parent = 0);
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
-    int lineNumberAreaWidth();
+    int  lineNumberAreaWidth();
 
     bool saveFile();
     void displayTextFromFile(QString docName, QString filePath);
     void displayText(QString docName, QString text);
-    inline QString getDocName( ){return mDocName;}
+    void releaseFile();
+    void addCompleter(const QString keywordListFilePath);
+
+    inline QString getDocName(){return mDocName;}
     inline QString getFilePath() {return mFilePath;}
     inline bool isTextModified(){return mTextModified;}
     inline void setTextModified(bool modified) {mTextModified = modified;}
-    void releaseFile();
-    void addCompleter(const QString keywordListFilePath);
 
 protected:
     void resizeEvent(QResizeEvent *event);
