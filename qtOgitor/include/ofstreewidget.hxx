@@ -47,7 +47,8 @@ public:
     {
         CAP_SHOW_DIRS = 0,
         CAP_SHOW_FILES = 1,
-        CAP_ALLOW_DROPS = 2
+        CAP_ALLOW_DROPS = 2,
+        CAP_FULL_FUNCTIONS = 0xFFFF
     };
 
     OfsTreeWidget(QWidget *parent = 0, unsigned int capabilities = CAP_SHOW_DIRS, std::string initialSelection = "/");
@@ -73,7 +74,6 @@ protected:
     void dragEnterEvent(QDragEnterEvent *evt);
     void dragMoveEvent(QDragMoveEvent *evt);
     void dropEvent(QDropEvent *evt);
-    void mouseDoubleClickEvent( QMouseEvent *evt );
     
     void fillTree(QTreeWidgetItem *pItem, std::string path);
     void fillTreeFiles(QTreeWidgetItem *pItem, std::string path);

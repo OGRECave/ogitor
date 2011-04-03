@@ -53,7 +53,7 @@
 #include "lineeditwithhistory.hxx"
 #include "terraintoolswidget.hxx"
 #include "generictexteditor.hxx"
-#include "filesystemview.hxx"
+#include "projectfilesview.hxx"
 
 #if OGRE_MEMORY_TRACKER
 #include "OgreMemoryTracker.h"
@@ -517,6 +517,7 @@ void MainWindow::retranslateUi()
     resourcesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Resources", 0, QApplication::UnicodeUTF8));
     propertiesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Properties", 0, QApplication::UnicodeUTF8));
     toolsDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Tools", 0, QApplication::UnicodeUTF8));
+    projectFilesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Files", 0, QApplication::UnicodeUTF8));
     menuFile->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
 }
 //------------------------------------------------------------------------------
@@ -557,12 +558,12 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mEntityViewWidget = new EntityViewWidget(parent);
     mEntityViewWidget->setObjectName(QString::fromUtf8("entityViewWidget"));
     mTemplatesViewWidget = new TemplateViewWidget(parent);
-    mFileSystemViewWidget = new FileSystemViewWidget(parent);
+    mProjectFilesViewWidget = new ProjectFilesViewWidget(parent);
+
     mResourcesToolBox = new QToolBox(parent);
     mResourcesToolBox->addItem(mObjectsViewWidget, QIcon(":/icons/objects.svg"), tr("Objects"));
     mResourcesToolBox->addItem(mEntityViewWidget, QIcon(":/icons/entity.svg"), tr("Meshes"));
     mResourcesToolBox->addItem(mTemplatesViewWidget, QIcon(":/icons/template.svg"), tr("Templates"));
-    mResourcesToolBox->addItem(mFileSystemViewWidget, QIcon(":/icons/files.svg"), tr("Files"));
     
     resourcesDockWidget = new QDockWidget(parent);
     resourcesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
@@ -575,9 +576,16 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     toolsDockWidget->setObjectName(QString::fromUtf8("toolsDockWidget"));
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), toolsDockWidget);
 
+    projectFilesDockWidget = new QDockWidget(parent);
+    projectFilesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    projectFilesDockWidget->setObjectName(QString::fromUtf8("projectFilesDockWidget"));
+    projectFilesDockWidget->setWidget(mProjectFilesViewWidget);
+    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), projectFilesDockWidget);
+
     parent->tabifyDockWidget(propertiesDockWidget, resourcesDockWidget);
     parent->tabifyDockWidget(propertiesDockWidget, toolsDockWidget);
     parent->tabifyDockWidget(explorerDockWidget, layerDockWidget);
+    parent->tabifyDockWidget(explorerDockWidget, projectFilesDockWidget);
     propertiesDockWidget->raise();
     explorerDockWidget->raise();
 
@@ -998,6 +1006,7 @@ void MainWindow::addMenus()
     menuView->setObjectName(QString::fromUtf8("menuView"));
     mMenuBar->addAction(menuView->menuAction());
     menuView->addAction(actToggleExplorer);
+    menuView->addAction(actToggleProjectFiles);
     menuView->addAction(actToggleLayer);
     menuView->addAction(actToggleProperties);
     menuView->addAction(actToggleTools);
@@ -1105,6 +1114,7 @@ void MainWindow::setupStatusBar()
     mStatusShowHideToolBar = new QToolBar();
     mStatusShowHideToolBar->setIconSize(QSize(16, 16));
     mStatusShowHideToolBar->addAction(actToggleExplorer);
+    mStatusShowHideToolBar->addAction(actToggleProjectFiles);
     mStatusShowHideToolBar->addAction(actToggleLayer);
     mStatusShowHideToolBar->addAction(actToggleProperties);
     mStatusShowHideToolBar->addAction(actToggleTools);

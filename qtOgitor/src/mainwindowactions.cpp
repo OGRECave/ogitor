@@ -268,6 +268,7 @@ void MainWindow::addActions()
     actToggleProperties = propertiesDockWidget->toggleViewAction();
     actToggleTools = toolsDockWidget->toggleViewAction();
     actToggleLog = logDockWidget->toggleViewAction();
+    actToggleProjectFiles = projectFilesDockWidget->toggleViewAction();
 
     actToggleTools->setIcon(QIcon(":/icons/objects.svg"));
     actToggleTools->setText(tr("Tools"));
@@ -277,6 +278,9 @@ void MainWindow::addActions()
     actToggleExplorer->setText(tr("Explorer"));
     actToggleExplorer->setStatusTip(tr("Toggle Explorer Panel"));
     actToggleExplorer->setShortcut(QKeySequence("F5"));
+    actToggleProjectFiles->setIcon(QIcon(":/icons/files.svg"));
+    actToggleProjectFiles->setText(tr("Files"));
+    actToggleProjectFiles->setStatusTip(tr("Toggle Project Files Panel"));
     actToggleLayer->setIcon(QIcon(":/icons/visibility.svg"));
     actToggleLayer->setText(tr("Groups"));
     actToggleLayer->setStatusTip(tr("Toggle Groups Panel"));

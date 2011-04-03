@@ -31,10 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include <QtGui/QtGui>
-#include <QtGui/QColorDialog>
-#include <QtGui/QMessageBox>
 #include <QtSvg>
-
 
 #include "generictexteditor.hxx"
 
@@ -150,7 +147,7 @@ void GenericTextEditor::closeEvent(QCloseEvent *event)
 }
 //-----------------------------------------------------------------------------------------
 GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
-mCompleter(0), mHighlighter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0)
+mCompleter(0), mHighlighter(0), mIsOfsFile(false), mDocName(""), mFilePath(""), mTextModified(false), mFile(0)
 {
     QFont fnt = font();
     fnt.setFamily("Courier New");
@@ -181,15 +178,60 @@ mCompleter(0), mHighlighter(0), mDocName(""), mFilePath(""), mTextModified(false
     highlightCurrentLine();
 }
 //-----------------------------------------------------------------------------------------
+GenericTextEditorDocument::~GenericTextEditorDocument()
+{
+    mOfsPtr.unmount();
+}
+//-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::displayTextFromFile(QString docName, QString filePath)
 {
     mDocName = docName;
     mFilePath = filePath;
-    mFile.setFileName(filePath);
-    mFile.open(QIODevice::ReadOnly);
-    setPlainText(mFile.readAll().data());
 
-    QString tabTitle = mFile.fileName();
+    QString tabTitle = "";
+
+    int pos = filePath.indexOf("::");
+    if(pos > 0)
+    {
+        QString ofsFile = filePath.mid(0, pos);
+        filePath.remove(0, pos + 2);
+        tabTitle = filePath;
+
+        if(mOfsPtr.mount(ofsFile.toStdString().c_str()) != OFS::OFS_OK)
+            return;
+
+        if(mOfsPtr->openFile(mOfsFileHandle, filePath.toStdString().c_str(), OFS::OFS_READ) != OFS::OFS_OK)
+        {
+            mOfsPtr.unmount();
+            return;
+        }
+
+        mIsOfsFile = true;
+
+        unsigned int cont_len = 0;
+        mOfsPtr->getFileSize(mOfsFileHandle, cont_len);
+
+        char  * buf = new char[cont_len + 1];
+        buf[cont_len] = 0;
+
+        mOfsPtr->read(mOfsFileHandle, buf, cont_len);
+        mOfsPtr->closeFile(mOfsFileHandle);
+        
+        setPlainText(buf);
+        delete [] buf;
+
+        tabTitle = filePath;
+    }
+    else
+    {
+        mIsOfsFile = false;
+
+        mFile.setFileName(filePath);
+        mFile.open(QIODevice::ReadOnly);
+        setPlainText(mFile.readAll().data());
+        tabTitle = mFile.fileName();
+    }
+
     if(tabTitle.length() > 25)
         tabTitle = tabTitle.mid(0, 12) + "..." + tabTitle.mid(tabTitle.length() - 10, 10);
     setWindowTitle(tabTitle + QString("[*]"));

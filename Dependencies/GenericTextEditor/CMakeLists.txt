@@ -48,9 +48,14 @@ else(NOT QT4_FOUND)
 
 	include_directories(.)
 
-	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES})
+        include_directories(../OFS/include)
+
+
+	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
 	add_library(GenericTextEditor SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
+
+        add_dependencies(GenericTextEditor OFS)
 
 	set_target_properties(GenericTextEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(GenericTextEditor PROPERTIES VERSION ${GenericTextEditor_VERSION} SOVERSION ${GenericTextEditor_VERSION_MAJOR})

@@ -29,8 +29,6 @@ else(NOT QT4_FOUND)
 		./src/complexproperties.cpp
 		./include/entityview.hxx
 		./src/entityview.cpp
-		./include/filesystemview.hxx
-		./src/filesystemview.cpp
 		./include/importheightmapdialog.hxx
 		./src/importheightmapdialog.cpp
 		./include/layerview.hxx
@@ -55,6 +53,8 @@ else(NOT QT4_FOUND)
 		./src/paths.cpp
 		./include/preferencesmanager.hxx
 		./src/preferencesmanager.cpp
+		./include/projectfilesview.hxx
+		./src/projectfilesview.cpp
 		./include/propertiesviewcustom.hxx
 		./src/propertiesviewcustom.cpp
 		./include/propertiesviewgeneral.hxx
@@ -89,7 +89,6 @@ else(NOT QT4_FOUND)
 		./include/colourpicker.hxx
 		./include/complexproperties.hxx
 		./include/entityview.hxx
-		./include/filesystemview.hxx
 		./include/importheightmapdialog.hxx
 		./include/layerview.hxx
 		./include/lineeditwithhistory.hxx
@@ -100,6 +99,7 @@ else(NOT QT4_FOUND)
 		./include/ogitorpreferenceswidget.hxx
 		./include/ogrewidget.hxx
 		./include/preferencesmanager.hxx
+		./include/projectfilesview.hxx
 		./include/propertiesviewcustom.hxx
 		./include/propertiesviewgeneral.hxx
 		./include/sceneview.hxx
