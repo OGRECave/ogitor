@@ -46,6 +46,8 @@
 #include <QtGui/QMdiSubWindow>
 #include <QtGui/QSyntaxHighlighter>
 
+#include "ofs.h"
+
 class QPaintEvent;
 class QResizeEvent;
 class QSize;
@@ -110,6 +112,7 @@ class GTEExport GenericTextEditorDocument : public QPlainTextEdit
 
 public:
     GenericTextEditorDocument(QWidget *parent = 0);
+    ~GenericTextEditorDocument();
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int  lineNumberAreaWidth();
@@ -143,9 +146,12 @@ protected slots:
     void documentWasModified();
 
 protected:
+    bool                    mIsOfsFile;
     QString            mDocName;
     QString            mFilePath;
     QFile              mFile;
+    OFS::OfsPtr             mOfsPtr;
+    OFS::OFSHANDLE          mOfsFileHandle;
     QWidget*           mLineNumberArea;
     QCompleter*        mCompleter;
     bool               mTextModified;
