@@ -52,10 +52,20 @@ public:
 
 public Q_SLOTS:
     void itemDoubleClicked(QTreeWidgetItem * item, int column);
+    void ofsWidgetCustomContextMenuRequested(const QPoint &pos);
 
 protected:
-    OfsTreeWidget *ofsWidget;
-    QVBoxLayout   *vboxLayout;
+    OfsTreeWidget* ofsWidget;
+    QVBoxLayout*   vboxLayout;
+    QMenu*         menuCommands; 
+    
+    QAction*       actCommandExtract;
+    QAction*       actCommandDefrag;
+    QAction*       actCommandDelete;
+    QAction*       actCommandRename;
+    QAction*       actCommandReadOnly;
+    QAction*       actCommandHidden;
+
     QStringList    mAllowedCombinedExtensions;
     QStringList    mAllowedGenericExtensions;
     QStringList    mAllowedMaterialExtensions;

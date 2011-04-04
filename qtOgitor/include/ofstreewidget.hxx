@@ -35,9 +35,62 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QTreeWidget>
+#include <QtCore/QThread>
+#include <QtCore/QMutex>
 
 #include "ofs.h"
 
+struct AddFilesData
+{
+    QString fileName;
+    QString ofsName;
+    bool    isDir;
+};
+
+typedef std::vector<AddFilesData> AddFilesList;
+
+class AddFilesThread : public QThread
+{
+    Q_OBJECT
+public:
+
+    void add(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list);
+
+    float getCurrentPos()
+    {
+        mutex.lock();
+        float ret = currentPos; 
+        mutex.unlock();
+
+        return ret;
+    }
+
+    const QString& getProgressMessage()
+    {
+        QMutexLocker mut(&mutex);
+        
+        return msgProgress;
+    }
+
+private:
+    AddFilesList mlist;
+    OFS::OfsPtr ofsFile;
+    std::string ofsFileName;
+    std::string currentDir;
+    float currentPos;
+    QMutex mutex;
+    unsigned int mTotalFileSize;
+    QString msgProgress;
+
+    char *tmp_buffer;
+
+    void run();
+    unsigned int generateList(AddFilesList& list);
+    void addFiles(const AddFilesList& list);
+};
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 class OfsTreeWidget : public QTreeWidget
 {
     Q_OBJECT;
@@ -52,14 +105,16 @@ public:
     };
 
     OfsTreeWidget(QWidget *parent = 0, unsigned int capabilities = CAP_SHOW_DIRS, std::string initialSelection = "/");
-    virtual ~OfsTreeWidget() {};
+    virtual ~OfsTreeWidget();
 
     const std::string& getSelected() { return mSelected; }
+    void refreshWidget();
 
 public Q_SLOTS:
     void onSelectionChanged();
     void onItemCollapsed( QTreeWidgetItem * item );
     void onItemExpanded( QTreeWidgetItem * item );
+    void addFilesFinished();
 
 protected:
     typedef std::map<std::string, QTreeWidgetItem*> NameTreeWidgetMap;
@@ -69,14 +124,16 @@ protected:
     NameTreeWidgetMap mItemMap;
     unsigned int      mCapabilities;
     QIcon             mUnknownFileIcon;
+    AddFilesThread   *mAddFilesThread;
 
-    void contextMenuEvent(QContextMenuEvent *evt);
     void dragEnterEvent(QDragEnterEvent *evt);
     void dragMoveEvent(QDragMoveEvent *evt);
     void dropEvent(QDropEvent *evt);
     
     void fillTree(QTreeWidgetItem *pItem, std::string path);
     void fillTreeFiles(QTreeWidgetItem *pItem, std::string path);
+    QStringList getFilenames(const QMimeData * data);
+    void addFiles(QString rootDir, QStringList list);
 };
 
 #endif // OFSTREEWIDGET_HXX

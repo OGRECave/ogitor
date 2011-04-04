@@ -44,6 +44,7 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
 {
     vboxLayout = new QVBoxLayout(this);
     vboxLayout->setMargin(0);
+    menuCommands = new QMenu();
 
     // Generic text editor extensions
     mAllowedGenericExtensions.append("txt");
@@ -77,6 +78,8 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::~ProjectFilesViewWidget()
 {
+    delete menuCommands;
+    menuCommands = 0;
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::prepareView()
@@ -85,8 +88,8 @@ void ProjectFilesViewWidget::prepareView()
     
     vboxLayout->addWidget(ofsWidget);
 
-    bool ret = connect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
-    ret = false;
+    connect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
+    connect(ofsWidget, SIGNAL(customContextMenuRequested ( const QPoint &)), this, SLOT(ofsWidgetCustomContextMenuRequested ( const QPoint &)));
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::clearView()
@@ -130,5 +133,11 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int colum
             }
         }
     }
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint & pos )
+{
+    QPoint globalPos = ofsWidget->mapToGlobal(pos);
+    menuCommands->exec( globalPos );
 }
 //----------------------------------------------------------------------------------------
