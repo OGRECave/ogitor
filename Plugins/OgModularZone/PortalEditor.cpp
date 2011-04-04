@@ -240,20 +240,23 @@ void PortalEditor::link(PortalEditor* dest)
 		mDestination->set(dest->getName());
 		mParentZone->setPortalLocked(true);
 		mLinked = true;
-		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
+		if(mPortalOutline)
+			mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
 	}
 	else
 	{
 		mDestination->set("");
 		mParentZone->setPortalLocked(false);
 		mLinked = false;
-		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
+		if(mPortalOutline)
+			mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
 	}
 }
 void PortalEditor::connect(PortalEditor* dest)
 {
 	mConnected = dest;
-	mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
+	if(mPortalOutline)
+		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
 }
 //-------------------------------------------------------------------------------
 bool PortalEditor::connectNearPortals(bool bAllowMove)
@@ -305,7 +308,8 @@ bool PortalEditor::connectNearPortals(bool bAllowMove)
 
 		}
 	}
-	mPortalOutline->setPortalState(PortalOutlineRenderable::PS_FREE);
+	if(mPortalOutline)
+		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_FREE);
 	return false;
 
 }
@@ -407,7 +411,8 @@ bool PortalEditor::postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *
 		if(mConnected)
 		{
 			mLinked=true;
-			mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
+			if(mPortalOutline)
+				mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
 
 		}
 		
