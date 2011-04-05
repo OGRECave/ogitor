@@ -44,7 +44,69 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
 {
     vboxLayout = new QVBoxLayout(this);
     vboxLayout->setMargin(0);
+    vboxLayout->setSpacing(0);
     menuCommands = new QMenu();
+
+    actCommandRefresh = new QAction(tr("Refresh"), this);
+    actCommandRefresh->setStatusTip(tr("Refresh file contents"));
+    actCommandRefresh->setIcon( QIcon( ":/icons/refresh.svg" ));
+     
+    actCommandExtract = new QAction(tr("Extract To..."), this);
+    actCommandExtract->setStatusTip(tr("Extract file contents to.."));
+    actCommandExtract->setIcon( QIcon( ":/icons/extract.svg" ));
+
+    actCommandDefrag = new QAction(tr("Defrag"), this);
+    actCommandDefrag->setStatusTip(tr("Defragment file"));
+    actCommandDefrag->setIcon( QIcon( ":/icons/defrag.svg" ));
+
+    actCommandDelete = new QAction(tr("Delete"), this);
+    actCommandDelete->setStatusTip(tr("Delete Selected File/Folder"));
+    actCommandDelete->setIcon( QIcon( ":/icons/trash.svg"));
+
+    actCommandRename = new QAction(tr("Rename"), this);
+    actCommandRename->setStatusTip(tr("Rename Selected File/Folder"));
+    actCommandRename->setIcon( QIcon( ":/icons/editrename.svg"));
+
+    actCommandReadOnly = new QAction(tr("Read Only"), this);
+    actCommandReadOnly->setStatusTip(tr("Set/UnSet File/Folder as Read Only"));
+    actCommandReadOnly->setCheckable(true);
+    actCommandReadOnly->setChecked(false);
+
+    actCommandHidden = new QAction(tr("Hidden"), this);
+    actCommandHidden->setStatusTip(tr("Set/UnSet File/Folder as Hidden"));
+    actCommandHidden->setCheckable(true);
+    actCommandHidden->setChecked(false);
+
+    menuCommands->addAction(actCommandRename);
+    menuCommands->addAction(actCommandReadOnly);
+    menuCommands->addAction(actCommandHidden);
+    menuCommands->addSeparator();
+    menuCommands->addAction(actCommandDelete);
+
+    actCommandRefresh->setEnabled(false);
+    actCommandExtract->setEnabled(false);
+    actCommandDefrag->setEnabled(false);
+    actCommandDelete->setEnabled(false);
+    actCommandRename->setEnabled(false);
+    actCommandReadOnly->setEnabled(false);
+    actCommandHidden->setEnabled(false);
+
+    connect(actCommandRefresh, SIGNAL(triggered()), this, SLOT(onCommandRefresh()));
+    connect(actCommandExtract, SIGNAL(triggered()), this, SLOT(onCommandExtract()));
+    connect(actCommandDefrag, SIGNAL(triggered()), this, SLOT(onCommandDefrag()));
+    connect(actCommandDelete, SIGNAL(triggered()), this, SLOT(onCommandDelete()));
+    connect(actCommandRename, SIGNAL(triggered()), this, SLOT(onCommandRename()));
+    connect(actCommandReadOnly, SIGNAL(triggered()), this, SLOT(onCommandReadOnly()));
+    connect(actCommandHidden, SIGNAL(triggered()), this, SLOT(onCommandHidden()));
+
+    toolBar = new QToolBar();
+    toolBar->setIconSize(QSize(16, 16));
+    toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+
+    toolBar->addAction(actCommandRefresh);
+    toolBar->addSeparator();
+    toolBar->addAction(actCommandExtract);
+    toolBar->addAction(actCommandDefrag);
 
     // Generic text editor extensions
     mAllowedGenericExtensions.append("txt");
@@ -80,16 +142,25 @@ ProjectFilesViewWidget::~ProjectFilesViewWidget()
 {
     delete menuCommands;
     menuCommands = 0;
+
+    delete toolBar;
+    toolBar = 0;
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::prepareView()
 {
     ofsWidget = new OfsTreeWidget(this, OfsTreeWidget::CAP_FULL_FUNCTIONS);
     
-    vboxLayout->addWidget(ofsWidget);
+    actCommandRefresh->setEnabled(true);
+    actCommandExtract->setEnabled(true);
+    actCommandDefrag->setEnabled(true);
+
+    vboxLayout->addWidget(toolBar, 0);
+    vboxLayout->addWidget(ofsWidget, 1);
 
     connect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
     connect(ofsWidget, SIGNAL(customContextMenuRequested ( const QPoint &)), this, SLOT(ofsWidgetCustomContextMenuRequested ( const QPoint &)));
+    connect(ofsWidget, SIGNAL(busyState(bool)), this, SLOT(ofsWidgetBusyState(bool)));
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::clearView()
@@ -97,9 +168,18 @@ void ProjectFilesViewWidget::clearView()
     if(ofsWidget != 0)
     {
         disconnect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
+        disconnect(ofsWidget, SIGNAL(customContextMenuRequested ( const QPoint &)), this, SLOT(ofsWidgetCustomContextMenuRequested ( const QPoint &)));
+        disconnect(ofsWidget, SIGNAL(busyState(bool)), this, SLOT(ofsWidgetBusyState(bool)));
+        
         delete ofsWidget;
         ofsWidget = 0;
+
+        vboxLayout->removeWidget(toolBar);
     }
+
+    actCommandRefresh->setEnabled(false);
+    actCommandExtract->setEnabled(false);
+    actCommandDefrag->setEnabled(false);
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int column)
@@ -137,7 +217,85 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int colum
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint & pos )
 {
+    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+ 
+    if(selItems.size() > 0)
+    {
+       QString path = selItems[0]->whatsThis(0);
+
+       if(path == "/")
+       {
+           actCommandReadOnly->setEnabled(false);
+           actCommandHidden->setEnabled(false);
+           actCommandRename->setEnabled(false);
+           actCommandDelete->setEnabled(false);
+       }
+       else
+       {
+           actCommandReadOnly->setEnabled(true);
+           actCommandHidden->setEnabled(true);
+           actCommandRename->setEnabled(true);
+           actCommandDelete->setEnabled(true);
+       }
+
+       OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+       unsigned int flags = 0;
+       
+       if(path.endsWith("/"))
+           file->getDirFlags(path.toStdString().c_str(), flags);
+       else
+           file->getFileFlags(path.toStdString().c_str(), flags);
+
+       actCommandReadOnly->setChecked(flags & OFS::OFS_READONLY);
+       actCommandHidden->setChecked(flags & OFS::OFS_HIDDEN);
+    }
+    else
+    {
+       actCommandReadOnly->setChecked(false);
+       actCommandHidden->setChecked(false);
+       actCommandReadOnly->setEnabled(false);
+       actCommandHidden->setEnabled(false);
+       actCommandRename->setEnabled(false);
+       actCommandDelete->setEnabled(false);
+    }
+
     QPoint globalPos = ofsWidget->mapToGlobal(pos);
     menuCommands->exec( globalPos );
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::ofsWidgetBusyState(bool state)
+{
+    actCommandRefresh->setEnabled(!state);
+    actCommandExtract->setEnabled(!state);
+    actCommandDefrag->setEnabled(!state);
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandRefresh()
+{
+    ofsWidget->refreshWidget();
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandExtract()
+{
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandDefrag()
+{
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandDelete()
+{
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandRename()
+{
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandReadOnly()
+{
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandHidden()
+{
 }
 //----------------------------------------------------------------------------------------

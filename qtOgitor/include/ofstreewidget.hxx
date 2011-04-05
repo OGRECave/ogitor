@@ -101,6 +101,7 @@ public:
         CAP_SHOW_DIRS = 0,
         CAP_SHOW_FILES = 1,
         CAP_ALLOW_DROPS = 2,
+        CAP_SHOW_COLORS = 4,
         CAP_FULL_FUNCTIONS = 0xFFFF
     };
 
@@ -115,6 +116,9 @@ public Q_SLOTS:
     void onItemCollapsed( QTreeWidgetItem * item );
     void onItemExpanded( QTreeWidgetItem * item );
     void addFilesFinished();
+
+Q_SIGNALS:
+    void busyState(bool state);
 
 protected:
     typedef std::map<std::string, QTreeWidgetItem*> NameTreeWidgetMap;
