@@ -23,6 +23,7 @@
         <file>icons/cut.svg</file>
         <file>icons/debuginfo.svg</file>
         <file>icons/deform.svg</file>
+        <file>icons/defrag.svg</file>
         <file>icons/downarrow.svg</file>
         <file>icons/editcopy.svg</file>
         <file>icons/editcut.svg</file>
@@ -33,6 +34,7 @@
         <file>icons/error.svg</file>
         <file>icons/exit.svg</file>
         <file>icons/export.svg</file>
+        <file>icons/extract.svg</file>
         <file>icons/filenew.svg</file>
         <file>icons/fileopen.svg</file>
         <file>icons/fileclose.svg</file>

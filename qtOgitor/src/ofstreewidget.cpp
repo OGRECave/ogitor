@@ -124,6 +124,23 @@ void OfsTreeWidget::fillTree(QTreeWidgetItem *pItem, std::string path)
         std::string fullpath = path + name + "/";
         item->setWhatsThis(0, QString(fullpath.c_str()));
 
+        if(mCapabilities & CAP_SHOW_COLORS)
+        {
+            bool isReadOnly = (list[i].flags & OFS::OFS_READONLY) > 0;
+            bool isHidden = (list[i].flags & OFS::OFS_HIDDEN) > 0;
+
+            QColor textColor = Qt::black;
+
+            if(isReadOnly && isHidden)
+                textColor = QColor(255, 210, 210);
+            else if(isReadOnly)
+                textColor = QColor(255, 0, 0);
+            else if(isHidden)
+                textColor = QColor(210, 210, 210);
+
+            item->setTextColor(0, textColor);
+        }
+
         pItem->addChild(item);
 
         mItemMap.insert(NameTreeWidgetMap::value_type(fullpath, item));
@@ -188,6 +205,23 @@ void OfsTreeWidget::fillTreeFiles(QTreeWidgetItem *pItem, std::string path)
 
         std::string fullpath = path + name;
         item->setWhatsThis(0, QString(fullpath.c_str()));
+
+        if(mCapabilities & CAP_SHOW_COLORS)
+        {
+            bool isReadOnly = (list[i].flags & OFS::OFS_READONLY) > 0;
+            bool isHidden = (list[i].flags & OFS::OFS_HIDDEN) > 0;
+
+            QColor textColor = Qt::black;
+
+            if(isReadOnly && isHidden)
+                textColor = QColor(255, 210, 210);
+            else if(isReadOnly)
+                textColor = QColor(255, 0, 0);
+            else if(isHidden)
+                textColor = QColor(210, 210, 210);
+
+            item->setTextColor(0, textColor);
+        }
 
         pItem->addChild(item);
 
@@ -398,6 +432,7 @@ void OfsTreeWidget::addFiles(QString rootDir, QStringList list)
 {
     if(!mAddFilesThread->isRunning())
     {
+        emit busyState(true);
         mAddFilesThread->add(mFile, rootDir.toStdString(), list);
     }
 }
@@ -405,6 +440,7 @@ void OfsTreeWidget::addFiles(QString rootDir, QStringList list)
 void OfsTreeWidget::addFilesFinished()
 {
     refreshWidget();
+    emit busyState(false);
 }
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
