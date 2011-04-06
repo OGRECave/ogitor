@@ -1199,6 +1199,11 @@ namespace OFS
     {
         assert(dir != NULL);
 
+        if(dir->Flags & OFS_READONLY)
+        {
+            return OFS_ACCESS_DENIED;
+        }
+
         OfsEntryDesc *curDesc = NULL;
         OfsResult ret;
 
@@ -1299,7 +1304,7 @@ namespace OFS
 
         IdHandleMap::const_iterator it = mActiveFiles.find(file->Id);
 
-        if(it != mActiveFiles.end())
+        if(it != mActiveFiles.end() || (file->Flags & OFS_READONLY))
         {
             return OFS_ACCESS_DENIED;
         }
@@ -1423,14 +1428,16 @@ namespace OFS
         if(fileDesc == NULL)
             return OFS_FILE_NOT_FOUND;
 
-        if(fileDesc->WriteLocked || (fileDesc->Flags & OFS_READONLY))
+        std::string nName = _extractFileName(newname);
+
+        int sz = nName.length();
+        if(sz > 251)
+            nName.erase(251, sz - 251);
+
+        if(_getFileDesc(dirDesc, nName) != NULL || fileDesc->WriteLocked || (fileDesc->Flags & OFS_READONLY))
             return OFS_ACCESS_DENIED;
 
-        fileDesc->Name = newname;
-
-        int sz = strlen(newname);
-        if(sz > 251)
-            fileDesc->Name.erase(251, sz - 251);
+        fileDesc->Name = nName;
 
         mStream.clear();
         mStream.seekp(fileDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), fstream::beg);
@@ -1487,11 +1494,29 @@ namespace OFS
 
         if(dirDesc->Parent != NULL)
         {
-            dirDesc->Name = newname;
+            std::string nName = newname;
+            int sz = nName.length() - 1;
 
-            int sz = strlen(newname);
+            if(nName.find_last_of("/") == sz)
+                nName.erase(sz, 1);
+
+            nName = _extractFileName(nName.c_str());
+
+            sz = nName.length();
+
             if(sz > 251)
-                dirDesc->Name.erase(251, sz - 251);
+                nName.erase(251, sz - 251);
+
+            for(unsigned int i = 0;i < dirDesc->Parent->Children.size();i++)
+            {
+                if(dirDesc->Parent->Children[i]->Name == nName)
+                    return OFS_ACCESS_DENIED;
+            }
+
+            if(dirDesc->WriteLocked || (dirDesc->Flags & OFS_READONLY))
+                return OFS_ACCESS_DENIED;
+
+            dirDesc->Name = nName;
 
             mStream.clear();
             mStream.seekp(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), fstream::beg);
@@ -2252,6 +2277,99 @@ namespace OFS
         }
 
         filename = handle.mEntryDesc->Name;
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------
+
+    OfsResult _Ofs::getDirEntry(const char *path, FileEntry& entry)
+    {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::getDirEntry, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(path);
+
+        if(dirDesc != NULL)
+        {
+            entry.name = dirDesc->Name;
+            entry.flags = dirDesc->Flags;
+            entry.uuid = dirDesc->Uuid;
+            entry.file_size = dirDesc->FileSize;
+            entry.create_time = dirDesc->CreationTime;
+            entry.modified_time = dirDesc->CreationTime;
+            
+            return OFS_OK;
+        }
+        else
+            return OFS_FILE_NOT_FOUND;
+    }
+
+//------------------------------------------------------------------------------
+
+    OfsResult _Ofs::getFileEntry(const char *filename, FileEntry& entry)
+    {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::getFileEntry, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(filename);
+
+        if(dirDesc == NULL)
+            return OFS_FILE_NOT_FOUND;
+
+        std::string fName = _extractFileName(filename);
+
+        OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
+
+        if(fileDesc != NULL)
+        {
+            entry.name = fileDesc->Name;
+            entry.flags = fileDesc->Flags;
+            entry.uuid = fileDesc->Uuid;
+            entry.file_size = fileDesc->FileSize;
+            entry.create_time = fileDesc->CreationTime;
+            entry.modified_time = fileDesc->CreationTime;
+            
+            return OFS_OK;
+        }
+        else
+            return OFS_FILE_NOT_FOUND;
+    }
+
+//------------------------------------------------------------------------------
+
+    OfsResult _Ofs::getFileEntry(OFSHANDLE& handle, FileEntry& entry)
+    {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::getFileEntry, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        if(!handle._valid())
+        {
+            OFS_EXCEPT("_Ofs::getFileEntry, Supplied OfsHandle is not valid.");
+            return OFS_INVALID_FILE;
+        }
+
+        entry.name = handle.mEntryDesc->Name;
+        entry.flags = handle.mEntryDesc->Flags;
+        entry.uuid = handle.mEntryDesc->Uuid;
+        entry.file_size = handle.mEntryDesc->FileSize;
+        entry.create_time = handle.mEntryDesc->CreationTime;
+        entry.modified_time = handle.mEntryDesc->CreationTime;
 
         return OFS_OK;
     }

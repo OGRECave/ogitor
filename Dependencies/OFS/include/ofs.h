@@ -619,6 +619,27 @@ namespace OFS
         */
         OfsResult getFileName(OFSHANDLE& handle, std::string& filename);
         /**
+        * Retrieves FileEntry structure of directory
+        * @param path path to the directory
+        * @param entry Returns directory's entry data
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    getDirEntry(const char *path, FileEntry& entry); 
+        /**
+        * Retrieves FileEntry structure of file
+        * @param filename path to the file
+        * @param entry Returns file's entry data
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    getFileEntry(const char *filename, FileEntry& entry); 
+        /**
+        * Retrieves FileEntry structure of file
+        * @param handle handle to the file
+        * @param entry Returns file's entry data
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    getFileEntry(OFSHANDLE& handle, FileEntry& entry); 
+        /**
         * Retrieves creation time of file
         * @param filename path to the file
         * @param creation_time Returns file's creation time

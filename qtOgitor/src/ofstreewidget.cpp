@@ -98,13 +98,18 @@ OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, std::st
     }
 
     mAddFilesThread = new AddFilesThread();
-    connect(mAddFilesThread, SIGNAL(finished()), this, SLOT(addFilesFinished()));
+    mExtractorThread = new ExtractorThread();
+    connect(mAddFilesThread, SIGNAL(finished()), this, SLOT(threadFinished()));
+    connect(mExtractorThread, SIGNAL(finished()), this, SLOT(threadFinished()));
 }
 //----------------------------------------------------------------------------------------
 OfsTreeWidget::~OfsTreeWidget()
 {
     delete mAddFilesThread;
     mAddFilesThread = 0;
+
+    delete mExtractorThread;
+    mExtractorThread = 0;
 }
 //----------------------------------------------------------------------------------------
 void OfsTreeWidget::fillTree(QTreeWidgetItem *pItem, std::string path)
@@ -437,10 +442,218 @@ void OfsTreeWidget::addFiles(QString rootDir, QStringList list)
     }
 }
 //----------------------------------------------------------------------------------------
-void OfsTreeWidget::addFilesFinished()
+void OfsTreeWidget::extractFiles()
+{
+    if(!mFile.valid())
+        return;
+
+    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), "", QApplication::applicationDirPath()
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+    );
+#else
+    , QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
+#endif
+
+    if(!path.isEmpty())
+    {
+        OFS::FileList theList;
+       
+        QList<QTreeWidgetItem*> selItems = selectedItems();
+
+        std::string baseDir = "";
+
+        if(selItems.size() == 0)
+        {
+            theList = mFile->listFiles("/");
+            baseDir = "/";
+        }
+        else
+        {
+            for(int i = 0;i < selItems.size();i++)
+            {
+                OFS::FileEntry entry;
+
+                QString name = selItems[i]->whatsThis(0);
+
+                if(name.endsWith("/"))
+                    mFile->getDirEntry(name.toStdString().c_str(), entry);
+                else
+                    mFile->getFileEntry(name.toStdString().c_str(), entry);
+
+                theList.push_back(entry);
+            }
+        }
+
+        if(!mExtractorThread->isRunning())
+        {
+            emit busyState(true);
+            mExtractorThread->extract(mFile, baseDir, path, theList);
+        }
+    }
+}
+//----------------------------------------------------------------------------------------
+void OfsTreeWidget::threadFinished()
 {
     refreshWidget();
     emit busyState(false);
+}
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+void ExtractorThread::extract(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _path, const OFS::FileList& _list)
+{
+    path = _path;
+    mlist = _list;
+    currentDir = _currentDir;
+    ofsFileName = _ofsFile->getFileSystemName();
+
+    start();
+}
+//------------------------------------------------------------------------------------
+void ExtractorThread::extractFiles(QString path, const OFS::FileList& list)
+{
+    std::ofstream out_handle;
+    OFS::OFSHANDLE in_handle;
+
+    unsigned int output_amount = 0;
+
+    mutex.lock();
+    currentPos = 0.0f; 
+    msgProgress = "";
+    mutex.unlock();
+
+    for(unsigned int i = 0;i < list.size();i++)
+    {
+        if(list[i].flags & OFS::OFS_DIR)
+        {
+            QString dir_path = path + QString("/") + QString(list[i].name.c_str());
+            QDir directory(dir_path);
+            directory.mkpath(dir_path);
+        }
+        else
+        {
+            std::string file_path = path.toStdString() + std::string("/") + list[i].name;
+            std::string file_ofs_path = list[i].name;
+
+            QFileInfo info(QString(file_path.c_str()));
+            QDir directory(info.absolutePath());
+            directory.mkpath(info.absolutePath());
+
+            mutex.lock();
+            msgProgress = file_ofs_path.c_str();
+            mutex.unlock();
+
+            out_handle.open(file_path.c_str(), std::ofstream::out | std::ofstream::binary);
+
+            if(out_handle.is_open())
+            {
+                try
+                {
+                    OFS::OfsResult ret = ofsFile->openFile(in_handle, file_ofs_path.c_str());
+                    if(ret != OFS::OFS_OK)
+                    {
+                        out_handle.close();
+                        continue;
+                    }
+
+                    unsigned int total = list[i].file_size;
+
+                    while(total > 0)
+                    {
+                        if(total < MAX_BUFFER_SIZE)
+                        {
+                            ofsFile->read(in_handle, tmp_buffer, total);
+                            out_handle.write(tmp_buffer, total);
+                            output_amount += total;
+                            total = 0;
+                        }
+                        else
+                        {
+                            ofsFile->read(in_handle, tmp_buffer, MAX_BUFFER_SIZE);
+                            out_handle.write(tmp_buffer, MAX_BUFFER_SIZE);
+                            total -= MAX_BUFFER_SIZE;
+                            output_amount += MAX_BUFFER_SIZE;
+                        }
+
+                        if(mTotalFileSize > 0)
+                        {
+                            mutex.lock();
+                            currentPos = (float)output_amount / (float)mTotalFileSize; 
+                            mutex.unlock();
+                        }
+                    }
+                }
+                catch(OFS::Exception& e)
+                {
+                    QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", tr("Error Extracting File : ") + QString(file_ofs_path.c_str()) + QString("\n") + QString(e.getDescription().c_str()), QMessageBox::Ok);
+                }
+
+                out_handle.close();
+                ofsFile->closeFile(in_handle);
+            }
+        }
+    }
+
+    mutex.lock();
+    currentPos = 1.0f;
+    msgProgress = tr("Finished Extracting");
+    mutex.unlock();
+}
+//------------------------------------------------------------------------------------
+unsigned int ExtractorThread::generateList(OFS::FileList& list)
+{
+    unsigned int list_max = list.size();
+    unsigned int file_size = 0;
+    
+    std::string tmpSaveCurrentDir;
+    OFS::FileList subList;
+
+    for(unsigned int i = 0;i < list_max;i++)
+    {
+        list[i].name = currentDir + list[i].name;
+        file_size += list[i].file_size;
+
+        if(list[i].flags & OFS::OFS_DIR)
+        {
+            tmpSaveCurrentDir = currentDir;
+            currentDir = list[i].name + "/";
+
+            subList = ofsFile->listFiles(currentDir.c_str());
+
+            file_size += generateList(subList);
+
+            for(unsigned int z = 0;z < subList.size();z++)
+                list.push_back(subList[z]);
+
+            currentDir = tmpSaveCurrentDir;
+        }
+    }
+
+    return file_size;
+}
+//------------------------------------------------------------------------------------
+void ExtractorThread::run()
+{
+    try
+    {
+        ofsFile.mount(ofsFileName.c_str());
+    }
+    catch(...)
+    {
+        return;
+    }
+
+    mTotalFileSize = generateList(mlist);
+
+    std::sort(mlist.begin(), mlist.end(), OFS::FileEntry::Compare);
+    
+    tmp_buffer = new char[MAX_BUFFER_SIZE];
+    
+    extractFiles(path, mlist);
+
+    delete [] tmp_buffer;
+
+    ofsFile.unmount();
 }
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

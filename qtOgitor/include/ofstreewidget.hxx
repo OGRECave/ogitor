@@ -40,6 +40,49 @@
 
 #include "ofs.h"
 
+class ExtractorThread : public QThread
+{
+    Q_OBJECT
+public:
+
+    void extract(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _path, const OFS::FileList& _list);
+
+    float getCurrentPos()
+    {
+        mutex.lock();
+        float ret = currentPos; 
+        mutex.unlock();
+
+        return ret;
+    }
+
+    const QString& getProgressMessage()
+    {
+        QMutexLocker mut(&mutex);
+        
+        return msgProgress;
+    }
+
+private:
+    QString path;
+    OFS::FileList mlist;
+    OFS::OfsPtr ofsFile;
+    std::string ofsFileName;
+    std::string currentDir;
+    float currentPos;
+    QMutex mutex;
+    unsigned int mTotalFileSize;
+    QString msgProgress;
+
+    char *tmp_buffer;
+
+    void run();
+    unsigned int generateList(OFS::FileList& list);
+    void extractFiles(QString path, const OFS::FileList& list);
+};
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 struct AddFilesData
 {
     QString fileName;
@@ -110,12 +153,13 @@ public:
 
     const std::string& getSelected() { return mSelected; }
     void refreshWidget();
+    void extractFiles();
 
 public Q_SLOTS:
     void onSelectionChanged();
     void onItemCollapsed( QTreeWidgetItem * item );
     void onItemExpanded( QTreeWidgetItem * item );
-    void addFilesFinished();
+    void threadFinished();
 
 Q_SIGNALS:
     void busyState(bool state);
@@ -129,6 +173,7 @@ protected:
     unsigned int      mCapabilities;
     QIcon             mUnknownFileIcon;
     AddFilesThread   *mAddFilesThread;
+    ExtractorThread  *mExtractorThread;
 
     void dragEnterEvent(QDragEnterEvent *evt);
     void dragMoveEvent(QDragMoveEvent *evt);

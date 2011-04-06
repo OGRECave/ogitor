@@ -277,25 +277,158 @@ void ProjectFilesViewWidget::onCommandRefresh()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandExtract()
 {
+    ofsWidget->extractFiles();
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandDefrag()
 {
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(ofsFile.valid())
+    {
+        QString fileName = ofsFile->getFileSystemName().c_str();
+        QString tmpFile = fileName + ".tmp";
+        
+        // Step-1 defrag the file to temp file
+        ofsFile->defragFileSystemTo(tmpFile.toStdString().c_str());
+        // Step-2 make the temp file active file, so that we can overwrite the original file
+        ofsFile->switchFileSystemTo(tmpFile.toStdString().c_str());
+        // Step-3 copy temp file over original file and make it active
+        ofsFile->moveFileSystemTo(fileName.toStdString().c_str());
+        // Step-4 remove temp file
+        QFile::remove(tmpFile);
+
+        ofsWidget->refreshWidget();
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandDelete()
 {
+    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() > 0 && ofsFile.valid())
+    {
+        if(QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Are you sure you want to delete selected files?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+        {
+            for(int i = 0;i < selItems.size();i++)
+            {
+                QString name = selItems[i]->whatsThis(0);
+
+                if(name.endsWith("/"))
+                    ofsFile->deleteDirectory(name.toStdString().c_str(), true);
+                else
+                    ofsFile->deleteFile(name.toStdString().c_str());
+            }
+            
+            ofsWidget->refreshWidget();            
+        }
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandRename()
 {
+    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() == 1 && ofsFile.valid())
+    {
+        QString name = selItems[0]->whatsThis(0);
+
+        bool ok;
+        QString text = QInputDialog::getText(this, tr("Rename File/Folder"), "Enter new name:", QLineEdit::Normal, selItems[0]->text(0), &ok);
+        if ( ok && !text.isEmpty() ) 
+        {
+            // user entered something and pressed OK
+            if(name.endsWith("/"))
+                ofsFile->renameDirectory(name.toStdString().c_str(), text.toStdString().c_str());
+            else
+                ofsFile->renameFile(name.toStdString().c_str(), text.toStdString().c_str());
+            
+            ofsWidget->refreshWidget();            
+        } 
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandReadOnly()
 {
+    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() > 0 && ofsFile.valid())
+    {
+        for(int i = 0;i < selItems.size();i++)
+        {
+            QString name = selItems[i]->whatsThis(0);
+
+            unsigned int new_flag = 0;
+            
+            if(name.endsWith("/"))
+            {
+                ofsFile->getDirFlags(name.toStdString().c_str(), new_flag);
+                
+                if(actCommandReadOnly->isChecked())
+                    new_flag |= OFS::OFS_READONLY;
+                else
+                    new_flag &= ~OFS::OFS_READONLY;
+
+                ofsFile->setDirFlags(name.toStdString().c_str(), new_flag);
+            }
+            else
+            {
+                ofsFile->getFileFlags(name.toStdString().c_str(), new_flag);
+                
+                if(actCommandReadOnly->isChecked())
+                    new_flag |= OFS::OFS_READONLY;
+                else
+                    new_flag &= ~OFS::OFS_READONLY;
+
+                ofsFile->setFileFlags(name.toStdString().c_str(), new_flag);
+            }
+        }
+            
+        ofsWidget->refreshWidget();            
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandHidden()
 {
+    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() > 0 && ofsFile.valid())
+    {
+        for(int i = 0;i < selItems.size();i++)
+        {
+            QString name = selItems[i]->whatsThis(0);
+
+            unsigned int new_flag = 0;
+            
+            if(name.endsWith("/"))
+            {
+                ofsFile->getDirFlags(name.toStdString().c_str(), new_flag);
+                
+                if(actCommandHidden->isChecked())
+                    new_flag |= OFS::OFS_HIDDEN;
+                else
+                    new_flag &= ~OFS::OFS_HIDDEN;
+
+                ofsFile->setDirFlags(name.toStdString().c_str(), new_flag);
+            }
+            else
+            {
+                ofsFile->getFileFlags(name.toStdString().c_str(), new_flag);
+                
+                if(actCommandHidden->isChecked())
+                    new_flag |= OFS::OFS_HIDDEN;
+                else
+                    new_flag &= ~OFS::OFS_HIDDEN;
+
+                ofsFile->setFileFlags(name.toStdString().c_str(), new_flag);
+            }
+        }
+            
+        ofsWidget->refreshWidget();            
+    }
 }
 //----------------------------------------------------------------------------------------
