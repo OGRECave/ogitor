@@ -48,6 +48,8 @@ namespace MZP
         virtual void      showBoundingBox(bool bShow);
         /** @copydoc CBaseEditor::getAABB() */
         virtual Ogre::AxisAlignedBox getAABB() {if(mPortalOutline) return mPortalOutline->getBoundingBox();else return Ogre::AxisAlignedBox::BOX_NULL;};
+		
+		virtual TiXmlElement* exportDotScene(TiXmlElement *pParent);
 
 		virtual bool getObjectContextMenu(UTFStringVector &menuitems);
 
