@@ -65,8 +65,8 @@ else(NOT QT4_FOUND)
 	link_directories(${OGITOR_LIBPATH})
 	link_directories(${DEPENDENCIES_LIBPATH})
 
-	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
 	add_library(OgScriptEditor SHARED ${SRCS})
+	target_link_libraries(OgScriptEditor ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
 	set_target_properties(OgScriptEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
