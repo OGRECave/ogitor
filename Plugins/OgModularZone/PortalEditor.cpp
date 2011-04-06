@@ -22,6 +22,7 @@
 #include "portalsizedialog.hxx"
 #include "OgitorsSystem.h"
 #include <QtGui/QMenu>
+#include "tinyxml.h"
 
 using namespace Ogitors;
 using namespace MZP;
@@ -239,20 +240,23 @@ void PortalEditor::link(PortalEditor* dest)
 		mDestination->set(dest->getName());
 		mParentZone->setPortalLocked(true);
 		mLinked = true;
-		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
+		if(mPortalOutline)
+			mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
 	}
 	else
 	{
 		mDestination->set("");
 		mParentZone->setPortalLocked(false);
 		mLinked = false;
-		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
+		if(mPortalOutline)
+			mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
 	}
 }
 void PortalEditor::connect(PortalEditor* dest)
 {
 	mConnected = dest;
-	mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
+	if(mPortalOutline)
+		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
 }
 //-------------------------------------------------------------------------------
 bool PortalEditor::connectNearPortals(bool bAllowMove)
@@ -304,7 +308,8 @@ bool PortalEditor::connectNearPortals(bool bAllowMove)
 
 		}
 	}
-	mPortalOutline->setPortalState(PortalOutlineRenderable::PS_FREE);
+	if(mPortalOutline)
+		mPortalOutline->setPortalState(PortalOutlineRenderable::PS_FREE);
 	return false;
 
 }
@@ -406,7 +411,8 @@ bool PortalEditor::postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *
 		if(mConnected)
 		{
 			mLinked=true;
-			mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
+			if(mPortalOutline)
+				mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
 
 		}
 		
@@ -438,6 +444,69 @@ void PortalEditor::setSelectedImpl(bool bSelected)
 	CBaseEditor::setSelectedImpl(bSelected);
 
 }
+//----------------------------------------------------------------------------------------
+TiXmlElement* PortalEditor::exportDotScene(TiXmlElement *pParent)
+{
+    TiXmlElement *pNode = pParent->InsertEndChild(TiXmlElement("portal"))->ToElement();
+
+    // node properties
+    pNode->SetAttribute("name", mName->get().c_str());
+    pNode->SetAttribute("id", Ogre::StringConverter::toString(mObjectID->get()).c_str());
+    // position
+    TiXmlElement *pPosition = pNode->InsertEndChild(TiXmlElement("position"))->ToElement();
+    pPosition->SetAttribute("x", Ogre::StringConverter::toString(mPosition->get().x).c_str());
+    pPosition->SetAttribute("y", Ogre::StringConverter::toString(mPosition->get().y).c_str());
+    pPosition->SetAttribute("z", Ogre::StringConverter::toString(mPosition->get().z).c_str());
+    // rotation
+    TiXmlElement *pRotation = pNode->InsertEndChild(TiXmlElement("rotation"))->ToElement();
+    pRotation->SetAttribute("qw", Ogre::StringConverter::toString(mOrientation->get().w).c_str());
+    pRotation->SetAttribute("qx", Ogre::StringConverter::toString(mOrientation->get().x).c_str());
+    pRotation->SetAttribute("qy", Ogre::StringConverter::toString(mOrientation->get().y).c_str());
+    pRotation->SetAttribute("qz", Ogre::StringConverter::toString(mOrientation->get().z).c_str());
+    // scale
+    TiXmlElement *pScale = pNode->InsertEndChild(TiXmlElement("scale"))->ToElement();
+    pScale->SetAttribute("x", Ogre::StringConverter::toString(mScale->get().x).c_str());
+    pScale->SetAttribute("y", Ogre::StringConverter::toString(mScale->get().y).c_str());
+    pScale->SetAttribute("z", Ogre::StringConverter::toString(mScale->get().z).c_str());
+
+	//*coords of portal corners*
+	//(use that instead of width/height, thus this format can be used for 
+	//more fully implemented PCZSM editors)
+	TiXmlElement *pCorners = pNode->InsertEndChild(TiXmlElement("corners"))->ToElement();
+
+	TiXmlElement *pCorner0 = pCorners->InsertEndChild(TiXmlElement("corner0"))->ToElement();
+	pCorner0->SetAttribute("x", Ogre::StringConverter::toString(-(mWidth->get())/2).c_str()); 
+	pCorner0->SetAttribute("y", Ogre::StringConverter::toString((mHeight->get())/2).c_str());
+	pCorner0->SetAttribute("z", "0.0");
+
+	TiXmlElement *pCorner1 = pCorners->InsertEndChild(TiXmlElement("corner1"))->ToElement();
+	pCorner1->SetAttribute("x", Ogre::StringConverter::toString((mWidth->get())/2).c_str()); 
+	pCorner1->SetAttribute("y", Ogre::StringConverter::toString((mHeight->get())/2).c_str());
+	pCorner1->SetAttribute("z", "0.0");
+
+	TiXmlElement *pCorner2 = pCorners->InsertEndChild(TiXmlElement("corner2"))->ToElement();
+	pCorner2->SetAttribute("x", Ogre::StringConverter::toString((mWidth->get())/2).c_str()); 
+	pCorner2->SetAttribute("y", Ogre::StringConverter::toString(-(mHeight->get())/2).c_str());
+	pCorner2->SetAttribute("z", "0.0");
+
+	TiXmlElement *pCorner3 = pCorners->InsertEndChild(TiXmlElement("corner3"))->ToElement();
+	pCorner3->SetAttribute("x", Ogre::StringConverter::toString(-(mWidth->get())/2).c_str()); 
+	pCorner3->SetAttribute("y", Ogre::StringConverter::toString(-(mHeight->get())/2).c_str());
+	pCorner3->SetAttribute("z", "0.0");
+
+	//*destination*
+    TiXmlElement *pDestination = pNode->InsertEndChild(TiXmlElement("destination"))->ToElement();
+	if(mConnected)
+	{
+		pDestination->SetAttribute("zone", mConnected->mParentZone->getName().c_str());
+		pDestination->SetAttribute("portal",mConnected->getName().c_str());
+	}
+
+
+	return pNode;
+    
+}
+
 //----------------------------------------------------------------------------------------
 bool PortalEditor::update(float timePassed)
 {
