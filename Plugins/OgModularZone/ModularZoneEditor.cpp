@@ -34,15 +34,17 @@
 #include "portalsizedialog.hxx"
 #include <QtGui/QFileDialog>
 #include <QtCore/QString>
+#include <QtGui/QMessageBox>
 #include <numeric>
-
+#include "ofs.h"
+#include <sstream>
 
 
 using namespace Ogitors;
 
 namespace MZP
 {
-
+const unsigned int MAX_BUFFER_SIZE = 1024 * 1024 * 16; 
 //-----------------------------------------------------------------------------------------
 ModularZoneEditor::ModularZoneEditor(Ogitors::CBaseEditorFactory *factory) :	
 																				Ogitors::CNodeEditor(factory),
@@ -257,6 +259,27 @@ TiXmlElement* ModularZoneEditor::exportDotScene(TiXmlElement *pParent)
     pScale->SetAttribute("y", Ogre::StringConverter::toString(mScale->get().y).c_str());
     pScale->SetAttribute("z", Ogre::StringConverter::toString(mScale->get().z).c_str());
     
+	//zone info
+	//A normal dotScene loader will ignore this 
+	//but a specialised one should use this to set up zone
+	//ideally portal info should hang of this element
+    TiXmlElement *pZone = pNode->InsertEndChild(TiXmlElement("zone"))->ToElement();
+    pZone->SetAttribute("name", mName->get().c_str());
+	pZone->SetAttribute("portals", Ogre::StringConverter::toString(mPortalCount->get()).c_str());
+
+	NameObjectPairList::const_iterator itrPortal = mChildren.begin();
+    while(itrPortal != mChildren.end())
+    {
+		//TODO: need to create nodes and then attach objects to these
+		//rather than attaching directly to zone node 
+		//(as everything needs a node in PCZSM)
+		if(itrPortal->second->getTypeName() == "MZ Portal Object")
+		{
+			itrPortal->second->exportDotScene(pZone);
+		}
+        itrPortal++;
+    }
+
 	
 	//retrieve zone mesh and export as entity
 
@@ -283,15 +306,24 @@ TiXmlElement* ModularZoneEditor::exportDotScene(TiXmlElement *pParent)
         pSubEntity->SetAttribute("materialName", material.c_str());
     }
 
-	//TODO: portals as userData ?
-	//TODO: child nodes for entities in this zone
-    //// loop over children
-    //NameObjectPairList::const_iterator it = mChildren.begin();
-    //while(it != mChildren.end())
-    //{
-    //    it->second->exportDotScene(pNode);
-    //    it++;
-    //}
+
+
+	//child nodes for entities in this zone
+	
+    //// loop over children eg lights, entities, markers, 
+	//(also portals at the moment. all they'd be better in a block in zone section)
+    NameObjectPairList::const_iterator it = mChildren.begin();
+    while(it != mChildren.end())
+    {
+		//TODO: need to create nodes and then attach objects to these
+		//rather than attaching directly to zone node 
+		//(as everything needs a node in PCZSM)
+		if(it->second->getTypeName() != "MZ Portal Object")
+		{
+			it->second->exportDotScene(pNode);
+		}
+        ++it;
+    }
 
     return pNode;
 }
@@ -465,25 +497,45 @@ void ModularZoneEditor::exportZone(void)
 	//update the ZoneInfo
 	updateDesignInfo();
 
-	//write the .zone file
+	//create the .zone file
 	ExportZoneDialog dlg;
 	//get the zone description info
 	if(dlg.exec())
 	{
-		//get file name 
-		Ogre::String fileName = QFileDialog::getSaveFileName(0,"Save ZONE file",".","ZONE files (*.zone)").toStdString();
-		
-		if(!fileName.empty())
+
+		if(!dlg.getFileName().empty())
 		{
+			//make sure the extension is .zone
+			Ogre::String fileName = dlg.getFileName();
+			int dotpos = fileName.find_last_of(".");
+			if(dotpos == Ogre::String::npos)
+			{
+				//no extension, add one
+				fileName = fileName + ".zone";
+			}
+			else 
+			{
+				//there is an extension - yay
+				if(fileName.substr(dotpos, fileName.length() - dotpos)!=".zone")
+				{
+					//but its not .zone - fix it
+					fileName = fileName + ".zone";
+				}
+			}
+
+			fileName = "/Zones/"+fileName;
+
 			//store the info
-			mDesignInfo->mName = fileName;
+			mDesignInfo->mName = dlg.getFileName();//fileName;
 			mDesignInfo->mShortDesc = dlg.getShortDescription();
 			mDesignInfo->mLongDesc = dlg.getLongDescription();
+	
+			//create buffer to store .zone file
+			std::stringstream outfile(std::ios_base::out);
 
-			//export the file
-			std::ofstream outfile(fileName.c_str());
 			//XML header
 			outfile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+			
 			//Zone Description 
 			outfile << "<zonedescription " 
 					<< "mesh=\"" 
@@ -505,7 +557,86 @@ void ModularZoneEditor::exportZone(void)
 				outfile << "</portal>\n";
 			}
 			outfile << "</zonedescription>\n";
-			outfile.close();
+
+			//write the .zone file
+			OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+			OFS::OFSHANDLE OfsHandle;
+			//add Zones directory if not present
+			ofsFile->createDirectory("Zones");
+
+			//check the file is small enough for buffer
+			//(probably overkill for these files, but better safe than sorry)
+			unsigned int file_size = outfile.str().length();
+			if(file_size >= MAX_BUFFER_SIZE)
+			{
+				char *tmp_buffer = new char[MAX_BUFFER_SIZE];
+
+				
+				outfile.read(tmp_buffer,MAX_BUFFER_SIZE);
+				try
+				{
+					if(ofsFile->createFile(OfsHandle,fileName.c_str(),MAX_BUFFER_SIZE,MAX_BUFFER_SIZE,outfile.str().c_str())!=OFS::OFS_OK)
+					{
+						QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "Error Saving file",  QMessageBox::Ok);
+					}
+
+					file_size -= MAX_BUFFER_SIZE;
+				}
+				catch(OFS::Exception& e)
+				{
+					QMessageBox::information(QApplication::activeWindow(),
+					"Ofs Exception:", 
+					QString(e.getDescription().c_str()), 
+					QMessageBox::Ok);
+				}
+
+				
+				try
+				{
+					while(file_size>0)
+					{
+						if(file_size >= MAX_BUFFER_SIZE)
+						{
+							outfile.read(tmp_buffer,MAX_BUFFER_SIZE);
+							ofsFile->write(OfsHandle,tmp_buffer,MAX_BUFFER_SIZE);
+							file_size -= MAX_BUFFER_SIZE;
+						}
+						else
+						{
+							outfile.read(tmp_buffer,MAX_BUFFER_SIZE);
+							ofsFile->write(OfsHandle,tmp_buffer,file_size);
+							file_size = 0;
+						}
+					}
+				}
+				catch(OFS::Exception& e)
+				{
+					QMessageBox::information(QApplication::activeWindow(),
+					"Ofs Exception:", 
+					QString(e.getDescription().c_str()), 
+					QMessageBox::Ok);
+				}
+			}
+			else
+			{
+				try
+				{
+					if(ofsFile->createFile(OfsHandle,fileName.c_str(),file_size,file_size,outfile.str().c_str())!=OFS::OFS_OK)
+					{
+						QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "There was a problem saving the file",  QMessageBox::Ok);
+					}
+				}
+				catch(OFS::Exception& e)
+				{
+					QMessageBox::information(QApplication::activeWindow(),
+					"Ofs Exception:", 
+					QString(e.getDescription().c_str()), 
+					QMessageBox::Ok);
+				}
+			}
+
+			ofsFile->closeFile(OfsHandle);
+			
 		}
 	
 	}

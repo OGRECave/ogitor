@@ -38,19 +38,8 @@ PortalOutlineRenderable::PortalOutlineRenderable(Ogre::String matname, Ogre::Col
 	bind->setBinding(0, vbuf);
 	// setup material
 	createPortalMaterials();
-	//Ogre::ResourceManager::ResourceCreateOrRetrieveResult result = Ogre::MaterialManager::getSingleton().createOrRetrieve(matname, "General");
-	//if(result.second)
-	//{
-	//	Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
-	//    matptrOBBoxManualMaterial->setReceiveShadows(false);
-	//    matptrOBBoxManualMaterial->getTechnique(0)->setLightingEnabled(true);
-	//    matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setDiffuse(colour);
-	//    matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setAmbient(colour);
-	//    matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setSelfIllumination(colour);
-	//}
 
-
-    this->setCastShadows(false);
+	this->setCastShadows(false);
     this->setQueryFlags(0); // set a query flag to exlude from queries (if necessary).
 	this->setMaterial("PortalOutlineMaterial");
 }

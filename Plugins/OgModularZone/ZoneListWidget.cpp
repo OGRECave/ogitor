@@ -38,6 +38,7 @@
 #include "SceneManagerEditor.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
+#include "OgreMeshManager.h"
 
 using namespace Ogitors;
 using namespace MZP;
@@ -232,8 +233,9 @@ void ZoneListWidget::_createImages(ImageMap& retlist)
     while(ite != entities.end())
 	{
 		Ogre::String addstr = ite->second;
-		
+
 		mEntity = mSceneMgr->createEntity("MZP_Preview", addstr);
+
 		mSceneMgr->getRootSceneNode()->attachObject(mEntity);
 
 		//TODO: It would be nice to retrieve a Preview Camera Position from 
