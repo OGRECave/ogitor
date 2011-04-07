@@ -77,7 +77,7 @@ namespace OFS
         int          Id;           /* Id of the Owner Entry */
         int          ParentId;     /* Id of the Owner Entry's Parent Directory, -1 if root directory */
         unsigned int Flags;        /* File Flags */
-        time_t       CreationTime; /* Entry's Creation Time */
+        __time64_t   CreationTime; /* Entry's Creation Time */
         unsigned int FileSize;     /* Entry's File Size, 0 for Directories */
         unsigned int NextBlock;    /* File Position of Next Block owned by this entry */
         char         Name[252];    /* Entry's Name */
@@ -90,7 +90,7 @@ namespace OFS
         int          ParentId;     /* Id of the Owner Entry's Parent Directory, -1 if root directory */
         unsigned int Flags;        /* File Flags */
         UUID         Uuid;         /* UUID of Entry */
-        time_t       CreationTime; /* Entry's Creation Time */
+        __time64_t   CreationTime; /* Entry's Creation Time */
         unsigned int FileSize;     /* Entry's File Size, 0 for Directories */
         unsigned int NextBlock;    /* File Position of Next Block owned by this entry */
         char         Name[252];    /* Entry's Name */
@@ -332,7 +332,7 @@ namespace OFS
 
         memset(&newHeader, 0, sizeof(_Ofs::strFileHeader));
 
-        time_t signature_time = time(NULL);
+        __time64_t signature_time = time(NULL);
         unsigned int * signature = (unsigned int *)(&signature_time);
 
         newHeader.ID[0] = 'O';newHeader.ID[1] = 'F';newHeader.ID[2] = 'S';newHeader.ID[3] = '1';
@@ -620,7 +620,7 @@ namespace OFS
 
         memset(&newHeader, 0, sizeof(_Ofs::strFileHeader));
 
-        time_t signature_time = time(NULL);
+        __time64_t signature_time = time(NULL);
         unsigned int * signature = (unsigned int *)(&signature_time);
 
         newHeader.ID[0] = 'O';newHeader.ID[1] = 'F';newHeader.ID[2] = 'S';newHeader.ID[3] = '1';
