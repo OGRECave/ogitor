@@ -117,6 +117,8 @@ namespace OFS
         OFS_HIDDEN = 8
     };
 
+#pragma pack(push)
+#pragma pack(4)
     struct UUID
     {
         unsigned int a;
@@ -196,6 +198,7 @@ namespace OFS
             return (memcmp(this, &uuid, sizeof(UUID)) >= 0);
         };
     };
+#pragma pack(pop)
 
     extern const UUID UUID_ZERO;
     
