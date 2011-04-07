@@ -648,28 +648,28 @@ namespace OFS
         * @param creation_time Returns file's creation time
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    getCreationTime(const char *filename, time_t& creation_time); 
+        OfsResult    getCreationTime(const char *filename, __time64_t& creation_time); 
         /**
         * Retrieves creation time of file
         * @param handle handle to the file
         * @param creation_time Returns file's creation time
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    getCreationTime(OFSHANDLE& handle, time_t& creation_time); 
+        OfsResult    getCreationTime(OFSHANDLE& handle, __time64_t& creation_time); 
         /**
         * Retrieves modification time of file
         * @param filename path to the file
         * @param creation_time Returns file's modification time
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    getModificationTime(const char *filename, time_t& mod_time); 
+        OfsResult    getModificationTime(const char *filename, __time64_t& mod_time); 
         /**
         * Retrieves modification time of file
         * @param handle handle to the file
         * @param creation_time Returns file's modification time
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    getModificationTime(OFSHANDLE& handle, time_t& mod_time); 
+        OfsResult    getModificationTime(OFSHANDLE& handle, __time64_t& mod_time); 
         /**
         * Retrieves filesize of file
         * @param filename path to the file

@@ -386,7 +386,7 @@ namespace Ogre {
 
         std::replace(name.begin(), name.end(), '\\', '/');
 
-        time_t mod_time = 0;
+        __time64_t mod_time = 0;
 
         mOfs->getModificationTime(name.c_str(), mod_time);
 

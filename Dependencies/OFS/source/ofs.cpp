@@ -594,7 +594,7 @@ namespace OFS
                 mActive = true;
                 memset(&mHeader, 0, sizeof(_Ofs::strFileHeader));
 
-                time_t signature_time = _time64(NULL);
+                __time64_t signature_time = _time64(NULL);
                 unsigned int * signature = (unsigned int *)(&signature_time);
 
                 mHeader.ID[0] = 'O';mHeader.ID[1] = 'F';mHeader.ID[2] = 'S';mHeader.ID[3] = '1';
@@ -2376,7 +2376,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::getCreationTime(const char *filename, time_t& creation_time)
+    OfsResult _Ofs::getCreationTime(const char *filename, __time64_t& creation_time)
     {
         LOCK_AUTO_MUTEX
 
@@ -2406,7 +2406,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::getModificationTime(const char *filename, time_t& mod_time)
+    OfsResult _Ofs::getModificationTime(const char *filename, __time64_t& mod_time)
     {
         LOCK_AUTO_MUTEX
 
@@ -2840,7 +2840,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::getCreationTime(OFSHANDLE& handle, time_t& creation_time)
+    OfsResult _Ofs::getCreationTime(OFSHANDLE& handle, __time64_t& creation_time)
     {
         LOCK_AUTO_MUTEX
 
@@ -2863,7 +2863,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::getModificationTime(OFSHANDLE& handle, time_t& mod_time) 
+    OfsResult _Ofs::getModificationTime(OFSHANDLE& handle, __time64_t& mod_time) 
     {
         LOCK_AUTO_MUTEX
 
