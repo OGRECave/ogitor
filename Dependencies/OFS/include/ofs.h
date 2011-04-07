@@ -208,8 +208,8 @@ namespace OFS
         unsigned int flags;
         UUID         uuid; 
         unsigned int file_size;
-        time_t       create_time;
-        time_t       modified_time;
+        __time64_t   create_time;
+        __time64_t   modified_time;
 
         static bool Compare ( FileEntry elem1, FileEntry elem2 )
         {
@@ -360,7 +360,7 @@ namespace OFS
             unsigned int FileSize;     /* Entry's File Size, 0 for Directories */
             unsigned int RESERVED[5];  /* RESERVED */
             char         Name[256];    /* Entry's Name */
-            time_t       CreationTime; /* Entry's Creation Time */
+            __time64_t   CreationTime; /* Entry's Creation Time */
             UUID         Uuid;         /* UUID of Entry */
         };
 
@@ -402,7 +402,7 @@ namespace OFS
             int           ParentId;               /* Id of the Owner Entry's Parent Directory, -1 if root directory */
             unsigned int  Flags;                  /* File Flags */
             UUID          Uuid;                   /* UUID of Entry */
-            time_t        CreationTime;           /* Entry's Creation Time */
+            __time64_t    CreationTime;           /* Entry's Creation Time */
             unsigned int  FileSize;               /* Entry's File Size, 0 for Directories */
             std::string   Name;                   /* Entry's Name */
             OfsEntryDesc *Parent;                 /* Pointer to Entry's Parent's descriptor */

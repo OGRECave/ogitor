@@ -594,7 +594,7 @@ namespace OFS
                 mActive = true;
                 memset(&mHeader, 0, sizeof(_Ofs::strFileHeader));
 
-                time_t signature_time = time(NULL);
+                time_t signature_time = _time64(NULL);
                 unsigned int * signature = (unsigned int *)(&signature_time);
 
                 mHeader.ID[0] = 'O';mHeader.ID[1] = 'F';mHeader.ID[2] = 'S';mHeader.ID[3] = '1';
@@ -607,7 +607,7 @@ namespace OFS
                 mHeader.BLOCK_HEADER_SIG[1] = signature[0] ^ 0xFFFFFFFF;
 
                 mHeader.LAST_ID = 0;
-                mRootDir.CreationTime = time( NULL );
+                mRootDir.CreationTime = _time64( NULL );
                 ret = _writeHeader();
             }
         }
@@ -1012,7 +1012,7 @@ namespace OFS
         dir->Name = name;
         dir->FileSize = 0;
         dir->Parent = parent;
-        dir->CreationTime = time( NULL );
+        dir->CreationTime = _time64( NULL );
         dir->UseCount = 0;
         dir->WriteLocked = false;
         dir->Uuid = uuid;
@@ -1110,7 +1110,7 @@ namespace OFS
         file->Name = name;
         file->FileSize = file_size;
         file->Parent = parent;
-        file->CreationTime = time( NULL );
+        file->CreationTime = _time64( NULL );
         file->UseCount = 0;
         file->WriteLocked = false;
         file->Uuid = uuid;
