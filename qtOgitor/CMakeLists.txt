@@ -172,6 +172,7 @@ else(NOT QT4_FOUND)
 			${RESOURCE_SRCS} 
 			${qtOgitor_res} 
 	    )
+    add_dependencies(qtOgitor log4cplus)
     add_dependencies(qtOgitor OgCaelum)
     add_dependencies(qtOgitor OgHydrax)
     add_dependencies(qtOgitor OgSkyx)

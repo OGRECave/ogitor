@@ -16,11 +16,13 @@ set(OFS_HEADERS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+include_directories(${DEPENDENCIES_INCLUDES})
+
 include_directories(${Boost_INCLUDE_DIR})
 
 add_library(OFS SHARED ${OFS_SOURCE} ${OFS_HEADERS})
 
-target_link_libraries(OFS ${Boost_LIBRARIES})
+target_link_libraries(OFS ${Boost_LIBRARIES} log4cplus)
 
 set(LIBRARY_OUTPUT_PATH  ../lib)
 
