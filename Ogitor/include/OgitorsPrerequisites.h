@@ -89,6 +89,9 @@ namespace Ogitors
     class TiXmlElement;
 
 
+#include <log4cplus/logger.h>
+#include <log4cplus/configurator.h>
+
 #include <Ogre.h>
 #include "OgitorsDefinitions.h"
 #include "StringId.h"

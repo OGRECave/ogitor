@@ -565,11 +565,9 @@ namespace OFS
 
     OfsResult _Ofs::_mount(const char *file, unsigned int op)
     {
-	log4cplus::Logger logger = log4cplus::Logger::getInstance("ogitor");
-	
-	LOG4CPLUS_TRACE(logger, "******************************************************************");
-	LOG4CPLUS_TRACE(logger, "Mounting OFS");
-	LOG4CPLUS_TRACE(logger, "******************************************************************");
+	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "******************************************************************");
+	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "Mounting OFS");
+	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "******************************************************************");
 
 	LOCK_AUTO_MUTEX
 
@@ -591,6 +589,7 @@ namespace OFS
             OPEN_STREAM(mStream, mFileName.c_str(), fstream::in | fstream::out | fstream::binary | fstream::ate);
             if(!mStream.fail() && mStream.is_open())
             {
+		LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "OFS Mounted (already open)");
                 mActive = true;
                 ret = _readHeader();
             }
@@ -600,6 +599,7 @@ namespace OFS
             OPEN_STREAM(mStream, mFileName.c_str(), fstream::in | fstream::out | fstream::binary | fstream::trunc);
             if(!mStream.fail())
             {
+		LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "OFS Mounted (new mount)");
                 mActive = true;
                 memset(&mHeader, 0, sizeof(_Ofs::strFileHeader));
 
@@ -623,7 +623,8 @@ namespace OFS
 
         if(ret != OFS_OK)
         {
-            _clear();
+            LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "OFS could not be mounted");
+	    _clear();
         }
         
         return ret;
@@ -864,6 +865,7 @@ namespace OFS
 
         std::sort(mFreeBlocks.begin(), mFreeBlocks.end(), BlockCompare);
 
+	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "_Ofs::_readHeader OFS_OK");
         return OFS_OK;
     }
 
