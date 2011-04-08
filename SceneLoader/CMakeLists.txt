@@ -23,12 +23,19 @@ else(NOT OIS_FOUND)
 		)
 	endif(WIN32)
 
-	if(UNIX)
+ 	if(UNIX)
+		if(NOT OGRE_ROOT)
+			get_filename_component(OGRE_ROOT "${OGRE_INCLUDE_DIRS}/.." ABSOLUTE)
+		endif()
 		find_path(OGRE_SAMPLES_INCLUDEPATH SdkTrays.h
-			/usr/share/OGRE/Samples/Common/include/
-			/usr/local/share/OGRE/Samples/Common/include/
-		)
-	endif(UNIX)
+			${OGRE_ROOT}/share/OGRE/Samples/Common/include/
+ 		)
+ 	endif(UNIX)
+ 
+	if(NOT OGRE_SAMPLES_INCLUDEPATH)
+		message(SEND_ERROR "Can't find SdkTrays.h header!"
+			"Reinstall Ogre with OGRE_INSTALL_SAMPLES_SOURCE=1")
+	endif()
 
 	include_directories(./include ${OIS_INCLUDE_DIRS}
 		${OGRE_INCLUDE_DIRS}
