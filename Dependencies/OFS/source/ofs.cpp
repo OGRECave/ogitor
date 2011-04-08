@@ -33,6 +33,9 @@
 #include "ofs.h"
 #include <algorithm>
 
+#include <log4cplus/logger.h>
+#include <log4cplus/configurator.h>
+
 using namespace std;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
@@ -562,7 +565,13 @@ namespace OFS
 
     OfsResult _Ofs::_mount(const char *file, unsigned int op)
     {
-        LOCK_AUTO_MUTEX
+	log4cplus::Logger logger = log4cplus::Logger::getInstance("ogitor");
+	
+	LOG4CPLUS_TRACE(logger, "******************************************************************");
+	LOG4CPLUS_TRACE(logger, "Mounting OFS");
+	LOG4CPLUS_TRACE(logger, "******************************************************************");
+
+	LOCK_AUTO_MUTEX
 
         if(mActive)
         {
