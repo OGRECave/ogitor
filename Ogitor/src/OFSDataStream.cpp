@@ -34,7 +34,6 @@
 #include "ofs.h"
 #include "OFSDataStream.h"
 
-
 namespace Ogitors 
 {
 
