@@ -44,8 +44,8 @@ using namespace Ogitors;
 
 int COFSSceneSerializer::Import(Ogre::String importfile)
 {
-    LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), __PRETTY_FUNCTION__ << " : " << __FILE__ << ", line " << __LINE__);
-  
+    OGITOR_LOG_TRACE;
+
     OgitorsRoot *ogRoot = OgitorsRoot::getSingletonPtr();
     OgitorsSystem *mSystem = OgitorsSystem::getSingletonPtr();
     OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();

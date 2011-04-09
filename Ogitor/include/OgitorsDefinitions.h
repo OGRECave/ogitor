@@ -502,3 +502,6 @@ namespace Ogitors
             return defaultvalue;
     }
 };
+
+#define OGITOR_LOG_TRACE LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), __PRETTY_FUNCTION__ << " : " << __FILE__ << ", line " << __LINE__)
+
