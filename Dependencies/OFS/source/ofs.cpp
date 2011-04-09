@@ -59,6 +59,7 @@ namespace OFS
 
     bool BlockCompare ( _Ofs::BlockData elem1, _Ofs::BlockData elem2 )
     {
+        OFS_LOG_TRACE;
         if(elem1.Length < elem2.Length)
             return true;
         else if(elem1.Length == elem2.Length)
@@ -71,6 +72,7 @@ namespace OFS
 
     void OFSHANDLE::_prepareReadWritePointers(bool append)
     {
+        OFS_LOG_TRACE;
         assert(mEntryDesc != NULL);
 
         mReadPos = 0;
@@ -90,6 +92,7 @@ namespace OFS
 
     void OFSHANDLE::_setWritePos(unsigned int value)
     {
+        OFS_LOG_TRACE;
         if(value > mEntryDesc->FileSize)
             value = mEntryDesc->FileSize;
 
@@ -125,6 +128,7 @@ namespace OFS
 
     void OFSHANDLE::_setReadPos(unsigned int value)
     {
+        OFS_LOG_TRACE;
         if(value > mEntryDesc->FileSize)
             value = mEntryDesc->FileSize;
 
@@ -182,6 +186,7 @@ namespace OFS
 
     void _Ofs::_incUseCount()
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         ++mUseCount;
@@ -191,6 +196,7 @@ namespace OFS
 
     void _Ofs::_decUseCount()
     {
+        OFS_LOG_TRACE;
         std::string name;
         bool doDelete = false;
 
@@ -227,6 +233,7 @@ namespace OFS
 
     bool _Ofs::isActive()
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         return mActive; 
@@ -236,6 +243,7 @@ namespace OFS
 
     void _Ofs::_getFileSystemStatsRecursive(OfsEntryDesc *desc, FileSystemStats& stats)
     {
+        OFS_LOG_TRACE;
         if(desc->Flags & OFS_FILE)
             stats.NumFiles++;
         else
@@ -270,6 +278,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileSystemStats(FileSystemStats& stats)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -303,6 +312,7 @@ namespace OFS
 
     void _Ofs::_deallocateChildren(OfsEntryDesc* parent)
     {
+        OFS_LOG_TRACE;
         for(unsigned int i = 0;i < parent->Children.size();i++)
         {
             _deallocateChildren(parent->Children[i]);
@@ -316,6 +326,7 @@ namespace OFS
 
     void _Ofs::_markUnused(BlockData data)
     {
+        OFS_LOG_TRACE;
         data.Type |= OFS_FREE_BLOCK;
         data.NextBlock = 0;
         mStream.clear();
@@ -328,6 +339,7 @@ namespace OFS
 
     void _Ofs::_allocateFileBlock(OfsEntryDesc *desc, strMainEntryHeader& mainEntry, unsigned int block_size, unsigned int data_size, const char *data)
     {
+        OFS_LOG_TRACE;
         BlockData blockData;
         strBlockHeader blHeader;
 
@@ -437,6 +449,7 @@ namespace OFS
 
     void _Ofs::_allocateExtendedFileBlock(OfsEntryDesc *desc, unsigned int block_size, unsigned int data_size, const char *data)
     {
+        OFS_LOG_TRACE;
         strExtendedEntryHeader extendedHeader;
         BlockData blockData;
         strBlockHeader blHeader;
@@ -565,9 +578,7 @@ namespace OFS
 
     OfsResult _Ofs::_mount(const char *file, unsigned int op)
     {
-	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "******************************************************************");
-	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "Mounting OFS");
-	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "******************************************************************");
+        OFS_LOG_TRACE;
 
 	LOCK_AUTO_MUTEX
 
@@ -589,7 +600,6 @@ namespace OFS
             OPEN_STREAM(mStream, mFileName.c_str(), fstream::in | fstream::out | fstream::binary | fstream::ate);
             if(!mStream.fail() && mStream.is_open())
             {
-		LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "OFS Mounted (already open)");
                 mActive = true;
                 ret = _readHeader();
             }
@@ -599,7 +609,6 @@ namespace OFS
             OPEN_STREAM(mStream, mFileName.c_str(), fstream::in | fstream::out | fstream::binary | fstream::trunc);
             if(!mStream.fail())
             {
-		LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "OFS Mounted (new mount)");
                 mActive = true;
                 memset(&mHeader, 0, sizeof(_Ofs::strFileHeader));
 
@@ -623,7 +632,6 @@ namespace OFS
 
         if(ret != OFS_OK)
         {
-            LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "OFS could not be mounted");
 	    _clear();
         }
         
@@ -634,6 +642,7 @@ namespace OFS
 
     void _Ofs::_unmount()
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -649,6 +658,7 @@ namespace OFS
 
     void _Ofs::_clear()
     {
+        OFS_LOG_TRACE;
         mActive = false;
 
         if(mStream.is_open())
@@ -674,6 +684,7 @@ namespace OFS
 
     OfsResult _Ofs::_readHeader()
     {
+        OFS_LOG_TRACE;
         assert(mActive);
 
         mStream.seekg(0, fstream::end);
@@ -873,6 +884,7 @@ namespace OFS
 
     OfsResult _Ofs::_writeHeader()
     {
+        OFS_LOG_TRACE;
         assert(mActive);
 
         mStream.clear();
@@ -889,6 +901,7 @@ namespace OFS
 
     _Ofs::OfsEntryDesc* _Ofs::_getDirectoryDesc(const char *filename)
     {
+        OFS_LOG_TRACE;
         if(*filename == '/')
             ++filename;
 
@@ -956,6 +969,7 @@ namespace OFS
 
     _Ofs::OfsEntryDesc* _Ofs::_getFileDesc(OfsEntryDesc *dir_desc, std::string filename)
     {
+        OFS_LOG_TRACE;
         for(unsigned int i = 0;i < dir_desc->Children.size();i++)
         {
             if((dir_desc->Children[i]->Flags & OFS_FILE) && dir_desc->Children[i]->Name == filename)
@@ -970,6 +984,7 @@ namespace OFS
     
     std::string   _Ofs::_extractFileName(const char *filename)
     {
+        OFS_LOG_TRACE;
         const char *pos = filename;
         const char *str = filename;
 
@@ -988,6 +1003,7 @@ namespace OFS
 
     _Ofs::OfsEntryDesc* _Ofs::_createDirectory(OfsEntryDesc *parent, const std::string& name, const UUID& uuid)
     {
+        OFS_LOG_TRACE;
         assert(parent != NULL);
 
         for(unsigned int i = 0; i < parent->Children.size();i++)
@@ -1111,6 +1127,7 @@ namespace OFS
 
     _Ofs::OfsEntryDesc* _Ofs::_createFile(OfsEntryDesc *parent, const std::string& name, unsigned int file_size, const UUID& uuid, unsigned int data_size, const char *data)
     {
+        OFS_LOG_TRACE;
         assert(parent != NULL);
         
         OfsEntryDesc *file = new OfsEntryDesc();
@@ -1163,6 +1180,7 @@ namespace OFS
 
     OfsResult _Ofs::deleteDirectory(const char *path, bool force)
     {
+        OFS_LOG_TRACE;
         assert(path != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1208,6 +1226,7 @@ namespace OFS
 
     OfsResult _Ofs::_deleteDirectory(OfsEntryDesc *dir)
     {
+        OFS_LOG_TRACE;
         assert(dir != NULL);
 
         if(dir->Flags & OFS_READONLY)
@@ -1255,6 +1274,7 @@ namespace OFS
 
     OfsResult _Ofs::deleteFile(const char *filename)
     {
+        OFS_LOG_TRACE;
         assert(filename != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1311,6 +1331,7 @@ namespace OFS
 
     OfsResult _Ofs::_deleteFile(OfsEntryDesc *file)
     {
+        OFS_LOG_TRACE;
         assert(file != NULL);
 
         IdHandleMap::const_iterator it = mActiveFiles.find(file->Id);
@@ -1343,6 +1364,7 @@ namespace OFS
 
     OfsResult _Ofs::createDirectoryUUID(const char *filename, const UUID& uuid, bool force)
     {
+        OFS_LOG_TRACE;
         assert(filename != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1417,6 +1439,7 @@ namespace OFS
 
     OfsResult _Ofs::renameFile(const char *filename, const char *newname)
     {
+        OFS_LOG_TRACE;
         assert(filename != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1479,6 +1502,7 @@ namespace OFS
 
     OfsResult _Ofs::renameDirectory(const char *dirname, const char *newname)
     {
+        OFS_LOG_TRACE;
         assert(dirname != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1545,6 +1569,10 @@ namespace OFS
 
     OfsResult _Ofs::openFile(OFSHANDLE& handle, const char *filename, unsigned int open_mode)
     {
+        OFS_LOG_TRACE;
+	
+	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "Filename: " << filename);
+	
         assert(filename != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1561,6 +1589,7 @@ namespace OFS
             return OFS_FILE_NOT_FOUND;
 
         std::string fName = _extractFileName(filename);
+	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "fName: " << fName);
 
         OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
 
@@ -1636,6 +1665,7 @@ namespace OFS
 
     OfsResult _Ofs::openFile(OFSHANDLE& handle, const UUID& uuid, unsigned int open_mode)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -1718,6 +1748,7 @@ namespace OFS
 
     OfsResult _Ofs::createFileUUID(OFSHANDLE& handle, const char *filename, const UUID& uuid, unsigned int file_size, unsigned int data_size, const char *data)
     {
+        OFS_LOG_TRACE;
         assert(filename != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1798,6 +1829,7 @@ namespace OFS
 
     OfsResult _Ofs::closeFile(OFSHANDLE& handle)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -1853,6 +1885,7 @@ namespace OFS
 
     OfsResult _Ofs::truncateFile(OFSHANDLE& handle, int file_size)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -1913,6 +1946,7 @@ namespace OFS
 
     void _Ofs::_setFileFlags(OfsEntryDesc *file, unsigned int flags)
     {
+        OFS_LOG_TRACE;
         assert(file != NULL);
 
         flags &= (OFS_READONLY | OFS_HIDDEN);
@@ -1935,6 +1969,7 @@ namespace OFS
 
     FileList _Ofs::listFiles(const char *path, unsigned int file_flags)
     {
+        OFS_LOG_TRACE;
         assert(path != NULL);
 
         LOCK_AUTO_MUTEX
@@ -1989,6 +2024,7 @@ namespace OFS
 
     OfsResult _Ofs::read(OFSHANDLE& handle, char *dest, unsigned int length, unsigned int *actual_read)
     {
+        OFS_LOG_TRACE;
         assert(dest != NULL);
 
         LOCK_AUTO_MUTEX
@@ -2053,6 +2089,7 @@ namespace OFS
 
     OfsResult _Ofs::write(OFSHANDLE& handle, const char *src, unsigned int length)
     {
+        OFS_LOG_TRACE;
         assert(src != NULL);
 
         LOCK_AUTO_MUTEX
@@ -2142,6 +2179,7 @@ namespace OFS
 
     unsigned int _Ofs::seekr(OFSHANDLE& handle, int pos, SeekDirection dir)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2176,6 +2214,7 @@ namespace OFS
 
     unsigned int _Ofs::seekw(OFSHANDLE& handle, int pos, SeekDirection dir)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2210,6 +2249,7 @@ namespace OFS
 
     unsigned int _Ofs::tellr(OFSHANDLE& handle)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2231,6 +2271,7 @@ namespace OFS
 
     unsigned int _Ofs::tellw(OFSHANDLE& handle)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2252,6 +2293,7 @@ namespace OFS
 
     bool _Ofs::eof(OFSHANDLE& handle)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2273,6 +2315,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileName(OFSHANDLE& handle, std::string& filename)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2296,6 +2339,7 @@ namespace OFS
 
     OfsResult _Ofs::getDirEntry(const char *path, FileEntry& entry)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2325,6 +2369,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileEntry(const char *filename, FileEntry& entry)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2361,6 +2406,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileEntry(OFSHANDLE& handle, FileEntry& entry)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2389,6 +2435,7 @@ namespace OFS
 
     OfsResult _Ofs::getCreationTime(const char *filename, time_t& creation_time)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2419,6 +2466,7 @@ namespace OFS
 
     OfsResult _Ofs::getModificationTime(const char *filename, time_t& mod_time)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2449,6 +2497,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileSize(const char *filename, unsigned int& size)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2479,6 +2528,7 @@ namespace OFS
 
     OfsResult _Ofs::setFileFlags(const char *filename, unsigned int flags)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2513,6 +2563,7 @@ namespace OFS
 
     OfsResult _Ofs::setFileFlags(OFSHANDLE& handle, unsigned int flags)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2537,6 +2588,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileFlags(const char *filename, unsigned int& flags)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2568,6 +2620,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileFlags(OFSHANDLE& handle, unsigned int& flags)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2591,6 +2644,7 @@ namespace OFS
 
     OfsResult _Ofs::setFileUUID(const char *filename, const UUID& uuid)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2643,6 +2697,7 @@ namespace OFS
 
     OfsResult _Ofs::setFileUUID(OFSHANDLE& handle, const UUID& uuid)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2684,6 +2739,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileUUID(const char *filename, UUID& uuid)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2715,6 +2771,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileUUID(OFSHANDLE& handle, UUID& uuid)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2738,6 +2795,7 @@ namespace OFS
 
     OfsResult _Ofs::setDirUUID(const char *dirpath, const UUID& uuid)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2780,6 +2838,7 @@ namespace OFS
 
     OfsResult _Ofs::getDirUUID(const char *dirpath, UUID& uuid)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2804,6 +2863,7 @@ namespace OFS
 
     OfsResult _Ofs::setDirFlags(const char *dirpath, unsigned int flags)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2829,6 +2889,7 @@ namespace OFS
 
     OfsResult _Ofs::getDirFlags(const char *dirpath, unsigned int& flags)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2853,6 +2914,7 @@ namespace OFS
 
     OfsResult _Ofs::getCreationTime(OFSHANDLE& handle, time_t& creation_time)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2876,6 +2938,7 @@ namespace OFS
 
     OfsResult _Ofs::getModificationTime(OFSHANDLE& handle, time_t& mod_time) 
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2899,6 +2962,7 @@ namespace OFS
 
     OfsResult _Ofs::getFileSize(OFSHANDLE& handle, unsigned int& size)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2922,6 +2986,7 @@ namespace OFS
 
     bool _Ofs::exists(const char *filename)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -2946,6 +3011,7 @@ namespace OFS
 
     OfsResult _Ofs::_mount(_Ofs **_ptr, const char *file, unsigned int op)
     {
+        OFS_LOG_TRACE;
         STATIC_LOCK_AUTO_MUTEX
 
         *_ptr = 0;
@@ -2988,6 +3054,7 @@ namespace OFS
 
     OfsResult _Ofs::copyFile(const char *src, const char *dest)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         OFSHANDLE srcHandle, destHandle;
@@ -3026,6 +3093,7 @@ namespace OFS
 
     OfsResult _Ofs::moveFile(const char *src, const char *dest)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         OFSHANDLE srcHandle;
@@ -3075,6 +3143,7 @@ namespace OFS
 
     OfsResult _Ofs::moveFileSystemTo(const char *dest)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -3141,6 +3210,7 @@ namespace OFS
 
     OfsResult _Ofs::switchFileSystemTo(const char *dest)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -3183,6 +3253,7 @@ namespace OFS
 
     OfsResult _Ofs::defragFileSystemTo(const char *dest)
     {
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -3283,6 +3354,7 @@ namespace OFS
 
     unsigned int _Ofs::listFilesRecursive(const std::string& path, FileList& list)
     {
+        OFS_LOG_TRACE;
         if(list.empty())
             list = listFiles(path.c_str());
 
@@ -3319,6 +3391,7 @@ namespace OFS
 //------------------------------------------------------------------------------------------
     OfsResult _Ofs::addTrigger(void *_owner, _Ofs::CallBackType _type, _Ofs::CallBackFunction _func, void *_data)
     {
+        OFS_LOG_TRACE;
         assert(_owner != 0);
 
         LOCK_AUTO_MUTEX
@@ -3342,6 +3415,7 @@ namespace OFS
 //------------------------------------------------------------------------------------------
     void _Ofs::removeTrigger(void *_owner, _Ofs::CallBackType _type)
     {
+        OFS_LOG_TRACE;
         assert(_owner != 0);
 
         LOCK_AUTO_MUTEX
@@ -3366,6 +3440,7 @@ namespace OFS
 //------------------------------------------------------------------------------------------
     OfsResult _Ofs::addFileTrigger(const char *filename, void *_owner, _Ofs::CallBackType _type, _Ofs::CallBackFunction _func, void *_data)
     {
+        OFS_LOG_TRACE;
         assert(_owner != 0);
 
         LOCK_AUTO_MUTEX
@@ -3401,6 +3476,7 @@ namespace OFS
 //------------------------------------------------------------------------------------------
     void _Ofs::removeFileTrigger(const char *filename, void *_owner, _Ofs::CallBackType _type)
     {
+        OFS_LOG_TRACE;
         assert(_owner != 0);
 
         LOCK_AUTO_MUTEX
@@ -3439,6 +3515,7 @@ namespace OFS
 //------------------------------------------------------------------------------------------
     OfsPtr::~OfsPtr()
     {
+        OFS_LOG_TRACE;
         if(mPtr != 0)
             mPtr->_decUseCount();
         
@@ -3449,6 +3526,7 @@ namespace OFS
 
     OfsResult OfsPtr::mount(const char *file, unsigned int op)
     {
+        OFS_LOG_TRACE;
         assert(mPtr == 0);
 
         return _Ofs::_mount(&mPtr, file, op);
@@ -3458,6 +3536,7 @@ namespace OFS
 
     void OfsPtr::unmount()
     {
+        OFS_LOG_TRACE;
         if(mPtr != 0)
             mPtr->_decUseCount();
         

@@ -1428,7 +1428,7 @@ bool OgitorsRoot::LoadProjectOptions(TiXmlElement *optRoot)
 //-----------------------------------------------------------------------------------------
 int OgitorsRoot::LoadScene(Ogre::String filename)
 {
-    LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), __PRETTY_FUNCTION__ << " : " << __FILE__ << ", line " << __LINE__);
+    OGITOR_LOG_TRACE;
     
     setLoadState(LS_LOADING);
 
