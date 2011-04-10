@@ -31,6 +31,7 @@ using namespace Ogitors;
 namespace MZP
 {
 	class ModularZoneEditor;
+	class TerrainCut;
 
 	class PortalEditor : public CNodeEditor
 	{
@@ -82,12 +83,14 @@ namespace MZP
 		PortalEditor* mConnected;//pointer to the destination portal
 		bool mLinked; //true when portal is linked to destination portal
 		bool mFreeMove;//if true, prevents snap-to  during design mode
+		TerrainCut* mTerrainCut;
 
 		PortalEditor(Ogitors::CBaseEditorFactory *factory);
 		virtual ~PortalEditor(void);	
 
 		Ogre::Entity* _createPlane();
 		void _createMaterial();
+		bool carveTerrainTunnel();
 
 		//PROPERTIES
 		//OgitorsProperty<Ogre::String>* mZone; //name of the parent zone
@@ -102,6 +105,25 @@ namespace MZP
 		bool _setHeight(OgitorsPropertyBase* property, const Ogre::Real& value);
 	};
 
+
+
+	class TerrainCut
+	{
+	public:
+		TerrainCut():mStencil(0),mTunnel(0){}
+		~TerrainCut(){}
+		Ogre::ManualObject* mStencil;
+	private:
+		std::vector<Ogre::Vector3> points;
+		
+		Ogre::ManualObject* mTunnel;
+		Ogre::MaterialPtr mBlendMaterial;
+
+	public:
+		void create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height);
+		bool update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height);
+
+	};
 }
 
 #endif

@@ -22,7 +22,11 @@
 #include "portalsizedialog.hxx"
 #include "OgitorsSystem.h"
 #include <QtGui/QMenu>
+#include <QtGui/QMessageBox>
+#include <QtGui/QApplication>
 #include "tinyxml.h"
+#include "TerrainEditor.h"
+//#include "OgreResourceGroupManager.h"
 
 using namespace Ogitors;
 using namespace MZP;
@@ -39,7 +43,8 @@ PortalEditor::PortalEditor(Ogitors::CBaseEditorFactory *factory) : Ogitors::CNod
 																	mPlaneHandle(0),
 																	mConnected(0),
 																	mLinked(false),
-																	mFreeMove(false)
+																	mFreeMove(false),
+																	mTerrainCut(0)
 {
 	mHandle = 0;
     mUsesGizmos = true;
@@ -49,7 +54,7 @@ PortalEditor::PortalEditor(Ogitors::CBaseEditorFactory *factory) : Ogitors::CNod
 //----------------------------------------------------------------------------------------
 PortalEditor::~PortalEditor(void)
 {
-
+	delete mTerrainCut;
 }
 //----------------------------------------------------------------------------------------
 void PortalEditor::showBoundingBox(bool bShow) 
@@ -155,20 +160,25 @@ bool PortalEditor::getObjectContextMenu(UTFStringVector &menuitems)
 		menuitems.push_back(OTR("Resize..."));
 	}
 	else
-	if(mConnected) //if there is a potential destination...
 	{
-		if(mLinked) //already linked - menu item to unlink
+		
+		if(mConnected) //if there is a potential destination...
 		{
-			menuitems.push_back(OTR("Unlink"));
+			if(mLinked) //already linked - menu item to unlink
+			{
+				menuitems.push_back(OTR("Unlink"));
+			}
+			else //not linked - menu item to link
+			{
+				menuitems.push_back(OTR("Link"));
+			}
 		}
-		else //not linked - menu item to link
+		else
 		{
-			menuitems.push_back(OTR("Link"));
+			menuitems.push_back(OTR("Carve Terrain"));
 		}
 	}
-
 	
-
 	//possible feature -> snap-to ->portal_name.
 
     return true;
@@ -212,23 +222,36 @@ void PortalEditor::onObjectContextMenu(int menuresult)
 		}
 	}
 	else
-    if(menuresult == 0)//connect
 	{
-		if(mConnected) //if there is a potential destination...
+
+
+		if(mConnected)//if there is a potential destination...
 		{
-			if(mLinked) //unlink it
+			if(menuresult == 0)//connect 
 			{
-				link(0);
-				mConnected->link(0);
+				if(mLinked) //unlink it
+				{
+					link(0);
+					mConnected->link(0);
+				}
+				else //link it
+				{
+					link(mConnected);
+					mConnected->link(this);
+				}
 			}
-			else //link it
+		}
+		else
+		{
+			if(menuresult == 0)//Carve tunnel thru terrain
 			{
-				link(mConnected);
-				mConnected->link(this);
+				carveTerrainTunnel();
+				QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "This doesn't do anything yet...",  QMessageBox::Ok);
 			}
 		}
 
 	}
+
    
 
 }
@@ -550,3 +573,146 @@ bool PortalEditor::update(float timePassed)
 
 	return bModified;
 }
+
+//----------------------------------------------------------------------------------------
+bool PortalEditor::carveTerrainTunnel()
+{
+	try
+	{
+
+	if(!mTerrainCut)
+	{
+		mTerrainCut = new TerrainCut();
+		mTerrainCut->create(getName(),this->getDerivedPosition(),this->getDerivedOrientation(),mWidth->get(),mHeight->get());
+		//this->getNode()->attachObject(mTerrainCut->mStencil);
+		OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->attachObject(mTerrainCut->mStencil);
+	}
+	else
+	{
+		mTerrainCut->update(this->getDerivedPosition(),this->getDerivedOrientation(),mWidth->get(),mHeight->get());
+	}
+	}
+	catch(Ogre::Exception &e)
+	{
+		QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "ARRRGH...",  QMessageBox::Ok);
+	}
+
+	
+	return true;
+}
+//----------------------------------------------------------------------------------------
+void TerrainCut::create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height)
+{
+	//create mesh for stencil cut:
+	Ogre::ResourceManager::ResourceCreateOrRetrieveResult result = Ogre::MaterialManager::getSingletonPtr()->createOrRetrieve("MZP_StencilMat", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+	
+	if(result.second)
+	{   //TODO: don't neeed member var just use local, we can use "MZP_StencilMat" elsewhere
+		mBlendMaterial = result.first;
+		mBlendMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);/*//should be false, true for debugging only
+		mBlendMaterial->getTechnique(0)->getPass(0)->setSelfIllumination(Ogre::ColourValue(1,1,0));//colours just for debugging
+		mBlendMaterial->getTechnique(0)->getPass(0)->setDiffuse(Ogre::ColourValue(1,0,1));*/
+	}
+	mStencil = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createManualObject(name + "Stencil");
+	mStencil->begin("MZP_StencilMat", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+	for(int p = 0;p<9;++p)
+	{
+		mStencil->position(Ogre::Vector3(0,0,0));
+		mStencil->textureCoord(0.0,1.0);
+	}
+	mStencil->quad(0,1,8,7);
+	mStencil->quad(1,2,3,8);
+	mStencil->quad(8,3,4,5);
+	mStencil->quad(7,8,5,6);
+	mStencil->end();
+	update(position,orientation,width,height);
+
+
+	ITerrainEditor * terrain = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
+	Ogre::Vector3 hitpoint;
+	Ogre::Ray ray(position, orientation * Ogre::Vector3::UNIT_Z );
+	if(terrain->hitTest(ray,&hitpoint))
+	{
+		Ogre::ManualObject* manual = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createManualObject(name + "DebugRay");
+		manual->begin("PortalOutlineMaterial",Ogre::RenderOperation::OT_LINE_LIST);
+		manual->position(position);
+		manual->position(hitpoint);
+		manual->end();
+
+		OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->attachObject(manual);
+	}
+	//OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->attachObject(mStencil);
+}
+//----------------------------------------------------------------------------------------
+bool TerrainCut::update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height)
+{
+		//retrieve terrain
+	ITerrainEditor * terrain = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
+	if(!terrain)return false; //no terrain 
+	//calc portal corners & midpoints in local space
+	
+	std::vector<Ogre::Vector3> points;
+	std::vector<Ogre::Vector2> tex;
+	const Ogre::Real left = -width/2;
+	const Ogre::Real right = width/2;
+	const Ogre::Real top = height/2;
+	const Ogre::Real bottom = -height/2;
+	
+	points.clear();//why didn't i just use a fixed array... TODO
+	points.push_back(Ogre::Vector3(left,top,0.0));//1st point top left
+	points.push_back(Ogre::Vector3(0.0,top,0.0));//top middle
+	points.push_back(Ogre::Vector3(right,top,0.0));//top right
+	points.push_back(Ogre::Vector3(right,0.0,0.0));//mid right
+	points.push_back(Ogre::Vector3(right,bottom,0.0));//bottom right
+	points.push_back(Ogre::Vector3(0.0,bottom,0.0));//bottom middle
+	points.push_back(Ogre::Vector3(left,bottom,0.0));//bottom left
+	points.push_back(Ogre::Vector3(left,0.0,0.0));//middle left
+	points.push_back(Ogre::Vector3(0.0,0.0,0.0));//centre
+
+	tex.push_back(Ogre::Vector2(0.0,0.0));//1st point top left
+	tex.push_back(Ogre::Vector2(0.5,0.0));//top middle
+	tex.push_back(Ogre::Vector2(1.0,0.0));//top right
+	tex.push_back(Ogre::Vector2(1.0,0.5));//mid right
+	tex.push_back(Ogre::Vector2(1.0,1.0));//bottom right
+	tex.push_back(Ogre::Vector2(0.5,1.0));//bottom middle
+	tex.push_back(Ogre::Vector2(0.0,1.0));//bottom left
+	tex.push_back(Ogre::Vector2(0.0,0.5));//middle left
+	tex.push_back(Ogre::Vector2(0.5,0.5));//centre
+	
+	std::vector<Ogre::Vector3>::iterator point;
+	std::vector<Ogre::Vector2>::iterator texture;
+	
+	//project points onto terrain
+	for(point = points.begin();point!=points.end();++point)
+	{
+		//apply orientation
+		(*point) =   orientation*(*point);
+		//convert to world coords
+		(*point) =   position + (*point);
+		//do ray cast for terrain hit
+		Ogre::Ray ray((*point), orientation * Ogre::Vector3::UNIT_Z );
+		if(!terrain->hitTest(ray,&(*point)))
+		{return false;}//if no hit, abort
+	}
+	
+	mStencil->beginUpdate(0);//(mBlendMaterial->getName(), Ogre::RenderOperation::OT_TRIANGLE_LIST);
+	//update points
+	for(point = points.begin(),texture = tex.begin();point!=points.end();++point,++texture)
+	{
+		mStencil->position((*point));
+		mStencil->textureCoord((*texture).x,(*texture).y);
+	}
+
+	mStencil->quad(0,1,8,7);
+	mStencil->quad(1,2,3,8);
+	mStencil->quad(8,3,4,5);
+	mStencil->quad(7,8,5,6);
+
+	mStencil->end();
+
+	//create tunnel mesh:
+
+	//set up portal for tunnel:
+}
+//----------------------------------------------------------------------------------------
