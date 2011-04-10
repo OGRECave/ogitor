@@ -1,0 +1,70 @@
+#ToolsRibbon {
+    background-color: #DADADA;
+    min-width: 100%;
+}
+
+QStatusBar{
+    border: 1px solid #C8C8C8;
+}
+
+QToolBar {
+	border : none;
+}
+
+QListWidget#logWidget{
+	color: white;
+    background: black;
+}
+
+QListWidget#listScriptOutput{
+	color: white;
+    background: black;
+}
+
+QLabel#descLabel{
+    background-color: #AFAFAF;
+}
+
+pane {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(232, 232, 232, 255), stop:1 rgba(245, 245, 245, 255));
+    border: 1px solid #B5B5B5;
+    border-radius: 5px;
+    padding: 1px;
+}
+
+Form{
+    background-color: #DADADA;
+    min-width: 100%;
+    left: 0px;
+    right: 0px;
+}
+
+QToolBar {
+	border : none;
+}
+
+#toolbarbox::title{
+    position: absolute;
+    subcontrol-origin: padding;
+    subcontrol-position: bottom center;
+    min-width: 10000%;
+    max-width: 10000%;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 1px solid #C8C8C8;
+    border-top-style: none;
+    border-bottom-style: none;
+    color: #FFFFFF;
+    min-height: 14px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #808080, stop: 1 #434343);
+}
+
+#toolbarbox {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(229, 229, 229, 255), stop:0.1 rgba(229, 229, 229, 255), stop:0.101 rgba(215, 215, 215, 255), stop:1 rgba(250, 250, 220, 255));
+    border: 1px solid #C8C8C8;
+    border-radius: 3px;
+}
+
+#renderwindowtoolbar {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(229, 229, 229, 255), stop:0.1 rgba(229, 229, 229, 255), stop:0.101 rgba(215, 215, 215, 255), stop:1 rgba(250, 250, 220, 255));
+}
