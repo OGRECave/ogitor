@@ -1,0 +1,12 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+plugindir=${libdir}/OGRE
+
+Name: OGRE
+Description: Object-Oriented Graphics Rendering Engine
+Version: 1.8.0unstable
+URL: http://www.ogre3d.org
+Libs: -L${libdir} -lOgreMain  -lpthread
+Cflags: -I${includedir} -I${includedir}/OGRE -pthread
