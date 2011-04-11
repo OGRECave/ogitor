@@ -586,6 +586,7 @@ bool PortalEditor::carveTerrainTunnel()
 		mTerrainCut->create(getName(),this->getDerivedPosition(),this->getDerivedOrientation(),mWidth->get(),mHeight->get());
 		//this->getNode()->attachObject(mTerrainCut->mStencil);
 		OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->attachObject(mTerrainCut->mStencil);
+		OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->attachObject(mTerrainCut->mTunnel);
 	}
 	else
 	{
@@ -608,16 +609,15 @@ void TerrainCut::create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaterni
 
 	
 	if(result.second)
-	{   //TODO: don't neeed member var just use local, we can use "MZP_StencilMat" elsewhere
+	{   //TODO: don't need member var just use local, we can use "MZP_StencilMat" elsewhere
 		mBlendMaterial = result.first;
-		mBlendMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);/*//should be false, true for debugging only
-		mBlendMaterial->getTechnique(0)->getPass(0)->setSelfIllumination(Ogre::ColourValue(1,1,0));//colours just for debugging
-		mBlendMaterial->getTechnique(0)->getPass(0)->setDiffuse(Ogre::ColourValue(1,0,1));*/
+		mBlendMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);
 	}
 	mStencil = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createManualObject(name + "Stencil");
 	mStencil->begin("MZP_StencilMat", Ogre::RenderOperation::OT_TRIANGLE_LIST);
 	for(int p = 0;p<9;++p)
 	{
+		//just some initial values so beginUpdate doesn't spit the dummy
 		mStencil->position(Ogre::Vector3(0,0,0));
 		mStencil->textureCoord(0.0,1.0);
 	}
@@ -626,6 +626,31 @@ void TerrainCut::create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaterni
 	mStencil->quad(8,3,4,5);
 	mStencil->quad(7,8,5,6);
 	mStencil->end();
+
+	mTunnel = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createManualObject(name + "Tunnel");
+	//TODO: choose a better material - terrain perhaps?
+	mTunnel->begin("MZP_StencilMat", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+	for(int p = 0;p<12;++p)
+	{
+		//just some values to keep beginUpdate happy
+		mTunnel->position(Ogre::Vector3(0,0,0));
+		mTunnel->textureCoord(0.0,1.0);
+	}
+	mTunnel->triangle(0,1,8);
+	mTunnel->triangle(1,9,8);
+	mTunnel->triangle(1,2,9);
+	mTunnel->triangle(2,3,9);
+	mTunnel->triangle(3,10,9);
+	mTunnel->triangle(3,4,10);
+	mTunnel->triangle(4,5,10);
+	mTunnel->triangle(5,11,10);
+	mTunnel->triangle(5,6,11);
+	mTunnel->triangle(6,7,11);
+	mTunnel->triangle(7,8,11);
+	mTunnel->triangle(7,0,8);
+	
+	mTunnel->end();
+
 	update(position,orientation,width,height);
 
 
@@ -710,8 +735,46 @@ bool TerrainCut::update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre
 	mStencil->quad(7,8,5,6);
 
 	mStencil->end();
-
+	
 	//create tunnel mesh:
+	mTunnel->beginUpdate(0);
+	//first we grab the terrain end vertices
+	points.pop_back();//except that centre point
+	for(point = points.begin();point!=points.end();++point)
+	{
+		mTunnel->position((*point));
+		mTunnel->textureCoord(0.0,1.0);//rough
+	}
+
+	//now do portal end
+	points.clear();
+	points.push_back(Ogre::Vector3(left,top,0.0));//1st point top left
+	points.push_back(Ogre::Vector3(right,top,0.0));//top right
+	points.push_back(Ogre::Vector3(right,bottom,0.0));//bottom right
+	points.push_back(Ogre::Vector3(left,bottom,0.0));//bottom left
+	for(point=points.begin();point!=points.end();++point)
+	{
+		//apply orientation
+		(*point) =   orientation*(*point);
+		//convert to world coords
+		(*point) =   position + (*point);
+		mTunnel->position((*point));
+		mTunnel->textureCoord(0.0,1.0);//rough
+	}
+	mTunnel->triangle(1,0,8);
+	mTunnel->triangle(9,1,8);
+	mTunnel->triangle(2,1,9);
+	mTunnel->triangle(3,2,9);
+	mTunnel->triangle(10,3,9);
+	mTunnel->triangle(4,3,10);
+	mTunnel->triangle(5,4,10);
+	mTunnel->triangle(11,5,10);
+	mTunnel->triangle(6,5,11);
+	mTunnel->triangle(7,6,11);
+	mTunnel->triangle(8,7,11);
+	mTunnel->triangle(0,7,8);
+	
+	mTunnel->end();
 
 	//set up portal for tunnel:
 }
