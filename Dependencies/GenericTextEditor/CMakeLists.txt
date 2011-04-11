@@ -65,7 +65,7 @@ else(NOT QT4_FOUND)
 		add_custom_command(TARGET GenericTextEditor PRE_BUILD
 			COMMAND mkdir -p ../../RunPath/bin)
 		add_custom_command(TARGET GenericTextEditor POST_BUILD
-			COMMAND cp -r ../lib/GenericTextEditor.* ../../RunPath/bin/)
+			COMMAND cp -r ../lib/libGenericTextEditor.* ../../RunPath/bin/)
 	endif(UNIX AND NOT APPLE)
 
 	if(WIN32)
