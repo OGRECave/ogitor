@@ -113,10 +113,11 @@ namespace MZP
 		TerrainCut():mStencil(0),mTunnel(0){}
 		~TerrainCut(){}
 		Ogre::ManualObject* mStencil;
+		Ogre::ManualObject* mTunnel;
 	private:
 		std::vector<Ogre::Vector3> points;
 		
-		Ogre::ManualObject* mTunnel;
+		
 		Ogre::MaterialPtr mBlendMaterial;
 
 	public:
