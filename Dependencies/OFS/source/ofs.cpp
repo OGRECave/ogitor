@@ -1569,7 +1569,7 @@ namespace OFS
 
     OfsResult _Ofs::openFile(OFSHANDLE& handle, const char *filename, unsigned int open_mode)
     {
-        //OFS_LOG_TRACE;
+        OFS_LOG_TRACE;
 	
 	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "Filename: " << filename);
 	
@@ -1665,7 +1665,7 @@ namespace OFS
 
     OfsResult _Ofs::openFile(OFSHANDLE& handle, const UUID& uuid, unsigned int open_mode)
     {
-        //OFS_LOG_TRACE;
+        OFS_LOG_TRACE;
         LOCK_AUTO_MUTEX
 
         if(!mActive)
@@ -1840,7 +1840,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::closeFile, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::closeFile, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -1896,7 +1896,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::truncateFile, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::truncateFile, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2037,7 +2037,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::read, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::read, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2102,7 +2102,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::write, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::write, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2190,7 +2190,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::seekr, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::seekr, Supplied OfsHandle is not valid.");
             return 0;
         }
 
@@ -2225,7 +2225,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::seekw, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::seekw, Supplied OfsHandle is not valid.");
             return 0;
         }
 
@@ -2260,7 +2260,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::tellr, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::tellr, Supplied OfsHandle is not valid.");
             return 0;
         }
 
@@ -2282,7 +2282,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::tellw, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::tellw, Supplied OfsHandle is not valid.");
             return 0;
         }
 
@@ -2304,7 +2304,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::eof, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::eof, Supplied OfsHandle is not valid.");
             return 0;
         }
 
@@ -2326,7 +2326,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::getFileName, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::getFileName, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2417,7 +2417,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::getFileEntry, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::getFileEntry, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2574,7 +2574,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::setFileFlags, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::setFileFlags, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2631,7 +2631,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::getFileFlags, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::getFileFlags, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2708,7 +2708,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::setFileUUID, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::setFileUUID, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2782,7 +2782,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::getFileUUID, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::getFileUUID, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2925,7 +2925,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::getCreationTime, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::getCreationTime, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2949,7 +2949,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::getModificationTime, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::getModificationTime, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
@@ -2973,7 +2973,7 @@ namespace OFS
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_Ofs::getFileSize, Supplied OfsHandle is not valid.");
+            //OFS_EXCEPT("_Ofs::getFileSize, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
 
