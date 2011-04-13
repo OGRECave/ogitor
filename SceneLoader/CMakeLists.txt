@@ -57,7 +57,9 @@ else(NOT OIS_FOUND)
 			${SampleLoadApp_res})
 	endif(NOT APPLE)
 
-	set_target_properties(SampleLoadApp PROPERTIES DEBUG_POSTFIX _d)
+	if(WIN32)
+		set_target_properties(SampleLoadApp PROPERTIES DEBUG_POSTFIX _d)
+	endif(WIN32)
 
 	if(APPLE)
 		find_package(IOKIT REQUIRED)
