@@ -39,9 +39,6 @@
 
 #include <boost/regex.hpp>
 
-#include <log4cplus/logger.h>
-#include <log4cplus/configurator.h>
-
 namespace Ogre {
 
 	bool OFSArchive::ms_IgnoreHidden = true;
@@ -256,12 +253,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     DataStreamPtr OFSArchive::open(const String& filename, bool readOnly) const
     {
-        OFS_LOG_TRACE;
-	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "Filename: " << filename);
-	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "mDir: " << mDir);
-
-	String name = concatenate_path(mDir, filename);
-	LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), "name: " << name);
+        String name = concatenate_path(mDir, filename);
 
         std::replace(name.begin(), name.end(), '\\', '/');
 

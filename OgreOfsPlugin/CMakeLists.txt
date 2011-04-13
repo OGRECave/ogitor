@@ -1,5 +1,4 @@
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/OFS/include")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/log4cplus/include")
 include_directories(include)
 
 set(OgreOfsPlugin_hdrs
@@ -17,7 +16,7 @@ set(LIBRARY_OUTPUT_PATH ../lib)
 
 set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPORT")
 
-target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARY} OFS ${Boost_LIBRARIES} log4cplus)
+target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARY} OFS ${Boost_LIBRARIES})
 
 if(APPLE)
 	find_package(CARBON REQUIRED)

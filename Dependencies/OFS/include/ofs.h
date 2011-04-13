@@ -1095,8 +1095,3 @@ namespace OFS
 //------------------------------------------------------------------------------
 
 }
-#ifdef _MSC_VER // Visual Studio
-#define OFS_LOG_TRACE LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), __FUNCSIG__ << " : " << __FILE__ << ", line " << __LINE__)
-#else
-#define OFS_LOG_TRACE LOG4CPLUS_TRACE(log4cplus::Logger::getInstance("ogitor"), __PRETTY_FUNCTION__ << " : " << __FILE__ << ", line " << __LINE__)
-#endif

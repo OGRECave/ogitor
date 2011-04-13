@@ -34,6 +34,7 @@
 #include "ofs.h"
 #include "OFSDataStream.h"
 
+
 namespace Ogitors 
 {
 
@@ -41,7 +42,6 @@ namespace Ogitors
     OfsDataStream::OfsDataStream(OFS::OfsPtr _ofsptr, OFS::OFSHANDLE *_handle)
         : mOfs(_ofsptr), mFileHandle(_handle)
     {
-        OGITOR_LOG_TRACE;
         assert(_handle != NULL);
         unsigned int sz = 0; 
 
@@ -66,9 +66,7 @@ namespace Ogitors
     //-----------------------------------------------------------------------
     size_t OfsDataStream::read(void* buf, size_t count)
     {
-        OGITOR_LOG_TRACE;
-        
-	unsigned int read_amount = 0;
+        unsigned int read_amount = 0;
 
         mOfs->read(*mFileHandle, (char*)buf, count, &read_amount);
 
@@ -85,21 +83,18 @@ namespace Ogitors
     //-----------------------------------------------------------------------
     void OfsDataStream::skip(long count)
     {
-        OGITOR_LOG_TRACE;
         mOfs->seekr(*mFileHandle, count, OFS::OFS_SEEK_CURRENT);
         mOfs->seekw(*mFileHandle, count, OFS::OFS_SEEK_CURRENT);
     }
     //-----------------------------------------------------------------------
     void OfsDataStream::seek( size_t pos )
     {
-        OGITOR_LOG_TRACE;
         mOfs->seekr(*mFileHandle, pos, OFS::OFS_SEEK_BEGIN);
         mOfs->seekw(*mFileHandle, pos, OFS::OFS_SEEK_BEGIN);
     }
     //-----------------------------------------------------------------------
     size_t OfsDataStream::tell(void) const
     {
-        OGITOR_LOG_TRACE;
         return mOfs->tellr(*mFileHandle);
     }
     //-----------------------------------------------------------------------
@@ -110,7 +105,6 @@ namespace Ogitors
     //-----------------------------------------------------------------------
     void OfsDataStream::close(void)
     {
-        OGITOR_LOG_TRACE;
         if (mFileHandle != 0)
 		{
             mOfs->closeFile(*mFileHandle);

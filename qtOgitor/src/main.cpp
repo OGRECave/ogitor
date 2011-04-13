@@ -33,10 +33,6 @@
 #include "mainwindow.hxx"
 #include "shortcuts.hxx"
 
-#include <log4cplus/logger.h>
-#include <log4cplus/configurator.h>
-//#include <log4cplus/consoleappender.h>
-
 #include "paths.h"
 #include "qtogitorsystem.h"
 #include "BaseEditor.h"
@@ -228,24 +224,6 @@ void writeRecentFiles()
 //-------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    log4cplus::BasicConfigurator config;
-    config.configure();
-
-    //log4cplus::SharedAppenderPtr append_1(new log4cplus::ConsoleAppender());
-    //append_1->setName(LOG4CPLUS_TEXT("First"));
-    //log4cplus::Logger::getRoot().addAppender(append_1);
-    
-    //test.setLogLevel(NOT_SET_LOG_LEVEL);
-    
-    //log4cplus::Logger root = log4cplus::Logger::getRoot();
-    log4cplus::Logger logger = log4cplus::Logger::getInstance("ogitor");
-    
-    logger.setLogLevel(log4cplus::TRACE_LOG_LEVEL);
-    
-    LOG4CPLUS_INFO(logger, "******************************************************************");
-    LOG4CPLUS_INFO(logger, "Booting Ogitor");
-    LOG4CPLUS_INFO(logger, "******************************************************************");
-  
     QApplication a(argc, argv);
 
     QDir::setCurrent(a.applicationDirPath());
@@ -379,18 +357,12 @@ int main(int argc, char *argv[])
 
     writeRecentFiles();
 
-    LOG4CPLUS_TRACE(logger, "Shutting down..");
-
     delete mOgitorMainWindow;
     delete shortCuts;
     OGRE_DELETE mOgitorsRoot;
     OGRE_DELETE mSystem;
     OGRE_DELETE mOgreRoot;
 
-    LOG4CPLUS_INFO(logger, "******************************************************************");
-    LOG4CPLUS_INFO(logger, "Ogitor ran succesfully");
-    LOG4CPLUS_INFO(logger, "******************************************************************");
-    
     return retval;
 }
 //-------------------------------------------------------------------------------------
