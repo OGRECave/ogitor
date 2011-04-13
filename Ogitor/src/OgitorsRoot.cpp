@@ -70,6 +70,7 @@
 
 #include "ofs.h"
 
+
 using namespace Ogre;
 
 namespace Ogitors
@@ -1428,8 +1429,6 @@ bool OgitorsRoot::LoadProjectOptions(TiXmlElement *optRoot)
 //-----------------------------------------------------------------------------------------
 int OgitorsRoot::LoadScene(Ogre::String filename)
 {
-    OGITOR_LOG_TRACE;
-    
     setLoadState(LS_LOADING);
 
     ClearProjectOptions();

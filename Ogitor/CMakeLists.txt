@@ -141,7 +141,7 @@ set_target_properties(Ogitor PROPERTIES COMPILE_DEFINITIONS "${OGITOR_PREPROCESS
 message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 
 message(STATUS ${OGRE_LIBRARY})
-target_link_libraries(Ogitor log4cplus ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
+target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
 
 if(APPLE)
 	find_package(CARBON REQUIRED)
