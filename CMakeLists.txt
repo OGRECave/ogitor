@@ -63,7 +63,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
 	# differentiation between debug and release builds.
 	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif ()
-set(CMAKE_DEBUG_POSTFIX "_d")
+
+if(WIN32)
+  set(CMAKE_DEBUG_POSTFIX "_d")
+endif(WIN32)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 

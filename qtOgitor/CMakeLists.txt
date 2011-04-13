@@ -187,7 +187,9 @@ else(NOT QT4_FOUND)
     ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})
 	endif(NOT APPLE)
 
-	set_target_properties(qtOgitor PROPERTIES DEBUG_POSTFIX _d)
+	if(WIN32)
+		set_target_properties(qtOgitor PROPERTIES DEBUG_POSTFIX _d)
+	endif(WIN32)
 
 	if(OGITOR_MESHMAGICK_INTERFACE)
         TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ${Boost_REGEX_LIBRARY})
