@@ -76,6 +76,20 @@ CBaseEditorFactory* ModularZoneFactory::duplicate(OgitorsView *view)
 }
 //-----------------------------------------------------------------------------------------
 
+static Ogre::String getExtension(Ogre::String filename)
+{
+	int dotpos = filename.find_last_of(".");
+	if(dotpos == Ogre::String::npos)return "";
+	else return filename.substr(dotpos, filename.length() - dotpos);
+}
+
+static bool not_a_zonefile(OFS::FileEntry entry)
+{
+  if(getExtension(entry.name)==".zone")
+    return false;
+  return true;
+}
+
 void ModularZoneFactory::loadZoneTemplates(void)
 {
 	mZoneTemplates.clear();
@@ -95,25 +109,8 @@ void ModularZoneFactory::loadZoneTemplates(void)
 
 		ofsFile->listFilesRecursive("/", list);
 
-		//TODO: make this functor nicer
-		class not_a_zonefile
-		{
-			Ogre::String getExtension(Ogre::String filename)
-			{
-				int dotpos = filename.find_last_of(".");
-				if(dotpos == Ogre::String::npos)return "";
-				else return filename.substr(dotpos, filename.length() - dotpos);
-			}
-		public:
-			bool operator()(OFS::FileEntry entry)
-			{
-				if(getExtension(entry.name)==".zone")return false;
-				else return true;
-			}
-		};
-
 		//get rid of everthing except .zone files
-		//list.erase(std::remove_if(list.begin(),list.end(),not_a_zonefile() ),list.end());
+		list.erase(std::remove_if(list.begin(),list.end(),not_a_zonefile),list.end());
 
 		int key = 0;
 		OFS::FileList::iterator zonefile;
