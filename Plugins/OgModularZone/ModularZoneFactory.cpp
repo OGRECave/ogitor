@@ -113,7 +113,7 @@ void ModularZoneFactory::loadZoneTemplates(void)
 		};
 
 		//get rid of everthing except .zone files
-		list.erase(std::remove_if(list.begin(),list.end(),not_a_zonefile()),list.end());
+		//list.erase(std::remove_if(list.begin(),list.end(),not_a_zonefile() ),list.end());
 
 		int key = 0;
 		OFS::FileList::iterator zonefile;
