@@ -83,14 +83,17 @@ namespace MZP
 		PortalEditor* mConnected;//pointer to the destination portal
 		bool mLinked; //true when portal is linked to destination portal
 		bool mFreeMove;//if true, prevents snap-to  during design mode
+#ifdef TERRAIN_CUT		
 		TerrainCut* mTerrainCut;
+		bool carveTerrainTunnel();
+#endif //TERRAIN_CUT
 
 		PortalEditor(Ogitors::CBaseEditorFactory *factory);
 		virtual ~PortalEditor(void);	
 
 		Ogre::Entity* _createPlane();
 		void _createMaterial();
-		bool carveTerrainTunnel();
+		
 
 		//PROPERTIES
 		//OgitorsProperty<Ogre::String>* mZone; //name of the parent zone
@@ -106,7 +109,7 @@ namespace MZP
 	};
 
 
-
+#ifdef TERRAIN_CUT
 	class TerrainCut
 	{
 	public:
@@ -123,8 +126,11 @@ namespace MZP
 	public:
 		void create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height);
 		bool update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height);
+		bool TerrainCut::updateStencil(Ogre::Quaternion orientation,Ogre::Vector3 points[13]);
+		bool updateTunnel(Ogre::Quaternion orientation,Ogre::Vector3 points[13],Ogre::Real width,Ogre::Real height);
 
 	};
+#endif //TERRAIN_CUT
 }
 
 #endif
