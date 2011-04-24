@@ -30,56 +30,36 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef PROJECTFILESVIEW_HXX
-#define PROJECTFILESVIEW_HXX
+#ifndef GENERIC_TEXT_EDITOR_CODEC_HXX
+#define GENERIC_TEXT_EDITOR_CODEC_HXX
 
-//------------------------------------------------------------------------------
+#include "itexteditorcodec.hxx"
 
-#include <QtGui/QtGui>
+//----------------------------------------------------------------------------------------
 
-class OfsTreeWidget;
-
-//------------------------------------------------------------------------------
-
-class ProjectFilesViewWidget : public QWidget
+class GenericTextEditorCodec : public ITextEditorCodec
 {
-    Q_OBJECT;
 public:
-    explicit ProjectFilesViewWidget(QWidget *parent = 0);
-    virtual ~ProjectFilesViewWidget();
-    void prepareView();
-    void clearView();
+    GenericTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon);
 
-public Q_SLOTS:
-    void itemDoubleClicked(QTreeWidgetItem * item, int column);
-    void ofsWidgetCustomContextMenuRequested(const QPoint &pos);
-    void ofsWidgetBusyState(bool state);
-
-    void onCommandRefresh();
-    void onCommandExtract();
-    void onCommandDefrag();
-    void onCommandDelete();
-    void onCommandRename();
-    void onCommandReadOnly();
-    void onCommandHidden();
-
-protected:
-    OfsTreeWidget* ofsWidget;
-    QVBoxLayout*   vboxLayout;
-    QToolBar*      toolBar;
-    QMenu*         menuCommands; 
-    
-    QAction*       actCommandRefresh;
-    QAction*       actCommandExtract;
-    QAction*       actCommandDefrag;
-    QAction*       actCommandDelete;
-    QAction*       actCommandRename;
-    QAction*       actCommandReadOnly;
-    QAction*       actCommandHidden;
+    QString prepareForDisplay(QString docName, QString text);
+    bool    save();
+    void    contextMenu(QContextMenuEvent* event){};    
+    void    keyPressEvent(QKeyEvent *event){};
+    void    addHighlighter(GenericTextEditorDocument* document){};
+    void    addCompleter(GenericTextEditorDocument* document){};
 };
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 
-#endif // PROJECTFILESVIEW_HXX
+class GenericTextEditorCodecFactory : public ITextEditorCodecFactory
+{
+public:
+    ITextEditorCodec* create(QPlainTextEdit* textEdit, QString docName);
+};
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
+
+#endif
+
+//----------------------------------------------------------------------------------------

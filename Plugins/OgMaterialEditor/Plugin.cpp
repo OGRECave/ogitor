@@ -36,7 +36,7 @@
 #include "Plugin.h"
 #include "MaterialEditor.h"
 #include "TechniqueEditor.h"
-#include "materialtexteditor.hxx"
+#include "materialtexteditorcodec.hxx"
 #include "materialview.hxx"
 #include "materialeditorprefseditor.hxx"
 
@@ -46,8 +46,7 @@ using namespace Ogitors;
 bool dllStartPlugin(void *identifier, Ogre::String& name)
 {
     name = "Material Editor Plugin";
-	
-    mMaterialTextEditor = new MaterialTextEditor();
+
 	mMaterialViewWidget = new MaterialViewWidget();
     mMaterialPrefsEditor = new MaterialEditorPrefsEditor();
 
@@ -57,20 +56,25 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
     dockWidgetData.mIcon = ":/icons/material.svg";
     dockWidgetData.mParent = DOCK_RESOURCES;
 	   
-	Ogitors::TabWidgetData tabWidgetData;
-	tabWidgetData.mCaption = "Material Editor";
-    tabWidgetData.mHandle = mMaterialTextEditor;
-
     Ogitors::PreferencesEditorData preferencesEditorData;
     preferencesEditorData.mCaption = "Material Editor";
     preferencesEditorData.mIcon = ":/icons/material.svg";
     preferencesEditorData.mSectionName = "materialEditor";
     preferencesEditorData.mHandle = mMaterialPrefsEditor;
 
+    MaterialTextEditorCodecFactory* matCodecFactory = new MaterialTextEditorCodecFactory();
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("material",     matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("cg",           matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("hlsl",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("glsl",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("frag",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("vert",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("program",      matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("compositor",   matCodecFactory);
+
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CMaterialEditorFactory());
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CTechniqueEditorFactory());
 	OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, dockWidgetData);
-	OgitorsRoot::getSingletonPtr()->RegisterTabWidget(identifier, tabWidgetData);
     OgitorsRoot::getSingletonPtr()->RegisterPreferenceEditor(identifier, preferencesEditorData);
 
     return true;
@@ -84,9 +88,6 @@ bool dllGetPluginName(Ogre::String& name)
 //----------------------------------------------------------------------------
 bool dllStopPlugin(void)
 {
-    //delete mMaterialTextEditor;
-    //delete mMaterialViewWidget;
-    //delete mMaterialPrefsEditor;
     return true;
 }
 //----------------------------------------------------------------------------

@@ -107,35 +107,6 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     toolBar->addSeparator();
     toolBar->addAction(actCommandExtract);
     toolBar->addAction(actCommandDefrag);
-
-    // Generic text editor extensions
-    mAllowedGenericExtensions.append("txt");
-    mAllowedGenericExtensions.append("html");
-    mAllowedGenericExtensions.append("htm");
-    mAllowedGenericExtensions.append("scene");
-    mAllowedGenericExtensions.append("ogscene");
-    mAllowedGenericExtensions.append("ini");
-    mAllowedGenericExtensions.append("xml");
-    mAllowedGenericExtensions.append("log");
-    mAllowedGenericExtensions.append("cfg");
-
-    // Material editor extensions
-    mAllowedMaterialExtensions.append("cg");
-    mAllowedMaterialExtensions.append("hlsl");
-    mAllowedMaterialExtensions.append("glsl");
-    mAllowedMaterialExtensions.append("frag");
-    mAllowedMaterialExtensions.append("vert");
-    mAllowedMaterialExtensions.append("material");
-    mAllowedMaterialExtensions.append("program");
-    mAllowedMaterialExtensions.append("compositor");
-
-    // Script editor extensions
-    mAllowedScriptExtensions.append("as");
-
-    // Combine into one joined list
-    mAllowedCombinedExtensions.append(mAllowedGenericExtensions);
-    mAllowedCombinedExtensions.append(mAllowedMaterialExtensions);
-    mAllowedCombinedExtensions.append(mAllowedScriptExtensions);
 }
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::~ProjectFilesViewWidget()
@@ -190,27 +161,9 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int colum
 
         if(!path.endsWith("/"))
         {
-            int pos = path.lastIndexOf(".");
-            QString extension = path.right(path.size() - pos - 1);
-
-            if(mAllowedCombinedExtensions.indexOf(extension) != -1) 
-            {
-                path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
+            path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
                 
-                if(mAllowedGenericExtensions.indexOf(extension) != -1) 
-                {
-                    mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
-                    mOgitorMainWindow->mEditorTab->setCurrentIndex(mOgitorMainWindow->mEditorTab->indexOf(mOgitorMainWindow->getGenericTextEditor()));
-                }
-                else if(mAllowedMaterialExtensions.indexOf(extension) != -1)
-                {
-                    // ToDo: Call the material editor plugin if available
-                }
-                else if(mAllowedScriptExtensions.indexOf(extension) != -1)
-                {
-                    // ToDo: Call the script editor plugin if available
-                }
-            }
+            mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
         }
     }
 }

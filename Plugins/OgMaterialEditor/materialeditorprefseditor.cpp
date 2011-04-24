@@ -73,23 +73,24 @@ void* MaterialEditorPrefsEditor::getPreferencesWidget()
 //----------------------------------------------------------------------------------------
 bool MaterialEditorPrefsEditor::applyPreferences()
 {
-    if(mMaterialTextEditor->findChildren<QPlainTextEdit*>().size() != 0)
-    {
-        // Change font size
-        QFont font = static_cast<QPlainTextEdit*>(mMaterialTextEditor->findChildren<QPlainTextEdit*>().at(0))->font();
-        font.setPointSize(fontSizeSpinBox->value());
-        foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
-            pEdit->setFont(font);
+    //if(mMaterialTextEditor->findChildren<QPlainTextEdit*>().size() != 0)
+    //{
+    //    // Change font size
+    //    QFont font = static_cast<QPlainTextEdit*>(mMaterialTextEditor->findChildren<QPlainTextEdit*>().at(0))->font();
+    //    font.setPointSize(fontSizeSpinBox->value());
+    //    foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
+    //        pEdit->setFont(font);
 
-        // Change line wrapping
-        if(lineBreakCheckBox->isChecked())
-            foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
-                pEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
-        else
-            foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
-                pEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    }
+    //    // Change line wrapping
+    //    if(lineBreakCheckBox->isChecked())
+    //        foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
+    //            pEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+    //    else
+    //        foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
+    //            pEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+    //}
 
+    //return true;
     return true;
 }
 //----------------------------------------------------------------------------------------

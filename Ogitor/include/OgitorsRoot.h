@@ -30,7 +30,8 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#pragma once
+#ifndef OGITORS_ROOT_H
+#define OGITORS_ROOT_H
 
 #include "OgitorsSingleton.h"
 
@@ -1192,3 +1193,5 @@ namespace Ogitors
         void resourceStreamOpened(const Ogre::String &name, const Ogre::String &group, Ogre::Resource *resource, Ogre::DataStreamPtr& dataStream){};
     };
 }
+
+#endif
