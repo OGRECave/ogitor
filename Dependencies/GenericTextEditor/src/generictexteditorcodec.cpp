@@ -30,56 +30,26 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef PROJECTFILESVIEW_HXX
-#define PROJECTFILESVIEW_HXX
+#include "generictexteditorcodec.hxx"
 
-//------------------------------------------------------------------------------
-
-#include <QtGui/QtGui>
-
-class OfsTreeWidget;
-
-//------------------------------------------------------------------------------
-
-class ProjectFilesViewWidget : public QWidget
+//-----------------------------------------------------------------------------------------
+GenericTextEditorCodec::GenericTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon) : 
+ITextEditorCodec(textEdit, docName, documentIcon)
 {
-    Q_OBJECT;
-public:
-    explicit ProjectFilesViewWidget(QWidget *parent = 0);
-    virtual ~ProjectFilesViewWidget();
-    void prepareView();
-    void clearView();
-
-public Q_SLOTS:
-    void itemDoubleClicked(QTreeWidgetItem * item, int column);
-    void ofsWidgetCustomContextMenuRequested(const QPoint &pos);
-    void ofsWidgetBusyState(bool state);
-
-    void onCommandRefresh();
-    void onCommandExtract();
-    void onCommandDefrag();
-    void onCommandDelete();
-    void onCommandRename();
-    void onCommandReadOnly();
-    void onCommandHidden();
-
-protected:
-    OfsTreeWidget* ofsWidget;
-    QVBoxLayout*   vboxLayout;
-    QToolBar*      toolBar;
-    QMenu*         menuCommands; 
-    
-    QAction*       actCommandRefresh;
-    QAction*       actCommandExtract;
-    QAction*       actCommandDefrag;
-    QAction*       actCommandDelete;
-    QAction*       actCommandRename;
-    QAction*       actCommandReadOnly;
-    QAction*       actCommandHidden;
-};
-
-//------------------------------------------------------------------------------
-
-#endif // PROJECTFILESVIEW_HXX
-
-//------------------------------------------------------------------------------
+}
+//-----------------------------------------------------------------------------------------
+QString GenericTextEditorCodec::prepareForDisplay(QString docName, QString text)
+{
+    return text;
+}
+//-----------------------------------------------------------------------------------------
+bool GenericTextEditorCodec::save()
+{
+    return true;
+}
+//-----------------------------------------------------------------------------------------
+ITextEditorCodec* GenericTextEditorCodecFactory::create(QPlainTextEdit* textEdit, QString docName)
+{
+    return new GenericTextEditorCodec(textEdit, ":/icons/files.svg", docName);
+}
+//-----------------------------------------------------------------------------------------

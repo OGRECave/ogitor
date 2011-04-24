@@ -30,56 +30,47 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef PROJECTFILESVIEW_HXX
-#define PROJECTFILESVIEW_HXX
+#ifndef MATERIAL_TEXT_EDITOR_CODEC_HXX
+#define MATERIAL_TEXT_EDITOR_CODEC_HXX
 
-//------------------------------------------------------------------------------
+#include "itexteditorcodec.hxx"
+#include "generictexteditor.hxx"
 
-#include <QtGui/QtGui>
+#include <OgreString.h>
+#include <OgreScriptCompiler.h>
 
-class OfsTreeWidget;
+//----------------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
-class ProjectFilesViewWidget : public QWidget
+class MaterialTextEditorCodec : public ITextEditorCodec, Ogre::ScriptCompilerListener 
 {
-    Q_OBJECT;
 public:
-    explicit ProjectFilesViewWidget(QWidget *parent = 0);
-    virtual ~ProjectFilesViewWidget();
-    void prepareView();
-    void clearView();
+    MaterialTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon);
 
-public Q_SLOTS:
-    void itemDoubleClicked(QTreeWidgetItem * item, int column);
-    void ofsWidgetCustomContextMenuRequested(const QPoint &pos);
-    void ofsWidgetBusyState(bool state);
+    QString prepareForDisplay(QString docName, QString text);
+    bool    save();
+    void    contextMenu(QContextMenuEvent* event);
+    void    keyPressEvent(QKeyEvent *event);
+    void    addHighlighter(GenericTextEditorDocument* document);
+    void    addCompleter(GenericTextEditorDocument* document){};
 
-    void onCommandRefresh();
-    void onCommandExtract();
-    void onCommandDefrag();
-    void onCommandDelete();
-    void onCommandRename();
-    void onCommandReadOnly();
-    void onCommandHidden();
+    static  QString getMaterialText(const Ogre::String& input, const Ogre::String& find);
 
-protected:
-    OfsTreeWidget* ofsWidget;
-    QVBoxLayout*   vboxLayout;
-    QToolBar*      toolBar;
-    QMenu*         menuCommands; 
-    
-    QAction*       actCommandRefresh;
-    QAction*       actCommandExtract;
-    QAction*       actCommandDefrag;
-    QAction*       actCommandDelete;
-    QAction*       actCommandRename;
-    QAction*       actCommandReadOnly;
-    QAction*       actCommandHidden;
+private:
+    void    handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const QString &file, int line, const QString &msg);
+    bool    mScriptError;
+    QString mMaterialName;
 };
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 
-#endif // PROJECTFILESVIEW_HXX
+class MaterialTextEditorCodecFactory : public ITextEditorCodecFactory
+{
+public:
+    ITextEditorCodec* create(QPlainTextEdit* textEdit, QString docName);
+};
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
+
+#endif
+
+//----------------------------------------------------------------------------------------

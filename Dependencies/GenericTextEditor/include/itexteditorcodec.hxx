@@ -30,56 +30,55 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef PROJECTFILESVIEW_HXX
-#define PROJECTFILESVIEW_HXX
+#ifndef I_TEXT_EDITOR_CODEC_HXX
+#define I_TEXT_EDITOR_CODEC_HXX
 
-//------------------------------------------------------------------------------
+#include <QtCore/QString>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QPlainTextEdit>
 
-#include <QtGui/QtGui>
+//----------------------------------------------------------------------------------------
 
-class OfsTreeWidget;
+class GenericTextEditorDocument;
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 
-class ProjectFilesViewWidget : public QWidget
+class ITextEditorCodec
 {
-    Q_OBJECT;
 public:
-    explicit ProjectFilesViewWidget(QWidget *parent = 0);
-    virtual ~ProjectFilesViewWidget();
-    void prepareView();
-    void clearView();
+    ITextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon)
+    {
+        mTextEdit           = textEdit;
+        mDocName            = docName;
+        mDocumentIcon       = documentIcon;
+    }
 
-public Q_SLOTS:
-    void itemDoubleClicked(QTreeWidgetItem * item, int column);
-    void ofsWidgetCustomContextMenuRequested(const QPoint &pos);
-    void ofsWidgetBusyState(bool state);
+    virtual QString prepareForDisplay(QString docName, QString text) = 0;
+    virtual bool    save() = 0;
+    virtual void    contextMenu(QContextMenuEvent* event) = 0;
+    virtual void    keyPressEvent(QKeyEvent* event) = 0;
+    virtual void    addHighlighter(GenericTextEditorDocument* document) = 0;
+    virtual void    addCompleter(GenericTextEditorDocument* document) = 0;
 
-    void onCommandRefresh();
-    void onCommandExtract();
-    void onCommandDefrag();
-    void onCommandDelete();
-    void onCommandRename();
-    void onCommandReadOnly();
-    void onCommandHidden();
+    QString         getDocumentIcon() {return mDocumentIcon;}
 
 protected:
-    OfsTreeWidget* ofsWidget;
-    QVBoxLayout*   vboxLayout;
-    QToolBar*      toolBar;
-    QMenu*         menuCommands; 
-    
-    QAction*       actCommandRefresh;
-    QAction*       actCommandExtract;
-    QAction*       actCommandDefrag;
-    QAction*       actCommandDelete;
-    QAction*       actCommandRename;
-    QAction*       actCommandReadOnly;
-    QAction*       actCommandHidden;
+    QPlainTextEdit* mTextEdit;
+    QString         mDocName;
+    QString         mDocumentIcon;
 };
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 
-#endif // PROJECTFILESVIEW_HXX
+class ITextEditorCodecFactory
+{
+public:
+    virtual ITextEditorCodec* create(QPlainTextEdit* textEdit, QString docName) = 0;
+};
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
+
+#endif
+
+//----------------------------------------------------------------------------------------

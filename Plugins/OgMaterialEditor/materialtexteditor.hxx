@@ -29,76 +29,74 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifndef MATERIAL_TEXT_EDITOR_HXX
-#define MATERIAL_TEXT_EDITOR_HXX
+//#ifndef MATERIAL_TEXT_EDITOR_HXX
+//#define MATERIAL_TEXT_EDITOR_HXX
+//
+//#include <QtCore/QFile>
+//#include <QtCore/QTextStream>
+//
+//#include <QtGui/QPlainTextEdit>
+//#include <QtGui/QWidget>
+//#include <QtGui/QPainter>
+//#include <QtGui/QCompleter>
+//#include <QtGui/QStringListModel>
+//#include <QtGui/QScrollBar>
+//#include <QtGui/QMdiArea>
+//#include <QtGui/QMdiSubWindow>
+//
+//#include <OgreScriptCompiler.h>
+//
+//#include <generictexteditor.hxx>
+//#include "materialhighlighter.hxx"
 
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
+//class MaterialTextEditorDocument;
+//
+////-----------------------------------------------------------------------------------------
+//
+//class MaterialTextEditor : public GenericTextEditor
+//{
+//    Q_OBJECT
+//
+//public:
+//    MaterialTextEditor(QWidget *parent = 0);
+//
+//    void    displayMaterial(QString materialName, QString resourceGroup, QString materialFileName);
+//
+//};
+//
+////-----------------------------------------------------------------------------------------
+//
+//class MaterialTextEditorDocument : public GenericTextEditorDocument, Ogre::ScriptCompilerListener 
+//{
+//    Q_OBJECT
+//
+//public:
+//    MaterialTextEditorDocument(QWidget *parent = 0);
+//
+//    bool saveFile();
+//    void displayMaterial(QString materialName, QString resourceGroup, QString materialFilePath);
+//
+//protected:
+//    void keyPressEvent(QKeyEvent *event);
+//    void contextMenuEvent(QContextMenuEvent *event);
+//    void mousePressEvent(QMouseEvent *event);
+//
+//private:
+//    void handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const QString &file, int line, const QString &msg);
+//    
+//private:
+//    QString            mLastMaterialSource;
+//    QString            mResourceGroup;
+//    MaterialHighlighter*    mHighlighter;
+//
+//    bool                    mTextModified;
+//    bool                    mScriptError;
+//};
+//
+////-----------------------------------------------------------------------------------------
+//
+//extern MaterialTextEditor *mMaterialTextEditor;
 
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QCompleter>
-#include <QtGui/QStringListModel>
-#include <QtGui/QScrollBar>
-#include <QtGui/QMdiArea>
-#include <QtGui/QMdiSubWindow>
-
-#include <OgreScriptCompiler.h>
-
-#include <generictexteditor.hxx>
-#include "materialhighlighter.hxx"
-
-class MaterialTextEditorDocument;
-
-//-----------------------------------------------------------------------------------------
-
-class MaterialTextEditor : public GenericTextEditor
-{
-    Q_OBJECT
-
-public:
-    MaterialTextEditor(QWidget *parent = 0);
-
-    void    displayMaterial(QString materialName, QString resourceGroup, QString materialFileName);
-
-private slots:
-    void    tabChanged(int index);
-};
-
-//-----------------------------------------------------------------------------------------
-
-class MaterialTextEditorDocument : public GenericTextEditorDocument, Ogre::ScriptCompilerListener 
-{
-    Q_OBJECT
-
-public:
-    MaterialTextEditorDocument(QWidget *parent = 0);
-
-    bool saveFile();
-    void displayMaterial(QString materialName, QString resourceGroup, QString materialFilePath);
-
-protected:
-    void keyPressEvent(QKeyEvent *event);
-    void contextMenuEvent(QContextMenuEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-
-private:
-    void handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const QString &file, int line, const QString &msg);
-    
-private:
-    QString            mLastMaterialSource;
-    QString            mResourceGroup;
-    MaterialHighlighter*    mHighlighter;
-
-    bool                    mTextModified;
-    bool                    mScriptError;
-};
-
-//-----------------------------------------------------------------------------------------
-
-extern MaterialTextEditor *mMaterialTextEditor;
-
-#endif
+//#endif
 
 //-----------------------------------------------------------------------------------------
