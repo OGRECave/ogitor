@@ -34,7 +34,7 @@ ModularZoneFactory::ModularZoneFactory(OgitorsView *view) : CNodeEditorFactory(v
 															mZoneListWidget(0)
 {
     mTypeName = "Modular Zone Object";
-    mEditorType = ETYPE_CUSTOM_MANAGER ;//was ETYPE_MOVABLE. this should make saving work
+    mEditorType = ETYPE_NODE;
     mAddToObjectList = false;//use the dragndrop widget
     mRequirePlacement = true;
     mIcon = "../Plugins/Icons/zone.svg";//"Icons/zone.svg";

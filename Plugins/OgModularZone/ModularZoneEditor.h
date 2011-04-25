@@ -41,7 +41,7 @@ namespace MZP
     {
         friend class ModularZoneFactory;
     public:
-		virtual bool isNodeType() {return false;};//Prevent CNodeEditor descendants to behave as nodes
+		virtual bool isNodeType() {return true;};
         /** @copydoc CBaseEditor::load() */
         virtual bool      load(bool async = true);
         /** @copydoc CBaseEditor::unLoad() */
