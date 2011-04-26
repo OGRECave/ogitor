@@ -33,6 +33,8 @@
 #include <QtGui/QtGui>
 #include "generictexteditor.hxx"
 
+#include "Ogitors.h"
+
 //-----------------------------------------------------------------------------------------
 
 template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::ms_Singleton = 0;
@@ -481,8 +483,8 @@ void GenericTextEditorDocument::documentWasModified()
 {
     setTextModified(true);
     setWindowModified(isTextModified());
-    // TODO!!!
-    //OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
+
+    Ogitors::OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::releaseFile()
