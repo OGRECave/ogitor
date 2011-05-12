@@ -27,6 +27,7 @@
 #include "PortalOutlineRenderable.h"
 
 using namespace Ogitors;
+//#define TERRAIN_CUT
 
 namespace MZP
 {
@@ -128,7 +129,7 @@ namespace MZP
 		bool update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height);
 		bool TerrainCut::updateStencil(Ogre::Quaternion orientation,Ogre::Vector3 points[13]);
 		bool updateTunnel(Ogre::Quaternion orientation,Ogre::Vector3 points[13],Ogre::Real width,Ogre::Real height);
-
+		void cleanup(void);
 	};
 #endif //TERRAIN_CUT
 }
