@@ -57,9 +57,7 @@ PortalEditor::PortalEditor(Ogitors::CBaseEditorFactory *factory) : Ogitors::CNod
 //----------------------------------------------------------------------------------------
 PortalEditor::~PortalEditor(void)
 {
-#ifdef TERRAIN_CUT
-	delete mTerrainCut;
-#endif
+
 }
 //----------------------------------------------------------------------------------------
 void PortalEditor::showBoundingBox(bool bShow) 
@@ -147,6 +145,14 @@ bool PortalEditor::unLoad()
 		OGRE_DELETE mPortalOutline;
 		mPortalOutline = 0;
 	}
+
+	#ifdef TERRAIN_CUT
+	if(mTerrainCut)
+	{
+		mTerrainCut->cleanup();
+		delete mTerrainCut;
+	}
+	#endif
 
   
     return Ogitors::CNodeEditor::unLoad();
@@ -254,7 +260,7 @@ void PortalEditor::onObjectContextMenu(int menuresult)
 			if(menuresult == 0)//Carve tunnel thru terrain
 			{
 				carveTerrainTunnel();
-				QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "This doesn't do anything yet...",  QMessageBox::Ok);
+				
 			}
 		}
 #endif //TERRAIN_CUT
@@ -538,8 +544,9 @@ TiXmlElement* PortalEditor::exportDotScene(TiXmlElement *pParent)
 		//export terrain tunnel mesh and stencil cut
 		PROJECTOPTIONS* options = OgitorsRoot::getSingletonPtr()->GetProjectOptions();
 		
-		Ogre::String tunnelname = getName()+"Tunnel.mesh";
-		Ogre::String stencilname = getName()+"Stencil.mesh";
+		
+		Ogre::String tunnelname = mTerrainCut->mTunnel->getName()+".mesh";
+		Ogre::String stencilname = mTerrainCut->mStencil->getName()+".mesh";
 
 		Ogre::MeshPtr tunnel = mTerrainCut->mTunnel->convertToMesh(tunnelname);
 		Ogre::MeshPtr stencil = mTerrainCut->mStencil->convertToMesh(stencilname);
@@ -643,7 +650,18 @@ bool PortalEditor::carveTerrainTunnel()
 	return true;
 }
 //----------------------------------------------------------------------------------------
-
+void TerrainCut::cleanup(void)
+{
+	if(mTunnel)
+	{
+		OgitorsRoot::getSingletonPtr()->GetSceneManager()->destroyManualObject(mTunnel);
+	}
+	if(mStencil)
+	{
+		OgitorsRoot::getSingletonPtr()->GetSceneManager()->destroyManualObject(mStencil);
+	}
+}
+//----------------------------------------------------------------------------------------
 void TerrainCut::create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre::Real width,Ogre::Real height)
 {
 	//create mesh for stencil cut:
@@ -653,10 +671,16 @@ void TerrainCut::create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaterni
 	if(result.second)
 	{  
 		Ogre::MaterialPtr stencilMaterial = result.first;
-		stencilMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+		stencilMaterial->getTechnique(0)->getPass(0)->createTextureUnitState();
+		stencilMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setColourOperationEx( Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT, Ogre::ColourValue( 0, 0, 0, 1) );
+		
+		stencilMaterial->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SceneBlendType::SBT_TRANSPARENT_COLOUR);
+		stencilMaterial->getTechnique(0)->getPass(0)->setAlphaRejectSettings(Ogre::CompareFunction::CMPF_GREATER_EQUAL, 1);
+		stencilMaterial->getTechnique(0)->getPass(0)->setDepthBias(3.5f, 3.5f);
 		Ogre::MaterialSerializer matexp;
 		matexp.exportMaterial(stencilMaterial,options->ProjectDir+"/Zones/MZP_StencilMat.material");
 	}
+
 	mStencil = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createManualObject(name + "Stencil");
 	mStencil->begin("MZP_StencilMat", Ogre::RenderOperation::OT_TRIANGLE_LIST);
 	for(int p = 0;p<9;++p)
@@ -670,7 +694,7 @@ void TerrainCut::create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaterni
 	mStencil->quad(8,5,4,3);
 	mStencil->quad(7,6,5,8);
 	mStencil->end();
-
+	
 	mTunnel = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createManualObject(name + "Tunnel");
 
 	Ogre::String tunnelMat = "MZP_TunnelMat";
@@ -697,6 +721,7 @@ void TerrainCut::create(Ogre::String name, Ogre::Vector3 position,Ogre::Quaterni
 		mTunnel->end();
 	}
 
+	mTunnel->setRenderQueueGroup(Ogre::RENDER_QUEUE_WORLD_GEOMETRY_1);
 	update(position,orientation,width,height);
 }
 //----------------------------------------------------------------------------------------
@@ -772,7 +797,8 @@ bool TerrainCut::updateStencil(Ogre::Quaternion orientation,Ogre::Vector3 points
 		Ogre::Vector3 point;
 		if(!terrain->hitTest(ray,&points[i]/*&point*/))
 		{return false;}//if no hit, abort
-		//points[i] = point;
+		points[i].y+=0.1;	//TODO: replace this epsilon value with 
+							//one moved along the ray
 		mStencil->position(points[i]);
 		mStencil->textureCoord(texture[i].x,texture[i].y);
 	}

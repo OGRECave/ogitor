@@ -144,6 +144,7 @@ bool ModularZoneEditor::load(bool async)
 
 		mZoneMesh->setQueryFlags(QUERYFLAG_MOVABLE);
         mZoneMesh->setCastShadows(false);
+		mZoneMesh->setRenderQueueGroup(Ogre::RENDER_QUEUE_WORLD_GEOMETRY_1);
 
 
     }
