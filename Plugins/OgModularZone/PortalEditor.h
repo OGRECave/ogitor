@@ -86,7 +86,8 @@ namespace MZP
 		bool mFreeMove;//if true, prevents snap-to  during design mode
 #ifdef TERRAIN_CUT		
 		TerrainCut* mTerrainCut;
-		bool carveTerrainTunnel();
+		bool carveTerrainTunnel(void);
+	public:		void updateTerrainCut(void);
 #endif //TERRAIN_CUT
 
 		PortalEditor(Ogitors::CBaseEditorFactory *factory);
