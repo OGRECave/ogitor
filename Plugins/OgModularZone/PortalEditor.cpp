@@ -27,7 +27,8 @@
 #include "tinyxml.h"
 #include "TerrainEditor.h"
 #include "ofs.h"
-//#include "OgreResourceGroupManager.h"
+//#include "OgreArchiveManager.h"
+
 
 using namespace Ogitors;
 using namespace MZP;
@@ -124,7 +125,7 @@ bool PortalEditor::unLoad()
     if(!mLoaded->get())
         return true;
 
-	//TODO: unload portal stuff
+	//unload portal stuff
 	if(mConnected)
 	{
 		//we have a connection - we need to tidy up
@@ -187,7 +188,15 @@ bool PortalEditor::getObjectContextMenu(UTFStringVector &menuitems)
 #ifdef TERRAIN_CUT
 		else
 		{
-			menuitems.push_back(OTR("Carve Terrain"));
+			if(!mTerrainCut)
+			{
+				menuitems.push_back(OTR("Cut Terrain"));
+			}
+			else
+			{
+				menuitems.push_back(OTR("Refresh Terrain Cut"));
+				menuitems.push_back(OTR("Remove Terrain Cut"));
+			}
 		}
 #endif TERRAIN_CUT
 	}
@@ -257,10 +266,18 @@ void PortalEditor::onObjectContextMenu(int menuresult)
 #ifdef TERRAIN_CUT
 		else
 		{
-			if(menuresult == 0)//Carve tunnel thru terrain
+			if(menuresult == 0)
+			{   
+				//Carve tunnel thru terrain 
+				//(or update an existing tunnel if zone has been moved etc)
+				carveTerrainTunnel();				
+			}
+			else if(menuresult == 1)
 			{
-				carveTerrainTunnel();
-				
+				//remove the terrain cut
+				mTerrainCut->cleanup();
+				delete mTerrainCut;
+				mTerrainCut = 0;
 			}
 		}
 #endif //TERRAIN_CUT
@@ -289,6 +306,7 @@ void PortalEditor::link(PortalEditor* dest)
 			mPortalOutline->setPortalState(PortalOutlineRenderable::PS_CONNECTED);
 	}
 }
+//----------------------------------------------------------------------------------------
 void PortalEditor::connect(PortalEditor* dest)
 {
 	mConnected = dest;
@@ -401,10 +419,7 @@ Ogre::Entity* PortalEditor::_createPlane()
     mesh = Ogre::MeshManager::getSingletonPtr()->createPlane(mName->get(),PROJECT_RESOURCE_GROUP,plane,mWidth->get(),mHeight->get());
     mPlaneHandle = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createEntity(mName->get(), mName->get());
     mPlaneHandle->setQueryFlags(QUERYFLAG_MOVABLE);
-    
-	
-
-
+ 
 	mPlaneHandle->setMaterialName("MZP_Portal_Material");
 
     mPlaneHandle->setCastShadows(false);
@@ -426,9 +441,7 @@ void PortalEditor::_createMaterial()
 	if(result.second)
 	{
 		material = result.first;
-		material->getTechnique(0)->getPass(0)->setPolygonMode(Ogre::PM_POINTS);
-		//FOR SOME REASON TRANSPARENCY DOESN'T WORK, so I set polygon mode to points
-	
+		material->getTechnique(0)->getPass(0)->setPolygonMode(Ogre::PM_POINTS);		
 	}
 
 }
@@ -552,14 +565,15 @@ TiXmlElement* PortalEditor::exportDotScene(TiXmlElement *pParent)
 		Ogre::MeshPtr stencil = mTerrainCut->mStencil->convertToMesh(stencilname);
 
 		Ogre::MeshSerializer meshexp;
-		meshexp.exportMesh(tunnel.get(),options->ProjectDir+"/Zones/"+tunnelname);
-		meshexp.exportMesh(stencil.get(),options->ProjectDir+"/Zones/"+stencilname);
-		
+		meshexp.exportMesh(tunnel.get(),options->ProjectDir+"Zones/"+tunnelname);
+		meshexp.exportMesh(stencil.get(),options->ProjectDir+"Zones/"+stencilname);
 
 		TiXmlElement *pTerrainCut = pNode->InsertEndChild(TiXmlElement("terrain_cut"))->ToElement();
 		
 		pTerrainCut->SetAttribute("tunnel", tunnelname.c_str());
 		pTerrainCut->SetAttribute("stencil",stencilname.c_str());
+
+
 
 	}
 #endif //TERRAIN_CUT
@@ -614,17 +628,21 @@ bool PortalEditor::update(float timePassed)
 
 //----------------------------------------------------------------------------------------
 #ifdef TERRAIN_CUT
-bool PortalEditor::carveTerrainTunnel()
+void PortalEditor::updateTerrainCut(void)
+{
+	if(this->mTerrainCut)
+	{
+		mTerrainCut->update(this->getDerivedPosition(),this->getDerivedOrientation(),mWidth->get(),mHeight->get());
+	}
+}
+
+bool PortalEditor::carveTerrainTunnel(void)
 {
 	//Make sure the Zones directory exists, and is part of project
 	//so dotScene exporter will handle this.
 	//(PortalEditor::exportDotScene needs to know where to put the 
 	//generated meshes)
-	OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
-	if(ofsFile->createDirectory("Zones")!=OFS::OFS_OK)return false;
-	
-	PROJECTOPTIONS* options = OgitorsRoot::getSingletonPtr()->GetProjectOptions();
-	options->ResourceDirectories.push_back("/Zones/");
+	if(!createMZPDirectory())return false;
 
 	try
 	{
@@ -767,6 +785,34 @@ bool TerrainCut::update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre
 	
 	updateStencil(orientation,points);
 	updateTunnel(orientation,points,width,height);
+
+	Ogre::String tunnelname = mTunnel->getName()+".mesh";
+	Ogre::String stencilname = mStencil->getName()+".mesh";
+
+	Ogre::MeshPtr tunnel = mTunnel->convertToMesh(tunnelname);
+	Ogre::MeshPtr stencil = mStencil->convertToMesh(stencilname);
+	
+	//add Zones directory if not present
+	OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+	ofsFile->createDirectory("Zones");
+	
+	Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+	Ogre::String value = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName() + "::/Zones/";
+	mngr->addResourceLocation(value,"Ofs","MESH_EXPORT_TEST");
+	mngr->initialiseResourceGroup("MESH_EXPORT_TEST");
+	Ogre::DataStreamPtr meshFileStream = 
+		Ogre::Root::getSingletonPtr()->createFileStream(tunnelname,"MESH_EXPORT_TEST");
+
+
+	Ogre::MeshSerializer meshSerialiser;
+	meshSerialiser.exportMesh(tunnel.get(),meshFileStream);
+	meshFileStream->close();//important, close stream
+	meshFileStream = 
+		Ogre::Root::getSingletonPtr()->createFileStream(stencilname,"MESH_EXPORT_TEST");
+
+	meshSerialiser.exportMesh(stencil.get(),meshFileStream);
+	meshFileStream->close();//important, close stream
+
 	return true;
 }
 //----------------------------------------------------------------------------------------

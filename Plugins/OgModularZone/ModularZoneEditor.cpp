@@ -563,8 +563,8 @@ void ModularZoneEditor::exportZone(void)
 			OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 			OFS::OFSHANDLE OfsHandle;
 			//add Zones directory if not present
-			ofsFile->createDirectory("Zones");
-
+			createMZPDirectory();//TODO: handle fail
+		
 			//check the file is small enough for buffer
 			//(probably overkill for these files, but better safe than sorry)
 			unsigned int file_size = outfile.str().length();
@@ -965,6 +965,17 @@ Ogre::Vector3 getCentroid(std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> > p
 	return (1/TotalArea)*TotalCentroid;
 }
 
-
+bool createMZPDirectory(void)
+{
+	OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+	if(ofsFile->createDirectory("Zones")!=OFS::OFS_OK)return false;
+	
+	//add Zones directory to project if not already
+	PROJECTOPTIONS* options = OgitorsRoot::getSingletonPtr()->GetProjectOptions();
+	Ogre::StringVector::iterator i = 
+	std::find(options->ResourceDirectories.begin(),options->ResourceDirectories.end(),"/Zones/");
+	if(i == options->ResourceDirectories.end())options->ResourceDirectories.push_back("/Zones/");
+	return true;
+}
 
 }//MZP namespace

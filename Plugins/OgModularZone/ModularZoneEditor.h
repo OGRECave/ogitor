@@ -128,7 +128,10 @@ namespace MZP
 	};
 	//calc centre of polygon
 	Ogre::Vector3 getCentroid(std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> > polygon);
-	
+
+	//set up MZP directory in project file
+	bool createMZPDirectory(void);
+
 }
 
 #endif
