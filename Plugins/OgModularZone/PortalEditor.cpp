@@ -343,24 +343,29 @@ bool PortalEditor::connectNearPortals(bool bAllowMove)
 		unsigned int id2 = (this->getParent()->getObjectID());
 		//if((*itr).second->getParent()->getObjectID()!=this->getParent()->getObjectID())
 		if(id1!=id2)
-		{
-			//check portal proximity
-			Ogre::Real d = that->getDerivedPosition().distance(this->getDerivedPosition());
-					
-			if(d<1.0f) 
+		{	
+			//check the portals match
+			if(that->getHeight()==this->getHeight()&&that->getWidth()==this->getWidth())
 			{
-				
-				if(this->snapTpPortal(that,bAllowMove))
-				{
-					//join the portals,set lock
-					this->connect(that);
-					that->connect(this);
-					return true;
 			
+				//check portal proximity
+				Ogre::Real d = that->getDerivedPosition().distance(this->getDerivedPosition());
+					
+				if(d<1.0f) 
+				{
+				
+					if(this->snapTpPortal(that,bAllowMove))
+					{
+						//join the portals,set lock
+						this->connect(that);
+						that->connect(this);
+						return true;
+			
+					}
+
 				}
-
 			}
-
+			//TODO: else{/*check h vs w and rotate 90deg if matches*/}
 		}
 	}
 	if(mPortalOutline)
