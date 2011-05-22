@@ -71,6 +71,8 @@ namespace MZP
 		bool snapTpPortal(PortalEditor* dest,bool);
 		void connect(PortalEditor*);//sets the destination of this portal
 		void link(PortalEditor*);//links/unlinks this portal
+		Ogre::Real getWidth(void){return mWidth->get();}
+		Ogre::Real getHeight(void){return mHeight->get();}
 
 		static const Ogre::Real DEFAULT_WIDTH;
 		static const Ogre::Real DEFAULT_HEIGHT;
@@ -84,11 +86,6 @@ namespace MZP
 		PortalEditor* mConnected;//pointer to the destination portal
 		bool mLinked; //true when portal is linked to destination portal
 		bool mFreeMove;//if true, prevents snap-to  during design mode
-#ifdef TERRAIN_CUT		
-		TerrainCut* mTerrainCut;
-		bool carveTerrainTunnel(void);
-	public:		void updateTerrainCut(void);
-#endif //TERRAIN_CUT
 
 		PortalEditor(Ogitors::CBaseEditorFactory *factory);
 		virtual ~PortalEditor(void);	
@@ -108,6 +105,13 @@ namespace MZP
 		bool _setDestination(OgitorsPropertyBase* property, const Ogre::String& value);
 		bool _setWidth(OgitorsPropertyBase* property, const Ogre::Real& value);
 		bool _setHeight(OgitorsPropertyBase* property, const Ogre::Real& value);
+#ifdef TERRAIN_CUT		
+		TerrainCut* mTerrainCut;
+		bool carveTerrainTunnel(void);
+	public:		void updateTerrainCut(void);
+#endif //TERRAIN_CUT
+
+
 	};
 
 
