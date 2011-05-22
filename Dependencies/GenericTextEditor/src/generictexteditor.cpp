@@ -33,12 +33,17 @@
 #include <QtGui/QtGui>
 #include "generictexteditor.hxx"
 
-//-----------------------------------------------------------------------------------------
-GenericTextEditor::GenericTextEditor(QString editorName, QString documentIcon, QWidget *parent) : QMdiArea(parent)
-{
-    mDocumentIcon = documentIcon;
-    mAllowDoubleDisplay = false;
+#include "Ogitors.h"
 
+//-----------------------------------------------------------------------------------------
+
+template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::ms_Singleton = 0;
+CodecExtensionFactoryMap GenericTextEditor::mRegisteredCodecFactories = CodecExtensionFactoryMap();
+
+//-----------------------------------------------------------------------------------------
+GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdiArea(parent)
+{
+    mParentTabWidget = static_cast<QTabWidget*>(parent);
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
 
@@ -48,17 +53,49 @@ GenericTextEditor::GenericTextEditor(QString editorName, QString documentIcon, Q
     connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     connect(tabBar, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
     connect(this,   SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+
+    // Register the standard generic text editor codec extensions
+    GenericTextEditorCodecFactory* genCodecFactory = new GenericTextEditorCodecFactory();
+    GenericTextEditor::registerCodecFactory("txt",         genCodecFactory);
+    GenericTextEditor::registerCodecFactory("xml",         genCodecFactory);
+    GenericTextEditor::registerCodecFactory("ogscene",     genCodecFactory);
+    GenericTextEditor::registerCodecFactory("html",        genCodecFactory);
+    GenericTextEditor::registerCodecFactory("htm",         genCodecFactory);
+    GenericTextEditor::registerCodecFactory("scene",       genCodecFactory);
+    GenericTextEditor::registerCodecFactory("cfg",         genCodecFactory);
+    GenericTextEditor::registerCodecFactory("log",         genCodecFactory);
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::displayTextFromFile(QString filePath)
+void GenericTextEditor::registerCodecFactory(QString extension, ITextEditorCodecFactory* codec)
 {
+    mRegisteredCodecFactories.insert(CodecExtensionFactoryMap::value_type(extension, codec));
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::unregisterCodecFactory(QString extension)
+{
+    CodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
+    it = mRegisteredCodecFactories.find(extension);
+
+    if(it != mRegisteredCodecFactories.end())
+        mRegisteredCodecFactories.erase(it);
+}
+//-----------------------------------------------------------------------------------------
+bool GenericTextEditor::displayTextFromFile(QString filePath)
+{
+    ITextEditorCodecFactory* codecFactory = GenericTextEditor::findMatchingCodecFactory(filePath);
+
+    if(codecFactory == 0)
+       return false;    
+    
     GenericTextEditorDocument* document = 0;
-    if(!isPathAlreadyShowing(filePath, document) || mAllowDoubleDisplay)
+    if(!isPathAlreadyShowing(filePath, document) || isAllowDoubleDisplay())
     {
         document = new GenericTextEditorDocument(this);
+        ITextEditorCodec* codec = codecFactory->create(document, filePath);
+        document->setCodec(codec);
         document->displayTextFromFile(QFile(filePath).fileName(), filePath);
         QMdiSubWindow *window = addSubWindow(document);
-        window->setWindowIcon(QIcon(mDocumentIcon));
+        window->setWindowIcon(QIcon(codec->getDocumentIcon()));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
         tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName());
@@ -68,17 +105,33 @@ void GenericTextEditor::displayTextFromFile(QString filePath)
         setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
         document->setFocus(Qt::ActiveWindowFocusReason);
     }
+
+    moveToForeground();
+
+    return true;
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::displayText(QString docName, QString text)
+bool GenericTextEditor::displayText(QString docName, QString text, QString extension = "")
 {
+    // If there is no extra extension passed, then try to find the matching one based on the doc name
+    ITextEditorCodecFactory* codecFactory;
+    if(extension == "")    
+        codecFactory = GenericTextEditor::findMatchingCodecFactory(docName);
+    else
+        codecFactory = GenericTextEditor::findMatchingCodecFactory(extension);
+
+    if(codecFactory == 0)
+        return false;
+
     GenericTextEditorDocument* document = 0;
-    if(!isDocAlreadyShowing(docName, document) || mAllowDoubleDisplay)
+    if(!isDocAlreadyShowing(docName, document) || isAllowDoubleDisplay())
     {
         document = new GenericTextEditorDocument(this);
+        ITextEditorCodec* codec = codecFactory->create(document, docName);
+        document->setCodec(codec);
         document->displayText(docName, text);
         QMdiSubWindow *window = addSubWindow(document);
-        window->setWindowIcon(QIcon(mDocumentIcon));
+        window->setWindowIcon(QIcon(codec->getDocumentIcon()));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
         tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName);
@@ -88,6 +141,10 @@ void GenericTextEditor::displayText(QString docName, QString text)
         setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
         document->setFocus(Qt::ActiveWindowFocusReason);
     }
+
+    moveToForeground();
+
+    return true;
 }
 //-----------------------------------------------------------------------------------------
 bool GenericTextEditor::isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document)
@@ -124,7 +181,7 @@ void GenericTextEditor::closeTab(int index)
         int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         switch(result)
         {
-        case QMessageBox::Yes: document->saveFile(); break;
+        case QMessageBox::Yes: document->getCodec()->save(); break;
         case QMessageBox::No: break;
         case QMessageBox::Cancel: return;
         }
@@ -136,10 +193,6 @@ void GenericTextEditor::closeTab(int index)
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::tabChanged(int index)
-{
-}
-//-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeEvent(QCloseEvent *event)
 {
     QList<QMdiSubWindow*> list = subWindowList();
@@ -147,8 +200,66 @@ void GenericTextEditor::closeEvent(QCloseEvent *event)
         closeTab(i);
 }
 //-----------------------------------------------------------------------------------------
-GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
-mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false)
+ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString extensionOrFileName)
+{
+    int pos = extensionOrFileName.lastIndexOf(".");
+    QString extension;
+
+    if(pos != -1)
+        extension = extensionOrFileName.right(extensionOrFileName.size() - pos - 1);
+    else
+        extension = extensionOrFileName;
+    
+    CodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
+    it = mRegisteredCodecFactories.find(extension);
+
+    if(it != mRegisteredCodecFactories.end())
+        return it->second;
+    else 
+        return 0;
+}
+//-----------------------------------------------------------------------------------------
+QStringListModel* GenericTextEditor::modelFromFile(const QString& filePath)
+{
+    QFile file(filePath);
+    if(!file.open(QFile::ReadOnly))
+        return new QStringListModel();
+
+    QStringList words;
+    while (!file.atEnd()) 
+    {
+        QByteArray line = file.readLine();
+        if(!line.isEmpty())
+            words << line.trimmed();
+    }
+    QMap<QString, QString> strMap;
+    foreach(QString str, words) 
+        strMap.insert(str.toLower(), str);
+
+    file.close();
+    return new QStringListModel(strMap.values());
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::moveToForeground()
+{
+    mParentTabWidget->setCurrentIndex(mParentTabWidget->indexOf(this));
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::saveAll()
+{
+    GenericTextEditorDocument* document;
+    QList<QMdiSubWindow*> list = subWindowList();
+    for(int i = 0; i < list.size(); i++)
+    { 
+        document = static_cast<GenericTextEditorDocument*>(subWindowList()[i]->widget());
+    
+        if(document->isTextModified())
+            document->getCodec()->save();
+    }
+}
+//-----------------------------------------------------------------------------------------
+GenericTextEditorDocument::GenericTextEditorDocument( QWidget *parent) : QPlainTextEdit(parent), 
+mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false)
 {
     QFont fnt = font();
     fnt.setFamily("Courier New");
@@ -199,14 +310,14 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
         unsigned int cont_len = 0;
         mOfsPtr->getFileSize(mOfsFileHandle, cont_len);
 
-        char  * buf = new char[cont_len + 1];
+        char* buf = new char[cont_len + 1];
         buf[cont_len] = 0;
 
         mOfsPtr->read(mOfsFileHandle, buf, cont_len);
         mOfsPtr->closeFile(mOfsFileHandle);
         
         displayText(filePath, buf);
-        delete [] buf;
+        delete[] buf;
     }
     else
     {
@@ -214,7 +325,7 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
 
         mFile.setFileName(filePath);
         mFile.open(QIODevice::ReadOnly);
-        displayText(docName, mFile.fileName());
+        displayText(docName, mFile.readAll());
     }
    
 }
@@ -222,14 +333,20 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
 void GenericTextEditorDocument::displayText(QString docName, QString text)
 {
     mDocName = docName;
-    setPlainText(text);
+
+    setPlainText(mCodec->prepareForDisplay(docName, text));
 
     QString tabTitle = docName;
     if(tabTitle.length() > 25)
         tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
     setWindowTitle(tabTitle + QString("[*]"));
 
+    mCodec->addCompleter(this);
+    mCodec->addHighlighter(this);
+
     connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
+
+    setWindowModified(false);
 }
 //-----------------------------------------------------------------------------------------
 int GenericTextEditorDocument::lineNumberAreaWidth()
@@ -344,27 +461,6 @@ void GenericTextEditorDocument::focusInEvent(QFocusEvent *event)
     QPlainTextEdit::focusInEvent(event);
 }
 //-----------------------------------------------------------------------------------------
-QStringListModel* GenericTextEditorDocument::modelFromFile(const QString& filePath)
-{
-    QFile file(filePath);
-    if(!file.open(QFile::ReadOnly))
-        return new QStringListModel(mCompleter);
-
-    QStringList words;
-    while (!file.atEnd()) 
-    {
-        QByteArray line = file.readLine();
-        if(!line.isEmpty())
-            words << line.trimmed();
-    }
-    QMap<QString, QString> strMap;
-    foreach(QString str, words) 
-        strMap.insert(str.toLower(), str);
-
-    file.close();
-    return new QStringListModel(strMap.values(), mCompleter);
-}
-//-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::keyPressEvent(QKeyEvent *event)
 {
     QPlainTextEdit::keyPressEvent(event);
@@ -372,12 +468,12 @@ void GenericTextEditorDocument::keyPressEvent(QKeyEvent *event)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 {
-    QPlainTextEdit::contextMenuEvent(event);
+    mCodec->contextMenu(event);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::mousePressEvent(QMouseEvent *event)
 {
-    // Rewrite the mouse event to a left button event so the cursor is moved to the location of the pointer
+    // Rewrite the right clcick mouse event to a left button event so the cursor is moved to the location of the click
     if(event->button() == Qt::RightButton)
         event = new QMouseEvent(QEvent::MouseButtonPress, event->pos(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
     QPlainTextEdit::mousePressEvent(event);
@@ -387,11 +483,8 @@ void GenericTextEditorDocument::documentWasModified()
 {
     setTextModified(true);
     setWindowModified(isTextModified());
-}
-//-----------------------------------------------------------------------------------------
-bool GenericTextEditorDocument::saveFile()
-{
-    return true;
+
+    Ogitors::OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::releaseFile()
@@ -401,7 +494,7 @@ void GenericTextEditorDocument::releaseFile()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::addCompleter(const QString keywordListFilePath)
 {
-    mCompleter = new QCompleter(modelFromFile(keywordListFilePath)->stringList(), this);
+    mCompleter = new QCompleter(GenericTextEditor::getSingletonPtr()->modelFromFile(keywordListFilePath)->stringList(), this);
     mCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     mCompleter->setCompletionMode(QCompleter::PopupCompletion);

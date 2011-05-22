@@ -59,7 +59,7 @@ namespace OFS
 
 #define VERSION_MAJOR_0 '0'
 #define VERSION_MAJOR_1 '1'
-#define VERSION_MINOR   '2'
+#define VERSION_MINOR   '3'
 #define VERSION_FIX     '0'
 
 #define AUTO_MUTEX mutable boost::recursive_mutex OfsMutex;
@@ -117,41 +117,44 @@ namespace OFS
         OFS_HIDDEN = 8
     };
 
+#pragma pack(push)
+#pragma pack(4)
     struct UUID
     {
-        unsigned int a;
-        unsigned short b;
-        unsigned short c;
-        unsigned char d[8];
+        unsigned char data[16];
 
         UUID()
         {
-            a = 0;b = 0;c = 0;d[0] = 0;d[1] = 0;d[2] = 0;d[3] = 0;d[4] = 0;d[5] = 0;d[6] = 0;d[7] = 0;
+            memset(data, 0, 16);
         };
         
         UUID(unsigned int _a, unsigned short _b, unsigned short _c, unsigned char _d0, unsigned char _d1, unsigned char _d2, unsigned char _d3, unsigned char _d4, unsigned char _d5, unsigned char _d6, unsigned char _d7)
         {
-            a = _a;
-            b = _b;
-            c = _c;
-            d[0] = _d0;
-            d[1] = _d1;
-            d[2] = _d2;
-            d[3] = _d3;
-            d[4] = _d4;
-            d[5] = _d5;
-            d[6] = _d6;
-            d[7] = _d7;
+            *((unsigned int *)&data[0]) = _a;
+            *((unsigned short *)&data[4]) = _b;
+            *((unsigned short *)&data[6]) = _c;
+            data[8] = _d0;
+            data[9] = _d1;
+            data[10] = _d2;
+            data[11] = _d3;
+            data[12] = _d4;
+            data[13] = _d5;
+            data[14] = _d6;
+            data[15] = _d7;
         };
 
         std::string toString()
         {
             char dest[36];
 
+            unsigned int a = *((unsigned int *)&data[0]);
+            unsigned short b = *((unsigned short *)&data[4]);
+            unsigned short c = *((unsigned short *)&data[6]);
+
 #if defined( __WIN32__ ) || defined( _WIN32 )
-            sprintf_s(dest, 36, "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", a, b, c, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]);
+            sprintf_s(dest, 36, "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", a, b, c, data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
 #else
-            sprintf(dest, "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", a, b, c, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]);
+            sprintf(dest, "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", a, b, c, data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
 #endif
 
             return std::string(dest);
@@ -159,43 +162,89 @@ namespace OFS
 
         void fromString(const std::string& str)
         {
+            unsigned int a;
+            unsigned short b, c;
+
 #if defined( __WIN32__ ) || defined( _WIN32 )
-            sscanf_s(str.c_str(), "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", &a, &b, &c, &d[0], &d[1], &d[2], &d[3], &d[4], &d[5], &d[6], &d[7]);
+            sscanf_s(str.c_str(), "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", &a, &b, &c, &data[8], &data[9], &data[10], &data[11], &data[12], &data[13], &data[14], &data[15]);
 #else
-            sscanf(str.c_str(), "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", &a, &b, &c, &d[0], &d[1], &d[2], &d[3], &d[4], &d[5], &d[6], &d[7]);
+            sscanf(str.c_str(), "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", &a, &b, &c, &data[8], &data[9], &data[10], &data[11], &data[12], &data[13], &data[14], &data[15]);
 #endif
+            *((unsigned int *)&data[0]) = a;
+            *((unsigned short *)&data[4]) = b;
+            *((unsigned short *)&data[6]) = c;
+        };
+
+        const UUID& operator=(const UUID& uuid)
+        {
+            memcpy(data, uuid.data, 16);
+            return *this;
         };
 
         bool operator==(const UUID& uuid) const
         {
-            return (memcmp(this, &uuid, sizeof(UUID)) == 0);
+            return (memcmp(data, uuid.data, 16) == 0);
         };
 
         bool operator!=(const UUID& uuid) const
         {
-            return (memcmp(this, &uuid, sizeof(UUID)) != 0);
+            return (memcmp(data, uuid.data, 16) != 0);
         };
 
         bool operator<(const UUID& uuid) const
         {
-            return (memcmp(this, &uuid, sizeof(UUID)) < 0);
+            return (memcmp(data, uuid.data, 16) < 0);
         };
 
         bool operator>(const UUID& uuid) const
         {
-            return (memcmp(this, &uuid, sizeof(UUID)) > 0);
+            return (memcmp(data, uuid.data, 16) > 0);
         };
 
         bool operator<=(const UUID& uuid) const
         {
-            return (memcmp(this, &uuid, sizeof(UUID)) <= 0);
+            return (memcmp(data, uuid.data, 16) <= 0);
         };
 
         bool operator>=(const UUID& uuid) const
         {
-            return (memcmp(this, &uuid, sizeof(UUID)) >= 0);
+            return (memcmp(data, uuid.data, 16) >= 0);
         };
     };
+
+    struct OTIME
+    {
+        char data[8];
+
+        OTIME()
+        {
+            memset(data, 0, 8);
+        };
+
+        OTIME(time_t _tm)
+        {
+            *((time_t *)data) = _tm;
+        };
+
+        operator time_t()
+        {
+            return *((time_t *)data);
+        };
+
+        const OTIME& operator=(const time_t& _tm)
+        {
+            *((time_t *)data) = _tm;
+            return *this;
+        };
+
+        const OTIME& operator=(const OTIME& _tm)
+        {
+            memcpy(data, _tm.data, 8);
+            return *this;
+        };
+    };
+
+#pragma pack(pop)
 
     extern const UUID UUID_ZERO;
     
@@ -350,15 +399,15 @@ namespace OFS
         /* Full Entry Header, contains all information needed for entry */
         struct strMainEntryHeader
         {
-            int          Id;           /* Id of the Owner Entry */
-            int          ParentId;     /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-            unsigned int NextBlock;    /* File Position of Next Block owned by this entry */
-            unsigned int Flags;        /* File Flags */
-            unsigned int FileSize;     /* Entry's File Size, 0 for Directories */
-            unsigned int RESERVED[5];  /* RESERVED */
-            char         Name[256];    /* Entry's Name */
-            time_t       CreationTime; /* Entry's Creation Time */
-            UUID         Uuid;         /* UUID of Entry */
+            int          Id;              /* Id of the Owner Entry */
+            int          ParentId;        /* Id of the Owner Entry's Parent Directory, -1 if root directory */
+            unsigned int NextBlock;       /* File Position of Next Block owned by this entry */
+            unsigned int Flags;           /* File Flags */
+            unsigned int FileSize;        /* Entry's File Size, 0 for Directories */
+            unsigned int RESERVED[5];     /* RESERVED */
+            char         Name[256];       /* Entry's Name */
+            OTIME        CreationTime;    /* Entry's Creation Time */
+            UUID         Uuid;            /* UUID of Entry */
         };
 
 #pragma pack(pop)
@@ -1038,8 +1087,9 @@ namespace OFS
         std::fstream mOutStream;      // Handle of destination file system
 
         void _deallocateChildren(_Ofs::OfsEntryDesc* parent);
-        bool _convertv10_v12(std::string infile, std::string outfile);
-        bool _convertv11_v12(std::string infile, std::string outfile);
+        bool _convertv10_v13(std::string infile, std::string outfile);
+        bool _convertv11_v13(std::string infile, std::string outfile);
+        bool _convertv12_v13(std::string infile, std::string outfile);
     };
 
 //------------------------------------------------------------------------------

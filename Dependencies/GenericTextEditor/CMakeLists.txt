@@ -17,14 +17,19 @@ else(NOT QT4_FOUND)
 
 	set(HEADER_FILES
 		./include/generictexteditor.hxx
+		./include/itexteditorcodec.hxx
+		./include/generictexteditorcodec.hxx
 	)
 
 	set(SOURCE_FILES
 		./src/generictexteditor.cpp	
+		./src/generictexteditorcodec.cpp
 	)
 
 	SET(MOC_SRCS2 
 		./include/generictexteditor.hxx
+		./include/itexteditorcodec.hxx
+		./include/generictexteditorcodec.hxx
 	)
 
 	qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})
@@ -47,11 +52,11 @@ else(NOT QT4_FOUND)
 	include_directories(include)
 
 	include_directories(.)
-
+	include_directories(${OGITOR_INCLUDES})
         include_directories(../OFS/include)
 
 
-	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
+	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor)
 	add_library(GenericTextEditor SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
@@ -65,7 +70,7 @@ else(NOT QT4_FOUND)
 		add_custom_command(TARGET GenericTextEditor PRE_BUILD
 			COMMAND mkdir -p ../../RunPath/bin)
 		add_custom_command(TARGET GenericTextEditor POST_BUILD
-			COMMAND cp -r ../lib/GenericTextEditor.* ../../RunPath/bin/)
+			COMMAND cp -r ../lib/libGenericTextEditor.* ../../RunPath/bin/)
 	endif(UNIX AND NOT APPLE)
 
 	if(WIN32)

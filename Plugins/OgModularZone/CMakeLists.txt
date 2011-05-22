@@ -4,7 +4,7 @@ cmake_policy(SET CMP0003 NEW)
 
 project(OgModularZone)
 
-set(QT_MIN_VERSION "4.7.0")
+set(QT_MIN_VERSION "4.6.0")
 find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 
 if(NOT QT4_FOUND)

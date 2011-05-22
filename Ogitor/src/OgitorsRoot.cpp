@@ -596,7 +596,7 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
     }
 }
 //-----------------------------------------------------------------------------------------
-typedef bool (*DLL_START_PLUGIN)(void *, Ogre::String&);
+typedef bool (*DLL_START_PLUGIN)(void*, Ogre::String&);
 typedef bool (*DLL_GET_PLUGIN_NAME)(Ogre::String&);
 typedef bool (*DLL_STOP_PLUGIN)(void);
 //-----------------------------------------------------------------------------------------

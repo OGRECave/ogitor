@@ -46,6 +46,9 @@
 #include <QtGui/QMdiSubWindow>
 #include <QtGui/QSyntaxHighlighter>
 
+#include "OgreSingleton.h"
+
+#include "generictexteditorcodec.hxx"
 #include "ofs.h"
 
 class QPaintEvent;
@@ -71,21 +74,30 @@ class LineNumberArea;
    #define GTEExport
 #endif
 
+typedef std::map<QString, ITextEditorCodecFactory*> CodecExtensionFactoryMap;
 
 //-----------------------------------------------------------------------------------------
 
-class GTEExport GenericTextEditor : public QMdiArea
+class GTEExport GenericTextEditor : public QMdiArea, public Ogre::Singleton<GenericTextEditor>
 {
     Q_OBJECT
 
 public:
-    GenericTextEditor(QString editorName, QString documentIcon, QWidget *parent = 0);
+    GenericTextEditor(QString editorName, QWidget *parent = 0);
 
-    void    displayTextFromFile(QString fileName);
-    void    displayText(QString docName, QString text);
+    bool                            displayTextFromFile(QString filePath);
+    bool                            displayText(QString docName, QString text, QString extension);
+    void                            moveToForeground();
+    void                            saveAll();
 
-    inline void    setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
-    inline bool    isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
+    static void                     registerCodecFactory(QString extension, ITextEditorCodecFactory* codec);
+    static void                     unregisterCodecFactory(QString extension);
+    static ITextEditorCodecFactory* findMatchingCodecFactory(QString extensionOrFileName);
+
+    static QStringListModel*        modelFromFile(const QString& fileName);
+
+    inline void                     setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
+    inline bool                     isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
 
 signals:
     void    currentChanged(int);
@@ -93,15 +105,15 @@ signals:
 protected:
     bool    isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
     bool    isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
-    void    closeEvent(QCloseEvent *event);
+    void    closeEvent(QCloseEvent *event);    
 
 private slots:
     void    closeTab(int index);
-    void    tabChanged(int index);
 
-protected:
-    QString mDocumentIcon;
-    bool    mAllowDoubleDisplay;
+private:
+     static CodecExtensionFactoryMap    mRegisteredCodecFactories;
+     QTabWidget*                        mParentTabWidget;
+     bool                               mAllowDoubleDisplay;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -117,16 +129,17 @@ public:
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int  lineNumberAreaWidth();
 
-    bool saveFile();
     void displayTextFromFile(QString docName, QString filePath);
     void displayText(QString docName, QString text);
     void releaseFile();
     void addCompleter(const QString keywordListFilePath);
 
     inline QString getDocName(){return mDocName;}
-    inline QString getFilePath() {return mFilePath;}
+    inline QString getFilePath(){return mFilePath;}
+    inline ITextEditorCodec* getCodec(){return mCodec;}
     inline bool isTextModified(){return mTextModified;}
-    inline void setTextModified(bool modified) {mTextModified = modified;}
+    inline void setTextModified(bool modified){mTextModified = modified;}
+    inline void setCodec(ITextEditorCodec* codec){mCodec = codec;}
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -135,7 +148,6 @@ protected:
     void contextMenuEvent(QContextMenuEvent *event);
     void mousePressEvent(QMouseEvent *event);
     QString textUnderCursor() const;
-    QStringListModel* modelFromFile(const QString& fileName);
     int  calculateIndentation(const QString& str);
 
 protected slots:
@@ -146,15 +158,16 @@ protected slots:
     void documentWasModified();
 
 protected:
-    bool                    mIsOfsFile;
-    QString            mDocName;
-    QString            mFilePath;
-    QFile              mFile;
-    OFS::OfsPtr             mOfsPtr;
-    OFS::OFSHANDLE          mOfsFileHandle;
-    QWidget*           mLineNumberArea;
-    QCompleter*        mCompleter;
-    bool               mTextModified;
+    ITextEditorCodec*   mCodec;
+    bool                mIsOfsFile;
+    QString             mDocName;
+    QString             mFilePath;
+    QFile               mFile;
+    OFS::OfsPtr         mOfsPtr;
+    OFS::OFSHANDLE      mOfsFileHandle;
+    QWidget*            mLineNumberArea;
+    QCompleter*         mCompleter;
+    bool                mTextModified;
 };
 
 //-----------------------------------------------------------------------------------------

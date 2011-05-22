@@ -85,8 +85,14 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
 
     Ogre::UTFString loadmsg = "";
 
-    if(mFile.mount(importfile.c_str(), OFS::OFS_MOUNT_OPEN | OFS::OFS_MOUNT_RECOVER) != OFS::OFS_OK)
-    {    
+    OFS::OfsResult oRet;
+    if((oRet = mFile.mount(importfile.c_str(), OFS::OFS_MOUNT_OPEN | OFS::OFS_MOUNT_RECOVER)) != OFS::OFS_OK)
+    {
+        if(oRet == OFS::OFS_PREVIOUS_VERSION)
+        {
+            mSystem->DisplayMessageDialog("The OFS file is a previous version, please use qtOFS to upgrade it to new file version.", DLGTYPE_OK);
+        }
+        
         loadmsg = mSystem->Translate("Please load a Scene File...");
         mSystem->UpdateLoadProgress(-1, loadmsg);
         return SCF_ERRPARSE;

@@ -120,7 +120,43 @@ namespace Hydrax
 		return _saveToFile(Data, File, Path);
 	}
 
-	const bool CfgFileManager::_saveToFile(const Ogre::String& Data, const Ogre::String& File, const Ogre::String& Path) const
+	const bool CfgFileManager::getSaveString(Ogre::String& Data) const
+	{
+		Data = "#Hydrax cfg file.\n\n";
+
+		Data += "#Hydrax version field\n";
+		Data += _getVersionCfgString();
+
+		Data += "#Main options field\n";
+		Data += _getCfgString("Position",               mHydrax->getPosition());
+		Data += _getCfgString("PlanesError",            mHydrax->getPlanesError());
+		Data += "#Shader mode: 0=HLSL, 1=CG, 2=GLSL\n";
+		Data += _getCfgString("ShaderMode",             static_cast<int>(mHydrax->getShaderMode()));
+		Data += _getCfgString("FullReflectionDistance", mHydrax->getFullReflectionDistance());
+		Data += _getCfgString("GlobalTransparency",     mHydrax->getGlobalTransparency());
+		Data += _getCfgString("NormalDistortion",       mHydrax->getNormalDistortion()); 
+		Data += _getCfgString("WaterColor",             mHydrax->getWaterColor()); Data += "\n";
+
+		Data += "#Components field\n";
+		Data += _getComponentsCfgString();
+
+		Data += "#Rtt quality field(0x0 = Auto)\n";
+		Data += _getRttCfgString(); Data += "\n";
+
+		if (mHydrax->getModule())
+		{
+			mHydrax->getModule()->saveCfg(Data);
+
+			if (mHydrax->getModule()->getNoise())
+			{
+				mHydrax->getModule()->getNoise()->saveCfg(Data);
+			}
+		}
+
+        return true;
+	}
+
+    const bool CfgFileManager::_saveToFile(const Ogre::String& Data, const Ogre::String& File, const Ogre::String& Path) const
 	{
 		FILE *DestinationFile = fopen((Path+"/"+File).c_str(), "w");
 

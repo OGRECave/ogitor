@@ -56,6 +56,7 @@
 #include "preferencesmanager.hxx"
 #include "lineeditwithhistory.hxx"
 #include "terraintoolswidget.hxx"
+#include "generictexteditor.hxx"
 
 using namespace Ogitors;
 
@@ -743,6 +744,8 @@ void MainWindow::saveScene(const QString& exportfile)
     }
 
     OgitorsRoot::getSingletonPtr()->SaveScene(false, exportfile.toStdString());
+
+    GenericTextEditor::getSingletonPtr()->saveAll();
 }
 //------------------------------------------------------------------------------
 void MainWindow::saveSceneAs()
