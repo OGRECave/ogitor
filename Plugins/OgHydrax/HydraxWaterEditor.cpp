@@ -835,6 +835,16 @@ void CHydraxEditor::onSave(bool forced)
     Ogre::ColourValue colOrig = mOriginalWaterColour->get();
     Ogre::Vector3 original = Ogre::Vector3(colOrig.r, colOrig.g, colOrig.b);
     mHandle->setWaterColor(original);
+
+    Ogre::String cfgData;
+    mHandle->saveCfg(cfgData);
+
+    OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+    Ogre::String path =  "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->HydraxDirectory + "/" + mConfigFile->get();
+
+    OFS::OFSHANDLE handle;
+    mFile->createFile(handle, path.c_str(), cfgData.size(), cfgData.size(), cfgData.c_str());
+    mFile->closeFile(handle);
 }
 //---------------------------------------------------------------------------------
 void CHydraxEditor::_initAndSignalProperties( void )

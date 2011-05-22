@@ -48,7 +48,9 @@ else(NOT QT4_FOUND)
 
         add_executable(qtOfs WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
 
-	set_target_properties(qtOfs PROPERTIES DEBUG_POSTFIX _d)
+	if(WIN32)
+		set_target_properties(qtOfs PROPERTIES DEBUG_POSTFIX _d)
+	endif(WIN32)
 
         TARGET_LINK_LIBRARIES(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
 

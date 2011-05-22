@@ -63,7 +63,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
 	# differentiation between debug and release builds.
 	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif ()
-set(CMAKE_DEBUG_POSTFIX "_d")
+
+if(WIN32)
+  set(CMAKE_DEBUG_POSTFIX "_d")
+endif(WIN32)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 
@@ -98,12 +101,14 @@ set(OGITOR_LIBPATH	"${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 
 # Dependencies
 set(DEPENDENCIES_INCLUDES
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/log4cplus/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptbuilder"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptstdstring"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptmath"
@@ -136,10 +141,12 @@ file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 add_subdirectory(Ogitor)
 
 # Setup Dependencies
+add_subdirectory(Dependencies/log4cplus)
 add_subdirectory(Dependencies/HYDRAX/Hydrax/src/Hydrax)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
+add_subdirectory(Dependencies/lua)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
 add_subdirectory(Dependencies/GenericTextEditor)

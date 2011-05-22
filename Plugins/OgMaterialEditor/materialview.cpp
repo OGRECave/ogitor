@@ -49,6 +49,7 @@
 
 #include "materialview.hxx"
 #include "materialtexteditor.hxx"
+#include "materialtexteditorcodec.hxx"
 
 using namespace Ogitors;
 
@@ -105,7 +106,7 @@ void MaterialTreeWidget::contextMenuEvent(QContextMenuEvent *event)
                 OgitorsUtils::ParseUTFStringVector(menuList[i], vList);
                 if(vList.size() > 0 && vList[0] != "")
                 {                 
-                    QAction *item = contextMenu->addAction( ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
+                    QAction *item = contextMenu->addAction(ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
                     if(vList.size() > 1)
                         item->setIcon(QIcon(ConvertToQString(vList[1])));
                     signalMapper->setMapping(item, i);
@@ -189,15 +190,13 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 
         mMaterialEditor->setMaterialPath(materialPath);
 
-        mMaterialTextEditor->displayMaterial(material->getName().c_str(), resourceGroup.c_str(), fileInfoList.getPointer()->at(0).filename.c_str());
+        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(fileInfoList.getPointer()->at(0).filename, resourceGroup);                
+        GenericTextEditor::getSingletonPtr()->displayText(material->getName().c_str(), MaterialTextEditorCodec::getMaterialText(stream->getAsString().c_str(), material->getName()), ".material");
     }
     catch(Ogre::Exception e)
     {
-        QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "This is only an internal, temporary material and therefore there is no displayable code available.");
-    }    
-
-    int index = static_cast<QTabWidget*>(mMaterialTextEditor->parent()->parent())->indexOf(mMaterialTextEditor);
-    static_cast<QTabWidget*>(mMaterialTextEditor->parent()->parent())->setCurrentIndex(index);
+        QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "This is only an internal, temporary material and therefore there is no displayable code available.");
+    }        
 }
 //----------------------------------------------------------------------------------------
 bool MaterialTreeWidget::OnDragEnter()
@@ -333,7 +332,6 @@ void MaterialViewWidget::selectionChanged()
         if(!mMaterialEditor)
             return;
 
-        //mMaterialEditor->setTreeItemHandle((void*)selitem);
         if(mMaterialEditor->load())
         {
             treeWidget->mMaterialEditor = mMaterialEditor;
@@ -350,7 +348,7 @@ void MaterialViewWidget::selectionChanged()
             }
             catch(Ogre::Exception e)
             {
-                QMessageBox::information(QApplication::activeWindow(),"qtOgitor", "This is only an internal, temporary material and therefore there is no displayable code available.");
+                QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("This is only an internal, temporary material and therefore there is no displayable code available."));
             }        
         }
     }
@@ -415,15 +413,13 @@ void MaterialViewWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 
     if(change_event)
     {
-        //reload the zone selection widget when a scene is loaded
+        // Reload the zone selection widget when a scene is loaded
         LoadState state = change_event->getType();
 	    
         if(state == LS_LOADED)
             prepareView();
         else if(state == LS_UNLOADED)
-        {
             destroyScene();
-        }
     }
 }
 //----------------------------------------------------------------------------------------

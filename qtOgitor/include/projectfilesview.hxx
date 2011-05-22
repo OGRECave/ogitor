@@ -76,11 +76,6 @@ protected:
     QAction*       actCommandRename;
     QAction*       actCommandReadOnly;
     QAction*       actCommandHidden;
-
-    QStringList    mAllowedCombinedExtensions;
-    QStringList    mAllowedGenericExtensions;
-    QStringList    mAllowedMaterialExtensions;
-    QStringList    mAllowedScriptExtensions;
 };
 
 //------------------------------------------------------------------------------

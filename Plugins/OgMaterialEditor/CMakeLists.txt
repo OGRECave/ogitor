@@ -23,6 +23,7 @@ else(NOT QT4_FOUND)
 		TechniqueEditor.h
 		Plugin.h
 		materialeditorprefseditor.hxx
+		materialtexteditorcodec.hxx
 	)
 
 	set(SOURCE_FILES
@@ -33,6 +34,7 @@ else(NOT QT4_FOUND)
 		TechniqueEditor.cpp
 		Plugin.cpp
 		materialeditorprefseditor.cpp
+		materialtexteditorcodec.cpp
 	)
 
 	set(MOC_SRCS2 
@@ -40,6 +42,7 @@ else(NOT QT4_FOUND)
 		materialtexteditor.hxx
 		materialhighlighter.hxx
 		materialeditorprefseditor.hxx
+		materialtexteditorcodec.hxx
 	)
 
 	qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2} OPTIONS ${OGITOR_QT_PREPROCESSOR})
@@ -59,7 +62,7 @@ else(NOT QT4_FOUND)
 	set(OgMaterialEditor_VERSION 0)
 	set(OgMaterialEditor_VERSION_MAJOR 1)
 
-	include_directories (include)
+	include_directories(include)
 	include_directories(${DEPENDENCIES_INCLUDES})
 	include_directories(${OGITOR_INCLUDES})
 	message(STATUS "${OGITOR_INCLUDES}")
