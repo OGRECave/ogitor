@@ -27,7 +27,7 @@
 #include "PortalOutlineRenderable.h"
 
 using namespace Ogitors;
-//#define TERRAIN_CUT
+#define TERRAIN_CUT
 
 namespace MZP
 {
@@ -119,12 +119,17 @@ namespace MZP
 	class TerrainCut
 	{
 	public:
-		TerrainCut():mStencil(0),mTunnel(0){}
+		TerrainCut():mStencil(0),mTunnel(0),mStencilNode(0),mTunnelNode(0){}
 		~TerrainCut(){}
 		Ogre::ManualObject* mStencil;
 		Ogre::ManualObject* mTunnel;
+		
 	private:
 		std::vector<Ogre::Vector3> points;
+		Ogre::Vector3 mStencilOffset;
+		Ogre::Vector3 mTunnelOffset;
+		Ogre::SceneNode* mStencilNode;
+		Ogre::SceneNode* mTunnelNode;
 		
 		
 		Ogre::MaterialPtr mBlendMaterial;
@@ -135,6 +140,12 @@ namespace MZP
 		bool TerrainCut::updateStencil(Ogre::Quaternion orientation,Ogre::Vector3 points[13]);
 		bool updateTunnel(Ogre::Quaternion orientation,Ogre::Vector3 points[13],Ogre::Real width,Ogre::Real height);
 		void cleanup(void);
+		const Ogre::Vector3 getStencilOffset(void){return mStencilOffset;}
+		const Ogre::Vector3 getTunnelOffset(void){return mTunnelOffset;}
+		Ogre::SceneNode* getStencilNode(void){return mStencilNode;}
+		Ogre::SceneNode* getTunnelNode(void){return mTunnelNode;}
+		void setStencilNode(Ogre::SceneNode* node){mStencilNode = node;}
+		void setTunnelNode(Ogre::SceneNode* node){mTunnelNode = node;}
 	};
 #endif //TERRAIN_CUT
 }

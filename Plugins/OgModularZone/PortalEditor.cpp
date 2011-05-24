@@ -656,8 +656,16 @@ bool PortalEditor::carveTerrainTunnel(void)
 	{
 		mTerrainCut = new TerrainCut();
 		mTerrainCut->create(getName(),this->getDerivedPosition(),this->getDerivedOrientation(),mWidth->get(),mHeight->get());
-		OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->attachObject(mTerrainCut->mStencil);
-		OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->attachObject(mTerrainCut->mTunnel);
+
+		Ogre::SceneNode* stencilNode = OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->createChildSceneNode(mTerrainCut->getStencilOffset());
+		stencilNode->attachObject(mTerrainCut->mStencil);
+		mTerrainCut->setStencilNode(stencilNode);
+
+		//@ the moment I haven't got a separate offset for tunnel set up - using stencil
+		Ogre::SceneNode* tunnelNode = OgitorsRoot::getSingletonPtr()->GetSceneManager()->getRootSceneNode()->createChildSceneNode(mTerrainCut->getStencilOffset());
+		tunnelNode->attachObject(mTerrainCut->mTunnel);
+		mTerrainCut->setTunnelNode(tunnelNode);
+
 	}
 	else
 	{
@@ -682,6 +690,16 @@ void TerrainCut::cleanup(void)
 	if(mStencil)
 	{
 		OgitorsRoot::getSingletonPtr()->GetSceneManager()->destroyManualObject(mStencil);
+	}
+	if(mTunnelNode)
+	{
+		OgitorsRoot::getSingletonPtr()->GetSceneManager()->destroySceneNode(mTunnelNode);
+
+	}
+	if(mStencilNode)
+	{
+		OgitorsRoot::getSingletonPtr()->GetSceneManager()->destroySceneNode(mStencilNode);
+
 	}
 }
 //----------------------------------------------------------------------------------------
@@ -800,24 +818,26 @@ bool TerrainCut::update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre
 	//add Zones directory if not present
 	OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 	ofsFile->createDirectory("Zones");
-/*	
+
 	Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-	Ogre::String value = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName() + "::/Zones/";
-	mngr->addResourceLocation(value,"Ofs","MESH_EXPORT_TEST");
+	Ogre::String zones_directory = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName() + "::/Zones/";
+	mngr->addResourceLocation(zones_directory,"Ofs","MESH_EXPORT_TEST");
 	mngr->initialiseResourceGroup("MESH_EXPORT_TEST");
+	
 	Ogre::DataStreamPtr meshFileStream = 
-		Ogre::Root::getSingletonPtr()->createFileStream(tunnelname,"MESH_EXPORT_TEST");
+		mngr->createResource(tunnelname,"MESH_EXPORT_TEST",true,zones_directory);//zones_directory);
 
 
 	Ogre::MeshSerializer meshSerialiser;
 	meshSerialiser.exportMesh(tunnel.get(),meshFileStream);
 	meshFileStream->close();//important, close stream
+
 	meshFileStream = 
-		Ogre::Root::getSingletonPtr()->createFileStream(stencilname,"MESH_EXPORT_TEST");
+		Ogre::Root::getSingletonPtr()->createFileStream(stencilname,"MESH_EXPORT_TEST",true,zones_directory);
 
 	meshSerialiser.exportMesh(stencil.get(),meshFileStream);
 	meshFileStream->close();//important, close stream
-	*/
+	
 
 	return true;
 }
@@ -841,20 +861,29 @@ bool TerrainCut::updateStencil(Ogre::Quaternion orientation,Ogre::Vector3 points
 		Ogre::Vector2(0.0,0.5),
 		Ogre::Vector2(0.5,0.5)};
 
+		
+	//fix the origin of mesh:
+	
+	Ogre::Ray ray(points[8], orientation * Ogre::Vector3::UNIT_Z );
+	if(!terrain->hitTest(ray,&mStencilOffset)){return false;}//if no hit, abort
+	if(mStencilNode)mStencilNode->setPosition(mStencilOffset);
+	
+
 	mStencil->beginUpdate(0);
 	//project points onto terrain
 	for(int i = 0;i < 9;++i)
 	{
 		Ogre::Ray ray(points[i], orientation * Ogre::Vector3::UNIT_Z );
-		Ogre::Vector3 point;
+		//Ogre::Vector3 point;
 		if(!terrain->hitTest(ray,&points[i]/*&point*/))
 		{return false;}//if no hit, abort
 		points[i].y+=0.1;	//TODO: replace this epsilon value with 
 							//one moved along the ray
-		mStencil->position(points[i]);
+		mStencil->position(points[i]-mStencilOffset);
 		mStencil->textureCoord(texture[i].x,texture[i].y);
 	}
-	
+
+	//update indices:	
 	mStencil->quad(0,7,8,1);
 	mStencil->quad(1,8,3,2);
 	mStencil->quad(8,5,4,3);
@@ -868,18 +897,19 @@ bool TerrainCut::updateStencil(Ogre::Quaternion orientation,Ogre::Vector3 points
 bool TerrainCut::updateTunnel(Ogre::Quaternion orientation,Ogre::Vector3 points[13],Ogre::Real width,Ogre::Real height)
 {
 	//update vertices
+	if(mTunnelNode)mTunnelNode->setPosition(mStencilOffset);
 
 	mTunnel->beginUpdate(0);//top
-	mTunnel->position(points[0]);//TODO U,V
+	mTunnel->position(points[0]-mStencilOffset);//TODO U,V
 	mTunnel->textureCoord(points[0].distance(points[9]),points[9].distance(points[10]));
-	mTunnel->position(points[1]);//the UVs for this point are tricky ...
+	mTunnel->position(points[1]-mStencilOffset);//the UVs for this point are tricky ...
 	Ogre::Real U = std::sqrt(std::pow(points[1].distance(points[10]),2)-std::pow(width/2,2));
 	mTunnel->textureCoord( U ,width/2);
-	mTunnel->position(points[2]);
+	mTunnel->position(points[2]-mStencilOffset);
 	mTunnel->textureCoord(points[2].distance(points[10]),0.0);
-	mTunnel->position(points[9]);
+	mTunnel->position(points[9]-mStencilOffset);
 	mTunnel->textureCoord(0.0,width);
-	mTunnel->position(points[10]);
+	mTunnel->position(points[10]-mStencilOffset);
 	mTunnel->textureCoord(0.0,0.0);
 	mTunnel->triangle(0,3,1);
 	mTunnel->triangle(1,3,4);
@@ -887,16 +917,16 @@ bool TerrainCut::updateTunnel(Ogre::Quaternion orientation,Ogre::Vector3 points[
 	mTunnel->end();
 
 	mTunnel->beginUpdate(1);//side
-	mTunnel->position(points[2]);
+	mTunnel->position(points[2]-mStencilOffset);
 	mTunnel->textureCoord(points[2].distance(points[10]),points[10].distance(points[11]));
-	mTunnel->position(points[3]);//the UVs for this point are tricky ...
+	mTunnel->position(points[3]-mStencilOffset);//the UVs for this point are tricky ...
 	U = std::sqrt(std::pow(points[3].distance(points[10]),2)-std::pow(height/2,2));
 	mTunnel->textureCoord( U ,height/2);
-	mTunnel->position(points[4]);
+	mTunnel->position(points[4]-mStencilOffset);
 	mTunnel->textureCoord(points[4].distance(points[11]),0.0);
-	mTunnel->position(points[10]);
+	mTunnel->position(points[10]-mStencilOffset);
 	mTunnel->textureCoord(0.0,height);
-	mTunnel->position(points[11]);
+	mTunnel->position(points[11]-mStencilOffset);
 	mTunnel->textureCoord(0.0,0.0);
 	mTunnel->triangle(0,3,1);
 	mTunnel->triangle(1,3,4);
@@ -904,16 +934,16 @@ bool TerrainCut::updateTunnel(Ogre::Quaternion orientation,Ogre::Vector3 points[
 	mTunnel->end();
 	
 	mTunnel->beginUpdate(2);//bottom
-	mTunnel->position(points[4]);
+	mTunnel->position(points[4]-mStencilOffset);
 	mTunnel->textureCoord(points[4].distance(points[11]),points[11].distance(points[12]));
-	mTunnel->position(points[5]);//the UVs for this point are tricky ...
+	mTunnel->position(points[5]-mStencilOffset);//the UVs for this point are tricky ...
 	U = std::sqrt(std::pow(points[5].distance(points[11]),2)-std::pow(width/2,2));
 	mTunnel->textureCoord( U ,width/2);
-	mTunnel->position(points[6]);
+	mTunnel->position(points[6]-mStencilOffset);
 	mTunnel->textureCoord(points[6].distance(points[12]),0.0);
-	mTunnel->position(points[11]);
+	mTunnel->position(points[11]-mStencilOffset);
 	mTunnel->textureCoord(0.0,width);
-	mTunnel->position(points[12]);
+	mTunnel->position(points[12]-mStencilOffset);
 	mTunnel->textureCoord(0.0,0.0);	
 	mTunnel->triangle(0,3,1);
 	mTunnel->triangle(1,3,4);
@@ -921,16 +951,16 @@ bool TerrainCut::updateTunnel(Ogre::Quaternion orientation,Ogre::Vector3 points[
 	mTunnel->end();
 
 	mTunnel->beginUpdate(3);
-	mTunnel->position(points[6]);
+	mTunnel->position(points[6]-mStencilOffset);
 	mTunnel->textureCoord(points[6].distance(points[12]),points[12].distance(points[9]));
-	mTunnel->position(points[7]);//the UVs for this point are tricky ...
+	mTunnel->position(points[7]-mStencilOffset);//the UVs for this point are tricky ...
 	U = std::sqrt(std::pow(points[7].distance(points[12]),2)-std::pow(height/2,2));
 	mTunnel->textureCoord( U ,height/2);
-	mTunnel->position(points[0]);
+	mTunnel->position(points[0]-mStencilOffset);
 	mTunnel->textureCoord(points[0].distance(points[9]),0.0);
-	mTunnel->position(points[12]);
+	mTunnel->position(points[12]-mStencilOffset);
 	mTunnel->textureCoord(0.0,height);
-	mTunnel->position(points[9]);
+	mTunnel->position(points[9]-mStencilOffset);
 	mTunnel->textureCoord(0.0,0.0);
 	mTunnel->triangle(0,3,1);
 	mTunnel->triangle(1,3,4);
