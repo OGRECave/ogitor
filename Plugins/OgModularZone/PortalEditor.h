@@ -27,7 +27,7 @@
 #include "PortalOutlineRenderable.h"
 
 using namespace Ogitors;
-#define TERRAIN_CUT
+//#define TERRAIN_CUT
 
 namespace MZP
 {
