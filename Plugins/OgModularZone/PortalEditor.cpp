@@ -800,7 +800,7 @@ bool TerrainCut::update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre
 	//add Zones directory if not present
 	OFS::OfsPtr& ofsFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 	ofsFile->createDirectory("Zones");
-	
+/*	
 	Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
 	Ogre::String value = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName() + "::/Zones/";
 	mngr->addResourceLocation(value,"Ofs","MESH_EXPORT_TEST");
@@ -817,6 +817,7 @@ bool TerrainCut::update(Ogre::Vector3 position,Ogre::Quaternion orientation,Ogre
 
 	meshSerialiser.exportMesh(stencil.get(),meshFileStream);
 	meshFileStream->close();//important, close stream
+	*/
 
 	return true;
 }
