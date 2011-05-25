@@ -1185,7 +1185,7 @@ void MainWindow::searchLog()
 //------------------------------------------------------------------------------
 void MainWindow::openPreferences()
 {
-    mPrefManager->showDialog();
+	mPrefManager->showDialog();
 }
 //------------------------------------------------------------------------------
 void MainWindow::openSceneOptions()
