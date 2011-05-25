@@ -105,7 +105,10 @@ signals:
 protected:
     bool    isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
     bool    isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
-    void    closeEvent(QCloseEvent *event);    
+    void    closeEvent(QCloseEvent *event);  
+
+protected slots:
+	void	tabChanged(int index);
 
 private slots:
     void    closeTab(int index);

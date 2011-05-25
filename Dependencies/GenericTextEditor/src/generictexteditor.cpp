@@ -258,6 +258,10 @@ void GenericTextEditor::saveAll()
     }
 }
 //-----------------------------------------------------------------------------------------
+void GenericTextEditor::tabChanged(int index)
+{
+}
+//-----------------------------------------------------------------------------------------
 GenericTextEditorDocument::GenericTextEditorDocument( QWidget *parent) : QPlainTextEdit(parent), 
 mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false)
 {
