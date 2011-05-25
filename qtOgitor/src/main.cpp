@@ -83,28 +83,35 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
         }
     }
 
-#if ((OGRE_VERSION_MAJOR * 10) + OGRE_VERSION_MINOR) >= 17
+	QSettings settings;
+	settings.beginGroup("preferences");
+
+	QString renderer = settings.value("renderSystem", "").toString();
+
     Ogre::RenderSystemList::const_iterator pRend = mOgreRoot->getAvailableRenderers().begin();
     while (pRend != mOgreRoot->getAvailableRenderers().end())
-#else
-    Ogre::RenderSystemList::const_iterator pRend = mOgreRoot->getAvailableRenderers()->begin();
-    while (pRend != mOgreRoot->getAvailableRenderers()->end())
-#endif
     {
         Ogre::String rName = (*pRend)->getName();
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-        if (rName == "Direct3D9 Rendering Subsystem")
-#else
-        if (rName == "OpenGL Rendering Subsystem")
-#endif
-            break;
+
+		// Per default we load OpenGL
+		if (renderer.isEmpty())
+		{
+			if (rName == "OpenGL Rendering Subsystem")
+			{
+				settings.setValue("renderSystem", rName.c_str());
+				break;
+			}
+		}
+		else
+		{
+			if (rName == renderer.toStdString())
+				break;
+		}
+
         pRend++;
     }
 
     Ogre::RenderSystem *rsys = *pRend;
-
-    QSettings settings;
-    settings.beginGroup("preferences");
 
     int antialias = settings.value("antiAliasing", 0).toInt();
     bool vsync = settings.value("useVSync", false).toBool();
@@ -118,11 +125,11 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
     rsys->setConfigOption("FSAA", Ogre::StringConverter::toString(antialias));
 
-    // Set the rendering system and Initialise OGRE
+    // Set the rendering system and initialise OGRE
     mOgreRoot->setRenderSystem(rsys);
 
     // initialize without creating window
-    mOgreRoot->getRenderSystem()->setConfigOption( "Full Screen", "No" );
+    mOgreRoot->getRenderSystem()->setConfigOption("Full Screen", "No");
     //mOgreRoot->saveConfig();
     mOgreRoot->initialise(false); // don't create a window
 
