@@ -127,7 +127,7 @@ public:
     void setSwitchingScene(bool switching) {mSwitchingScene = switching;};
     void processMaterialName(Ogre::Mesh *mesh, Ogre::String *name);
     void processSkeletonName(Ogre::Mesh *mesh, Ogre::String *name){};
-	void stopRendering(bool stop) {mRenderStop = stop;};
+    void stopRendering(bool stop) {mRenderStop = stop;};
 
     OverlayWidget* getOverlayWidget() {return mOverlayWidget;};
 

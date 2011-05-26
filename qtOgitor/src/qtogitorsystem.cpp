@@ -398,15 +398,15 @@ Ogitors::DIALOGRET QtOgitorSystem::DisplayMessageDialog(Ogre::UTFString msg, Ogi
 Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
-	
-	QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), QApplication::applicationDirPath()
+    
+    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), QApplication::applicationDirPath()
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
       , QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
 #else
       );
 #endif
 
-	mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+    mOgitorMainWindow->getOgreWidget()->stopRendering(false);
 
     return path.toStdString();
 }
@@ -414,8 +414,8 @@ Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
 Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
-	
-	QSettings settings;
+    
+    QSettings settings;
     QString theList;
     QString selectedFilter;
     QString oldOpenPath;
@@ -445,7 +445,7 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
     );
 #endif
 
-	mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+    mOgitorMainWindow->getOgreWidget()->stopRendering(false);
 
     if(path != "")
     {
@@ -468,8 +468,8 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
 Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
-	
-	QSettings settings;
+    
+    QSettings settings;
     QString theList;
     QString selectedFilter;
     QString oldSavePath;
@@ -501,7 +501,7 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
     );
 #endif
 
-	mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+    mOgitorMainWindow->getOgreWidget()->stopRendering(false);
 
     if(path != "")
     {
