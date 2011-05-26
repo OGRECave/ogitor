@@ -88,26 +88,24 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
 	QString renderer = settings.value("renderSystem", "").toString();
 
+    if(renderer.isEmpty())
+    {
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+        renderer = "Direct3D9 Rendering Subsystem";
+#else
+        renderer = "OpenGL Rendering Subsystem";
+#endif
+        settings.setValue("renderSystem", renderer);
+    }
+
     Ogre::RenderSystemList::const_iterator pRend = mOgreRoot->getAvailableRenderers().begin();
     while (pRend != mOgreRoot->getAvailableRenderers().end())
     {
         Ogre::String rName = (*pRend)->getName();
 
-		// Per default we load OpenGL
-		if (renderer.isEmpty())
-		{
-			if (rName == "OpenGL Rendering Subsystem")
-			{
-				settings.setValue("renderSystem", rName.c_str());
-				break;
-			}
-		}
-		else
-		{
-			if (rName == renderer.toStdString())
-				break;
-		}
-
+    	if (rName == renderer.toStdString())
+	        break;
+		
         pRend++;
     }
 

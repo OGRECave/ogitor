@@ -60,10 +60,6 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     setupUi(this);
 
-    connect(buttonBox,                   SIGNAL(accepted()),         this, SLOT(onAccept()));
-    connect(buttonBox,                   SIGNAL(rejected()),         this, SLOT(reject()));
-    connect(mBrowseProjectDirButton,     SIGNAL(clicked()),          this, SLOT(browse()));
-
     mOptions = options;
 
     mProjectDirTextBox->setText(mOptions->ProjectDir.c_str());
@@ -296,10 +292,11 @@ bool SettingsDialog::eventFilter(QObject * watched, QEvent * e)
         if(e->type() == QEvent::ContextMenu)
         {
             QMenu *menu = new QMenu(this);
-            menu->addAction(tr("Add Directory"), this, SLOT(onAddDirectory()));
-            QAction *removeAction = menu->addAction(tr("Remove Entry"), this, SLOT(onRemoveEntry()));
-            removeAction->setEnabled(mResourceListBox->currentIndex().row() >= 0);
-
+            QAction *tempAct = menu->addAction(tr("Add Directory"), this, SLOT(onAddDirectory()));
+            tempAct->setEnabled(!mOptions->IsNewProject);
+            tempAct = menu->addAction(tr("Remove Entry"), this, SLOT(onRemoveEntry()));
+            tempAct->setEnabled(mResourceListBox->currentIndex().row() >= 0);
+            
             menu->exec(QCursor::pos());
             delete menu;
             e->ignore();
