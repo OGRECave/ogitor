@@ -62,8 +62,8 @@ public Q_SLOTS:
     void onCommandRename();
     void onCommandReadOnly();
     void onCommandHidden();
-	void onCommandAddFolder();
-	void onCommandAddFile();
+    void onCommandAddFolder();
+    void onCommandAddFile();
 
 protected:
     OfsTreeWidget* ofsWidget;
@@ -72,8 +72,8 @@ protected:
     QMenu*         menuCommands; 
     
     QAction*       actCommandRefresh;
-	QAction*	   actCommandAddFolder;
-	QAction*       actCommandAddFile;
+    QAction*       actCommandAddFolder;
+    QAction*       actCommandAddFile;
     QAction*       actCommandExtract;
     QAction*       actCommandDefrag;
     QAction*       actCommandDelete;
