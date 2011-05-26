@@ -2116,10 +2116,13 @@ namespace OFS
                 }
             }
 
-            desc->FileSize += length;
-            mStream.seekp(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), fstream::beg);
-            mStream.write((char*)&(desc->FileSize), sizeof(unsigned int));
-            mStream.flush();
+            if(write_pos_save + length > desc->FileSize)
+            {
+                desc->FileSize = write_pos_save + length;
+                mStream.seekp(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), fstream::beg);
+                mStream.write((char*)&(desc->FileSize), sizeof(unsigned int));
+                mStream.flush();
+            }
 
             handle._setWritePos(write_pos_save + length);
         }
