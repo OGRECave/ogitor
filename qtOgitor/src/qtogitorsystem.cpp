@@ -397,19 +397,25 @@ Ogitors::DIALOGRET QtOgitorSystem::DisplayMessageDialog(Ogre::UTFString msg, Ogi
 //-------------------------------------------------------------------------------
 Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
 {
-    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), QApplication::applicationDirPath()
+    mOgitorMainWindow->getOgreWidget()->stopRendering(true);
+	
+	QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), QApplication::applicationDirPath()
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
       , QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
 #else
       );
 #endif
 
+	mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
 Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
 {
-    QSettings settings;
+    mOgitorMainWindow->getOgreWidget()->stopRendering(true);
+	
+	QSettings settings;
     QString theList;
     QString selectedFilter;
     QString oldOpenPath;
@@ -439,6 +445,8 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
     );
 #endif
 
+	mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+
     if(path != "")
     {
         settings.beginGroup("OgitorSystem");
@@ -459,7 +467,9 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
 //-------------------------------------------------------------------------------
 Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
 {
-    QSettings settings;
+    mOgitorMainWindow->getOgreWidget()->stopRendering(true);
+	
+	QSettings settings;
     QString theList;
     QString selectedFilter;
     QString oldSavePath;
@@ -490,6 +500,9 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
 #else
     );
 #endif
+
+	mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+
     if(path != "")
     {
         settings.beginGroup("OgitorSystem");
