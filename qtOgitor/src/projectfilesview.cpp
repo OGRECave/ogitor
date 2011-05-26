@@ -37,6 +37,7 @@
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
 
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
@@ -63,6 +64,14 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     actCommandDelete->setStatusTip(tr("Delete Selected File/Folder"));
     actCommandDelete->setIcon( QIcon( ":/icons/trash.svg"));
 
+	actCommandAddFolder = new QAction(tr("Add Folder"), this);
+	actCommandAddFolder->setStatusTip(tr("Add Folder"));
+	actCommandAddFolder->setIcon( QIcon( ":/icons/import.svg"));
+
+	actCommandAddFile = new QAction(tr("Add File"), this);
+	actCommandAddFile->setStatusTip(tr("Add a single File"));
+	actCommandAddFile->setIcon( QIcon( ":/icons/additional.svg"));
+
     actCommandRename = new QAction(tr("Rename"), this);
     actCommandRename->setStatusTip(tr("Rename Selected File/Folder"));
     actCommandRename->setIcon( QIcon( ":/icons/editrename.svg"));
@@ -77,12 +86,17 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     actCommandHidden->setCheckable(true);
     actCommandHidden->setChecked(false);
 
+	menuCommands->addAction(actCommandAddFile);
+	menuCommands->addAction(actCommandAddFolder);
+	menuCommands->addSeparator();
     menuCommands->addAction(actCommandRename);
     menuCommands->addAction(actCommandReadOnly);
     menuCommands->addAction(actCommandHidden);
     menuCommands->addSeparator();
     menuCommands->addAction(actCommandDelete);
 
+	actCommandAddFile->setEnabled(false);
+	actCommandAddFolder->setEnabled(false);
     actCommandRefresh->setEnabled(false);
     actCommandExtract->setEnabled(false);
     actCommandDefrag->setEnabled(false);
@@ -91,13 +105,15 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     actCommandReadOnly->setEnabled(false);
     actCommandHidden->setEnabled(false);
 
-    connect(actCommandRefresh, SIGNAL(triggered()), this, SLOT(onCommandRefresh()));
-    connect(actCommandExtract, SIGNAL(triggered()), this, SLOT(onCommandExtract()));
-    connect(actCommandDefrag, SIGNAL(triggered()), this, SLOT(onCommandDefrag()));
-    connect(actCommandDelete, SIGNAL(triggered()), this, SLOT(onCommandDelete()));
-    connect(actCommandRename, SIGNAL(triggered()), this, SLOT(onCommandRename()));
-    connect(actCommandReadOnly, SIGNAL(triggered()), this, SLOT(onCommandReadOnly()));
-    connect(actCommandHidden, SIGNAL(triggered()), this, SLOT(onCommandHidden()));
+	connect(actCommandAddFile,		SIGNAL(triggered()), this, SLOT(onCommandAddFile()));
+	connect(actCommandAddFolder,	SIGNAL(triggered()), this, SLOT(onCommandAddFolder()));
+    connect(actCommandRefresh,		SIGNAL(triggered()), this, SLOT(onCommandRefresh()));
+    connect(actCommandExtract,		SIGNAL(triggered()), this, SLOT(onCommandExtract()));
+    connect(actCommandDefrag,		SIGNAL(triggered()), this, SLOT(onCommandDefrag()));
+    connect(actCommandDelete,		SIGNAL(triggered()), this, SLOT(onCommandDelete()));
+    connect(actCommandRename,		SIGNAL(triggered()), this, SLOT(onCommandRename()));
+    connect(actCommandReadOnly,		SIGNAL(triggered()), this, SLOT(onCommandReadOnly()));
+    connect(actCommandHidden,		SIGNAL(triggered()), this, SLOT(onCommandHidden()));
 
     toolBar = new QToolBar();
     toolBar->setIconSize(QSize(16, 16));
@@ -178,14 +194,18 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
 
        if(path == "/")
        {
-           actCommandReadOnly->setEnabled(false);
+		   actCommandAddFile->setEnabled(true);
+           actCommandAddFolder->setEnabled(true);
+		   actCommandReadOnly->setEnabled(false);
            actCommandHidden->setEnabled(false);
            actCommandRename->setEnabled(false);
            actCommandDelete->setEnabled(false);
        }
        else
        {
-           actCommandReadOnly->setEnabled(true);
+		   actCommandAddFile->setEnabled(false);
+           actCommandAddFolder->setEnabled(false);
+		   actCommandReadOnly->setEnabled(true);
            actCommandHidden->setEnabled(true);
            actCommandRename->setEnabled(true);
            actCommandDelete->setEnabled(true);
@@ -204,12 +224,14 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
     }
     else
     {
-       actCommandReadOnly->setChecked(false);
-       actCommandHidden->setChecked(false);
-       actCommandReadOnly->setEnabled(false);
-       actCommandHidden->setEnabled(false);
-       actCommandRename->setEnabled(false);
-       actCommandDelete->setEnabled(false);
+		actCommandAddFile->setEnabled(false);
+		actCommandAddFolder->setEnabled(false);
+		actCommandReadOnly->setChecked(false);
+		actCommandHidden->setChecked(false);
+		actCommandReadOnly->setEnabled(false);
+		actCommandHidden->setEnabled(false);
+		actCommandRename->setEnabled(false);
+		actCommandDelete->setEnabled(false);
     }
 
     QPoint globalPos = ofsWidget->mapToGlobal(pos);
@@ -218,7 +240,9 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::ofsWidgetBusyState(bool state)
 {
-    actCommandRefresh->setEnabled(!state);
+	actCommandAddFile->setEnabled(!state);
+	actCommandAddFolder->setEnabled(!state);
+	actCommandRefresh->setEnabled(!state);
     actCommandExtract->setEnabled(!state);
     actCommandDefrag->setEnabled(!state);
 }
@@ -383,5 +407,25 @@ void ProjectFilesViewWidget::onCommandHidden()
             
         ofsWidget->refreshWidget();            
     }
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandAddFolder()
+{
+	Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
+	Ogre::String folderName = mSystem->DisplayDirectorySelector(OTR("Choose folder to import"));
+
+	QStringList folders(folderName.c_str());
+	if(!folders.empty())
+		ofsWidget->addFiles("/", folders);
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onCommandAddFile()
+{
+	Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
+	Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose folder to import"), Ogitors::UTFStringVector());
+
+	QStringList files(fileName.c_str());
+	if(!files.empty())
+		ofsWidget->addFiles("/", files);
 }
 //----------------------------------------------------------------------------------------
