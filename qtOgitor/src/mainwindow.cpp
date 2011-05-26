@@ -1421,7 +1421,7 @@ void MainWindow::onSceneRunStateChange(Ogitors::IEvent* evt)
     {
         //reload the zone selection widget when a scene is loaded
         RunState state = change_event->getType();
-	
+    
         if(state == RS_STOPPED)
         {
             actPlayerRunPause->setEnabled(OgitorsRoot::getSingletonPtr()->IsSceneLoaded());
@@ -1460,7 +1460,7 @@ void MainWindow::onSceneEditorToolChange(Ogitors::IEvent* evt)
     {
         //reload the zone selection widget when a scene is loaded
         unsigned int tool = change_event->getType();
-	
+    
         actSelect->setChecked(tool == TOOL_SELECT);
         actMove->setChecked(tool == TOOL_MOVE);
         actRotate->setChecked(tool == TOOL_ROTATE);
@@ -1481,7 +1481,7 @@ void MainWindow::onSceneModifiedChange(Ogitors::IEvent* evt)
     if(change_event)
     {
         bool state = change_event->getState();
-	
+    
         if(state != actSave->isEnabled())
         {
             QString appTitle;
