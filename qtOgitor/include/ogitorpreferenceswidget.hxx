@@ -60,8 +60,8 @@ public Q_SLOTS:
     void setDirty();
     void languageChanged();
     void treeChanged(QTreeWidgetItem* item, int row);
-	void renderSystemChanged();
-	void VSyncChanged();
+    void renderSystemChanged();
+    void VSyncChanged();
     
 Q_SIGNALS:
     void isDirty();
@@ -73,8 +73,8 @@ private:
     
     bool                    mPluginsChanged;
     bool                    mLanguageChanged;
-	bool					mRenderSystemChanged;
-	bool					mVSyncChanged;
+    bool                    mRenderSystemChanged;
+    bool                    mVSyncChanged;
     QMap<QString, QString>  mLanguageMap;
 };
 

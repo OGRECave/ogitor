@@ -231,7 +231,7 @@ void MainWindow::addActions()
     QSettings settings;
     QString style = settings.value("preferences/customStyleSheet").toString();
     
-	actToggleWorldSpaceGizmo = new QAction(tr("World Space Gizmo"), this);
+    actToggleWorldSpaceGizmo = new QAction(tr("World Space Gizmo"), this);
     actToggleWorldSpaceGizmo->setStatusTip(tr("Toggle World Space Gizmo"));
     
     QString orient_icon = "";
@@ -240,7 +240,7 @@ void MainWindow::addActions()
     } else {
         orient_icon = QString::fromLatin1(":/icons/orient_obj.svg");
     }
-	actToggleWorldSpaceGizmo->setIcon(QIcon(orient_icon));
+    actToggleWorldSpaceGizmo->setIcon(QIcon(orient_icon));
     actToggleWorldSpaceGizmo->setCheckable(true);
 
     actToggleWalkAround = new QAction(tr("Toggle Walk Around Mode"), this);
@@ -252,8 +252,8 @@ void MainWindow::addActions()
     } else {
         fly_icon = QString::fromLatin1(":/icons/mode_fly.svg");
     }
-	
-	actToggleWalkAround->setIcon(QIcon(fly_icon));
+    
+    actToggleWalkAround->setIcon(QIcon(fly_icon));
     actToggleWalkAround->setCheckable(true);
 
     actToggleGrid = new QAction(tr("Grid"), this);
@@ -529,7 +529,7 @@ void MainWindow::updateLoadTerminateActions(bool loaded)
     actScale->setEnabled(loaded);
     actToggleWorldSpaceGizmo->setEnabled(loaded);
     actToggleWorldSpaceGizmo->setChecked(false);
-	QSettings settings;
+    QSettings settings;
     QString style = settings.value("preferences/customStyleSheet").toString();
     QString orient_icon = "";
     if(style == ":/stylesheets/dark.qss") {
@@ -1185,7 +1185,7 @@ void MainWindow::searchLog()
 //------------------------------------------------------------------------------
 void MainWindow::openPreferences()
 {
-	mPrefManager->showDialog();
+    mPrefManager->showDialog();
 }
 //------------------------------------------------------------------------------
 void MainWindow::openSceneOptions()
@@ -1373,7 +1373,7 @@ void MainWindow::toggleWorldSpaceGizmo()
 
     OgitorsRoot::getSingletonPtr()->SetWorldSpaceGizmoOrientation(state);
     
-	QSettings settings;
+    QSettings settings;
     QString style = settings.value("preferences/customStyleSheet").toString();
     QString orient_world_icon = "";
     QString orient_obj_icon = "";
@@ -1396,7 +1396,7 @@ void MainWindow::toggleWalkAround()
 
     OgitorsRoot::getSingletonPtr()->SetWalkAroundMode(state);
     
-	QSettings settings;
+    QSettings settings;
     QString style = settings.value("preferences/customStyleSheet").toString();
     QString fly_icon = "";
     QString walk_icon = "";
@@ -1408,7 +1408,7 @@ void MainWindow::toggleWalkAround()
         walk_icon = QString::fromLatin1(":/icons/mode_walk.svg");
     }
 
-	if(state)
+    if(state)
         actToggleWalkAround->setIcon(QIcon(walk_icon));
     else
         actToggleWalkAround->setIcon(QIcon(fly_icon));

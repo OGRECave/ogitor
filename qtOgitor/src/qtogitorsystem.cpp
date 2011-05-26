@@ -203,8 +203,8 @@ bool CopyDir(const QString& src, const QString& target, const QString& targetRoo
     if (from.endsWith("/") || from.endsWith("\\")) {
         from.resize(from.length() - 1);
     }
-	
-	QString targetDir(targetRoot);
+    
+    QString targetDir(targetRoot);
     if (targetDir.endsWith("/") || targetDir.endsWith("\\")) {
         targetDir.resize(targetDir.length() - 1);
     }
@@ -227,8 +227,8 @@ bool CopyDir(const QString& src, const QString& target, const QString& targetRoo
     while(it.hasNext())
     {
         filename = it.next();
-		if(filename.compare(targetDir) == 0)	// infinite cycle would happen if the target dir is within the source dir
-			continue;
+        if(filename.compare(targetDir) == 0)    // infinite cycle would happen if the target dir is within the source dir
+            continue;
         if (QDir(filename).exists())
         {
             if(!filename.endsWith(".")) {

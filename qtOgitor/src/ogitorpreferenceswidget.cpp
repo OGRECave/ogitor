@@ -46,12 +46,12 @@
 OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, QWidget *parent) 
 : QWidget(parent)
 {
-	mPluginsChanged			= false;
-	mLanguageChanged		= false;
-	mRenderSystemChanged	= false;	
-	mVSyncChanged			= false;
-	
-	setPrefsSectionName(prefSectionName);
+    mPluginsChanged            = false;
+    mLanguageChanged        = false;
+    mRenderSystemChanged    = false;    
+    mVSyncChanged            = false;
+    
+    setPrefsSectionName(prefSectionName);
     
     setupUi(this);
     styleSheetList->addItem(":/stylesheets/obsidian.qss");
@@ -65,7 +65,7 @@ OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, Q
     styleSheetList->setCurrentIndex(0);
 #endif
 
-	QDir myDir("../languages");
+    QDir myDir("../languages");
     QStringList list = myDir.entryList(QStringList("ogitor_*.qm")); // filter only translation files
     
     /** Add System Default Option Manually */
@@ -278,8 +278,8 @@ void OgitorPreferencesWidget::getPreferences(Ogre::NameValuePairList& preference
         Ogre::StringConverter::toString(useVSyncCheckBox->isChecked())));
     preferences.insert(Ogre::NameValuePairList::value_type("antiAliasing",
         Ogre::String(antiAlliasingComboBox->currentText().toStdString())));
-	preferences.insert(Ogre::NameValuePairList::value_type("renderSystem",
-		Ogre::String(renderSystemComboBox->currentText().toStdString())));
+    preferences.insert(Ogre::NameValuePairList::value_type("renderSystem",
+        Ogre::String(renderSystemComboBox->currentText().toStdString())));
 
     // Delete existing plugin usage settings
     QSettings settings;
@@ -338,8 +338,8 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
     
     if(antiAlliasingComboBox->findText(settings.value("antiAliasing").toString()) >= 0)
         antiAlliasingComboBox->setCurrentIndex(antiAlliasingComboBox->findText(settings.value("antiAliasing").toString()));
-	if(renderSystemComboBox->findText(settings.value("renderSystem").toString()) >= 0)
-		renderSystemComboBox->setCurrentIndex(renderSystemComboBox->findText(settings.value("renderSystem").toString()));
+    if(renderSystemComboBox->findText(settings.value("renderSystem").toString()) >= 0)
+        renderSystemComboBox->setCurrentIndex(renderSystemComboBox->findText(settings.value("renderSystem").toString()));
     
     useVSyncCheckBox->setChecked(settings.value("useVSync").toBool());
 
@@ -378,15 +378,15 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
     settings.endGroup();
     applyPreferences();
 
-	connect(splashscreenCheckBox,     SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
-	connect(loadLastCheckBox,         SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
-	connect(styleSheetList,           SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
-	connect(languageFileList,         SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
-	connect(languageFileList,         SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged()));
-	connect(renderSystemComboBox,     SIGNAL(currentIndexChanged(int)), this, SLOT(renderSystemChanged()));
-	connect(useVSyncCheckBox,         SIGNAL(stateChanged(int)),        this, SLOT(VSyncChanged()));
-	connect(antiAlliasingComboBox,    SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
-	connect(treeWidget,               SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeChanged(QTreeWidgetItem*, int)));
+    connect(splashscreenCheckBox,     SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
+    connect(loadLastCheckBox,         SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
+    connect(styleSheetList,           SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
+    connect(languageFileList,         SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
+    connect(languageFileList,         SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged()));
+    connect(renderSystemComboBox,     SIGNAL(currentIndexChanged(int)), this, SLOT(renderSystemChanged()));
+    connect(useVSyncCheckBox,         SIGNAL(stateChanged(int)),        this, SLOT(VSyncChanged()));
+    connect(antiAlliasingComboBox,    SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
+    connect(treeWidget,               SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeChanged(QTreeWidgetItem*, int)));
 
     return this;
 }
@@ -424,13 +424,13 @@ bool OgitorPreferencesWidget::applyPreferences()
         QMessageBox::warning(QApplication::activeWindow(), tr("Preferences"), tr("Plugin usage will be changed when Ogitor is restarted!"), QMessageBox::Ok);
     mPluginsChanged = false;
 
-	if(mRenderSystemChanged)
-		QMessageBox::warning(QApplication::activeWindow(), tr("Preferences"), tr("Render System will be changed when Ogitor is restarted!"), QMessageBox::Ok);
-	mRenderSystemChanged = false;
+    if(mRenderSystemChanged)
+        QMessageBox::warning(QApplication::activeWindow(), tr("Preferences"), tr("Render System will be changed when Ogitor is restarted!"), QMessageBox::Ok);
+    mRenderSystemChanged = false;
 
-	if(mVSyncChanged)
-		QMessageBox::warning(QApplication::activeWindow(), tr("Preferences"), tr("VSync usage will be changed when Ogitor is restarted!"), QMessageBox::Ok);
-	mVSyncChanged = false;
+    if(mVSyncChanged)
+        QMessageBox::warning(QApplication::activeWindow(), tr("Preferences"), tr("VSync usage will be changed when Ogitor is restarted!"), QMessageBox::Ok);
+    mVSyncChanged = false;
 
     //// Unload plugins
     //const Ogitors::PluginEntryMap* pPluginMap = Ogitors::OgitorsRoot::getSingletonPtr()->GetPluginMap();
@@ -491,7 +491,7 @@ void OgitorPreferencesWidget::setDirty()
 void OgitorPreferencesWidget::languageChanged()
 {
     mLanguageChanged = true;
-	setDirty();
+    setDirty();
 }
 //----------------------------------------------------------------------------------------
 void OgitorPreferencesWidget::treeChanged(QTreeWidgetItem* item, int row)
@@ -502,13 +502,13 @@ void OgitorPreferencesWidget::treeChanged(QTreeWidgetItem* item, int row)
 //----------------------------------------------------------------------------------------
 void OgitorPreferencesWidget::renderSystemChanged()
 {
-	mRenderSystemChanged = true;
-	setDirty();
+    mRenderSystemChanged = true;
+    setDirty();
 }
 //----------------------------------------------------------------------------------------
 void OgitorPreferencesWidget::VSyncChanged()
 {
-	mVSyncChanged = true;
-	setDirty();
+    mVSyncChanged = true;
+    setDirty();
 }
 //----------------------------------------------------------------------------------------
