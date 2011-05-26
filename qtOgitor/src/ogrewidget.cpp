@@ -167,8 +167,8 @@ void OgreWidget::initializeOGRE()
         &params );
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-	mRenderWindow->windowMovedOrResized();
-	//resizeEvent(0);
+    mRenderWindow->windowMovedOrResized();
+    //resizeEvent(0);
 #endif
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     mRenderWindow->resize(width(), height());

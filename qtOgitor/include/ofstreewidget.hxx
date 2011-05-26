@@ -141,11 +141,11 @@ public:
 
     enum Capabilities
     {
-        CAP_SHOW_DIRS		= 0,
-        CAP_SHOW_FILES		= 1,
-        CAP_ALLOW_DROPS		= 2,
-        CAP_SHOW_COLORS		= 4,
-        CAP_FULL_FUNCTIONS	= 0xFFFF
+        CAP_SHOW_DIRS        = 0,
+        CAP_SHOW_FILES       = 1,
+        CAP_ALLOW_DROPS      = 2,
+        CAP_SHOW_COLORS      = 4,
+        CAP_FULL_FUNCTIONS   = 0xFFFF
     };
 
     OfsTreeWidget(QWidget *parent = 0, unsigned int capabilities = CAP_SHOW_DIRS, std::string initialSelection = "/");
@@ -154,7 +154,7 @@ public:
     const std::string& getSelected() { return mSelected; }
     void refreshWidget();
     void extractFiles();
-	void addFiles(QString rootDir, QStringList list);
+    void addFiles(QString rootDir, QStringList list);
 
 public Q_SLOTS:
     void onSelectionChanged();

@@ -45,34 +45,34 @@
 
 class LineEditWithHistory : public QLineEdit
 {
-	Q_OBJECT
-	Q_DISABLE_COPY(LineEditWithHistory)
+    Q_OBJECT
+    Q_DISABLE_COPY(LineEditWithHistory)
 public:
-	explicit LineEditWithHistory(QWidget *parent = 0);
-	virtual ~LineEditWithHistory();
+    explicit LineEditWithHistory(QWidget *parent = 0);
+    virtual ~LineEditWithHistory();
 
-	void AddToHistory();
-	void GetPrevious();
-	void GetNext();
+    void AddToHistory();
+    void GetPrevious();
+    void GetNext();
 
-	typedef std::vector<std::string> CommandList;
+    typedef std::vector<std::string> CommandList;
 
-	CommandList m_history;
-	int m_nCurrentCommand;
-	std::string m_sEditBuffer;
+    CommandList m_history;
+    int m_nCurrentCommand;
+    std::string m_sEditBuffer;
 
 public slots:
 
-	void StoreLine();
+    void StoreLine();
 
 signals:
 
-	void UpPressed();
-	void DownPressed();
+    void UpPressed();
+    void DownPressed();
 
 protected:
 
-	void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // LINEEDITWITHHISTORY_H

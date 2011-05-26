@@ -44,10 +44,10 @@
 LineEditWithHistory::LineEditWithHistory(QWidget *parent) :
     QLineEdit(parent)
 {
-	m_nCurrentCommand = -1;
-	m_history.reserve(100);
+    m_nCurrentCommand = -1;
+    m_history.reserve(100);
 
-	QObject::connect(this, SIGNAL(returnPressed()), this, SLOT(StoreLine()));
+    QObject::connect(this, SIGNAL(returnPressed()), this, SLOT(StoreLine()));
 }
 
 LineEditWithHistory::~LineEditWithHistory()
@@ -56,86 +56,86 @@ LineEditWithHistory::~LineEditWithHistory()
 
 void LineEditWithHistory::keyPressEvent(QKeyEvent *event)
 {
-	if(event->key() == Qt::Key_Up)
-	{
-		GetPrevious();
-		emit UpPressed();
-		return;
-	}
+    if(event->key() == Qt::Key_Up)
+    {
+        GetPrevious();
+        emit UpPressed();
+        return;
+    }
 
-	if(event->key() == Qt::Key_Down)
-	{
-		GetNext();
-		emit DownPressed();
-		return;
-	}
+    if(event->key() == Qt::Key_Down)
+    {
+        GetNext();
+        emit DownPressed();
+        return;
+    }
 
-	if(event->key() == Qt::Key_Escape)
-	{
-		setText(m_sEditBuffer.c_str());
-		m_nCurrentCommand = m_history.size();
-		return;
-	}
+    if(event->key() == Qt::Key_Escape)
+    {
+        setText(m_sEditBuffer.c_str());
+        m_nCurrentCommand = m_history.size();
+        return;
+    }
 
-	QLineEdit::keyPressEvent(event);
+    QLineEdit::keyPressEvent(event);
 
-	m_sEditBuffer = text().toStdString();
+    m_sEditBuffer = text().toStdString();
 }
 
 void LineEditWithHistory::StoreLine()
 {
-	AddToHistory();
+    AddToHistory();
 }
 
 void LineEditWithHistory::AddToHistory()
 {
-	if(m_nCurrentCommand <= 0)
-	{
-		m_history.push_back(text().toStdString());
-		m_nCurrentCommand = m_history.size();
-	}
-	else if(text().toStdString() != m_history[m_nCurrentCommand-1])
-	{
-		m_history.push_back(text().toStdString());
-		m_nCurrentCommand = m_history.size();
-	}
+    if(m_nCurrentCommand <= 0)
+    {
+        m_history.push_back(text().toStdString());
+        m_nCurrentCommand = m_history.size();
+    }
+    else if(text().toStdString() != m_history[m_nCurrentCommand-1])
+    {
+        m_history.push_back(text().toStdString());
+        m_nCurrentCommand = m_history.size();
+    }
 }
 
 void LineEditWithHistory::GetPrevious()
 {
-	if(m_history.size() <= 0)
-	{
-		m_nCurrentCommand = -1;
-		return;
-	}
+    if(m_history.size() <= 0)
+    {
+        m_nCurrentCommand = -1;
+        return;
+    }
 
-	m_nCurrentCommand--;
-	if(m_nCurrentCommand < 0)
+    m_nCurrentCommand--;
+    if(m_nCurrentCommand < 0)
         m_nCurrentCommand = 0;
-	if(m_nCurrentCommand >= (int)m_history.size())
+    if(m_nCurrentCommand >= (int)m_history.size())
         m_nCurrentCommand = m_history.size() - 1;
 
-	setText(m_history[m_nCurrentCommand].c_str());
+    setText(m_history[m_nCurrentCommand].c_str());
 }
 
 void LineEditWithHistory::GetNext()
 {
-	if(m_history.size() <= 0)
-	{
-		m_nCurrentCommand = -1;
-		return;
-	}
+    if(m_history.size() <= 0)
+    {
+        m_nCurrentCommand = -1;
+        return;
+    }
 
-	m_nCurrentCommand++;
-	if(m_nCurrentCommand < 0)                  
+    m_nCurrentCommand++;
+    if(m_nCurrentCommand < 0)                  
         m_nCurrentCommand = 0;
-	if(m_nCurrentCommand >= (int)m_history.size())
-	{
-		m_nCurrentCommand = m_history.size();
-		setText(m_sEditBuffer.c_str());
+    if(m_nCurrentCommand >= (int)m_history.size())
+    {
+        m_nCurrentCommand = m_history.size();
+        setText(m_sEditBuffer.c_str());
 
-		return;
-	}
+        return;
+    }
 
-	setText(m_history[m_nCurrentCommand].c_str());
+    setText(m_history[m_nCurrentCommand].c_str());
 }

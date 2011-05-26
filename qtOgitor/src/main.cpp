@@ -83,10 +83,10 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
         }
     }
 
-	QSettings settings;
-	settings.beginGroup("preferences");
+    QSettings settings;
+    settings.beginGroup("preferences");
 
-	QString renderer = settings.value("renderSystem", "").toString();
+    QString renderer = settings.value("renderSystem", "").toString();
 
     if(renderer.isEmpty())
     {
@@ -103,9 +103,9 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
     {
         Ogre::String rName = (*pRend)->getName();
 
-    	if (rName == renderer.toStdString())
-	        break;
-		
+        if (rName == renderer.toStdString())
+            break;
+        
         pRend++;
     }
 
