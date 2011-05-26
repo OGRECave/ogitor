@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<QtHelpProject version="1.0">
+	<namespace>Ogitor</namespace>
+	<virtualFolder>doc</virtualFolder>
+	<customFilter name="Ogitor Help 0.4.3">
+		<filterAttribute>Ogitor Help</filterAttribute>
+		<filterAttribute>0.4.3</filterAttribute>
+	</customFilter>
+	<filterSection>
+		<filterAttribute>Ogitor Help</filterAttribute>
+		<filterAttribute>0.4.3</filterAttribute>
+		<toc>
+			<section title="Ogitor Help" ref="index.html">
+				<section title="Introduction" ref="index.html"/>
+				<section title="Interface" ref="interface.html"/>
+				<section title="Controls" ref="controls.html"/>
+				<section title="Your First Scene" ref="first_scene.html"/>
+			</section>
+		</toc>
+		<keywords>
+			<keyword name="Features" id="OgitorHelp::features" ref="index.html#Features"/>
+			<keyword name="Plugins" id="OgitorHelp::plugins" ref="index.html#Supported-PlugIns"/>
+			<keyword name="Roadmap" id="OgitorHelp::roadmap" ref="index.html#Roadmap"/>
+			<keyword name="Interface" id="OgitorHelp::interface" ref="interface.html#Interface"/>
+			<keyword name="Movement" id="OgitorHelp::movement" ref="controls.html#Basic-Movement"/>
+			<keyword name="Controls" id="OgitorHelp::controls" ref="controls.html#Controls"/>
+			<keyword name="Move" id="OgitorHelp::move" ref="controls.html#Move"/>
+			<keyword name="Rotate" id="OgitorHelp::rotate" ref="controls.html#Rotate"/>
+			<keyword name="Scale" id="OgitorHelp::scale" ref="controls.html#Scale"/>
+			<keyword name="Deform" id="OgitorHelp::smooth" ref="controls.html#Terrain-SmoothDeform"/>
+			<keyword name="Smooth" id="OgitorHelp::deform" ref="controls.html#Terrain-SmoothDeform"/>
+			<keyword name="Project" id="OgitorHelp::project" ref="first_scene.html#Creating-A-New-Project"/>
+			<keyword name="Resources" id="OgitorHelp::resources" ref="first_scene.html#Setting-Up-Project-Resources"/>
+		</keywords>
+		<files>
+			<file>index.html</file>
+			<file>controls.html</file>
+			<file>interface.html</file>
+			<file>first_scene.html</file>
+			<file>scm.css</file>
+			<file>application.css</file>
+			<file>jstoolbar.css</file>
+			<file>intro1.png</file>
+			<file>interface.png</file>
+		</files>
+	</filterSection>
+</QtHelpProject>

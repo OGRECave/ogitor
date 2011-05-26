@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>syntax_highlightning/script.txt</file>
+        <file>icons/script2.svg</file>
+    </qresource>
+</RCC>
