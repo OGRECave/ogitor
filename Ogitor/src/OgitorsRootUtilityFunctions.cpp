@@ -276,7 +276,7 @@ Vector3 OgitorsRoot::GetGizmoIntersectCameraPlane(Ogre::Vector3& pos, Ogre::Quat
     return vPos;
 }
 //-----------------------------------------------------------------------------------------
-void OgitorsRoot::FillResourceGroup(Ogre::ResourceGroupManager *mngr,Ogre::StringVector &list,Ogre::String path,Ogre::String group)
+void OgitorsRoot::FillResourceGroup(Ogre::ResourceGroupManager *mngr, Ogre::StringVector &list, Ogre::String path, Ogre::String group)
 {
     Ogre::String strTemp;
     unsigned int itemcount;
@@ -1467,7 +1467,7 @@ void OgitorsRoot::PrepareProjectResources()
         mngr->addResourceLocation(mProjectOptions.ProjectDir + mProjectOptions.ProjectName + ".ofs::" + tempDir, "Ofs", PROJECT_TEMP_RESOURCE_GROUP);
         mngr->initialiseResourceGroup(PROJECT_TEMP_RESOURCE_GROUP);
 
-        FillResourceGroup(mngr,mProjectOptions.ResourceDirectories,mProjectOptions.ProjectDir + mProjectOptions.ProjectName + ".ofs",PROJECT_RESOURCE_GROUP);
+        FillResourceGroup(mngr, mProjectOptions.ResourceDirectories, mProjectOptions.ProjectDir + mProjectOptions.ProjectName + ".ofs", PROJECT_RESOURCE_GROUP);
 
         try
         {
@@ -1495,23 +1495,23 @@ void OgitorsRoot::PrepareProjectResources()
         }
 
         mScriptNames.clear();
-        mScriptNames.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
+        mScriptNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
 
         OFS::FileList scriptnames = (*mProjectFile)->listFiles("/Scripts", OFS::OFS_FILE);
         
         for(unsigned int i = 0;i < scriptnames.size();i++)
         {
-            mScriptNames.push_back(PropertyOption(scriptnames[i].name,Ogre::Any(scriptnames[i].name)));
+            mScriptNames.push_back(PropertyOption(scriptnames[i].name, Ogre::Any(scriptnames[i].name)));
         }
 
         std::sort(++(mScriptNames.begin()), mScriptNames.end(), PropertyOption::comp_func);
 
         mModelNames.clear();
-        mModelNames.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
+        mModelNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
 
         HashMap<Ogre::String, int> tmpEntityList;
         
-        Ogre::StringVectorPtr pList = Ogre::ResourceGroupManager::getSingleton().findResourceNames(PROJECT_RESOURCE_GROUP,"*.mesh",false);
+        Ogre::StringVectorPtr pList = Ogre::ResourceGroupManager::getSingleton().findResourceNames(PROJECT_RESOURCE_GROUP, "*.mesh", false);
     
         for(unsigned int i = 0;i < pList->size();i++)
         {
@@ -1527,7 +1527,7 @@ void OgitorsRoot::PrepareProjectResources()
         HashMap<Ogre::String, int>::iterator eit = tmpEntityList.begin();
         while(eit != tmpEntityList.end())
         {
-            mModelNames.push_back(PropertyOption(eit->first,Ogre::Any(eit->first)));
+            mModelNames.push_back(PropertyOption(eit->first, Ogre::Any(eit->first)));
             eit++;
         }
 
@@ -1535,9 +1535,9 @@ void OgitorsRoot::PrepareProjectResources()
 
         mMaterialNames.clear();
         mTerrainPlantMaterialNames.clear();
-        mTerrainPlantMaterialNames.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
+        mTerrainPlantMaterialNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
         mSkyboxMaterials.clear();
-        mSkyboxMaterials.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
+        mSkyboxMaterials.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
 
         Ogre::ResourcePtr mRes;
         Ogre::ResourceManager::ResourceMapIterator it = Ogre::MaterialManager::getSingleton().getResourceIterator();
