@@ -44,7 +44,7 @@ namespace Ogre {
 	bool OFSArchive::ms_IgnoreHidden = true;
 
     //-----------------------------------------------------------------------
-    OFSArchive::OFSArchive(const String& name, const String& archType )
+    OFSArchive::OFSArchive(const String& name, const String& archType)
         : Archive(name, archType)
     {
         int pos = name.find("::");
