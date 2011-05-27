@@ -64,22 +64,24 @@ public Q_SLOTS:
     void onCommandHidden();
     void onCommandAddFolder();
     void onCommandAddFile();
+    void onCommandMakeAsset();
 
 protected:
-    OfsTreeWidget* ofsWidget;
-    QVBoxLayout*   vboxLayout;
-    QToolBar*      toolBar;
-    QMenu*         menuCommands; 
+    OfsTreeWidget*  ofsWidget;
+    QVBoxLayout*    vboxLayout;
+    QToolBar*       toolBar;
+    QMenu*          menuCommands; 
     
-    QAction*       actCommandRefresh;
-    QAction*       actCommandAddFolder;
-    QAction*       actCommandAddFile;
-    QAction*       actCommandExtract;
-    QAction*       actCommandDefrag;
-    QAction*       actCommandDelete;
-    QAction*       actCommandRename;
-    QAction*       actCommandReadOnly;
-    QAction*       actCommandHidden;
+    QAction*        actCommandRefresh;
+    QAction*        actCommandAddFolder;
+    QAction*        actCommandAddFile;
+    QAction*        actCommandMakeAsset;
+    QAction*        actCommandExtract;
+    QAction*        actCommandDefrag;
+    QAction*        actCommandDelete;
+    QAction*        actCommandRename;
+    QAction*        actCommandReadOnly;
+    QAction*        actCommandHidden;
 };
 
 //------------------------------------------------------------------------------
