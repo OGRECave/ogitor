@@ -57,6 +57,7 @@
 #include "lineeditwithhistory.hxx"
 #include "terraintoolswidget.hxx"
 #include "generictexteditor.hxx"
+#include "genericimageeditor.hxx"
 
 using namespace Ogitors;
 

@@ -54,6 +54,7 @@
 #include "terraintoolswidget.hxx"
 #include "generictexteditor.hxx"
 #include "projectfilesview.hxx"
+#include "genericimageeditor.hxx"
 
 #if OGRE_MEMORY_TRACKER
 #include "OgreMemoryTracker.h"
@@ -233,7 +234,12 @@ MainWindow::MainWindow(QString args, QWidget *parent)
     createSceneRenderWindow();
 
     mGenericTextEditor = new GenericTextEditor("GenericTextEditor", mEditorTab);
+    mGenericTextEditor->setAllowDoubleDisplay(false);
     mEditorTab->addTab(mGenericTextEditor, tr("Generic Text Editor"));
+
+    mGenericImageEditor = new GenericImageEditor("GenericImageEditor", mEditorTab);
+    mGenericImageEditor->setAllowDoubleDisplay(false);
+    mEditorTab->addTab(mGenericImageEditor, tr("Image Editor"));
 
     createCustomTabWindows();
 

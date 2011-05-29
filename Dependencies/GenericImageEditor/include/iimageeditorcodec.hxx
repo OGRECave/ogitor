@@ -30,26 +30,49 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "generictexteditorcodec.hxx"
+#ifndef I_IMAGE_EDITOR_CODEC_HXX
+#define I_IMAGE_EDITOR_CODEC_HXX
 
-//-----------------------------------------------------------------------------------------
-GenericTextEditorCodec::GenericTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon) : 
-ITextEditorCodec(textEdit, docName, documentIcon)
+#include <QtCore/QString>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QScrollArea>
+
+//----------------------------------------------------------------------------------------
+
+class IImageEditorCodec
 {
-}
-//-----------------------------------------------------------------------------------------
-QString GenericTextEditorCodec::prepareForDisplay(QString docName, QString text)
+public:
+    IImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon)
+    {
+        mScrollArea         = scrollArea;
+        mDocName            = docName;
+        mDocumentIcon       = documentIcon;
+    }
+
+    virtual QPixmap*    prepareForDisplay(QString docName, QPixmap* pixmap) = 0;
+    virtual bool        save() = 0;
+    virtual void        contextMenu(QContextMenuEvent* event) = 0;
+    virtual void        keyPressEvent(QKeyEvent* event) = 0;
+
+    QString             getDocumentIcon() {return mDocumentIcon;}
+
+protected:
+    QScrollArea*    mScrollArea;
+    QString         mDocName;
+    QString         mDocumentIcon;
+};
+
+//----------------------------------------------------------------------------------------
+
+class IImageEditorCodecFactory
 {
-    return text;
-}
-//-----------------------------------------------------------------------------------------
-bool GenericTextEditorCodec::save()
-{
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-ITextEditorCodec* GenericTextEditorCodecFactory::create(QPlainTextEdit* textEdit, QString docName)
-{
-    return new GenericTextEditorCodec(textEdit, docName, ":/icons/files.svg");
-}
-//-----------------------------------------------------------------------------------------
+public:
+    virtual IImageEditorCodec* create(QScrollArea* scrollArea, QString docName) = 0;
+};
+
+//----------------------------------------------------------------------------------------
+
+#endif
+
+//----------------------------------------------------------------------------------------

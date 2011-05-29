@@ -30,71 +30,62 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef GENERIC_TEXT_EDITOR_HXX
-#define GENERIC_TEXT_EDITOR_HXX
+#ifndef GENERIC_IMAGE_EDITOR_HXX
+#define GENERIC_IMAGE_EDITOR_HXX
 
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-#include <QtGui/QPlainTextEdit>
+#include <QtGui/QScrollArea>
 #include <QtGui/QWidget>
 #include <QtGui/QPainter>
-#include <QtGui/QCompleter>
-#include <QtGui/QStringListModel>
 #include <QtGui/QScrollBar>
 #include <QtGui/QMdiArea>
 #include <QtGui/QMdiSubWindow>
-#include <QtGui/QSyntaxHighlighter>
 
 #include "OgreSingleton.h"
 
-#include "generictexteditorcodec.hxx"
+#include "genericimageeditorcodec.hxx"
 #include "ofs.h"
 
 class QPaintEvent;
 class QResizeEvent;
 class QSize;
 class QWidget;
-class QTextDocument;
-class QTextFormat;
 class QPainter;
 class QRectF;
 class QSizeF;
 
-class GenericTextEditorDocument;
-class LineNumberArea;
+class GenericImageEditorDocument;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
-   #ifdef GENERICTEXTEDITOR_EXPORT
-     #define GTEExport __declspec (dllexport)
+   #ifdef GENERICIMAGEEDITOR_EXPORT
+     #define GIEExport __declspec (dllexport)
    #else
-     #define GTEExport __declspec (dllimport)
+     #define GIEExport __declspec (dllimport)
    #endif
 #else
-   #define GTEExport
+   #define GIEExport
 #endif
 
-typedef std::map<QString, ITextEditorCodecFactory*> TextCodecExtensionFactoryMap;
+typedef std::map<QString, IImageEditorCodecFactory*> ImageCodecExtensionFactoryMap;
 
 //-----------------------------------------------------------------------------------------
 
-class GTEExport GenericTextEditor : public QMdiArea, public Ogre::Singleton<GenericTextEditor>
+class GIEExport GenericImageEditor : public QMdiArea, public Ogre::Singleton<GenericImageEditor>
 {
     Q_OBJECT
 
 public:
-    GenericTextEditor(QString editorName, QWidget *parent = 0);
+    GenericImageEditor(QString editorName, QWidget *parent = 0);
 
-    bool                            displayTextFromFile(QString filePath);
-    bool                            displayText(QString docName, QString text, QString extension);
+    bool                            displayImageFromFile(QString filePath);
     void                            moveToForeground();
     void                            saveAll();
 
-    static void                     registerCodecFactory(QString extension, ITextEditorCodecFactory* codec);
+    static void                     registerCodecFactory(QString extension, IImageEditorCodecFactory* codec);
     static void                     unregisterCodecFactory(QString extension);
-    static ITextEditorCodecFactory* findMatchingCodecFactory(QString extensionOrFileName);
-
-    static QStringListModel*        modelFromFile(const QString& fileName);
+    static IImageEditorCodecFactory* findMatchingCodecFactory(QString extensionOrFileName);
 
     inline void                     setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
     inline bool                     isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
@@ -103,8 +94,8 @@ signals:
     void    currentChanged(int);
 
 protected:
-    bool    isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
-    bool    isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
+    bool    isPathAlreadyShowing(QString filePath, GenericImageEditorDocument*& document);
+    bool    isDocAlreadyShowing(QString docName, GenericImageEditorDocument*& document);
     void    closeEvent(QCloseEvent *event);  
 
 protected slots:
@@ -114,82 +105,41 @@ private slots:
     void    closeTab(int index);
 
 private:
-     static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;
-     QTabWidget*                        mParentTabWidget;
-     bool                               mAllowDoubleDisplay;
+     static ImageCodecExtensionFactoryMap   mRegisteredCodecFactories;
+     QTabWidget*                            mParentTabWidget;
+     bool                                   mAllowDoubleDisplay;
 };
 
 //-----------------------------------------------------------------------------------------
 
-class GTEExport GenericTextEditorDocument : public QPlainTextEdit
+class GIEExport GenericImageEditorDocument : public QScrollArea
 {
     Q_OBJECT
 
 public:
-    GenericTextEditorDocument(QWidget *parent = 0);
-    ~GenericTextEditorDocument();
+    GenericImageEditorDocument(QWidget *parent = 0);
+    ~GenericImageEditorDocument();
 
-    void lineNumberAreaPaintEvent(QPaintEvent *event);
-    int  lineNumberAreaWidth();
-
-    void displayTextFromFile(QString docName, QString filePath);
-    void displayText(QString docName, QString text);
+    void displayImageFromFile(QString docName, QString filePath);
     void releaseFile();
-    void addCompleter(const QString keywordListFilePath);
-
+    
     inline QString getDocName(){return mDocName;}
     inline QString getFilePath(){return mFilePath;}
-    inline ITextEditorCodec* getCodec(){return mCodec;}
-    inline bool isTextModified(){return mTextModified;}
-    inline void setTextModified(bool modified){mTextModified = modified;}
-    inline void setCodec(ITextEditorCodec* codec){mCodec = codec;}
+    inline IImageEditorCodec* getCodec(){return mCodec;}
+    inline void setCodec(IImageEditorCodec* codec){mCodec = codec;}
 
 protected:
-    void resizeEvent(QResizeEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void focusInEvent(QFocusEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     void mousePressEvent(QMouseEvent *event);
-    QString textUnderCursor() const;
-    int  calculateIndentation(const QString& str);
-
-protected slots:
-    void updateLineNumberAreaWidth(int newBlockCount);
-    void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
-    void insertCompletion(const QString &completion);
-    void documentWasModified();
 
 protected:
-    ITextEditorCodec*   mCodec;
+    IImageEditorCodec*  mCodec;
     bool                mIsOfsFile;
     QString             mDocName;
     QString             mFilePath;
     QFile               mFile;
     OFS::OfsPtr         mOfsPtr;
     OFS::OFSHANDLE      mOfsFileHandle;
-    QWidget*            mLineNumberArea;
-    QCompleter*         mCompleter;
-    bool                mTextModified;
-};
-
-//-----------------------------------------------------------------------------------------
-
-class GTEExport LineNumberArea : public QWidget
-{
-public:
-    LineNumberArea(GenericTextEditorDocument *document) : QWidget(document) 
-    {
-        genericTextEditorDocument = document;
-    }
-
-    QSize sizeHint() const {return QSize(genericTextEditorDocument->lineNumberAreaWidth(), 0);}
-
-protected:
-    void paintEvent(QPaintEvent *event){genericTextEditorDocument->lineNumberAreaPaintEvent(event);}
-
-private:
-    GenericTextEditorDocument *genericTextEditorDocument;
 };
 
 //-----------------------------------------------------------------------------------------
