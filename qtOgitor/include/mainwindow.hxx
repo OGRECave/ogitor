@@ -55,6 +55,7 @@ class LineEditWithHistory;
 class TerrainToolsWidget;
 class GenericTextEditor;
 class ProjectFilesViewWidget;
+class GenericImageEditor;
 
 extern int FPSLIST[12];
 extern int BrushValueTable[25];
@@ -247,7 +248,9 @@ public:
     TerrainToolsWidget              *getTerrainToolsWidget() {return mTerrainToolsWidget;};
     ProjectFilesViewWidget          *getProjectFilesViewWidget() {return mProjectFilesViewWidget;};
     GenericTextEditor               *getGenericTextEditor() {return mGenericTextEditor;};
+    GenericImageEditor              *getGenericImageEditor() {return mGenericImageEditor;};
     QTimer                          *getAutoBackupTimer() {return mAutoBackupTimer;};
+    QTabWidget                      *getEditorTab() {return mEditorTab;};
 
     void                            setCameraPositions();
     void                            updateLoadTerminateActions(bool loaded);
@@ -340,6 +343,7 @@ private:
     PreferencesManager              *mPrefManager;
     OgitorAssistant                 *mOgitorAssistant;
     GenericTextEditor               *mGenericTextEditor;
+    GenericImageEditor              *mGenericImageEditor;
     std::vector<QWidget*>           mSubWindowStateSave;
     QTimer                          *mTimer;
     unsigned int                    mLastTime;

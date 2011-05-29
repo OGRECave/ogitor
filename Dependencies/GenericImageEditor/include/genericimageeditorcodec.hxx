@@ -30,26 +30,34 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "generictexteditorcodec.hxx"
+#ifndef GENERIC_IMAGE_EDITOR_CODEC_HXX
+#define GENERIC_IMAGE_EDITOR_CODEC_HXX
 
-//-----------------------------------------------------------------------------------------
-GenericTextEditorCodec::GenericTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon) : 
-ITextEditorCodec(textEdit, docName, documentIcon)
+#include "iimageeditorcodec.hxx"
+
+//----------------------------------------------------------------------------------------
+
+class GenericImageEditorCodec : public IImageEditorCodec
 {
-}
-//-----------------------------------------------------------------------------------------
-QString GenericTextEditorCodec::prepareForDisplay(QString docName, QString text)
+public:
+    GenericImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon);
+
+    QPixmap*    prepareForDisplay(QString docName, QPixmap* pixmap);
+    bool        save();
+    void        contextMenu(QContextMenuEvent* event){};    
+    void        keyPressEvent(QKeyEvent *event){};
+};
+
+//----------------------------------------------------------------------------------------
+
+class GenericImageEditorCodecFactory : public IImageEditorCodecFactory
 {
-    return text;
-}
-//-----------------------------------------------------------------------------------------
-bool GenericTextEditorCodec::save()
-{
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-ITextEditorCodec* GenericTextEditorCodecFactory::create(QPlainTextEdit* textEdit, QString docName)
-{
-    return new GenericTextEditorCodec(textEdit, docName, ":/icons/files.svg");
-}
-//-----------------------------------------------------------------------------------------
+public:
+    IImageEditorCodec* create(QScrollArea* scrollArea, QString docName);
+};
+
+//----------------------------------------------------------------------------------------
+
+#endif
+
+//----------------------------------------------------------------------------------------

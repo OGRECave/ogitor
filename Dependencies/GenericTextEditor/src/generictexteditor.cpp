@@ -38,7 +38,7 @@
 //-----------------------------------------------------------------------------------------
 
 template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::ms_Singleton = 0;
-CodecExtensionFactoryMap GenericTextEditor::mRegisteredCodecFactories = CodecExtensionFactoryMap();
+TextCodecExtensionFactoryMap GenericTextEditor::mRegisteredCodecFactories = TextCodecExtensionFactoryMap();
 
 //-----------------------------------------------------------------------------------------
 GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdiArea(parent)
@@ -68,12 +68,12 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::registerCodecFactory(QString extension, ITextEditorCodecFactory* codec)
 {
-    mRegisteredCodecFactories.insert(CodecExtensionFactoryMap::value_type(extension, codec));
+    mRegisteredCodecFactories.insert(TextCodecExtensionFactoryMap::value_type(extension, codec));
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::unregisterCodecFactory(QString extension)
 {
-    CodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
+    TextCodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
     it = mRegisteredCodecFactories.find(extension);
 
     if(it != mRegisteredCodecFactories.end())
@@ -210,7 +210,7 @@ ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString ext
     else
         extension = extensionOrFileName;
     
-    CodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
+    TextCodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
     it = mRegisteredCodecFactories.find(extension);
 
     if(it != mRegisteredCodecFactories.end())
@@ -262,7 +262,7 @@ void GenericTextEditor::tabChanged(int index)
 {
 }
 //-----------------------------------------------------------------------------------------
-GenericTextEditorDocument::GenericTextEditorDocument( QWidget *parent) : QPlainTextEdit(parent), 
+GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
 mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false)
 {
     QFont fnt = font();
@@ -477,7 +477,7 @@ void GenericTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::mousePressEvent(QMouseEvent *event)
 {
-    // Rewrite the right clcick mouse event to a left button event so the cursor is moved to the location of the click
+    // Rewrite the right click mouse event to a left button event so the cursor is moved to the location of the click
     if(event->button() == Qt::RightButton)
         event = new QMouseEvent(QEvent::MouseButtonPress, event->pos(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
     QPlainTextEdit::mousePressEvent(event);

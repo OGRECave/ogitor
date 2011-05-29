@@ -30,26 +30,26 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "generictexteditorcodec.hxx"
+#include "genericimageeditorcodec.hxx"
 
 //-----------------------------------------------------------------------------------------
-GenericTextEditorCodec::GenericTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon) : 
-ITextEditorCodec(textEdit, docName, documentIcon)
+GenericImageEditorCodec::GenericImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon) : 
+IImageEditorCodec(scrollArea, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
-QString GenericTextEditorCodec::prepareForDisplay(QString docName, QString text)
+QPixmap* GenericImageEditorCodec::prepareForDisplay(QString docName, QPixmap* pixmap)
 {
-    return text;
+    return pixmap;
 }
 //-----------------------------------------------------------------------------------------
-bool GenericTextEditorCodec::save()
+bool GenericImageEditorCodec::save()
 {
     return true;
 }
 //-----------------------------------------------------------------------------------------
-ITextEditorCodec* GenericTextEditorCodecFactory::create(QPlainTextEdit* textEdit, QString docName)
+IImageEditorCodec* GenericImageEditorCodecFactory::create(QScrollArea* scrollArea, QString docName)
 {
-    return new GenericTextEditorCodec(textEdit, docName, ":/icons/files.svg");
+    return new GenericImageEditorCodec(scrollArea, docName, ":/icons/paint.svg");
 }
 //-----------------------------------------------------------------------------------------

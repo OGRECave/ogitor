@@ -36,6 +36,7 @@
 #include "generictexteditor.hxx"
 #include "entityview.hxx"
 #include "templateview.hxx"
+#include "genericimageeditor.hxx"
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
@@ -191,7 +192,8 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int colum
         {
             path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
                 
-            mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
+            if(!mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path))
+                mOgitorMainWindow->getGenericImageEditor()->displayImageFromFile(path);
         }
     }
 }

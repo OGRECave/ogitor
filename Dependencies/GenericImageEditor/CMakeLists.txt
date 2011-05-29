@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 cmake_policy(SET CMP0003 NEW)
 
-project(GenericTextEditor)
+project(GenericImageEditor)
 
 set(QT_MIN_VERSION "4.5.0")
 find_package(Qt4 COMPONENTS QtSvg REQUIRED)
@@ -16,20 +16,20 @@ else(NOT QT4_FOUND)
 	file(GLOB UI_FILES *.ui)
 
 	set(HEADER_FILES
-		./include/generictexteditor.hxx
-		./include/itexteditorcodec.hxx
-		./include/generictexteditorcodec.hxx
+		./include/genericimageeditor.hxx
+		./include/iimageeditorcodec.hxx
+		./include/genericimageeditorcodec.hxx
 	)
 
 	set(SOURCE_FILES
-		./src/generictexteditor.cpp	
-		./src/generictexteditorcodec.cpp
+		./src/genericimageeditor.cpp	
+		./src/genericimageeditorcodec.cpp
 	)
 
 	SET(MOC_SRCS2 
-		./include/generictexteditor.hxx
-		./include/itexteditorcodec.hxx
-		./include/generictexteditorcodec.hxx
+		./include/genericimageeditor.hxx
+		./include/iimageeditorcodec.hxx
+		./include/genericimageeditorcodec.hxx
 	)
 
 	qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})
@@ -43,8 +43,8 @@ else(NOT QT4_FOUND)
 
 	set(SRCS ${HEADER_FILES} ${SOURCE_FILES} ${MOC_SRCS} ${UI_FILES})
 
-	set(GenericTextEditor_VERSION 0)
-	set(GenericTextEditor_VERSION_MAJOR 1)
+	set(GenericImageEditor_VERSION 0)
+	set(GenericImageEditor_VERSION_MAJOR 1)
 
 	include_directories(include)
 
@@ -52,31 +52,30 @@ else(NOT QT4_FOUND)
 	include_directories(${OGITOR_INCLUDES})
         include_directories(../OFS/include)
 
-
 	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor)
-	add_library(GenericTextEditor SHARED ${SRCS})
+	add_library(GenericImageEditor SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
-        add_dependencies(GenericTextEditor OFS)
+        add_dependencies(GenericImageEditor OFS)
 
-	set_target_properties(GenericTextEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
-	set_target_properties(GenericTextEditor PROPERTIES VERSION ${GenericTextEditor_VERSION} SOVERSION ${GenericTextEditor_VERSION_MAJOR})
-	set_target_properties(GenericTextEditor PROPERTIES COMPILE_DEFINITIONS GENERICTEXTEDITOR_EXPORT)
+	set_target_properties(GenericImageEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+	set_target_properties(GenericImageEditor PROPERTIES VERSION ${GenericImageEditor_VERSION} SOVERSION ${GenericImageEditor_VERSION_MAJOR})
+	set_target_properties(GenericImageEditor PROPERTIES COMPILE_DEFINITIONS GENERICIMAGEEDITOR_EXPORT)
 
 	if(UNIX AND NOT APPLE)
-		add_custom_command(TARGET GenericTextEditor PRE_BUILD
+		add_custom_command(TARGET GenericImageEditor PRE_BUILD
 			COMMAND mkdir -p ../../RunPath/bin)
-		add_custom_command(TARGET GenericTextEditor POST_BUILD
-			COMMAND cp -r ../lib/libGenericTextEditor.* ../../RunPath/bin/)
+		add_custom_command(TARGET GenericImageEditor POST_BUILD
+			COMMAND cp -r ../lib/libGenericImageEditor.* ../../RunPath/bin/)
 	endif(UNIX AND NOT APPLE)
 
 	if(WIN32)
-		add_custom_command(TARGET GenericTextEditor PRE_BUILD
+		add_custom_command(TARGET GenericImageEditor PRE_BUILD
 			COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
-		add_custom_command(TARGET GenericTextEditor POST_BUILD
+		add_custom_command(TARGET GenericImageEditor POST_BUILD
 			COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
 
-		install(TARGETS GenericTextEditor
+		install(TARGETS GenericImageEditor
 			RUNTIME DESTINATION bin
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
