@@ -15,7 +15,7 @@ class PortalSizeDialog : public QDialog//QMainWindow
     Q_OBJECT
 
 public:
-	PortalSizeDialog(QWidget *parent = 0,float x = MZP::PortalEditor::DEFAULT_WIDTH,float y = MZP::PortalEditor::DEFAULT_HEIGHT);
+    PortalSizeDialog(QWidget *parent = 0,float x = MZP::PortalEditor::DEFAULT_WIDTH,float y = MZP::PortalEditor::DEFAULT_HEIGHT);
     ~PortalSizeDialog();
 
 

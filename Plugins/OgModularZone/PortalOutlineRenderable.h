@@ -26,12 +26,12 @@
 class PortalOutlineRenderable : public Ogre::SimpleRenderable
 {
 public:
-	enum PortalState
-	{
-		PS_FREE,
-		PS_CONNECTED,
-		PS_LINKED
-	};
+    enum PortalState
+    {
+        PS_FREE,
+        PS_CONNECTED,
+        PS_LINKED
+    };
 
     /**
     * Constructor
@@ -55,17 +55,17 @@ public:
     */
     Ogre::Real getBoundingRadius()const;
 
-	/**
+    /**
     * Fetches squared view depth
     * @param camera handle to current camera
     * @return squared view depth
     */    
-	Ogre::Real getSquaredViewDepth(const Ogre::Camera* cam)const ;
-	
-	void setPortalState(PortalState state);
+    Ogre::Real getSquaredViewDepth(const Ogre::Camera* cam)const ;
+    
+    void setPortalState(PortalState state);
 
 protected:
-	virtual void createPortalMaterials(void);
+    virtual void createPortalMaterials(void);
 
     Ogre::VertexData vertexes;  /** portal outline's vertices */
 };
