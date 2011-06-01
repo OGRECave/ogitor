@@ -22,15 +22,15 @@ PortalSizeDialog::~PortalSizeDialog()
 
 float PortalSizeDialog::getWidth(void)
 {
-	float x = ui->widthLineEdit->text().toFloat();
-	if(x < MZP::PortalEditor::MIN_WIDTH)x = MZP::PortalEditor::MIN_WIDTH;
+    float x = ui->widthLineEdit->text().toFloat();
+    if(x < MZP::PortalEditor::MIN_WIDTH)x = MZP::PortalEditor::MIN_WIDTH;
     return x;
 }
 
 float PortalSizeDialog::getHeight(void)
 {
-	float y = ui->heightLineEdit->text().toFloat();
-	if(y < MZP::PortalEditor::MIN_HEIGHT)y = MZP::PortalEditor::MIN_HEIGHT;
+    float y = ui->heightLineEdit->text().toFloat();
+    if(y < MZP::PortalEditor::MIN_HEIGHT)y = MZP::PortalEditor::MIN_HEIGHT;
     return y;
 }
 

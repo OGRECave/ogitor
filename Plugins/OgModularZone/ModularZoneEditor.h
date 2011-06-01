@@ -33,15 +33,15 @@ using namespace Ogitors;
 
 namespace MZP
 {
-	class PortalEditor;
-	struct ZoneInfo;
-	struct ZoneDesignTools;
-			
+    class PortalEditor;
+    struct ZoneInfo;
+    struct ZoneDesignTools;
+            
     class PluginExport ModularZoneEditor: public CNodeEditor
     {
         friend class ModularZoneFactory;
     public:
-		virtual bool isNodeType() {return true;};
+        virtual bool isNodeType() {return true;};
         /** @copydoc CBaseEditor::load() */
         virtual bool      load(bool async = true);
         /** @copydoc CBaseEditor::unLoad() */
@@ -53,39 +53,39 @@ namespace MZP
         /** @copydoc CBaseEditor::getAABB() */
         virtual Ogre::AxisAlignedBox getAABB() {if(mZoneMesh) return mZoneMesh->getBoundingBox();else return Ogre::AxisAlignedBox::BOX_NULL;};
 
-		virtual TiXmlElement* exportDotScene(TiXmlElement *pParent);
+        virtual TiXmlElement* exportDotScene(TiXmlElement *pParent);
 
-		//virtual void     setSelectedImpl(bool bSelected); use this 
+        //virtual void     setSelectedImpl(bool bSelected); use this 
 
-		virtual bool update(float timePassed);
+        virtual bool update(float timePassed);
 
-		virtual bool getObjectContextMenu(UTFStringVector &menuitems);
+        virtual bool getObjectContextMenu(UTFStringVector &menuitems);
 
-		virtual void onObjectContextMenu(int menuresult);
+        virtual void onObjectContextMenu(int menuresult);
 
-		Ogre::SceneNode* getSceneNode(void){return mHandle;}
-		void setPortalLocked(bool lock = true);
-		bool getPortalLocked(void){return mPortalLocked;}
-		void addPortal(PortalEditor*);//adds an existing portal
-		Ogre::Entity* getZoneMesh(void){return mZoneMesh;}
-		void setDesignMode(void);
-		inline bool getDesignMode(void){return mDesignInfo!=0;}
-		inline ZoneDesignTools* getTools(void){return mDesignTools;}
-		bool mDragging;
+        Ogre::SceneNode* getSceneNode(void){return mHandle;}
+        void setPortalLocked(bool lock = true);
+        bool getPortalLocked(void){return mPortalLocked;}
+        void addPortal(PortalEditor*);//adds an existing portal
+        Ogre::Entity* getZoneMesh(void){return mZoneMesh;}
+        void setDesignMode(void);
+        inline bool getDesignMode(void){return mDesignInfo!=0;}
+        inline ZoneDesignTools* getTools(void){return mDesignTools;}
+        bool mDragging;
 
     protected:
-		void addPortal(void);//creates and adds a new portal (used in design mode only)
-		void updateDesignInfo(void);//send any design changes to the zone selection widget
-		void exportZone(void);// save a new zone design to a .zone file
-		void setDesignModeMaterial(void); //creates a translucent material with wireframe overlay
-		void enableMeshHolesTool(bool enable);//a tool to aid positioning of new portals (snap-to holes in mesh)
+        void addPortal(void);//creates and adds a new portal (used in design mode only)
+        void updateDesignInfo(void);//send any design changes to the zone selection widget
+        void exportZone(void);// save a new zone design to a .zone file
+        void setDesignModeMaterial(void); //creates a translucent material with wireframe overlay
+        void enableMeshHolesTool(bool enable);//a tool to aid positioning of new portals (snap-to holes in mesh)
 
-		Ogre::Entity* mZoneMesh; //Enclosing mesh for the Zone
-		std::vector<PortalEditor*> mPortals;  //container of portals attached to this zone
+        Ogre::Entity* mZoneMesh; //Enclosing mesh for the Zone
+        std::vector<PortalEditor*> mPortals;  //container of portals attached to this zone
 
-		bool mPortalLocked;//when portals a join set true
-		ZoneInfo* mDesignInfo;//used when a new zone template is being designed
-		ZoneDesignTools* mDesignTools;//                 "
+        bool mPortalLocked;//when portals a join set true
+        ZoneInfo* mDesignInfo;//used when a new zone template is being designed
+        ZoneDesignTools* mDesignTools;//                 "
 
         /**
         * Constructor
@@ -97,40 +97,40 @@ namespace MZP
         */
         ~ModularZoneEditor() {};
   
-		bool _loadZoneDescription(int);
+        bool _loadZoneDescription(int);
 
-		//PROPERTIES
-		OgitorsProperty<int>* mZoneDescription; //id of the zone description file
-		OgitorsProperty<int>* mPortalCount;//number of portals in this zone
-		OgitorsProperty<Ogre::String>* mMeshName;//name of the mesh
-		//SETTERS
-		bool _setZoneTemplate(OgitorsPropertyBase* property, const int& value);
-		bool _setPortalCount(OgitorsPropertyBase* property, const int& value);
-		bool _setPortal(OgitorsPropertyBase* property, const Ogre::String& value);
-		bool _setMeshName(OgitorsPropertyBase* property, const Ogre::String& value);
-		void setSelectedImpl(bool bSelected);
+        //PROPERTIES
+        OgitorsProperty<int>* mZoneDescription; //id of the zone description file
+        OgitorsProperty<int>* mPortalCount;//number of portals in this zone
+        OgitorsProperty<Ogre::String>* mMeshName;//name of the mesh
+        //SETTERS
+        bool _setZoneTemplate(OgitorsPropertyBase* property, const int& value);
+        bool _setPortalCount(OgitorsPropertyBase* property, const int& value);
+        bool _setPortal(OgitorsPropertyBase* property, const Ogre::String& value);
+        bool _setMeshName(OgitorsPropertyBase* property, const Ogre::String& value);
+        void setSelectedImpl(bool bSelected);
 
     };
 
-	//utility function for retrieving vertex info
-	void getVertexData(const Ogre::VertexData* vertex_data,Ogre::Vector3* &vertices);
-	
-	//functor to check if 2 edges are adjoining at a specific end of the 1st edge
-	class MatchEdge:public std::binary_function<Ogre::Vector3,std::pair<Ogre::Vector3,Ogre::Vector3>,bool>
-	{
-	public:
-		bool operator()(const Ogre::Vector3 V,const std::pair<Ogre::Vector3,Ogre::Vector3> prV)const
-		{
-			if(prV.first==V)return true;
-			else if(prV.second == V)return true;
-			else return false;
-		}
-	};
-	//calc centre of polygon
-	Ogre::Vector3 getCentroid(std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> > polygon);
+    //utility function for retrieving vertex info
+    void getVertexData(const Ogre::VertexData* vertex_data,Ogre::Vector3* &vertices);
+    
+    //functor to check if 2 edges are adjoining at a specific end of the 1st edge
+    class MatchEdge:public std::binary_function<Ogre::Vector3,std::pair<Ogre::Vector3,Ogre::Vector3>,bool>
+    {
+    public:
+        bool operator()(const Ogre::Vector3 V,const std::pair<Ogre::Vector3,Ogre::Vector3> prV)const
+        {
+            if(prV.first==V)return true;
+            else if(prV.second == V)return true;
+            else return false;
+        }
+    };
+    //calc centre of polygon
+    Ogre::Vector3 getCentroid(std::vector<std::pair<Ogre::Vector3,Ogre::Vector3> > polygon);
 
-	//set up MZP directory in project file
-	bool createMZPDirectory(void);
+    //set up MZP directory in project file
+    bool createMZPDirectory(void);
 
 }
 
