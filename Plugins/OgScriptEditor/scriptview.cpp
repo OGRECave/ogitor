@@ -40,9 +40,11 @@
 #include <QtCore/QTextCodec>
 
 #include "OgitorsPrerequisites.h"
+#include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
+#include "ofs.h"
 
 #include "scriptview.hxx"
 #include "scripttexteditorcodec.hxx"
@@ -169,11 +171,12 @@ void ScriptViewWidget::prepareView()
 
     QTreeWidgetItem* scriptitem = 0;
 
-
     for(unsigned int i = 1;i < (*scripts).size();i++)
     {
         Ogre::String shortname = (*scripts)[i].mKey;
-        Ogre::String longname = OgitorsUtils::QualifyPath(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectDir + "/Scripts/" + (*scripts)[i].mKey);
+        Ogre::String longname = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName();
+        longname += "::/Scripts/";
+        longname += (*scripts)[i].mKey;
         scriptitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(shortname.c_str())));
         scriptitem->setWhatsThis(0, QString(longname.c_str()));
         scriptitem->setIcon(0, QIcon(":/icons/script.svg"));
