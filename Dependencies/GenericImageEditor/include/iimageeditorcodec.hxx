@@ -38,6 +38,8 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QScrollArea>
 
+#include <Ogre.h>
+
 //----------------------------------------------------------------------------------------
 
 class IImageEditorCodec
@@ -50,7 +52,7 @@ public:
         mDocumentIcon       = documentIcon;
     }
 
-    virtual QPixmap*    onBeforeDisplay(QPixmap* pixmap) = 0;
+    virtual QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream) = 0;
     virtual void        onContextMenu(QContextMenuEvent* event){};
 
     QString             getDocumentIcon() {return mDocumentIcon;}
