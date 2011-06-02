@@ -31,25 +31,25 @@
 
 namespace MZP
 {
-	
-	class ModularZoneToolbar : public QWidget
-	{
-		Q_OBJECT;
-	public:
-		ModularZoneToolbar(QWidget *parent = 0);
-		virtual ~ModularZoneToolbar(void);
-		QToolBar* getToolbar(void){return mZoneSelectionToolbar;}
+    
+    class ModularZoneToolbar : public QWidget
+    {
+        Q_OBJECT;
+    public:
+        ModularZoneToolbar(QWidget *parent = 0);
+        virtual ~ModularZoneToolbar(void);
+        QToolBar* getToolbar(void){return mZoneSelectionToolbar;}
 
-		//Slots
-	public Q_SLOTS:
-		void addZoneProperties(void);
-		void createZone(void);
+        //Slots
+    public Q_SLOTS:
+        void addZoneProperties(void);
+        void createZone(void);
 
-	protected:
-		QToolBar* mZoneSelectionToolbar;
+    protected:
+        QToolBar* mZoneSelectionToolbar;
 
-		ZoneListWidget* widget;
-	};
+        ZoneListWidget* widget;
+    };
 }
 
 #endif
