@@ -19,17 +19,20 @@ else(NOT QT4_FOUND)
 		./include/genericimageeditor.hxx
 		./include/iimageeditorcodec.hxx
 		./include/genericimageeditorcodec.hxx
+		./include/heightimageeditorcodec.hxx
 	)
 
 	set(SOURCE_FILES
 		./src/genericimageeditor.cpp	
 		./src/genericimageeditorcodec.cpp
+		./src/heightimageeditorcodec.cpp
 	)
 
 	SET(MOC_SRCS2 
 		./include/genericimageeditor.hxx
 		./include/iimageeditorcodec.hxx
 		./include/genericimageeditorcodec.hxx
+		./include/heightimageeditorcodec.hxx
 	)
 
 	qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})

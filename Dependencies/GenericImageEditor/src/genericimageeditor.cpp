@@ -32,6 +32,7 @@
 
 #include <QtGui/QtGui>
 #include "genericimageeditor.hxx"
+#include "heightimageeditorcodec.hxx"
 
 #include "Ogitors.h"
 #include "OgitorsDefinitions.h"
@@ -60,6 +61,8 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
 
     // Register the standard generic text editor codec extensions
     GenericImageEditorCodecFactory* genCodecFactory = new GenericImageEditorCodecFactory();
+    HeightImageEditorCodecFactory* heightCodecFactory = new HeightImageEditorCodecFactory();
+
     GenericImageEditor::registerCodecFactory("png",         genCodecFactory);
     GenericImageEditor::registerCodecFactory("jpg",         genCodecFactory);
     GenericImageEditor::registerCodecFactory("gif",         genCodecFactory);
@@ -71,6 +74,8 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     GenericImageEditor::registerCodecFactory("tiff",        genCodecFactory);
     GenericImageEditor::registerCodecFactory("xbm",         genCodecFactory);
     GenericImageEditor::registerCodecFactory("xpm",         genCodecFactory);
+
+    GenericImageEditor::registerCodecFactory("f32",         heightCodecFactory);
 
     Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericImageEditor, onLoadStateChanged));
 }
