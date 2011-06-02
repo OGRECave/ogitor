@@ -38,8 +38,24 @@ IImageEditorCodec(scrollArea, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
-QPixmap* GenericImageEditorCodec::onBeforeDisplay(QPixmap* pixmap)
+QPixmap* GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
 {
+    Ogre::Image image;
+    image.load(stream);
+
+    int w = image.getWidth();
+    int h = image.getHeight();
+
+    unsigned char *buf = new unsigned char[4 * w * h];
+    Ogre::PixelBox pb(w, h, 1, Ogre::PF_A8R8G8B8, buf);
+
+    Ogre::PixelUtil::bulkPixelConversion(image.getPixelBox(), pb);
+
+    QImage pImg(buf, w, h, QImage::Format_ARGB32);
+    QPixmap *pixmap = new QPixmap(QPixmap::fromImage(pImg));
+
+    delete [] buf;
+
     return pixmap;
 }
 //-----------------------------------------------------------------------------------------

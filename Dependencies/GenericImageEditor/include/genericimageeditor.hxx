@@ -123,7 +123,7 @@ public:
     ~GenericImageEditorDocument();
 
     void displayImageFromFile(QString docName, QString filePath);
-    void displayImage(QString docName, QPixmap* pixmap);
+    void displayImage(QString docName, Ogre::DataStreamPtr stream);
     void releaseFile();
     
     inline QString getDocName(){return mDocName;}

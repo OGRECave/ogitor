@@ -42,7 +42,7 @@ class GenericImageEditorCodec : public IImageEditorCodec
 public:
     GenericImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon);
 
-    QPixmap*    onBeforeDisplay(QPixmap* pixmap);
+    QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream);
     void        onContextMenu(QContextMenuEvent* event){};    
 };
 

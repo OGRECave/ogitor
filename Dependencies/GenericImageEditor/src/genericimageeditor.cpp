@@ -37,6 +37,7 @@
 #include "OgitorsDefinitions.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
+#include "OFSDataStream.h"
 
 //-----------------------------------------------------------------------------------------
 
@@ -227,7 +228,9 @@ void GenericImageEditorDocument::displayImageFromFile(QString docName, QString f
         if(mOfsPtr.mount(ofsFile.toStdString().c_str()) != OFS::OFS_OK)
             return;
 
-        if(mOfsPtr->openFile(mOfsFileHandle, filePath.toStdString().c_str(), OFS::OFS_READ) != OFS::OFS_OK)
+        OFS::OFSHANDLE *handle = new OFS::OFSHANDLE();
+
+        if(mOfsPtr->openFile(*handle, filePath.toStdString().c_str(), OFS::OFS_READ) != OFS::OFS_OK)
         {
             mOfsPtr.unmount();
             return;
@@ -235,45 +238,26 @@ void GenericImageEditorDocument::displayImageFromFile(QString docName, QString f
 
         mIsOfsFile = true;
 
-        unsigned int cont_len = 0;
-        mOfsPtr->getFileSize(mOfsFileHandle, cont_len);
-
-        char* buf = new char[cont_len + 1];
-        buf[cont_len] = 0;
-
-        mOfsPtr->read(mOfsFileHandle, buf, cont_len);
-        mOfsPtr->closeFile(mOfsFileHandle);
+        Ogre::DataStreamPtr stream(new Ogitors::OfsDataStream(mOfsPtr, handle));
         
-        Ogre::DataStreamPtr stream(new Ogre::MemoryDataStream(buf, cont_len + 1));
-        Ogre::Image ogreImage;
-        ogreImage.load(stream);
-
-        QImage qImage;
-        qImage.loadFromData((uchar*)buf, cont_len + 1);
-        QPixmap pixmap = QPixmap::fromImage(qImage);
-        displayImage(docName, &pixmap);
-
-        delete[] buf;
+        displayImage(docName, stream);
     }
     else
     {
         mIsOfsFile = false;
 
-        mFile.setFileName(filePath);
-        mFile.open(QIODevice::ReadOnly);
+        std::ifstream inpstr(filePath.toStdString().c_str());
+        Ogre::DataStreamPtr stream(new Ogre::FileStreamDataStream(&inpstr, false));
 
-        QByteArray content = mFile.readAll();
-        QImage qImage;
-        qImage.loadFromData((uchar*)content.data(), content.length());
-        QPixmap pixmap = QPixmap::fromImage(qImage);
-        displayImage(docName, &pixmap);
+        displayImage(docName, stream);
     }   
 }
 //-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::displayImage(QString docName, QPixmap* pixmap)
+void GenericImageEditorDocument::displayImage(QString docName, Ogre::DataStreamPtr stream)
 {
     QLabel* label = new QLabel();
-    label->setPixmap(*mCodec->onBeforeDisplay(pixmap));
+
+    label->setPixmap(*mCodec->onBeforeDisplay(stream));
     label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     setWidget(label);
