@@ -40,10 +40,10 @@
 class HeightImageEditorCodec : public IImageEditorCodec
 {
 public:
-    HeightImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon);
+    HeightImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon);
 
     QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream);
-    void        onContextMenu(QContextMenuEvent* event){};    
+    QString     onToolTip(QMouseEvent* event);
 };
 
 //----------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ public:
 class HeightImageEditorCodecFactory : public IImageEditorCodecFactory
 {
 public:
-    IImageEditorCodec* create(QScrollArea* scrollArea, QString docName);
+    IImageEditorCodec* create(GenericImageEditorDocument* genImgEdDoc, QString docName);
 };
 
 //----------------------------------------------------------------------------------------

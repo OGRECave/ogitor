@@ -208,10 +208,11 @@ void GenericImageEditor::onLoadStateChanged(Ogitors::IEvent* evt)
             close();
     }
 }
-//-----------------------------------------------------------------------------------------
+/************************************************************************/
 GenericImageEditorDocument::GenericImageEditorDocument(QWidget *parent) : QScrollArea(parent), 
 mCodec(0), mDocName(""), mFilePath(""), mFile(0), mIsOfsFile(false)
 {
+    mLabel = new ToolTipLabel(this);
 }
 //-----------------------------------------------------------------------------------------
 GenericImageEditorDocument::~GenericImageEditorDocument()
@@ -260,12 +261,11 @@ void GenericImageEditorDocument::displayImageFromFile(QString docName, QString f
 //-----------------------------------------------------------------------------------------
 void GenericImageEditorDocument::displayImage(QString docName, Ogre::DataStreamPtr stream)
 {
-    QLabel* label = new QLabel();
+    mLabel->setMouseTracking(true);
+    mLabel->setPixmap(*mCodec->onBeforeDisplay(stream));
+    mLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-    label->setPixmap(*mCodec->onBeforeDisplay(stream));
-    label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-    setWidget(label);
+    setWidget(mLabel);
 
     QString tabTitle = docName;
     if(tabTitle.length() > 25)
@@ -290,5 +290,16 @@ void GenericImageEditorDocument::mousePressEvent(QMouseEvent *event)
 void GenericImageEditorDocument::releaseFile()
 {
     mFile.close();
+}
+/************************************************************************/
+ToolTipLabel::ToolTipLabel(GenericImageEditorDocument* genImgEdDoc, QWidget *parent) : QLabel(parent),
+mGenImgEdDoc(genImgEdDoc)
+{
+    setMouseTracking(true);
+}
+//-----------------------------------------------------------------------------------------
+void ToolTipLabel::mouseMoveEvent(QMouseEvent *event)
+{
+    QToolTip::showText(event->globalPos(), mGenImgEdDoc->getCodec()->onToolTip(event), this);
 }
 //-----------------------------------------------------------------------------------------
