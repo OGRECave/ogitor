@@ -33,8 +33,8 @@
 #include "genericimageeditorcodec.hxx"
 
 //-----------------------------------------------------------------------------------------
-GenericImageEditorCodec::GenericImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon) : 
-IImageEditorCodec(scrollArea, docName, documentIcon)
+GenericImageEditorCodec::GenericImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon) : 
+IImageEditorCodec(genImgEdDoc, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
@@ -51,16 +51,23 @@ QPixmap* GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
 
     Ogre::PixelUtil::bulkPixelConversion(image.getPixelBox(), pb);
 
-    QImage pImg(buf, w, h, QImage::Format_ARGB32);
-    QPixmap *pixmap = new QPixmap(QPixmap::fromImage(pImg));
+    QImage mImage(buf, w, h, QImage::Format_ARGB32);
+    QPixmap *pixmap = new QPixmap(QPixmap::fromImage(mImage));
 
     delete [] buf;
 
     return pixmap;
 }
 //-----------------------------------------------------------------------------------------
-IImageEditorCodec* GenericImageEditorCodecFactory::create(QScrollArea* scrollArea, QString docName)
+QString GenericImageEditorCodec::onToolTip(QMouseEvent* event)
 {
-    return new GenericImageEditorCodec(scrollArea, docName, ":/icons/paint.svg");
+    QColor rgb(mImage.color(mImage.pixelIndex(event->pos())));
+    return QString("X: %1 Y: %2\nR: %3 G: %4 B: %5").arg(event->pos().x()).arg(event->pos().y())
+        .arg(rgb.red()).arg(rgb.green()).arg(rgb.blue());
+}
+//-----------------------------------------------------------------------------------------
+IImageEditorCodec* GenericImageEditorCodecFactory::create(GenericImageEditorDocument* genImgEdDoc, QString docName)
+{
+    return new GenericImageEditorCodec(genImgEdDoc, docName, ":/icons/paint.svg");
 }
 //-----------------------------------------------------------------------------------------

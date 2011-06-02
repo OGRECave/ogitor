@@ -42,25 +42,31 @@
 
 //----------------------------------------------------------------------------------------
 
+class GenericImageEditorDocument;
+
+//----------------------------------------------------------------------------------------
+
 class IImageEditorCodec
 {
 public:
-    IImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon)
+    IImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon)
     {
-        mScrollArea         = scrollArea;
+        mGenImgEdDoc        = genImgEdDoc;
         mDocName            = docName;
         mDocumentIcon       = documentIcon;
     }
 
     virtual QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream) = 0;
     virtual void        onContextMenu(QContextMenuEvent* event){};
+    virtual QString     onToolTip(QMouseEvent* event){return QString("");};
 
     QString             getDocumentIcon() {return mDocumentIcon;}
 
 protected:
-    QScrollArea*    mScrollArea;
-    QString         mDocName;
-    QString         mDocumentIcon;
+    GenericImageEditorDocument*     mGenImgEdDoc;
+    QImage                          mImage;
+    QString                         mDocName;
+    QString                         mDocumentIcon;
 };
 
 //----------------------------------------------------------------------------------------
@@ -68,7 +74,7 @@ protected:
 class IImageEditorCodecFactory
 {
 public:
-    virtual IImageEditorCodec* create(QScrollArea* scrollArea, QString docName) = 0;
+    virtual IImageEditorCodec* create(GenericImageEditorDocument* genImgEdDoc, QString docName) = 0;
 };
 
 //----------------------------------------------------------------------------------------

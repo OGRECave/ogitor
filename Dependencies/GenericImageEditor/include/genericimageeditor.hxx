@@ -42,6 +42,7 @@
 #include <QtGui/QScrollBar>
 #include <QtGui/QMdiArea>
 #include <QtGui/QMdiSubWindow>
+#include <QtGui/QLabel>
 
 #include "OgreSingleton.h"
 #include "Ogitors.h"
@@ -58,6 +59,7 @@ class QRectF;
 class QSizeF;
 
 class GenericImageEditorDocument;
+class ToolTipLabel;
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
    #ifdef GENERICIMAGEEDITOR_EXPORT
@@ -133,6 +135,7 @@ public:
     inline bool isOfsFile(){return mIsOfsFile;};
     inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
     inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
+    ToolTipLabel* getLabel(){return mLabel;};
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
@@ -146,6 +149,22 @@ protected:
     QFile               mFile;
     OFS::OfsPtr         mOfsPtr;
     OFS::OFSHANDLE      mOfsFileHandle;
+    ToolTipLabel*       mLabel;
+};
+
+//-----------------------------------------------------------------------------------------
+
+class GIEExport ToolTipLabel : public QLabel
+{
+    Q_OBJECT
+
+public:
+    ToolTipLabel(GenericImageEditorDocument* genImgEdDoc, QWidget *parent = 0);
+
+    void mouseMoveEvent(QMouseEvent *event);
+
+private:
+    GenericImageEditorDocument* mGenImgEdDoc;
 };
 
 //-----------------------------------------------------------------------------------------

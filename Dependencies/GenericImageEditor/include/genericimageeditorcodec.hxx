@@ -40,10 +40,10 @@
 class GenericImageEditorCodec : public IImageEditorCodec
 {
 public:
-    GenericImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon);
+    GenericImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon);
 
     QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream);
-    void        onContextMenu(QContextMenuEvent* event){};    
+    QString     onToolTip(QMouseEvent* event);   
 };
 
 //----------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ public:
 class GenericImageEditorCodecFactory : public IImageEditorCodecFactory
 {
 public:
-    IImageEditorCodec* create(QScrollArea* scrollArea, QString docName);
+    IImageEditorCodec* create(GenericImageEditorDocument* genImgEdDoc, QString docName);
 };
 
 //----------------------------------------------------------------------------------------

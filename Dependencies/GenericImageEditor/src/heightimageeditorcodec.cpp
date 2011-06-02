@@ -40,14 +40,14 @@ float mapToRange(float val, float minInput, float maxInput, float minOutput, flo
     float inputRange = maxInput - minInput;
     float outputRange = maxOutput - minOutput;
 
-    //Map input to 0..1 range
+    // Map input to 0..1 range
     float temp = 1.0f - ((val - minInput) / inputRange);
 
-    //Map 0..1 range to output
+    // Map 0..1 range to output
     return temp * outputRange + minOutput;
 }
 //-----------------------------------------------------------------------------------------
-void HSVtoARGB( unsigned char *color, float h, float s, float v )
+void HSVtoARGB(unsigned char *color, float h, float s, float v)
 {
 	int i;
 	float f, p, q, t;
@@ -99,8 +99,8 @@ void HSVtoARGB( unsigned char *color, float h, float s, float v )
 	}
 }
 //-----------------------------------------------------------------------------------------
-HeightImageEditorCodec::HeightImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon) : 
-IImageEditorCodec(scrollArea, docName, documentIcon)
+HeightImageEditorCodec::HeightImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon) : 
+IImageEditorCodec(genImgEdDoc, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
@@ -144,16 +144,21 @@ QPixmap* HeightImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     else
         memset(buf, 0xFF, map_size * map_size * 4);
 
-    QImage pImg((unsigned char *)buf, map_size, map_size, QImage::Format_ARGB32);
-    QPixmap *pixmap = new QPixmap(QPixmap::fromImage(pImg));
+    QImage mImage((unsigned char *)buf, map_size, map_size, QImage::Format_ARGB32);
+    QPixmap *pixmap = new QPixmap(QPixmap::fromImage(mImage));
 
     delete [] buf;
 
     return pixmap;
 }
 //-----------------------------------------------------------------------------------------
-IImageEditorCodec* HeightImageEditorCodecFactory::create(QScrollArea* scrollArea, QString docName)
+QString HeightImageEditorCodec::onToolTip(QMouseEvent* event)
 {
-    return new HeightImageEditorCodec(scrollArea, docName, ":/icons/paint.svg");
+    return QString("X: %1 Y: %2\nData:").arg(event->pos().x()).arg(event->pos().y());
+}
+//-----------------------------------------------------------------------------------------
+IImageEditorCodec* HeightImageEditorCodecFactory::create(GenericImageEditorDocument* genImgEdDoc, QString docName)
+{
+    return new HeightImageEditorCodec(genImgEdDoc, docName, ":/icons/paint.svg");
 }
 //-----------------------------------------------------------------------------------------
