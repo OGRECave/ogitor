@@ -14,9 +14,9 @@ class ExportZoneDialog : public QDialog,public Ui::ExportZoneDialog{
 public:
     ExportZoneDialog(QWidget *parent = 0);
     ~ExportZoneDialog();
-	Ogre::String getShortDescription(void){return m_ui->lineEditShortDesc->text().toStdString();}
-	Ogre::String getLongDescription(void){return m_ui->plainTextEditLongDesc->toPlainText().toStdString();}
-	Ogre::String getFileName(void){return m_ui->lineEditFileName->text().toStdString();}
+    Ogre::String getShortDescription(void){return m_ui->lineEditShortDesc->text().toStdString();}
+    Ogre::String getLongDescription(void){return m_ui->plainTextEditLongDesc->toPlainText().toStdString();}
+    Ogre::String getFileName(void){return m_ui->lineEditFileName->text().toStdString();}
 
 
 protected:

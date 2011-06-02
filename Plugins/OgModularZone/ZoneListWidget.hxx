@@ -35,58 +35,58 @@ class QLabel;
 namespace MZP
 {
 
-	class ModularZoneFactory;
-	struct ZoneInfo;
-	//! Drag'n'drop structure
-	/*!  
-		A structure that is used to track object state after initiating dragging
-	*/
-	struct DRAGDATA
-	{
-		Ogitors::CBaseEditor            *Object;                /** Pointer to Dragged Object */
-		Ogre::String                     ObjectType;            /** Type of an object being dragged */
-		Ogitors::OgitorsPropertyValueMap Parameters;            /** Information about the object */
-	};
+    class ModularZoneFactory;
+    struct ZoneInfo;
+    //! Drag'n'drop structure
+    /*!  
+        A structure that is used to track object state after initiating dragging
+    */
+    struct DRAGDATA
+    {
+        Ogitors::CBaseEditor            *Object;                /** Pointer to Dragged Object */
+        Ogre::String                     ObjectType;            /** Type of an object being dragged */
+        Ogitors::OgitorsPropertyValueMap Parameters;            /** Information about the object */
+    };
 
-	typedef std::map<int, unsigned char *> ImageMap;
-	class ZoneListWidget : public QWidget,public Ogitors::DragDropHandler
-	{
-		Q_OBJECT;
-	public:
-		explicit ZoneListWidget(QWidget* parent=0);
-		virtual ~ZoneListWidget(void);
-		
-	public:
-		void prepareView();
-		void clearView();
-		void addZone(int);
-		void updateZoneInfo(int);
+    typedef std::map<int, unsigned char *> ImageMap;
+    class ZoneListWidget : public QWidget,public Ogitors::DragDropHandler
+    {
+        Q_OBJECT;
+    public:
+        explicit ZoneListWidget(QWidget* parent=0);
+        virtual ~ZoneListWidget(void);
+        
+    public:
+        void prepareView();
+        void clearView();
+        void addZone(int);
+        void updateZoneInfo(int);
 
-		QListWidget *getListWidget() {return listWidget;};
-		
-	public Q_SLOTS:
+        QListWidget *getListWidget() {return listWidget;};
+        
+    public Q_SLOTS:
         void filterBoxTextChanged(QString text);
 
-	protected:
-		QListWidget *listWidget;
-		QLineEdit   *filterBox;
-		QToolButton *clearFilterButton;
-		ImageMap     mIcons;
-		DRAGDATA     mDragData; 
+    protected:
+        QListWidget *listWidget;
+        QLineEdit   *filterBox;
+        QToolButton *clearFilterButton;
+        ImageMap     mIcons;
+        DRAGDATA     mDragData; 
 
-		void resizeEvent(QResizeEvent* evt);
-		void _createImages(ImageMap& retlist);
+        void resizeEvent(QResizeEvent* evt);
+        void _createImages(ImageMap& retlist);
 
-		/** DragDropHandler functions**/
-		virtual bool OnDragEnter();
-		virtual void OnDragLeave();
-		virtual bool OnDragMove (Ogre::Viewport *vp, unsigned int modifier, Ogre::Vector2& position);
-		virtual void OnDragDropped(Ogre::Viewport *vp, Ogre::Vector2& position);
-		virtual void OnDragWheel(Ogre::Viewport *vp, float delta);
+        /** DragDropHandler functions**/
+        virtual bool OnDragEnter();
+        virtual void OnDragLeave();
+        virtual bool OnDragMove (Ogre::Viewport *vp, unsigned int modifier, Ogre::Vector2& position);
+        virtual void OnDragDropped(Ogre::Viewport *vp, Ogre::Vector2& position);
+        virtual void OnDragWheel(Ogre::Viewport *vp, float delta);
 
-		// Refresh 
+        // Refresh 
         void onSceneLoadStateChange(Ogitors::IEvent* evt);
-	};
+    };
 
 }
 

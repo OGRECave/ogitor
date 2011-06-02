@@ -32,22 +32,22 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 {
     name = "Modular Zone Plugin";
 
-	ModularZoneFactory* zonefactory = OGRE_NEW ModularZoneFactory();
-	PortalFactory* portalfactory = OGRE_NEW PortalFactory();
-	ModularZoneToolbar* toolbar = new ModularZoneToolbar();
-	ZoneListWidget* widget = new ZoneListWidget();
-	zonefactory->setZoneListWidget(widget);
+    ModularZoneFactory* zonefactory = OGRE_NEW ModularZoneFactory();
+    PortalFactory* portalfactory = OGRE_NEW PortalFactory();
+    ModularZoneToolbar* toolbar = new ModularZoneToolbar();
+    ZoneListWidget* widget = new ZoneListWidget();
+    zonefactory->setZoneListWidget(widget);
 
-	Ogitors::DockWidgetData data;
-	data.mCaption = "Modular Zones";
+    Ogitors::DockWidgetData data;
+    data.mCaption = "Modular Zones";
     data.mHandle = widget;
     data.mIcon = "../Plugins/Icons/zone.svg";
     data.mParent = DOCK_RESOURCES;
-	   
-	OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, zonefactory);
-	OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, portalfactory);
-	OgitorsRoot::getSingletonPtr()->RegisterToolBar(identifier,toolbar->getToolbar());
-	OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier,data);
+       
+    OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, zonefactory);
+    OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, portalfactory);
+    OgitorsRoot::getSingletonPtr()->RegisterToolBar(identifier,toolbar->getToolbar());
+    OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier,data);
 
     return true;
 }

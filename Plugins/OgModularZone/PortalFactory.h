@@ -29,21 +29,21 @@ using namespace Ogitors;
 
 namespace MZP
 {
-	
+    
     class PortalFactory : public CNodeEditorFactory
-	{
-	public:
-		PortalFactory(OgitorsView *view = 0);
-		virtual ~PortalFactory(void){};
+    {
+    public:
+        PortalFactory(OgitorsView *view = 0);
+        virtual ~PortalFactory(void){};
 
-		/** @copydoc CBaseEditorFactory::CreateObject(CBaseEditor **, OgitorsPropertyValueMap &) */
+        /** @copydoc CBaseEditorFactory::CreateObject(CBaseEditor **, OgitorsPropertyValueMap &) */
         virtual CBaseEditor *CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params);
         
-		/** @copydoc CBaseEditorFactory::GetPlaceHolderName() */
+        /** @copydoc CBaseEditorFactory::GetPlaceHolderName() */
         virtual Ogre::String GetPlaceHolderName() {return "scbMarker.mesh";};
 
-		virtual CBaseEditorFactory* duplicate(OgitorsView *view);
-	};
+        virtual CBaseEditorFactory* duplicate(OgitorsView *view);
+    };
 
 }
 
