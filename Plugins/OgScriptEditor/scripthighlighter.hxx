@@ -29,6 +29,7 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #ifndef SCRIPT_HIGHLIGHTER_HXX
 #define SCRIPT_HIGHLIGHTER_HXX
 
@@ -50,9 +51,6 @@ public:
 protected:
     void highlightBlock(const QString &text);
 
-signals:
-    void addTextureTextObject();
-
 private:
     struct HighlightingRule
     {
@@ -71,4 +69,7 @@ private:
 };
 
 //-----------------------------------------------------------------------------------------
+
 #endif
+
+//-----------------------------------------------------------------------------------------

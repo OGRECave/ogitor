@@ -44,6 +44,7 @@
 #include <QtGui/QMdiSubWindow>
 
 #include "OgreSingleton.h"
+#include "Ogitors.h"
 
 #include "genericimageeditorcodec.hxx"
 #include "ofs.h"
@@ -81,7 +82,6 @@ public:
 
     bool                            displayImageFromFile(QString filePath);
     void                            moveToForeground();
-    void                            saveAll();
 
     static void                     registerCodecFactory(QString extension, IImageEditorCodecFactory* codec);
     static void                     unregisterCodecFactory(QString extension);
@@ -89,6 +89,8 @@ public:
 
     inline void                     setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
     inline bool                     isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
+
+    void                            onLoadStateChanged(Ogitors::IEvent* evt);
 
 signals:
     void    currentChanged(int);
@@ -121,12 +123,16 @@ public:
     ~GenericImageEditorDocument();
 
     void displayImageFromFile(QString docName, QString filePath);
+    void displayImage(QString docName, QPixmap* pixmap);
     void releaseFile();
     
     inline QString getDocName(){return mDocName;}
     inline QString getFilePath(){return mFilePath;}
     inline IImageEditorCodec* getCodec(){return mCodec;}
     inline void setCodec(IImageEditorCodec* codec){mCodec = codec;}
+    inline bool isOfsFile(){return mIsOfsFile;};
+    inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
+    inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);

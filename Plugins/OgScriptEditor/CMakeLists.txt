@@ -17,22 +17,22 @@ else(NOT QT4_FOUND)
 
 	set(HEADER_FILES
 		scriptview.hxx
-		scripttexteditor.hxx
 		scripthighlighter.hxx
 		Plugin.h
+		scripttexteditorcodec.hxx
 	)
 
 	set(SOURCE_FILES
 		scriptview.cpp
-		scripttexteditor.cpp
 		scripthighlighter.cpp
 		Plugin.cpp
+		scripttexteditorcodec.cpp
 	)
 
 	SET(MOC_SRCS2 
 		scriptview.hxx
-		scripttexteditor.hxx
 		scripthighlighter.hxx
+		scripttexteditorcodec.hxx
 	)
 
 	qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})
@@ -43,7 +43,6 @@ else(NOT QT4_FOUND)
 
 	qt4_add_resources(RESOURCE_SRCS ./res/resource.qrc)
 	source_group("Qrc Files" FILES ${RESOURCE_SRCS})
-
 
 	# if we don't include this CMake will not include ui headers properly:
 	include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -59,14 +58,14 @@ else(NOT QT4_FOUND)
 	include_directories (include)
 	include_directories(${DEPENDENCIES_INCLUDES})
 	include_directories(${OGITOR_INCLUDES})
-	message(STATUS "${OGITOR_INCLUDES}" )
+	message(STATUS "${OGITOR_INCLUDES}")
 
 	include_directories(.)
 	link_directories(${OGITOR_LIBPATH})
 	link_directories(${DEPENDENCIES_LIBPATH})
 
 	add_library(OgScriptEditor SHARED ${SRCS})
-	target_link_libraries(OgScriptEditor ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
+	target_link_libraries(OgScriptEditor ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor GenericTextEditor)
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
 	set_target_properties(OgScriptEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)

@@ -127,7 +127,6 @@ void MaterialHighlighter::highlightBlock(const QString &text)
             int length = expression.matchedLength();
             setFormat(index+length-expression.cap(1).length(), expression.cap(1).length(), rule.format);
             index = text.indexOf(expression, index + length);
-            //emit addTextureTextObject();
         }
     }
 }

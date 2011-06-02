@@ -44,21 +44,25 @@
 class MaterialTextEditorCodec : public ITextEditorCodec, Ogre::ScriptCompilerListener 
 {
 public:
-    MaterialTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon);
+    MaterialTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
 
-    QString prepareForDisplay(QString docName, QString text);
-    bool    save();
-    void    contextMenu(QContextMenuEvent* event);
-    void    keyPressEvent(QKeyEvent *event);
-    void    addHighlighter(GenericTextEditorDocument* document);
-    void    addCompleter(GenericTextEditorDocument* document){};
+    QString         onBeforeDisplay(QString text);
+    void            onAfterDisplay();
+    void            onContextMenu(QContextMenuEvent* event);
+    void            onKeyPressEvent(QKeyEvent *event);
+    void            onAddHighlighter();
+    void            onAddCompleter();
+    void            onDisplayRequest();
+
+    void            handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const Ogre::String &file, int line, const Ogre::String &msg);
 
     static  QString getMaterialText(const Ogre::String& input, const Ogre::String& find);
 
 private:
-    void    handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const QString &file, int line, const QString &msg);
-    bool    mScriptError;
-    QString mMaterialName;
+    QStringList     findMaterialNames();
+    void            reloadMaterials(QStringList materialList);
+    
+    bool            mScriptError;
 };
 
 //----------------------------------------------------------------------------------------
@@ -66,7 +70,7 @@ private:
 class MaterialTextEditorCodecFactory : public ITextEditorCodecFactory
 {
 public:
-    ITextEditorCodec* create(QPlainTextEdit* textEdit, QString docName);
+    ITextEditorCodec* create(GenericTextEditorDocument* genTexEdDoc, QString docName);
 };
 
 //----------------------------------------------------------------------------------------

@@ -17,7 +17,6 @@ else(NOT QT4_FOUND)
 
 	set(HEADER_FILES
 		materialview.hxx
-		materialtexteditor.hxx
 		materialhighlighter.hxx
 		MaterialEditor.h
 		TechniqueEditor.h
@@ -28,7 +27,6 @@ else(NOT QT4_FOUND)
 
 	set(SOURCE_FILES
 		materialview.cpp
-		materialtexteditor.cpp
 		materialhighlighter.cpp
 		MaterialEditor.cpp
 		TechniqueEditor.cpp
@@ -39,7 +37,6 @@ else(NOT QT4_FOUND)
 
 	set(MOC_SRCS2 
 		materialview.hxx
-		materialtexteditor.hxx
 		materialhighlighter.hxx
 		materialeditorprefseditor.hxx
 		materialtexteditorcodec.hxx
@@ -50,6 +47,9 @@ else(NOT QT4_FOUND)
 
 	source_group("Moc Files" FILES ${MOC_SRCS})
 	source_group("Ui Files" FILES ${UI_FILES})
+	
+	qt4_add_resources(RESOURCE_SRCS ./res/resource.qrc)
+	source_group("Qrc Files" FILES ${RESOURCE_SRCS})
 
 	# if we don't include this CMake will not include ui headers properly:
 	include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -57,7 +57,7 @@ else(NOT QT4_FOUND)
 	#qt4_add_resources(RESOURCE_SRCS ./res/qtOgitor.qrc)
 	#source_group("Qrc Files" FILES ${RESOURCE_SRCS})
 
-	set(SRCS ${HEADER_FILES} ${SOURCE_FILES} ${MOC_SRCS} ${UI_FILES})
+	set(SRCS ${HEADER_FILES} ${SOURCE_FILES} ${MOC_SRCS} ${UI_FILES} ${RESOURCE_SRCS})
 
 	set(OgMaterialEditor_VERSION 0)
 	set(OgMaterialEditor_VERSION_MAJOR 1)

@@ -29,43 +29,42 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifndef MATERIAL_HIGHLIGHTER_HXX
-#define MATERIAL_HIGHLIGHTER_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QSyntaxHighlighter>
-#include <QtGui/QTextCharFormat>
-#include <QtGui/QStringListModel>
-#include <QtGui/QTextObjectInterface>
+#ifndef SCRIPT_TEXT_EDITOR_CODEC_HXX
+#define SCRIPT_TEXT_EDITOR_CODEC_HXX
 
-//-----------------------------------------------------------------------------------------
+#include "itexteditorcodec.hxx"
+#include "generictexteditor.hxx"
 
-class MaterialHighlighter : public QSyntaxHighlighter
+#include <OgreString.h>
+#include <OgreScriptCompiler.h>
+
+//----------------------------------------------------------------------------------------
+
+class ScriptTextEditorCodec : public ITextEditorCodec
 {
-    Q_OBJECT
-
 public:
-    MaterialHighlighter(QStringListModel* keywords, QTextDocument *parent = 0);
+    ScriptTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
 
-protected:
-    void highlightBlock(const QString &text);
+    QString onBeforeDisplay(QString text);
+    void    onKeyPressEvent(QKeyEvent *event);
+    void    onAddHighlighter();
+    void    onAddCompleter();
 
 private:
-    struct HighlightingRule
-    {
-        QRegExp pattern;
-        QTextCharFormat format;
-    };
-    QVector<HighlightingRule> keywordRules;
-    QVector<HighlightingRule> valueRules;
-
-    QRegExp commentStartExpression;
-    QRegExp commentEndExpression;
-
-    QTextCharFormat keywordFormat;
-    QTextCharFormat commentFormat;
-    QTextCharFormat textureFormat;
+    QString mScriptName;
 };
 
-//-----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
+
+class ScriptTextEditorCodecFactory : public ITextEditorCodecFactory
+{
+public:
+    ITextEditorCodec* create(GenericTextEditorDocument* genTexEdDoc, QString docName);
+};
+
+//----------------------------------------------------------------------------------------
+
 #endif
+
+//----------------------------------------------------------------------------------------

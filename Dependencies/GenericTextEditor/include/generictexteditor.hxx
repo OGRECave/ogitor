@@ -46,6 +46,7 @@
 #include <QtGui/QMdiSubWindow>
 #include <QtGui/QSyntaxHighlighter>
 
+#include "Ogitors.h"
 #include "OgreSingleton.h"
 
 #include "generictexteditorcodec.hxx"
@@ -85,8 +86,8 @@ class GTEExport GenericTextEditor : public QMdiArea, public Ogre::Singleton<Gene
 public:
     GenericTextEditor(QString editorName, QWidget *parent = 0);
 
-    bool                            displayTextFromFile(QString filePath);
-    bool                            displayText(QString docName, QString text, QString extension);
+    bool                            displayTextFromFile(QString filePath, QString optionalData = "");
+    bool                            displayText(QString docName, QString text, QString extension = "", QString optionalData = "");
     void                            moveToForeground();
     void                            saveAll();
 
@@ -99,19 +100,22 @@ public:
     inline void                     setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
     inline bool                     isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
 
+    void                            onModifiedStateChanged(Ogitors::IEvent* evt);
+    void                            onLoadStateChanged(Ogitors::IEvent* evt);
+
 signals:
-    void    currentChanged(int);
+    void                            currentChanged(int);
 
 protected:
-    bool    isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
-    bool    isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
-    void    closeEvent(QCloseEvent *event);  
+    bool                            isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
+    bool                            isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
+    void                            closeEvent(QCloseEvent *event);  
 
 protected slots:
-	void	tabChanged(int index);
+	void	                        tabChanged(int index);
 
 private slots:
-    void    closeTab(int index);
+    void                            closeTab(int index);
 
 private:
      static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;
@@ -132,8 +136,10 @@ public:
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int  lineNumberAreaWidth();
 
-    void displayTextFromFile(QString docName, QString filePath);
-    void displayText(QString docName, QString text);
+    void displayTextFromFile(QString docName, QString filePath, QString optionalData);
+    void displayText(QString docName, QString text, QString optionalData);
+    void save();
+    bool saveDefaultLogic();
     void releaseFile();
     void addCompleter(const QString keywordListFilePath);
 
@@ -141,8 +147,12 @@ public:
     inline QString getFilePath(){return mFilePath;}
     inline ITextEditorCodec* getCodec(){return mCodec;}
     inline bool isTextModified(){return mTextModified;}
-    inline void setTextModified(bool modified){mTextModified = modified;}
+    inline void setTextModified(bool modified);
     inline void setCodec(ITextEditorCodec* codec){mCodec = codec;}
+    inline bool isOfsFile(){return mIsOfsFile;};
+    inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
+    inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
+    inline QFile* getFile(){return &mFile;};
 
 protected:
     void resizeEvent(QResizeEvent *event);

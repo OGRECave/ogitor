@@ -50,10 +50,8 @@ public:
         mDocumentIcon       = documentIcon;
     }
 
-    virtual QPixmap*    prepareForDisplay(QString docName, QPixmap* pixmap) = 0;
-    virtual bool        save() = 0;
-    virtual void        contextMenu(QContextMenuEvent* event) = 0;
-    virtual void        keyPressEvent(QKeyEvent* event) = 0;
+    virtual QPixmap*    onBeforeDisplay(QPixmap* pixmap) = 0;
+    virtual void        onContextMenu(QContextMenuEvent* event){};
 
     QString             getDocumentIcon() {return mDocumentIcon;}
 

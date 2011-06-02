@@ -31,25 +31,21 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "generictexteditorcodec.hxx"
+#include "generictexteditor.hxx"
 
 //-----------------------------------------------------------------------------------------
-GenericTextEditorCodec::GenericTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon) : 
-ITextEditorCodec(textEdit, docName, documentIcon)
+GenericTextEditorCodec::GenericTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon) : 
+ITextEditorCodec(genTexEdDoc, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
-QString GenericTextEditorCodec::prepareForDisplay(QString docName, QString text)
+QString GenericTextEditorCodec::onBeforeDisplay(QString text)
 {
     return text;
 }
 //-----------------------------------------------------------------------------------------
-bool GenericTextEditorCodec::save()
+ITextEditorCodec* GenericTextEditorCodecFactory::create(GenericTextEditorDocument* genTexEdDoc, QString docName)
 {
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-ITextEditorCodec* GenericTextEditorCodecFactory::create(QPlainTextEdit* textEdit, QString docName)
-{
-    return new GenericTextEditorCodec(textEdit, docName, ":/icons/files.svg");
+    return new GenericTextEditorCodec(genTexEdDoc, docName, ":/icons/files.svg");
 }
 //-----------------------------------------------------------------------------------------

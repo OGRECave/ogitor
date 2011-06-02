@@ -33,13 +33,16 @@
 #include "materialtexteditorcodec.hxx"
 #include "generictexteditor.hxx"
 #include "materialhighlighter.hxx"
+#include "materialeditorprefseditor.hxx"
 
+#include "OgitorsRoot.h"
 #include "OgreTechnique.h"
 
 #include <QtGui/QColorDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QApplication>
 #include <QtCore/QObject>
+#include <QtCore/QSettings>
 
 //-----------------------------------------------------------------------------------------
 
@@ -53,167 +56,109 @@ enum ColorType
 };
 
 //-----------------------------------------------------------------------------------------
-MaterialTextEditorCodec::MaterialTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon) : 
-ITextEditorCodec(textEdit, docName, documentIcon)
-{
-    int pos = docName.lastIndexOf(".material");
-
-    if(pos != -1)
-        mMaterialName = docName.left(pos);
-    else
-        mMaterialName = docName;
-
-    //    QSettings settings;
-    //    settings.beginGroup(mMaterialPrefsEditor->getPrefsSectionName().c_str());
-    //
-    //    if(settings.value("lineWrapping", false).toBool() == false)
-    //        setLineWrapMode(QPlainTextEdit::NoWrap);
-    //    else
-    //        setLineWrapMode(QPlainTextEdit::WidgetWidth);
-    //
-    //    settings.endGroup();
-}
-//-----------------------------------------------------------------------------------------
-QString MaterialTextEditorCodec::prepareForDisplay(QString docName, QString text)
+MaterialTextEditorCodec::MaterialTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon) : 
+ITextEditorCodec(genTexEdDoc, docName, documentIcon)
 {
     Ogre::ScriptCompilerManager::getSingletonPtr()->setListener(this);
-    
+
+    mScriptError = false;
+
+    QSettings settings;
+    settings.beginGroup(mMaterialPrefsEditor->getPrefsSectionName().c_str());
+
+    if(settings.value("lineWrapping", false).toBool() == false)
+        mGenTexEdDoc->setLineWrapMode(QPlainTextEdit::NoWrap);
+    else
+        mGenTexEdDoc->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+
+    settings.endGroup();
+}
+//-----------------------------------------------------------------------------------------
+QString MaterialTextEditorCodec::onBeforeDisplay(QString text)
+{
     return text;
 }
 //-----------------------------------------------------------------------------------------
-bool MaterialTextEditorCodec::save()
+void MaterialTextEditorCodec::onContextMenu(QContextMenuEvent* event)
 {
-    //    //bool reLoad = false;
-    //
-    //    //Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(mFilePath.toStdString(), mResourceGroup.toStdString());				
-    //    //QString contents = stream->getAsString().c_str();
-    //    //stream.setNull();
-    //
-    //    //int pos = contents.indexOf(mLastMaterialSource);
-    //    //contents.erase(pos, mLastMaterialSource.size());
-    //    //contents.insert(pos, document()->toPlainText().toAscii());
-    //
-    //    //Ogre::Material* material = static_cast<Ogre::Material*>(mMaterialViewWidget->getMaterialEditor()->getHandle());
-    //
-    //    //Ogre::FileInfoListPtr fileInfoList;
-    //    //QString matOrigin = material->getOrigin();
-    //
-    //    //try
-    //    //{
-    //    //    fileInfoList = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo(material->getGroup(), material->getOrigin());
-    //
-    //    //    stream = fileInfoList.getPointer()->at(0).archive->create(matOrigin);
-    //
-    //    //    if(!stream.isNull())
-    //    //    {
-    //    //        int content_size = contents.length();
-    //    //        stream->write(contents.c_str(), content_size);
-    //    //        stream->close();
-    //    //        reLoad = true;
-    //    //    }
-    //    //}
-    //    //catch(...)
-    //    //{
-    //    //}
-    //
-    //
-    //    //if(reLoad)
-    //    //{
-    //    //    QString matName = material->getName();
-    //    //    material->unload();
-    //    //    Ogre::MaterialManager::getSingletonPtr()->remove(matName);
-    //
-    //    //    stream = fileInfoList.getPointer()->at(0).archive->open(matOrigin);
-    //
-    //    //    if(!stream.isNull())
-    //    //    {	
-    //    //        mScriptError = false;
-    //    //        Ogre::MaterialManager::getSingleton().parseScript(stream, material->getGroup());
-    //
-    //    //        if(!mScriptError)
-    //    //        {
-    //    //            Ogre::MaterialPtr reloadedMaterial = Ogre::MaterialManager::getSingleton().getByName(matName);
-    //    //            if (!reloadedMaterial.isNull())
-    //    //            {
-    //    //                reloadedMaterial->compile();
-    //    //                reloadedMaterial->load();
-    //    //                mMaterialViewWidget->getMaterialEditor()->setHandle(reloadedMaterial);
-    //    //            }
-    //
-    //    //            stream->close();
-    //    //            setTextModified(false);
-    //    //            setWindowModified(false);
-    //    //            //return matName;
-    //    //        }
-    //    //    }
-    //    //}
-    //    //else
-    //    //{
-    //    //    QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Error saving material script"));
-    //    //}
-    //
-    //    ////return QString("");
-    //
-    //    return true;
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-void MaterialTextEditorCodec::contextMenu(QContextMenuEvent* event)
-{
-    QTextCursor cursor = mTextEdit->textCursor();
+    QTextCursor cursor = mGenTexEdDoc->textCursor();
     cursor.select(QTextCursor::LineUnderCursor);
-    mTextEdit->setTextCursor(cursor);
+    mGenTexEdDoc->setTextCursor(cursor);
 
-    if(mTextEdit->textCursor().hasSelection())
+    QString lineText = mGenTexEdDoc->textCursor().selectedText();
+    int lineNumber = mGenTexEdDoc->textCursor().blockNumber();
+
+    cursor = mGenTexEdDoc->textCursor();
+    cursor.setPosition(0);
+    cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, lineNumber);
+    int startPos = cursor.position();
+    
+    QString materialName;
+
+    // There can be multiple materials within one material file, so we
+    // need to figure out in which material the context menu event occurred.
+    QTextCursor tc = mGenTexEdDoc->textCursor();
+    int savePos = tc.position();
+    tc.movePosition(QTextCursor::Start, QTextCursor::KeepAnchor);
+    QString tmpStr = tc.selectedText();
+
+    // Cut to content from the material, the click occurred in and cut "material" keyword
+    int pos =  tmpStr.lastIndexOf("material");
+    tmpStr = tmpStr.mid(pos + 9);               // 8 for "material" + 1 for blank after the keyword 
+
+    // Cut to content in material name line
+    pos = tmpStr.indexOf("{");
+    tmpStr = tmpStr.left(pos); 
+
+    // There might be a ":" from material inheritance...get rid of it
+    pos = tmpStr.indexOf(":");
+    tmpStr = tmpStr.left(pos);
+    materialName = tmpStr;
+    
+    // Offer color dialog help for the light terms
+    int colourType = NONE;
+    int index;
+    QRegExp expression;
+    expression.setPattern("ambient[^_](.+)$");
+    index = lineText.indexOf(expression);
+    if(index >= 0)
+        colourType = AMBIENT;
+    else
     {
-        QString lineText = mTextEdit->textCursor().selectedText();
-        int lineNumber = mTextEdit->textCursor().blockNumber();
-
-        cursor = mTextEdit->textCursor();
-        cursor.setPosition(0);
-        cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, lineNumber);
-        int startPos = cursor.position();
-
-        // Offer color dialog help for the light terms
-        int colourType = NONE;
-        int index;
-        QRegExp expression;
-        expression.setPattern("ambient[^_](.+)$");
+        expression.setPattern("diffuse[^_](.+)$");
         index = lineText.indexOf(expression);
         if(index >= 0)
-            colourType = AMBIENT;
+            colourType = DIFFUSE;
         else
         {
-            expression.setPattern("diffuse[^_](.+)$");
+            expression.setPattern("specular[^_](.+)$");
             index = lineText.indexOf(expression);
             if(index >= 0)
-                colourType = DIFFUSE;
+                colourType = SPECULAR;
             else
             {
-                expression.setPattern("specular[^_](.+)$");
+                expression.setPattern("emissive[^_](.+)$");
                 index = lineText.indexOf(expression);
                 if(index >= 0)
-                    colourType = SPECULAR;
-                else
-                {
-                    expression.setPattern("emissive[^_](.+)$");
-                    index = lineText.indexOf(expression);
-                    if(index >= 0)
-                        colourType = EMISSIVE;
-                }
+                    colourType = EMISSIVE;
             }
         }
-            
-        if(colourType != NONE)
-        {         
-            int length = expression.matchedLength();
-            cursor = mTextEdit->textCursor();
-            cursor.setPosition(startPos + index + length - expression.cap(1).length());
-            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
-            mTextEdit->setTextCursor(cursor);
+    }
+        
+    if(colourType != NONE)
+    {         
+        int length = expression.matchedLength();
+        cursor = mGenTexEdDoc->textCursor();
+        cursor.setPosition(startPos + index + length - expression.cap(1).length());
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
+        mGenTexEdDoc->setTextCursor(cursor);
 
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterialName.toStdString());
-            
+        QColor oldColour;
+        Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialName.toStdString());
+        
+        // If null then the material was probably not made a scene asset yet.
+        if(!mat.isNull())
+        {
             Ogre::ColourValue colour;
             if(colourType == AMBIENT)
                 colour = mat->getBestTechnique(0)->getPass(0)->getAmbient();
@@ -224,17 +169,24 @@ void MaterialTextEditorCodec::contextMenu(QContextMenuEvent* event)
             else if(colourType == EMISSIVE)
                 colour = mat->getBestTechnique(0)->getPass(0)->getSelfIllumination();
 
-            QColor oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
-            QColor newColour = QColorDialog::getColor(oldColour, mTextEdit);
+            oldColour = QColor(255 * colour.r, 255 * colour.g, 255 * colour.b, 255 * colour.a);
+        }
+        else
+            oldColour = QColor();
 
-            // If the user pressed cancel, use our previous colour
-            if(!newColour.isValid())
-                return;
+        QColor newColour = QColorDialog::getColor(oldColour, mGenTexEdDoc);
 
-            cursor.removeSelectedText();
-            char temp[128];
-            sprintf(temp, "%.4f %.4f %.4f %.4f", newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF());
-            cursor.insertText(QString(temp));
+        // If the user pressed cancel, use our previous colour
+        if(!newColour.isValid())
+            return;
+
+        cursor.removeSelectedText();
+        char temp[128];
+        sprintf(temp, "%.4f %.4f %.4f %.4f", newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF());
+        cursor.insertText(QString(temp));
+        
+        if(!mat.isNull())
+        {
             if(colourType == AMBIENT)
                 mat->getTechnique(0)->getPass(0)->setAmbient(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
             else if(colourType == DIFFUSE)
@@ -243,32 +195,30 @@ void MaterialTextEditorCodec::contextMenu(QContextMenuEvent* event)
                 mat->getTechnique(0)->getPass(0)->setSpecular(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
             else if(colourType == EMISSIVE)
                 mat->getTechnique(0)->getPass(0)->setSelfIllumination(Ogre::ColourValue(newColour.redF(), newColour.greenF(), newColour.blueF(), newColour.alphaF()));
-
-            return;
         }
 
-        expression = QRegExp("texture[^_]([a-zA-Z0-9\\.\\-\\_]+)\\s*([a-zA-Z0-9-]*)");
-        index = lineText.indexOf(expression);
-        if(index >= 0)
-        {
-            int length = expression.matchedLength();
-            cursor = mTextEdit->textCursor();
-            cursor.setPosition(startPos + index + length - expression.cap(1).length());
-            cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
-            mTextEdit->setTextCursor(cursor);
-            return;
-        }
+        return;
+    }
+
+    expression = QRegExp("texture[^_]([a-zA-Z0-9\\.\\-\\_]+)\\s*([a-zA-Z0-9-]*)");
+    index = lineText.indexOf(expression);
+    if(index >= 0)
+    {
+        int length = expression.matchedLength();
+        cursor = mGenTexEdDoc->textCursor();
+        cursor.setPosition(startPos + index + length - expression.cap(1).length());
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, expression.cap(1).length());
+        mGenTexEdDoc->setTextCursor(cursor);
+        return;
     }
 }
 //-----------------------------------------------------------------------------------------
 QString MaterialTextEditorCodec::getMaterialText(const Ogre::String& input, const Ogre::String& find)
 {
     Ogre::String buffer = input;
-
     char *curpos = const_cast<char *>(buffer.c_str());
     char *start = curpos;
     char *end = curpos;
-
     const char *curposend = curpos + buffer.size();
 
     // Fill all comment lines with SPACE so they don't interfere with our search, example: //material X
@@ -300,7 +250,6 @@ QString MaterialTextEditorCodec::getMaterialText(const Ogre::String& input, cons
             return "";
 
         curpos++;
-
         int brackets = 1;
 
         while(brackets && (curpos < curposend))
@@ -316,7 +265,6 @@ QString MaterialTextEditorCodec::getMaterialText(const Ogre::String& input, cons
             return "";
 
         end = curpos;
-
         Ogre::String res = input.substr(start - buffer.c_str(), end - start);
         return res.c_str();
     }
@@ -324,129 +272,143 @@ QString MaterialTextEditorCodec::getMaterialText(const Ogre::String& input, cons
         return "";
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditorCodec::addHighlighter(GenericTextEditorDocument* document)
+void MaterialTextEditorCodec::onAddHighlighter()
 {
-    new MaterialHighlighter(GenericTextEditor::getSingletonPtr()->modelFromFile(":/syntax_highlighting/material.txt"), document->document());
+    new MaterialHighlighter(GenericTextEditor::getSingletonPtr()->modelFromFile(":/syntax_highlighting/material.txt"), mGenTexEdDoc->document());
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditorCodec::handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const QString &file, int line, const QString &msg)
+void MaterialTextEditorCodec::handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const Ogre::String &file, int line, const Ogre::String &msg)
 {
     mScriptError = true;
     QList<QTextEdit::ExtraSelection> extraSelections;
     QTextEdit::ExtraSelection selection;
-    int currentLine = mTextEdit->textCursor().blockNumber() + 1;
-    QTextCursor cursor = mTextEdit->textCursor();
+    int currentLine = mGenTexEdDoc->textCursor().blockNumber() + 1;
+    QTextCursor cursor = mGenTexEdDoc->textCursor();
     int lineDiff = line - currentLine;
     if(lineDiff > 0)
         cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, lineDiff);
     else if(lineDiff < 0)
-        cursor.movePosition(QTextCursor::Up, QTextCursor::MoveAnchor, lineDiff);
-    mTextEdit->setTextCursor(cursor);
+        cursor.movePosition(QTextCursor::Up, QTextCursor::MoveAnchor, -lineDiff);
+    mGenTexEdDoc->setTextCursor(cursor);
 
     QColor lineColor = QColor(Qt::red).lighter(160);
     selection.format.setBackground(lineColor);
     selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-    selection.cursor = mTextEdit->textCursor();
+    selection.cursor = mGenTexEdDoc->textCursor();
     selection.cursor.clearSelection();
     extraSelections.append(selection);
-    mTextEdit->setExtraSelections(extraSelections);
+    mGenTexEdDoc->setExtraSelections(extraSelections);
 
-    QString message = QString("Script Compiler error: %1\nLine: %2").arg(msg).arg(line);
+    QString message = QString("Script Compiler error: %1\nLine: %2").arg(msg.c_str()).arg(line);
     QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr(message.toAscii()));
 }
 //-----------------------------------------------------------------------------------------
-void MaterialTextEditorCodec::keyPressEvent( QKeyEvent *event )
+void MaterialTextEditorCodec::onKeyPressEvent(QKeyEvent *event)
 {
-    //    if((event->key() == Qt::Key_F5 || event->key() == Qt::Key_F6) && event->modifiers() == Qt::AltModifier)
-    //    {
-    //        //QString newMaterialName = saveMaterial();
-    //
-    //        //if(event->key() == Qt::Key_F5)
-    //            //OgitorsRoot::getSingletonPtr()->UpdateMaterialInScene(newMaterialName);
-    //    }
-    //
-    //    if(mCompleter && mCompleter->popup()->isVisible()) 
-    //    {
-    //        switch (event->key()) 
-    //        {
-    //        case Qt::Key_Enter:
-    //        case Qt::Key_Return:
-    //        case Qt::Key_Escape:
-    //        case Qt::Key_Tab:
-    //        case Qt::Key_Backtab:
-    //            event->ignore();
-    //            return;
-    //        default:
-    //            break;
-    //        }
-    //    }
-    //
-    //    // Auto start next line with the indentation of previous line...
-    //    if(event->key() == Qt::Key_Return)
-    //    {
-    //        QTextCursor tc = textCursor();
-    //        int savePos = tc.position();
-    //        //Get Previous bracket position
-    //        tc.movePosition(QTextCursor::Start, QTextCursor::KeepAnchor);
-    //        QString tmpStr = tc.selectedText();
-    //
-    //        int count = calculateIndentation(tmpStr);
-    //
-    //        tc.setPosition(savePos);
-    //        QString txt = "\n";
-    //        for(int z = 0;z < count;z++)
-    //            txt += " ";
-    //        tc.insertText(txt);
-    //        tc.setPosition(savePos + count + 1);
-    //        setTextCursor(tc);
-    //        event->accept();
-    //        return;
-    //    }
-    //
-    //    //Insert 4 spaces instead of tab
-    //    if(event->key() == Qt::Key_Tab)
-    //    {
-    //        QTextCursor tc = textCursor();
-    //        int savePos = tc.position();
-    //        QString txt = "    ";
-    //        tc.insertText(txt);
-    //        tc.setPosition(savePos + 4);
-    //        setTextCursor(tc);
-    //        event->accept();
-    //        return;
-    //    }
-    //
-    //    bool isShortcut = ((event->modifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Space); 
-    //    if(!mCompleter || !isShortcut) 
-    //        QPlainTextEdit::keyPressEvent(event);
-    //
-    //    const bool ctrlOrShift = event->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
-    //    if(!mCompleter || (ctrlOrShift && event->text().isEmpty()))
-    //        return;
-    //
-    //    static QString eow("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
-    //    bool hasModifier = (event->modifiers() != Qt::NoModifier) && !ctrlOrShift;
-    //    QString completionPrefix = textUnderCursor();
-    //
-    //    if(!isShortcut && (hasModifier || event->text().isEmpty() || completionPrefix.length() < 1
-    //        || eow.contains(event->text().right(1))))
-    //    {
-    //        mCompleter->popup()->hide();
-    //        return;
-    //    }
-    //
-    //    if(completionPrefix != mCompleter->completionPrefix()) 
-    //    {
-    //        mCompleter->setCompletionPrefix(completionPrefix);
-    //        mCompleter->popup()->setCurrentIndex(mCompleter->completionModel()->index(0, 0));
-    //    }
-    //    QRect cr = cursorRect();
-    //    cr.setWidth(mCompleter->popup()->sizeHintForColumn(0) + mCompleter->popup()->verticalScrollBar()->sizeHint().width());
-    //    mCompleter->complete(cr);
+    if((event->key() == Qt::Key_F5 || event->key() == Qt::Key_F6) && event->modifiers() == Qt::AltModifier)
+    {
+        mGenTexEdDoc->save();
+
+        if(event->key() == Qt::Key_F5)
+        {
+            QStringList materialList = findMaterialNames();
+
+            // Check if we are dealing with actual loaded Ogre materials here. If we previously found out
+            // that there is a script error proceed anyway.
+            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+            if(mat.isNull() && !mScriptError)
+            {
+                QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("This material file seems to not be an active Ogre material. Please make sure it is declared as a scene asset and properly loaded."));      
+                return;
+            }
+
+            reloadMaterials(materialList);
+
+            for(int i = 0; i < materialList.size(); i++)
+                Ogitors::OgitorsRoot::getSingletonPtr()->UpdateMaterialInScene(materialList[i].toStdString());
+        }
+    }
 }
 //-----------------------------------------------------------------------------------------
-ITextEditorCodec* MaterialTextEditorCodecFactory::create(QPlainTextEdit* textEdit, QString docName)
+void MaterialTextEditorCodec::onAddCompleter()
 {
-    return new MaterialTextEditorCodec(textEdit, docName, ":/icons/material.svg");
+    mGenTexEdDoc->addCompleter(":/syntax_highlightning/material.txt");
+}
+//-----------------------------------------------------------------------------------------
+void MaterialTextEditorCodec::onAfterDisplay()
+{
+    // If the optionalData field is filled, we interpret it as the material that is to be shown,
+    // so we move the cursor to its first line and ensure that it is visible.
+    if(!mOptionalData.isEmpty())
+    {
+        QString mat = mGenTexEdDoc->toPlainText();
+        int pos = mat.indexOf(QRegExp("\\s" + mOptionalData + "\\s"));
+
+        if(pos > 0)
+        {
+            QTextCursor tc = mGenTexEdDoc->textCursor();
+            tc.setPosition(pos);
+            mGenTexEdDoc->setTextCursor(tc);
+            mGenTexEdDoc->ensureCursorVisible();
+        }
+    }
+}
+//-----------------------------------------------------------------------------------------
+void MaterialTextEditorCodec::onDisplayRequest()
+{
+    onAfterDisplay();
+}
+//-----------------------------------------------------------------------------------------
+QStringList MaterialTextEditorCodec::findMaterialNames()
+{
+    QRegExp reg("material\\s+([a-zA-Z.0-9/_]+)\\s");
+    int pos = 0;
+    QStringList result;
+
+    while((pos = reg.indexIn(mGenTexEdDoc->toPlainText(), pos)) != -1) 
+    {
+        result << reg.cap(1);
+        pos += reg.matchedLength();
+    }
+
+    return result;
+}
+//-----------------------------------------------------------------------------------------
+void MaterialTextEditorCodec::reloadMaterials(QStringList materialList)
+{
+    for(int i = 0; i < materialList.size(); i++)
+    {
+        QString matName = materialList[i];
+        Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(matName.toStdString());
+        mat->unload();
+        Ogre::MaterialManager::getSingletonPtr()->remove(matName.toStdString());
+
+        Ogre::FileInfoListPtr fileInfoList;
+        fileInfoList = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo(mat->getGroup(), mat->getOrigin());
+        Ogre::DataStreamPtr stream = fileInfoList.getPointer()->at(0).archive->open(mat->getOrigin());
+
+        if(!stream.isNull())
+        {	
+            mScriptError = false;
+            Ogre::MaterialManager::getSingleton().parseScript(stream, mat->getGroup());
+
+            if(!mScriptError)
+            {
+                Ogre::MaterialPtr reloadedMaterial = Ogre::MaterialManager::getSingleton().getByName(matName.toStdString());
+                if(!reloadedMaterial.isNull())
+                {
+                    reloadedMaterial->compile();
+                    reloadedMaterial->load();
+                }
+
+                stream->close();
+            }
+        }
+    }
+}
+//-----------------------------------------------------------------------------------------
+ITextEditorCodec* MaterialTextEditorCodecFactory::create(GenericTextEditorDocument* genTexEdDoc, QString docName)
+{
+    return new MaterialTextEditorCodec(genTexEdDoc, docName, ":/icons/material.svg");
 }
 //-----------------------------------------------------------------------------------------

@@ -38,14 +38,9 @@ IImageEditorCodec(scrollArea, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
-QPixmap* GenericImageEditorCodec::prepareForDisplay(QString docName, QPixmap* pixmap)
+QPixmap* GenericImageEditorCodec::onBeforeDisplay(QPixmap* pixmap)
 {
     return pixmap;
-}
-//-----------------------------------------------------------------------------------------
-bool GenericImageEditorCodec::save()
-{
-    return true;
 }
 //-----------------------------------------------------------------------------------------
 IImageEditorCodec* GenericImageEditorCodecFactory::create(QScrollArea* scrollArea, QString docName)

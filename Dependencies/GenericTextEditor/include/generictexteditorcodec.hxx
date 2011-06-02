@@ -37,17 +37,16 @@
 
 //----------------------------------------------------------------------------------------
 
+class GenericTextEditorDocument;
+
+//----------------------------------------------------------------------------------------
+
 class GenericTextEditorCodec : public ITextEditorCodec
 {
 public:
-    GenericTextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon);
+    GenericTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
 
-    QString prepareForDisplay(QString docName, QString text);
-    bool    save();
-    void    contextMenu(QContextMenuEvent* event){};    
-    void    keyPressEvent(QKeyEvent *event){};
-    void    addHighlighter(GenericTextEditorDocument* document){};
-    void    addCompleter(GenericTextEditorDocument* document){};
+    QString onBeforeDisplay(QString text);
 };
 
 //----------------------------------------------------------------------------------------
@@ -55,7 +54,7 @@ public:
 class GenericTextEditorCodecFactory : public ITextEditorCodecFactory
 {
 public:
-    ITextEditorCodec* create(QPlainTextEdit* textEdit, QString docName);
+    ITextEditorCodec* create(GenericTextEditorDocument* genTexEdDoc, QString docName);
 };
 
 //----------------------------------------------------------------------------------------

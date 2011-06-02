@@ -48,12 +48,12 @@
 #include "EventManager.h"
 
 #include "materialview.hxx"
-#include "materialtexteditor.hxx"
 #include "materialtexteditorcodec.hxx"
 
 using namespace Ogitors;
 
 MaterialViewWidget *mMaterialViewWidget = 0;
+
 //----------------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
 {
@@ -190,8 +190,9 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 
         mMaterialEditor->setMaterialPath(materialPath);
 
-        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(fileInfoList.getPointer()->at(0).filename, resourceGroup);                
-        GenericTextEditor::getSingletonPtr()->displayText(material->getName().c_str(), MaterialTextEditorCodec::getMaterialText(stream->getAsString().c_str(), material->getName()), ".material");
+        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(fileInfoList.getPointer()->at(0).filename, resourceGroup); 
+        Ogre::String fullPath = fileInfoList.getPointer()->at(0).archive->getName() +  fileInfoList.getPointer()->at(0).filename;
+        GenericTextEditor::getSingletonPtr()->displayTextFromFile(fullPath.c_str(), material->getName().c_str());
     }
     catch(Ogre::Exception e)
     {

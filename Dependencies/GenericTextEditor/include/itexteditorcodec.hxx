@@ -36,7 +36,6 @@
 #include <QtCore/QString>
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QPlainTextEdit>
 
 //----------------------------------------------------------------------------------------
 
@@ -44,29 +43,97 @@ class GenericTextEditorDocument;
 
 //----------------------------------------------------------------------------------------
 
+/*!  
+* A class that forms the base that all editor codecs have to inherit from. Its methods are
+* then called from the GenericTextEditor.
+*/
 class ITextEditorCodec
 {
 public:
-    ITextEditorCodec(QPlainTextEdit* textEdit, QString docName, QString documentIcon)
+    ITextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon)
     {
-        mTextEdit           = textEdit;
-        mDocName            = docName;
-        mDocumentIcon       = documentIcon;
+        mGenTexEdDoc            = genTexEdDoc;
+        mDocName                = docName;
+        mDocumentIcon           = documentIcon;
+        mUseDefaultSaveLogic    = true;
     }
 
-    virtual QString prepareForDisplay(QString docName, QString text) = 0;
-    virtual bool    save() = 0;
-    virtual void    contextMenu(QContextMenuEvent* event) = 0;
-    virtual void    keyPressEvent(QKeyEvent* event) = 0;
-    virtual void    addHighlighter(GenericTextEditorDocument* document) = 0;
-    virtual void    addCompleter(GenericTextEditorDocument* document) = 0;
+    /**
+    * Called before the text passed as an argument is called for the first time
+    * @param text the content that was loaded
+    * @return the the that is now going to be displayed. If no changes are needed to be made, 
+    *         then just return the content that was passed to the function              
+    */
+    virtual QString onBeforeDisplay(QString text) = 0;
+
+    /**
+    * Called after the content was displayed for the first time            
+    */
+    virtual void    onAfterDisplay(){};
+
+    /**
+    * Called when a save request was issued, but only if the member variable mUseDefaultSaveLogic
+    * was set to true. Otherwise the default saving logic of the generic text editor will be used.
+    */
+    virtual void    onSave(){};
+
+    /**
+    * Called after each successful save, regardless of whether it was executed by the codec's save
+    * logic or whether the default save logic from the editor was used.
+    */
+    virtual void    onAfterSave(){};
+
+    /**
+    * Called when a context menu request was triggered.
+    */
+    virtual void    onContextMenu(QContextMenuEvent* event){};
+
+    /**
+    * Called when a key press event was triggered. Pay attention that some events are already processed
+    * by the generic text editor itself, such as syntax completion if an completer was set for the codec.
+    */
+    virtual void    onKeyPressEvent(QKeyEvent* event){};
+    
+    /**
+    * Called once on document creation, offering the possibility to add syntax highlighting to the document. 
+    * Please simply call the addHighlighter method from mGenTexEdDoc .
+    */
+    virtual void    onAddHighlighter(){};
+
+    /**
+    * Called once on document creation, offering the possibility to add syntax completion to the document. 
+    * Please simply call the addCompleter method from mGenTexEdDoc .
+    */
+    virtual void    onAddCompleter(){};
+
+    /**
+    * Called whenever a document that is already open in one tab is requested to be displayed again
+    * and therefore will be moved to the foreground. 
+    */
+    virtual void    onDisplayRequest(){};
+
+    /**
+    * Called whenever the document this codec instance is attached to is made visible due to a tab change.
+    */
+    virtual void    onTabChange(){};
+
+    /**
+    * Called whenever the document this codec instance is attached to is being closed. At this stage 
+    * at runtime the document was already requested to be saved if there were unsaved changes, so
+    * no need to do this again in this method.
+    */
+    virtual void    onClose(){};
 
     QString         getDocumentIcon() {return mDocumentIcon;}
+    void            setOptionalData(QString optionalData){mOptionalData = optionalData;};
+    bool            isUseDefaultSaveLogic(){return mUseDefaultSaveLogic;};
 
 protected:
-    QPlainTextEdit* mTextEdit;
-    QString         mDocName;
-    QString         mDocumentIcon;
+    GenericTextEditorDocument*  mGenTexEdDoc;
+    QString                     mDocName;
+    QString                     mDocumentIcon;
+    QString                     mOptionalData;
+    bool                        mUseDefaultSaveLogic;
 };
 
 //----------------------------------------------------------------------------------------
@@ -74,7 +141,7 @@ protected:
 class ITextEditorCodecFactory
 {
 public:
-    virtual ITextEditorCodec* create(QPlainTextEdit* textEdit, QString docName) = 0;
+    virtual ITextEditorCodec* create(GenericTextEditorDocument* genTexEdDoc, QString docName) = 0;
 };
 
 //----------------------------------------------------------------------------------------

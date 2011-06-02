@@ -42,10 +42,8 @@ class GenericImageEditorCodec : public IImageEditorCodec
 public:
     GenericImageEditorCodec(QScrollArea* scrollArea, QString docName, QString documentIcon);
 
-    QPixmap*    prepareForDisplay(QString docName, QPixmap* pixmap);
-    bool        save();
-    void        contextMenu(QContextMenuEvent* event){};    
-    void        keyPressEvent(QKeyEvent *event){};
+    QPixmap*    onBeforeDisplay(QPixmap* pixmap);
+    void        onContextMenu(QContextMenuEvent* event){};    
 };
 
 //----------------------------------------------------------------------------------------

@@ -40,7 +40,7 @@
 #include <QtCore/QMap>
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
-#include "materialtexteditor.hxx"
+#include "materialtexteditorcodec.hxx"
 
 #include "ui_materialeditorprefstab.h"
 

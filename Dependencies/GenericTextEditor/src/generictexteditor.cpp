@@ -33,7 +33,9 @@
 #include <QtGui/QtGui>
 #include "generictexteditor.hxx"
 
-#include "Ogitors.h"
+#include "OgitorsDefinitions.h"
+#include "DefaultEvents.h"
+#include "EventManager.h"
 
 //-----------------------------------------------------------------------------------------
 
@@ -64,6 +66,9 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     GenericTextEditor::registerCodecFactory("scene",       genCodecFactory);
     GenericTextEditor::registerCodecFactory("cfg",         genCodecFactory);
     GenericTextEditor::registerCodecFactory("log",         genCodecFactory);
+
+    Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::MODIFIED_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericTextEditor, onModifiedStateChanged));
+    Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericTextEditor, onLoadStateChanged));
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::registerCodecFactory(QString extension, ITextEditorCodecFactory* codec)
@@ -80,7 +85,7 @@ void GenericTextEditor::unregisterCodecFactory(QString extension)
         mRegisteredCodecFactories.erase(it);
 }
 //-----------------------------------------------------------------------------------------
-bool GenericTextEditor::displayTextFromFile(QString filePath)
+bool GenericTextEditor::displayTextFromFile(QString filePath, QString optionalData)
 {
     ITextEditorCodecFactory* codecFactory = GenericTextEditor::findMatchingCodecFactory(filePath);
 
@@ -93,25 +98,29 @@ bool GenericTextEditor::displayTextFromFile(QString filePath)
         document = new GenericTextEditorDocument(this);
         ITextEditorCodec* codec = codecFactory->create(document, filePath);
         document->setCodec(codec);
-        document->displayTextFromFile(QFile(filePath).fileName(), filePath);
+        document->displayTextFromFile(QFile(filePath).fileName(), filePath, optionalData);
         QMdiSubWindow *window = addSubWindow(document);
         window->setWindowIcon(QIcon(codec->getDocumentIcon()));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName());
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName());   
     }
     else
     {
+        document->getCodec()->setOptionalData(optionalData);
+        document->getCodec()->onDisplayRequest();
         setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
         document->setFocus(Qt::ActiveWindowFocusReason);
     }
 
-    moveToForeground();
+    moveToForeground();   
+
+    connect(document, SIGNAL(textChanged()), document, SLOT(documentWasModified()));
 
     return true;
 }
 //-----------------------------------------------------------------------------------------
-bool GenericTextEditor::displayText(QString docName, QString text, QString extension = "")
+bool GenericTextEditor::displayText(QString docName, QString text, QString extension, QString optionalData)
 {
     // If there is no extra extension passed, then try to find the matching one based on the doc name
     ITextEditorCodecFactory* codecFactory;
@@ -129,20 +138,24 @@ bool GenericTextEditor::displayText(QString docName, QString text, QString exten
         document = new GenericTextEditorDocument(this);
         ITextEditorCodec* codec = codecFactory->create(document, docName);
         document->setCodec(codec);
-        document->displayText(docName, text);
+        document->displayText(docName, text, optionalData);
         QMdiSubWindow *window = addSubWindow(document);
         window->setWindowIcon(QIcon(codec->getDocumentIcon()));
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName);
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName);    
     }
     else
     {
+        document->getCodec()->setOptionalData(optionalData);
+        document->getCodec()->onDisplayRequest();
         setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
         document->setFocus(Qt::ActiveWindowFocusReason);
     }
 
     moveToForeground();
+
+    connect(document, SIGNAL(textChanged()), document, SLOT(documentWasModified()));
 
     return true;
 }
@@ -181,12 +194,13 @@ void GenericTextEditor::closeTab(int index)
         int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         switch(result)
         {
-        case QMessageBox::Yes: document->getCodec()->save(); break;
-        case QMessageBox::No: break;
-        case QMessageBox::Cancel: return;
+        case QMessageBox::Yes:      document->save(); break;
+        case QMessageBox::No:       break;
+        case QMessageBox::Cancel:   return;
         }
     }
     sub->close();
+    document->getCodec()->onClose();
     document->releaseFile();
     document->close();
 
@@ -197,7 +211,7 @@ void GenericTextEditor::closeEvent(QCloseEvent *event)
 {
     QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
-        closeTab(i);
+        closeTab(0);
 }
 //-----------------------------------------------------------------------------------------
 ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString extensionOrFileName)
@@ -252,14 +266,48 @@ void GenericTextEditor::saveAll()
     for(int i = 0; i < list.size(); i++)
     { 
         document = static_cast<GenericTextEditorDocument*>(subWindowList()[i]->widget());
-    
-        if(document->isTextModified())
-            document->getCodec()->save();
+        document->save();
     }
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabChanged(int index)
 {
+    // -1 means that the last tab was just closed and so there is no one left anymore to switch to
+    if(index != -1)
+    {
+        GenericTextEditorDocument* document;
+        QList<QMdiSubWindow*> list = subWindowList();
+        document = static_cast<GenericTextEditorDocument*>(subWindowList()[index]->widget());
+        document->getCodec()->onTabChange();
+    }
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::onModifiedStateChanged(Ogitors::IEvent* evt)
+{
+    Ogitors::SceneModifiedChangeEvent *change_event = Ogitors::event_cast<Ogitors::SceneModifiedChangeEvent*>(evt);
+
+    if(change_event)
+    {
+        bool state = change_event->getState();
+
+        // If scene is not modified anymore, the user saved it, so we need to save the
+        // documents as well.
+        if(!state)
+            saveAll();
+    }
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::onLoadStateChanged(Ogitors::IEvent* evt)
+{
+    Ogitors::LoadStateChangeEvent *change_event = Ogitors::event_cast<Ogitors::LoadStateChangeEvent*>(evt);
+
+    if(change_event)
+    {
+        Ogitors::LoadState state = change_event->getType();
+
+        if(state == Ogitors::LS_UNLOADED)
+            close();
+    }
 }
 //-----------------------------------------------------------------------------------------
 GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
@@ -289,10 +337,11 @@ GenericTextEditorDocument::~GenericTextEditorDocument()
     mOfsPtr.unmount();
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::displayTextFromFile(QString docName, QString filePath)
+void GenericTextEditorDocument::displayTextFromFile(QString docName, QString filePath, QString optionalData = "")
 {
     mDocName = docName;
     mFilePath = filePath;
+    mCodec->setOptionalData(optionalData);
 
     int pos = filePath.indexOf("::");
     if(pos > 0)
@@ -320,7 +369,7 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
         mOfsPtr->read(mOfsFileHandle, buf, cont_len);
         mOfsPtr->closeFile(mOfsFileHandle);
         
-        displayText(filePath, buf);
+        displayText(filePath, buf, optionalData);
         delete[] buf;
     }
     else
@@ -329,28 +378,29 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
 
         mFile.setFileName(filePath);
         mFile.open(QIODevice::ReadOnly);
-        displayText(docName, mFile.readAll());
+        displayText(docName, mFile.readAll(), optionalData);
     }
    
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::displayText(QString docName, QString text)
+void GenericTextEditorDocument::displayText(QString docName, QString text, QString optionalData = "")
 {
     mDocName = docName;
+    mCodec->setOptionalData(optionalData);
 
-    setPlainText(mCodec->prepareForDisplay(docName, text));
+    setPlainText(mCodec->onBeforeDisplay(text));
 
     QString tabTitle = docName;
     if(tabTitle.length() > 25)
         tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
     setWindowTitle(tabTitle + QString("[*]"));
 
-    mCodec->addCompleter(this);
-    mCodec->addHighlighter(this);
-
-    connect(this, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
+    mCodec->onAddCompleter();
+    mCodec->onAddHighlighter();
 
     setWindowModified(false);
+
+    mCodec->onAfterDisplay();
 }
 //-----------------------------------------------------------------------------------------
 int GenericTextEditorDocument::lineNumberAreaWidth()
@@ -467,12 +517,94 @@ void GenericTextEditorDocument::focusInEvent(QFocusEvent *event)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::keyPressEvent(QKeyEvent *event)
 {
-    QPlainTextEdit::keyPressEvent(event);
+    if(mCompleter && mCompleter->popup()->isVisible()) 
+    {
+        switch (event->key()) 
+        {
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+        case Qt::Key_Escape:
+        case Qt::Key_Tab:
+        case Qt::Key_Backtab:
+            event->ignore();
+            return;
+        default:
+            break;
+        }
+    }
+
+    // Auto start next line with the indentation of previous line...
+    if(event->key() == Qt::Key_Return)
+    {
+        QTextCursor tc = textCursor();
+        int savePos = tc.position();
+        //Get Previous bracket position
+        tc.movePosition(QTextCursor::Start, QTextCursor::KeepAnchor);
+        QString tmpStr = tc.selectedText();
+
+        int count = calculateIndentation(tmpStr);
+
+        tc.setPosition(savePos);
+        QString txt = "\n";
+        for(int z = 0;z < count;z++)
+            txt += " ";
+        tc.insertText(txt);
+        tc.setPosition(savePos + count + 1);
+        setTextCursor(tc);
+        event->accept();
+        return;
+    }
+
+    // Insert 4 spaces instead of tab
+    if(event->key() == Qt::Key_Tab)
+    {
+        QTextCursor tc = textCursor();
+        int savePos = tc.position();
+        QString txt = "    ";
+        tc.insertText(txt);
+        tc.setPosition(savePos + 4);
+        setTextCursor(tc);
+        event->accept();
+        return;
+    }
+
+    bool isShortcut = ((event->modifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Space); 
+    if(!mCompleter || !isShortcut) 
+    {
+        mCodec->onKeyPressEvent(event);
+        QPlainTextEdit::keyPressEvent(event);
+    }
+
+    const bool ctrlOrShift = event->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
+    if(!mCompleter || (ctrlOrShift && event->text().isEmpty()))
+        return;
+
+    static QString eow("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
+    bool hasModifier = (event->modifiers() != Qt::NoModifier) && !ctrlOrShift;
+    QString completionPrefix = textUnderCursor();
+
+    if(!isShortcut && (hasModifier || event->text().isEmpty() || completionPrefix.length() < 1
+        || eow.contains(event->text().right(1))))
+    {
+        mCompleter->popup()->hide();
+        return;
+    }
+
+    if(completionPrefix != mCompleter->completionPrefix()) 
+    {
+        mCompleter->setCompletionPrefix(completionPrefix);
+        mCompleter->popup()->setCurrentIndex(mCompleter->completionModel()->index(0, 0));
+    }
+    QRect cr = cursorRect();
+    cr.setWidth(mCompleter->popup()->sizeHintForColumn(0) + mCompleter->popup()->verticalScrollBar()->sizeHint().width());
+    mCompleter->complete(cr);
+
+    mCodec->onKeyPressEvent(event);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 {
-    mCodec->contextMenu(event);
+    mCodec->onContextMenu(event);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::mousePressEvent(QMouseEvent *event)
@@ -485,10 +617,10 @@ void GenericTextEditorDocument::mousePressEvent(QMouseEvent *event)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::documentWasModified()
 {
-    setTextModified(true);
-    setWindowModified(isTextModified());
-
-    Ogitors::OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
+    // Check if the underlying QTextDocument also reports back the modified flag, 
+    // to ignore highlighting changes   
+    if(document()->isModified())
+        setTextModified(true);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::releaseFile()
@@ -512,13 +644,15 @@ int GenericTextEditorDocument::calculateIndentation(const QString& str)
 {
     int indent = 0;
     int str_len = str.length();
-    const char *chr = str.toStdString().c_str();
+    char c;
 
-    for(int i = 0;i < str_len;i++)
+    for(int i = 0; i < str_len; i++)
     {
-        if(chr[i] == '{')
+        c = str.at(i).toAscii();
+        
+        if(c == '{')
             ++indent;
-        else if(chr[i] == '}')
+        else if(c == '}')
             --indent;
     }
 
@@ -526,5 +660,61 @@ int GenericTextEditorDocument::calculateIndentation(const QString& str)
         indent = 0;
 
     return (indent * 4);
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditorDocument::setTextModified(bool modified)
+{
+    mTextModified = modified; 
+    setWindowModified(modified);
+    Ogitors::OgitorsRoot::getSingletonPtr()->SetSceneModified(modified);
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditorDocument::save()
+{
+    if(isTextModified())
+    {
+        if(!mCodec->isUseDefaultSaveLogic())
+            mCodec->onSave();
+        else
+            if(!saveDefaultLogic())
+                QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("Error saving file %1").arg(mFilePath));                
+
+        mCodec->onAfterSave();
+    }
+
+    setTextModified(false);
+}
+//-----------------------------------------------------------------------------------------
+bool GenericTextEditorDocument::saveDefaultLogic()
+{
+    if(mIsOfsFile)
+    {
+        int pos = mFilePath.indexOf("::");
+        if(pos > 0)
+            mFilePath = mFilePath.remove(0, pos + 2);
+
+        OFS::OfsResult res = mOfsPtr->openFile(mOfsFileHandle, mFilePath.toAscii(), OFS::OFS_WRITE);
+
+        if(res != OFS::OFS_OK)
+            return false;
+
+        QString text = toPlainText();
+        res = mOfsPtr->write(mOfsFileHandle, text.toAscii(), text.toAscii().length());    
+        mOfsPtr->closeFile(mOfsFileHandle);
+
+        if(res != OFS::OFS_OK)
+            return false;
+    }
+    else
+    {
+        // First close it, since it is still open from loading (will never get closed as long as it is
+        // used within Ogitor to prevent manipulation from outside).
+        mFile.close();
+        mFile.open(QIODevice::ReadWrite | QIODevice::Truncate);
+        if(mFile.write(toPlainText().toAscii()) == -1)
+            return false;
+    }
+
+    return true;
 }
 //-----------------------------------------------------------------------------------------

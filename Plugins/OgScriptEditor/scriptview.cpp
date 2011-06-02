@@ -45,11 +45,12 @@
 #include "EventManager.h"
 
 #include "scriptview.hxx"
-#include "scripttexteditor.hxx"
+#include "scripttexteditorcodec.hxx"
 
 using namespace Ogitors;
 
 ScriptViewWidget *mScriptViewWidget = 0;
+
 //----------------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
 {
@@ -103,10 +104,7 @@ void ScriptTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
     Ogre::String scriptname = item->text(0).toStdString();
     Ogre::String scriptfilename = item->whatsThis(0).toStdString();
 
-    mScriptTextEditor->displayScriptFromFile(scriptname, scriptfilename);
-
-    int index = static_cast<QTabWidget*>(mScriptTextEditor->parent()->parent())->indexOf(mScriptTextEditor);
-    static_cast<QTabWidget*>(mScriptTextEditor->parent()->parent())->setCurrentIndex(index);
+    GenericTextEditor::getSingletonPtr()->displayTextFromFile(scriptfilename.c_str());
 }
 //----------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------

@@ -34,6 +34,9 @@
 #include "genericimageeditor.hxx"
 
 #include "Ogitors.h"
+#include "OgitorsDefinitions.h"
+#include "DefaultEvents.h"
+#include "EventManager.h"
 
 //-----------------------------------------------------------------------------------------
 
@@ -67,6 +70,8 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     GenericImageEditor::registerCodecFactory("tiff",        genCodecFactory);
     GenericImageEditor::registerCodecFactory("xbm",         genCodecFactory);
     GenericImageEditor::registerCodecFactory("xpm",         genCodecFactory);
+
+    Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericImageEditor, onLoadStateChanged));
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::registerCodecFactory(QString extension, IImageEditorCodecFactory* codec)
@@ -154,7 +159,7 @@ void GenericImageEditor::closeEvent(QCloseEvent *event)
 {
     QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
-        closeTab(i);
+        closeTab(0);
 }
 //-----------------------------------------------------------------------------------------
 IImageEditorCodecFactory* GenericImageEditor::findMatchingCodecFactory(QString extensionOrFileName)
@@ -181,18 +186,21 @@ void GenericImageEditor::moveToForeground()
     mParentTabWidget->setCurrentIndex(mParentTabWidget->indexOf(this));
 }
 //-----------------------------------------------------------------------------------------
-void GenericImageEditor::saveAll()
-{
-    GenericImageEditorDocument* document;
-    QList<QMdiSubWindow*> list = subWindowList();
-    for(int i = 0; i < list.size(); i++)
-    { 
-        document = static_cast<GenericImageEditorDocument*>(subWindowList()[i]->widget());
-    }
-}
-//-----------------------------------------------------------------------------------------
 void GenericImageEditor::tabChanged(int index)
 {
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditor::onLoadStateChanged(Ogitors::IEvent* evt)
+{
+    Ogitors::LoadStateChangeEvent *change_event = Ogitors::event_cast<Ogitors::LoadStateChangeEvent*>(evt);
+
+    if(change_event)
+    {
+        Ogitors::LoadState state = change_event->getType();
+
+        if(state == Ogitors::LS_UNLOADED)
+            close();
+    }
 }
 //-----------------------------------------------------------------------------------------
 GenericImageEditorDocument::GenericImageEditorDocument(QWidget *parent) : QScrollArea(parent), 
@@ -240,20 +248,10 @@ void GenericImageEditorDocument::displayImageFromFile(QString docName, QString f
         Ogre::Image ogreImage;
         ogreImage.load(stream);
 
-        QLabel* label = new QLabel();
         QImage qImage;
-        bool res = qImage.loadFromData((uchar*)buf, cont_len + 1);
-
-        label->setPixmap(QPixmap::fromImage(qImage));
-        label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        
-        setWidget(label);
-
-        QString tabTitle = docName;
-        if(tabTitle.length() > 25)
-            tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
-        setWindowTitle(tabTitle + QString("[*]"));
-        setWindowModified(false);
+        qImage.loadFromData((uchar*)buf, cont_len + 1);
+        QPixmap pixmap = QPixmap::fromImage(qImage);
+        displayImage(docName, &pixmap);
 
         delete[] buf;
     }
@@ -263,12 +261,33 @@ void GenericImageEditorDocument::displayImageFromFile(QString docName, QString f
 
         mFile.setFileName(filePath);
         mFile.open(QIODevice::ReadOnly);
+
+        QByteArray content = mFile.readAll();
+        QImage qImage;
+        qImage.loadFromData((uchar*)content.data(), content.length());
+        QPixmap pixmap = QPixmap::fromImage(qImage);
+        displayImage(docName, &pixmap);
     }   
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditorDocument::displayImage(QString docName, QPixmap* pixmap)
+{
+    QLabel* label = new QLabel();
+    label->setPixmap(*mCodec->onBeforeDisplay(pixmap));
+    label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+    setWidget(label);
+
+    QString tabTitle = docName;
+    if(tabTitle.length() > 25)
+        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
+    setWindowTitle(tabTitle + QString("[*]"));
+    setWindowModified(false);
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 {
-    mCodec->contextMenu(event);
+    mCodec->onContextMenu(event);
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditorDocument::mousePressEvent(QMouseEvent *event)

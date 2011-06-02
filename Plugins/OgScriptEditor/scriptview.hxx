@@ -29,32 +29,42 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #ifndef SCRIPTVIEW_HXX
 #define SCRIPTVIEW_HXX
 
 #include <QtGui/QWidget>
 #include <QtGui/QTreeWidget>
+
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
+
+//----------------------------------------------------------------------------------------
 
 class ScriptTreeWidget : public QTreeWidget
 {
     Q_OBJECT;
     friend class ScriptViewWidget;
+
 public:
     ScriptTreeWidget(QWidget *parent = 0);
     virtual ~ScriptTreeWidget();
+
 public Q_SLOTS:
     void contextMenu(int id);
+
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
     void keyPressEvent(QKeyEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
+//----------------------------------------------------------------------------------------
+
 class ScriptViewWidget : public QWidget 
 {
     Q_OBJECT;
+
 public:
     explicit ScriptViewWidget(QWidget *parent = 0);
     virtual ~ScriptViewWidget();
@@ -70,10 +80,14 @@ protected:
     ScriptTreeWidget *treeWidget;
     QTreeWidgetItem  *generalCategory;
     QTreeWidgetItem  *projectCategory;
-
 };
+
+//----------------------------------------------------------------------------------------
 
 extern ScriptViewWidget *mScriptViewWidget;
 
+//----------------------------------------------------------------------------------------
 
 #endif // SCRIPTVIEW_HXX
+
+//----------------------------------------------------------------------------------------
