@@ -335,6 +335,8 @@ mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFi
 GenericTextEditorDocument::~GenericTextEditorDocument()
 {
     mOfsPtr.unmount();
+    delete mCodec;
+    mCodec = 0;
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::displayTextFromFile(QString docName, QString filePath, QString optionalData = "")

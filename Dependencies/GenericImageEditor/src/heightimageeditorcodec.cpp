@@ -110,7 +110,8 @@ QPixmap* HeightImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
 
     unsigned int map_size = sqrt(file_len);
 
-    float *buf = new float [map_size * map_size];
+    mBuffer = new unsigned char[map_size * map_size * sizeof(float)];
+    float *buf = (float *)mBuffer;
 
     stream->read(buf, map_size * map_size * 4);
     
@@ -144,10 +145,8 @@ QPixmap* HeightImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     else
         memset(buf, 0xFF, map_size * map_size * 4);
 
-    QImage mImage((unsigned char *)buf, map_size, map_size, QImage::Format_ARGB32);
+    mImage = QImage((unsigned char *)buf, map_size, map_size, QImage::Format_ARGB32);
     QPixmap *pixmap = new QPixmap(QPixmap::fromImage(mImage));
-
-    delete [] buf;
 
     return pixmap;
 }

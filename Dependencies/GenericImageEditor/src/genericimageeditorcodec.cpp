@@ -46,22 +46,21 @@ QPixmap* GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     int w = image.getWidth();
     int h = image.getHeight();
 
-    unsigned char *buf = new unsigned char[4 * w * h];
-    Ogre::PixelBox pb(w, h, 1, Ogre::PF_A8R8G8B8, buf);
+    mBuffer = new unsigned char[4 * w * h];
+    Ogre::PixelBox pb(w, h, 1, Ogre::PF_A8R8G8B8, mBuffer);
 
     Ogre::PixelUtil::bulkPixelConversion(image.getPixelBox(), pb);
 
-    QImage mImage(buf, w, h, QImage::Format_ARGB32);
+    mImage = QImage(mBuffer, w, h, QImage::Format_ARGB32);
     QPixmap *pixmap = new QPixmap(QPixmap::fromImage(mImage));
-
-    delete [] buf;
 
     return pixmap;
 }
 //-----------------------------------------------------------------------------------------
 QString GenericImageEditorCodec::onToolTip(QMouseEvent* event)
 {
-    QColor rgb(mImage.color(mImage.pixelIndex(event->pos())));
+    QPoint pos = event->pos();
+    QColor rgb = mImage.pixel(pos);
     return QString("X: %1 Y: %2\nR: %3 G: %4 B: %5").arg(event->pos().x()).arg(event->pos().y())
         .arg(rgb.red()).arg(rgb.green()).arg(rgb.blue());
 }
