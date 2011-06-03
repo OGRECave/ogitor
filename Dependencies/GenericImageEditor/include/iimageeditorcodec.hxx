@@ -54,6 +54,13 @@ public:
         mGenImgEdDoc        = genImgEdDoc;
         mDocName            = docName;
         mDocumentIcon       = documentIcon;
+        mBuffer             = 0;
+    }
+
+    virtual ~IImageEditorCodec()
+    {
+        delete [] mBuffer;
+        mBuffer = 0;
     }
 
     virtual QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream) = 0;
@@ -64,6 +71,7 @@ public:
 
 protected:
     GenericImageEditorDocument*     mGenImgEdDoc;
+    unsigned char*                  mBuffer;
     QImage                          mImage;
     QString                         mDocName;
     QString                         mDocumentIcon;

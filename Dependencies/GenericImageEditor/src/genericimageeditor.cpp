@@ -218,6 +218,8 @@ mCodec(0), mDocName(""), mFilePath(""), mFile(0), mIsOfsFile(false)
 GenericImageEditorDocument::~GenericImageEditorDocument()
 {
     mOfsPtr.unmount();
+    delete mCodec;
+    mCodec = 0;
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditorDocument::displayImageFromFile(QString docName, QString filePath)
