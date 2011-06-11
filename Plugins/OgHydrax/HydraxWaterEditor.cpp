@@ -1012,7 +1012,7 @@ void CHydraxEditor::createProperties(OgitorsPropertyValueMap &params)
 
     PROPERTY_PTR(mDepthLimit, "depth::limit", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setDepthLimit));
 
-    PROPERTY_PTR(mDepthLimit, "smooth::power", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setSmoothPower));
+    PROPERTY_PTR(mSmoothPower, "smooth::power", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setSmoothPower));
 
     PROPERTY_PTR(mCausticsScale, "caustics::scale", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setCausticsScale));
     PROPERTY_PTR(mCausticsPower, "caustics::power", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setCausticsPower));

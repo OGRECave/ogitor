@@ -114,6 +114,7 @@ namespace Ogitors
         OgitorsProperty<Ogre::Real>         *mFoamTransparency;
 
         OgitorsProperty<Ogre::Real>         *mDepthLimit;
+        OgitorsProperty<Ogre::Real>         *mSmoothPower;
 
         OgitorsProperty<Ogre::Real>         *mCausticsScale;
         OgitorsProperty<Ogre::Real>         *mCausticsPower;
