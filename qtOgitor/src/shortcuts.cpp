@@ -49,7 +49,7 @@ Shortcuts* Shortcuts::getInstance()
        msgBox.setText("Some function wanted the instance of the\nShortcuts class what is nonexistent at the moment.\nThis is probably a bug.");
        msgBox.setWindowTitle("Shortcut instance not found!");
 #if OGRE_PLATFORM != OGRE_PLATFORM_LINUX
-       msgBox.setIcon(QMessageBox::Icon::Critical);
+       msgBox.setIcon(QMessageBox::Critical);
 #endif
        msgBox.exec();
     }
