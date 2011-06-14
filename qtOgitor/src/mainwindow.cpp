@@ -321,6 +321,11 @@ void MainWindow::initHiddenRenderWindow()
     hiddenParams["externalWindowHandle"] = winHiddenHandle;
 #endif
 
+#if defined(Q_WS_MAC)
+    hiddenParams["macAPICocoaUseNSView"] = "true";   
+    hiddenParams["macAPI"] = "cocoa";
+#endif
+
     hiddenParams["border"] = "none";
     Ogre::RenderWindow* pPrimary = Ogre::Root::getSingletonPtr()->createRenderWindow("Primary1",1,1,false,&hiddenParams);
     pPrimary->setVisible(false);

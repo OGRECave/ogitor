@@ -160,6 +160,11 @@ void OgreWidget::initializeOGRE()
     params["externalWindowHandle"] = winHandle;
 #endif
 
+#if defined(Q_WS_MAC)
+    params["macAPI"] = "cocoa";   
+    params["macAPICocoaUseNSView"] = "true";
+#endif
+
     mRenderWindow = mOgreRoot->createRenderWindow( "QtOgitorRenderWindow",
         this->width(),
         this->height(),
