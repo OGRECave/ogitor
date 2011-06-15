@@ -292,6 +292,16 @@
 // Some compilers always pass certain objects by reference. GNUC for example does
 // this if the the class has a defined destructor.
 
+// AS_LARGE_OBJS_PASSED_BY_REF
+// If this is defined large objects are passed by reference, whether they are complex or not
+
+// AS_LARGE_OBJ_MIN_SIZE
+// This is the size of objects determined as large ones
+
+// AS_CALLEE_DESTROY_OBJ_BY_VAL
+// When an object is passed by value the called function is the one responsible
+// for calling the destructor before returning.
+
 // HAS_128_BIT_PRIMITIVES
 // 64bit processors often support 128bit primitives. These may require special
 // treatment when passed in function arguments or returned by functions.
@@ -397,6 +407,9 @@
 			#define AS_X86
 		#elif defined(_M_X64)
 			#define AS_X64_MSVC
+			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
+			#define AS_LARGE_OBJS_PASSED_BY_REF
+			#define AS_LARGE_OBJ_MIN_SIZE 3
 		#endif
 	#endif
 
@@ -406,14 +419,15 @@
 		#define I64(x) x##ll
 	#endif
 
-    #ifdef _ARM_
-        #define AS_ALIGN
-        #define AS_ARM
-        #define CDECL_RETURN_SIMPLE_IN_MEMORY
-        #define STDCALL_RETURN_SIMPLE_IN_MEMORY
-        #define COMPLEX_OBJS_PASSED_BY_REF
-        #define COMPLEX_MASK asOBJ_APP_CLASS_ASSIGNMENT
-    #endif
+	#ifdef _ARM_
+		#define AS_ALIGN
+		#define AS_ARM
+		#define AS_CALLEE_DESTROY_OBJ_BY_VAL
+		#define CDECL_RETURN_SIMPLE_IN_MEMORY
+		#define STDCALL_RETURN_SIMPLE_IN_MEMORY
+		#define COMPLEX_OBJS_PASSED_BY_REF
+		#define COMPLEX_MASK asOBJ_APP_CLASS_ASSIGNMENT
+	#endif
 
 	#ifndef COMPLEX_MASK
 		#define COMPLEX_MASK (asOBJ_APP_CLASS_CONSTRUCTOR | asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_ASSIGNMENT)
@@ -552,6 +566,7 @@
 			#define AS_ARM
 			#define AS_IPHONE
 			#define AS_ALIGN
+			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
 			#define CDECL_RETURN_SIMPLE_IN_MEMORY
 			#define STDCALL_RETURN_SIMPLE_IN_MEMORY
 			#define THISCALL_RETURN_SIMPLE_IN_MEMORY
@@ -614,6 +629,7 @@
 			#define AS_ARM
 			#define AS_ALIGN
 			#define AS_NO_ATOMIC
+			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
 
 			#define CDECL_RETURN_SIMPLE_IN_MEMORY
 			#define STDCALL_RETURN_SIMPLE_IN_MEMORY
@@ -713,7 +729,8 @@
 		#define STDCALL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE 2
 
 		#if (defined(_ARM_) || defined(__arm__))
-		    #define AS_ARM
+			#define AS_ARM
+			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
 			#define AS_ALIGN
 		#endif
 

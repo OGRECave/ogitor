@@ -1240,7 +1240,7 @@ void asCCompiler::PrepareArgument(asCDataType *paramType, asSExprContext *ctx, a
 			// Make sure the reference to the value is on the stack
 			if( ctx->type.dataType.IsObject() && ctx->type.dataType.IsReference() )
 				Dereference(ctx, true);
-			else if( ctx->type.isVariable )
+			else if( ctx->type.isVariable && !ctx->type.dataType.IsObject() )
 				ctx->bc.InstrSHORT(asBC_PSF, ctx->type.stackOffset);
 			else if( ctx->type.dataType.IsPrimitive() )
 				ctx->bc.Instr(asBC_PshRPtr);
@@ -2807,7 +2807,19 @@ void asCCompiler::PrepareTemporaryObject(asCScriptNode *node, asSExprContext *ct
 	// Note, a type can be temporary without being a variable, in which case it is holding off
 	// on releasing a previously used object.
 	if( ctx->type.isTemporary && ctx->type.isVariable && 
-		!(forceOnHeap && !IsVariableOnHeap(ctx->type.stackOffset)) ) return;
+		!(forceOnHeap && !IsVariableOnHeap(ctx->type.stackOffset)) )
+	{
+		// If the temporary object is currently not a reference 
+		// the expression needs to be reevaluated to a reference
+		if( !ctx->type.dataType.IsReference() )
+		{
+			ctx->bc.Pop(AS_PTR_SIZE);
+			ctx->bc.InstrSHORT(asBC_PSF, ctx->type.stackOffset);
+			ctx->type.dataType.MakeReference(true);
+		}
+
+		return;
+	}
 
 	// Allocate temporary variable
 	asCDataType dt = ctx->type.dataType;
@@ -5643,13 +5655,13 @@ int asCCompiler::CompileExpressionTerm(asCScriptNode *node, asSExprContext *ctx)
 	return 0;
 }
 
-int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &scope, asSExprContext *ctx, asCScriptNode *errNode, bool isOptional, bool noFunction, bool onlyClassMembers)
+int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &scope, asSExprContext *ctx, asCScriptNode *errNode, bool isOptional, bool noFunction, asCObjectType *objType)
 {
 	bool found = false;
 
 	// It is a local variable or parameter?
 	sVariable *v = 0;
-	if( scope == "" && !onlyClassMembers )
+	if( scope == "" && !objType )
 		v = variables->GetVariable(name.AddressOf());
 	if( v )
 	{
@@ -5688,9 +5700,9 @@ int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &s
 	}
 
 	// Is it a class member?
-	if( !found && outFunc && outFunc->objectType && scope == "" )
+	if( !found && ((objType) || (outFunc && outFunc->objectType && scope == "")) )
 	{
-		if( name == THIS_TOKEN )
+		if( name == THIS_TOKEN && !objType )
 		{
 			asCDataType dt = asCDataType::CreateObject(outFunc->objectType, outFunc->isReadOnly);
 
@@ -5706,7 +5718,10 @@ int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &s
 		{
 			// See if there are any matching property accessors
 			asSExprContext access(engine);
-			access.type.Set(asCDataType::CreateObject(outFunc->objectType, outFunc->isReadOnly));
+			if( objType )
+				access.type.Set(asCDataType::CreateObject(objType, false));
+			else
+				access.type.Set(asCDataType::CreateObject(outFunc->objectType, outFunc->isReadOnly));
 			access.type.dataType.MakeReference(true);
 			int r = 0;
 			if( errNode->next && errNode->next->tokenType == ttOpenBracket )
@@ -5723,8 +5738,12 @@ int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &s
 			if( r < 0 ) return -1;
 			if( access.property_get || access.property_set )
 			{
-				// Prepare the bytecode for the member access
-				ctx->bc.InstrSHORT(asBC_PSF, 0);
+				if( !objType )
+				{
+					// Prepare the bytecode for the member access
+					// This is only done when accessing through the implicit this pointer
+					ctx->bc.InstrSHORT(asBC_PSF, 0);
+				}
 				MergeExprBytecodeAndType(ctx, &access);
 
 				found = true;
@@ -5733,17 +5752,24 @@ int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &s
 
 		if( !found )
 		{
-			asCDataType dt = asCDataType::CreateObject(outFunc->objectType, false);
+			asCDataType dt;
+			if( objType )
+				dt = asCDataType::CreateObject(objType, false);
+			else
+				dt = asCDataType::CreateObject(outFunc->objectType, false);
 			asCObjectProperty *prop = builder->GetObjectProperty(dt, name.AddressOf());
 			if( prop )
 			{
-				// The object pointer is located at stack position 0
-				ctx->bc.InstrSHORT(asBC_PSF, 0);
-				ctx->type.SetVariable(dt, 0, false);
-				ctx->type.dataType.MakeReference(true);
-
-				Dereference(ctx, true);
-
+				if( !objType )
+				{
+					// The object pointer is located at stack position 0
+					// This is only done when accessing through the implicit this pointer
+					ctx->bc.InstrSHORT(asBC_PSF, 0);
+					ctx->type.SetVariable(dt, 0, false);
+					ctx->type.dataType.MakeReference(true);
+					Dereference(ctx, true);
+				}
+				
 				// TODO: This is the same as what is in CompileExpressionPostOp
 				// Put the offset on the stack
 				ctx->bc.InstrSHORT_DW(asBC_ADDSi, prop->byteOffset, engine->GetTypeIdFromDataType(dt));
@@ -5778,7 +5804,7 @@ int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &s
 	}
 
 	// Is it a global property?
-	if( !found && (scope == "" || scope == "::") && !onlyClassMembers )
+	if( !found && (scope == "" || scope == "::") && !objType )
 	{
 		// See if there are any matching global property accessors
 		asSExprContext access(engine);
@@ -5867,7 +5893,7 @@ int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &s
 	}
 
 	// Is it the name of a global function?
-	if( !noFunction && !found && (scope == "" || scope == "::") && !onlyClassMembers )
+	if( !noFunction && !found && (scope == "" || scope == "::") && !objType )
 	{
 		asCArray<int> funcs;
 		builder->GetFunctionDescriptions(name.AddressOf(), funcs);
@@ -5896,7 +5922,7 @@ int asCCompiler::CompileVariableAccess(const asCString &name, const asCString &s
 	}
 
 	// Is it an enum value?
-	if( !found && !onlyClassMembers )
+	if( !found && !objType )
 	{
 		asCObjectType *scopeType = 0;
 		if( scope != "" )
@@ -6982,7 +7008,7 @@ void asCCompiler::CompileFunctionCall(asCScriptNode *node, asSExprContext *ctx, 
 
 			// It is still possible that there is a class member of a function type
 			if( funcs.GetLength() == 0 )
-				CompileVariableAccess(name, scope, &funcPtr, node, true, true, true);
+				CompileVariableAccess(name, scope, &funcPtr, node, true, true, objectType);
 		}
 		else
 		{
@@ -7039,6 +7065,14 @@ void asCCompiler::CompileFunctionCall(asCScriptNode *node, asSExprContext *ctx, 
 			// by first storing the function pointer in a local variable (if it isn't already in one)
 			if( (funcs[0] & 0xFFFF0000) == 0 && engine->scriptFunctions[funcs[0]]->funcType == asFUNC_FUNCDEF )
 			{
+				if( objectType )
+				{
+					Dereference(ctx, true); // Dereference the object pointer to access the member
+
+					// The actual function should be called as if a global function
+					objectType = 0;
+				}
+
 				Dereference(&funcPtr, true);
 				ConvertToVariable(&funcPtr);
 				ctx->bc.AddCode(&funcPtr.bc);
@@ -9195,15 +9229,19 @@ void asCCompiler::CompileMathOperator(asCScriptNode *node, asSExprContext *lctx,
 				else if( op == ttStar || op == ttMulAssign )
 					instruction = asBC_MULi;
 				else if( op == ttSlash || op == ttDivAssign )
+				{
 					if( lctx->type.dataType.IsIntegerType() )
 						instruction = asBC_DIVi;
 					else
 						instruction = asBC_DIVu;
+				}
 				else if( op == ttPercent || op == ttModAssign )
+				{
 					if( lctx->type.dataType.IsIntegerType() )
 						instruction = asBC_MODi; 
 					else
 						instruction = asBC_MODu;
+				}
 			}
 			else
 			{
@@ -9214,15 +9252,19 @@ void asCCompiler::CompileMathOperator(asCScriptNode *node, asSExprContext *lctx,
 				else if( op == ttStar || op == ttMulAssign )
 					instruction = asBC_MULi64;
 				else if( op == ttSlash || op == ttDivAssign )
+				{
 					if( lctx->type.dataType.IsIntegerType() )
 						instruction = asBC_DIVi64;
 					else
 						instruction = asBC_DIVu64;
+				}
 				else if( op == ttPercent || op == ttModAssign )
+				{
 					if( lctx->type.dataType.IsIntegerType() )
 						instruction = asBC_MODi64;
 					else
 						instruction = asBC_MODu64;
+				}
 			}
 		}
 		else if( lctx->type.dataType.IsFloatType() )
