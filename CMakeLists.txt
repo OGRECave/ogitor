@@ -112,6 +112,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptbuilder"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptstdstring"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptmath"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptarray"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/quaternion"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/vector3"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include"

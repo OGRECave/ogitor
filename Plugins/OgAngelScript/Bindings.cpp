@@ -45,6 +45,7 @@
 #include "scriptmath.h"
 #include "as_ScriptOgreQuaternion.h"
 #include "as_ScriptOgreVector3.h"
+#include "scriptarray.h"
 
 #include "stdvector.h"
 
@@ -105,6 +106,7 @@ namespace Ogitors
     {
         int r;
 
+        RegisterScriptArray(engine, true);
         RegisterStdString(engine);
         RegisterUTFBindings(engine);
         RegisterScriptMath(engine);
