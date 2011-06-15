@@ -82,66 +82,15 @@ const t_CallThisCallRetByRef CallThisCallFunctionRetByRef = (t_CallThisCallRetBy
 asDWORD GetReturnedFloat();
 asQWORD GetReturnedDouble();
 
-int CallSystemFunction(int id, asCContext *context, void *objectPointer)
+asQWORD CallSystemFunctionNative(asCContext *context, asCScriptFunction *descr, void *obj, asDWORD *args, void *retPointer, asQWORD &/*retQW2*/)
 {
-	asCScriptEngine *engine = context->engine;
-	asCScriptFunction *descr = engine->scriptFunctions[id];
-	asSSystemFunctionInterface *sysFunc = descr->sysFuncIntf;
-	int callConv = sysFunc->callConv;
-	if( callConv == ICC_GENERIC_FUNC || callConv == ICC_GENERIC_METHOD )
-		return context->CallGeneric(id, objectPointer);
+	asCScriptEngine            *engine    = context->engine;
+	asSSystemFunctionInterface *sysFunc   = descr->sysFuncIntf;
 
-	asQWORD  retQW             = 0;
-	void    *func              = (void*)sysFunc->func;
-	int      paramSize         = sysFunc->paramSize;
-	asDWORD *args              = context->regs.stackPointer;
-	void    *retPointer        = 0;
-	void    *obj               = 0;
-	asDWORD *vftable;
-	int      popSize           = paramSize;
+	asQWORD retQW;
 
-	context->regs.objectType = descr->returnType.GetObjectType();
-	if( descr->returnType.IsObject() && !descr->returnType.IsReference() && !descr->returnType.IsObjectHandle() )
-	{
-		// Allocate the memory for the object
-		retPointer = engine->CallAlloc(descr->returnType.GetObjectType());
-
-		if( sysFunc->hostReturnInMemory )
-		{
-			// The return is made in memory
-			callConv++;
-		}
-	}
-
-	if( callConv >= ICC_THISCALL )
-	{
-		if( objectPointer )
-		{
-			obj = objectPointer;
-		}
-		else
-		{
-			// The object pointer should be popped from the context stack
-			popSize += AS_PTR_SIZE;
-
-			// Check for null pointer
-			obj = (void*)*(size_t*)(args);
-			if( obj == 0 )
-			{
-				context->SetInternalException(TXT_NULL_POINTER_ACCESS);
-				if( retPointer )
-					engine->CallFree(retPointer);
-				return 0;
-			}
-
-			// Add the base offset for multiple inheritance
-			obj = (void*)(size_t(obj) + sysFunc->baseOffset);
-
-			// Skip the object pointer
-			args += AS_PTR_SIZE;
-		}
-	}
-
+	// Prepare the parameters
+	int paramSize = sysFunc->paramSize;
 	asDWORD paramBuffer[64];
 	if( sysFunc->takesObjByVal )
 	{
@@ -184,6 +133,13 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 		args = &paramBuffer[1];
 	}
 
+	// Make the actual call
+	void *func = (void*)sysFunc->func;
+	int callConv = sysFunc->callConv;
+	if( sysFunc->hostReturnInMemory )
+		callConv++;
+
+	asDWORD *vftable;
 	context->isCallingSystemFunction = true;
 	switch( callConv )
 	{
@@ -254,99 +210,16 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 	}
 	context->isCallingSystemFunction = false;
 
-#ifdef COMPLEX_OBJS_PASSED_BY_REF
-	if( sysFunc->takesObjByVal )
+	// If the return is a float value we need to get the value from the FP register
+	if( sysFunc->hostReturnFloat )
 	{
-		// Need to free the complex objects passed by value
-		args = context->regs.stackPointer;
-		if( callConv >= ICC_THISCALL && !objectPointer )
-		    args++;
-
-		int spos = 0;
-		for( asUINT n = 0; n < descr->parameterTypes.GetLength(); n++ )
-		{
-			if( descr->parameterTypes[n].IsObject() &&
-				!descr->parameterTypes[n].IsReference() &&
-				(descr->parameterTypes[n].GetObjectType()->flags & COMPLEX_MASK) )
-			{
-				void *obj = (void*)args[spos++];
-				asSTypeBehaviour *beh = &descr->parameterTypes[n].GetObjectType()->beh;
-				if( beh->destruct )
-					engine->CallObjectMethod(obj, beh->destruct);
-
-				engine->CallFree(obj);
-			}
-			else
-				spos += descr->parameterTypes[n].GetSizeInMemoryDWords();
-		}
-	}
-#endif
-
-	// Store the returned value in our stack
-	if( descr->returnType.IsObject() && !descr->returnType.IsReference() )
-	{
-		if( descr->returnType.IsObjectHandle() )
-		{
-			context->regs.objectRegister = (void*)(size_t)retQW;
-
-			if( sysFunc->returnAutoHandle && context->regs.objectRegister )
-				engine->CallObjectMethod(context->regs.objectRegister, descr->returnType.GetObjectType()->beh.addref);
-		}
+		if( sysFunc->hostReturnSize == 1 )
+			*(asDWORD*)&retQW = GetReturnedFloat();
 		else
-		{
-			if( !sysFunc->hostReturnInMemory )
-			{
-				// Copy the returned value to the pointer sent by the script engine
-				if( sysFunc->hostReturnSize == 1 )
-					*(asDWORD*)retPointer = (asDWORD)retQW;
-				else
-					*(asQWORD*)retPointer = retQW;
-			}
-
-			// Store the object in the register
-			context->regs.objectRegister = retPointer;
-		}
-	}
-	else
-	{
-		// Store value in value register
-		if( sysFunc->hostReturnFloat )
-		{
-			if( sysFunc->hostReturnSize == 1 )
-				*(asDWORD*)&context->regs.valueRegister = GetReturnedFloat();
-			else
-				context->regs.valueRegister = GetReturnedDouble();
-		}
-		else if( sysFunc->hostReturnSize == 1 )
-			*(asDWORD*)&context->regs.valueRegister = (asDWORD)retQW;
-		else
-			context->regs.valueRegister = retQW;
+			retQW = GetReturnedDouble();
 	}
 
-	if( sysFunc->hasAutoHandles )
-	{
-		args = context->regs.stackPointer;
-		if( callConv >= ICC_THISCALL && !objectPointer )
-			args++;
-
-		int spos = 0;
-		for( asUINT n = 0; n < descr->parameterTypes.GetLength(); n++ )
-		{
-			if( sysFunc->paramAutoHandles[n] && args[spos] )
-			{
-				// Call the release method on the type
-				engine->CallObjectMethod((void*)*(size_t*)&args[spos], descr->parameterTypes[n].GetObjectType()->beh.release);
-				args[spos] = 0;
-			}
-
-			if( descr->parameterTypes[n].IsObject() && !descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() )
-				spos++;
-			else
-				spos += descr->parameterTypes[n].GetSizeOnStackDWords();
-		}
-	}
-
-	return popSize;
+	return retQW;
 }
 
 // On GCC we need to prevent the compiler from inlining these assembler routines when
@@ -368,7 +241,7 @@ void NOINLINE CallCDeclFunction(const asDWORD *args, int paramSize, size_t func)
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		// Use emms instead of fninit to preserve FPU control word
@@ -376,7 +249,7 @@ void NOINLINE CallCDeclFunction(const asDWORD *args, int paramSize, size_t func)
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -402,12 +275,12 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
 
 	asm("pushl %ecx           \n"
-	    "emms                 \n"
+		"emms                 \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -452,7 +325,7 @@ void NOINLINE CallCDeclFunctionObjLast(const void *obj, const asDWORD *args, int
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		// Use emms instead of fninit to preserve FPU control word
@@ -463,7 +336,7 @@ void NOINLINE CallCDeclFunctionObjLast(const void *obj, const asDWORD *args, int
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -490,13 +363,13 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(obj);
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
+	UNUSED_VAR(obj);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
 
 	asm("pushl %ecx           \n"
-	    "emms                 \n"
+		"emms                 \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -543,7 +416,7 @@ void NOINLINE CallCDeclFunctionObjFirst(const void *obj, const asDWORD *args, in
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		// Use emms instead of fninit to preserve FPU control word
@@ -551,7 +424,7 @@ void NOINLINE CallCDeclFunctionObjFirst(const void *obj, const asDWORD *args, in
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -564,14 +437,14 @@ copyloop:
 endcopy:
 
 		// push object as first parameter
-        push obj
+		push obj
 
 		// Call function
 		call [func]
 
 		// Pop arguments from stack
 		add  esp, paramSize
-        add  esp, 4
+		add  esp, 4
 
 		// Restore registers
 		pop  ecx
@@ -581,13 +454,13 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(obj);
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
+	UNUSED_VAR(obj);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
 
 	asm("pushl %ecx           \n"
-	    "emms                 \n"
+		"emms                 \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -615,7 +488,7 @@ endcopy:
 		"pushl 8(%ebp)        \n" // push obj
 		"call  *20(%ebp)      \n"
 		"addl  16(%ebp), %esp \n" // pop arguments
-        "addl  $4, %esp       \n"
+		"addl  $4, %esp       \n"
 
 		// Pop the alignment bytes
 		"popl  %esp           \n"
@@ -634,7 +507,7 @@ void NOINLINE CallCDeclFunctionRetByRefObjFirst_impl(const void *obj, const asDW
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		// Use emms instead of fninit to preserve FPU control word
@@ -642,7 +515,7 @@ void NOINLINE CallCDeclFunctionRetByRefObjFirst_impl(const void *obj, const asDW
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -655,7 +528,7 @@ copyloop:
 endcopy:
 
 		// Push the object pointer
-        push obj
+		push obj
 
 		// Push the return pointer
 		push retPtr;
@@ -670,7 +543,7 @@ endcopy:
 		// Pop the return pointer
 		add  esp, 8
 #else
-        add  esp, 4
+		add  esp, 4
 #endif
 		// Restore registers
 		pop  ecx
@@ -680,14 +553,14 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(obj);
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
-    UNUSED_VAR(retPtr);
+	UNUSED_VAR(obj);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
+	UNUSED_VAR(retPtr);
 
 	asm("pushl %ecx           \n"
-	    "emms                 \n"
+		"emms                 \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -712,7 +585,7 @@ endcopy:
 		"subl  $4, %ecx       \n"
 		"jne   copyloop5      \n"
 		"endcopy5:            \n"
-        "pushl 8(%ebp)        \n" // push object first
+		"pushl 8(%ebp)        \n" // push object first
 		"pushl 24(%ebp)       \n" // retPtr
 		"call  *20(%ebp)      \n" // func
 		"addl  16(%ebp), %esp \n" // pop arguments
@@ -738,7 +611,7 @@ void NOINLINE CallCDeclFunctionRetByRef_impl(const asDWORD *args, int paramSize,
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		// Use emms instead of fninit to preserve FPU control word
@@ -746,7 +619,7 @@ void NOINLINE CallCDeclFunctionRetByRef_impl(const asDWORD *args, int paramSize,
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -779,13 +652,13 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
-    UNUSED_VAR(retPtr);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
+	UNUSED_VAR(retPtr);
 
 	asm("pushl %ecx           \n"
-	    "emms                 \n"
+		"emms                 \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -833,7 +706,7 @@ void NOINLINE CallCDeclFunctionRetByRefObjLast_impl(const void *obj, const asDWO
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		fninit
@@ -842,7 +715,7 @@ void NOINLINE CallCDeclFunctionRetByRefObjLast_impl(const void *obj, const asDWO
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -876,14 +749,14 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(obj);
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
-    UNUSED_VAR(retPtr);
+	UNUSED_VAR(obj);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
+	UNUSED_VAR(retPtr);
 
 	asm("pushl %ecx           \n"
-	    "fninit               \n"
+		"fninit               \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -934,14 +807,14 @@ void NOINLINE CallSTDCallFunction(const asDWORD *args, int paramSize, size_t fun
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		fninit
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -966,12 +839,12 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
 
 	asm("pushl %ecx           \n"
-	    "fninit               \n"
+		"fninit               \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -1016,14 +889,14 @@ void NOINLINE CallThisCallFunction(const void *obj, const asDWORD *args, int par
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		fninit
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -1063,13 +936,13 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(obj);
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
+	UNUSED_VAR(obj);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
 
 	asm("pushl %ecx           \n"
-	    "fninit               \n"
+		"fninit               \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -1117,14 +990,14 @@ void NOINLINE CallThisCallFunctionRetByRef_impl(const void *obj, const asDWORD *
 	__asm
 	{
 		// We must save registers that are used
-	    push ecx
+		push ecx
 
 		// Clear the FPU stack, in case the called function doesn't do it by itself
 		fninit
 
 		// Copy arguments from script
 		// stack to application stack
-        mov  ecx, paramSize
+		mov  ecx, paramSize
 		mov  eax, args
 		add  eax, ecx
 		cmp  ecx, 0
@@ -1172,14 +1045,14 @@ endcopy:
 
 #elif defined ASM_AT_N_T
 
-    UNUSED_VAR(obj);
-    UNUSED_VAR(args);
-    UNUSED_VAR(paramSize);
-    UNUSED_VAR(func);
-    UNUSED_VAR(retPtr);
+	UNUSED_VAR(obj);
+	UNUSED_VAR(args);
+	UNUSED_VAR(paramSize);
+	UNUSED_VAR(func);
+	UNUSED_VAR(retPtr);
 
 	asm("pushl %ecx           \n"
-	    "fninit               \n"
+		"fninit               \n"
 
 		// Need to align the stack pointer so that it is aligned to 16 bytes when making the function call.
 		// It is assumed that when entering this function, the stack pointer is already aligned, so we need
@@ -1224,12 +1097,12 @@ endcopy:
 
 asDWORD GetReturnedFloat()
 {
-    asDWORD f;
+	asDWORD f;
 
 #if defined ASM_INTEL
 
 	// Get the float value from ST0
-    __asm fstp dword ptr [f]
+	__asm fstp dword ptr [f]
 
 #elif defined ASM_AT_N_T
 
@@ -1242,12 +1115,12 @@ asDWORD GetReturnedFloat()
 
 asQWORD GetReturnedDouble()
 {
-    asQWORD d;
+	asQWORD d;
 
 #if defined ASM_INTEL
 
 	// Get the double value from ST0
-    __asm fstp qword ptr [d]
+	__asm fstp qword ptr [d]
 
 #elif defined ASM_AT_N_T
 
