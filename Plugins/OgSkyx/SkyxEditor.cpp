@@ -309,6 +309,42 @@ bool CSkyxEditor::_setWindDirection(OgitorsPropertyBase* property, const Ogre::R
     return true;
 }
 //-----------------------------------------------------------------------------------------
+TiXmlElement *CSkyxEditor::exportDotScene(TiXmlElement *pParent)
+{
+    TiXmlElement *pSkyX = pParent->Parent()->InsertEndChild(TiXmlElement("skyx"))->ToElement();
+
+    pSkyX->SetAttribute("rayleighMultiplier", Ogre::StringConverter::toString(mRayleighMultiplier->get()).c_str());
+    pSkyX->SetAttribute("mieMultiplier", Ogre::StringConverter::toString(mMieMultiplier->get()).c_str());
+    pSkyX->SetAttribute("exposure", Ogre::StringConverter::toString(mExposure->get()).c_str());
+    pSkyX->SetAttribute("innerRadius", Ogre::StringConverter::toString(mInnerRadius->get()).c_str());
+    pSkyX->SetAttribute("outerRadius", Ogre::StringConverter::toString(mOuterRadius->get()).c_str());
+    pSkyX->SetAttribute("sampleCount", Ogre::StringConverter::toString(mSampleCount->get()).c_str());
+    pSkyX->SetAttribute("height", Ogre::StringConverter::toString(mHeight->get()).c_str());
+    pSkyX->SetAttribute("sunIntensity", Ogre::StringConverter::toString(mSunIntensity->get()).c_str());
+    pSkyX->SetAttribute("G", Ogre::StringConverter::toString(mG->get()).c_str());
+
+    TiXmlElement *pTime = pSkyX->InsertEndChild(TiXmlElement("time"))->ToElement();
+    pTime->SetAttribute("multiplier", Ogre::StringConverter::toString(mTimeMultiplier->get()).c_str());
+    pTime->SetAttribute("current", Ogre::StringConverter::toString(mTime->get().x).c_str());
+    pTime->SetAttribute("sunRise", Ogre::StringConverter::toString(mTime->get().y).c_str());
+    pTime->SetAttribute("sunSet",  Ogre::StringConverter::toString(mTime->get().z).c_str());
+    
+    TiXmlElement *pEastPosition = pSkyX->InsertEndChild(TiXmlElement("eastPosition"))->ToElement();
+    pEastPosition->SetAttribute("X", Ogre::StringConverter::toString(mEastPosition->get().x).c_str());
+    pEastPosition->SetAttribute("Y", Ogre::StringConverter::toString(mEastPosition->get().y).c_str());
+
+    TiXmlElement *pWaveLength = pSkyX->InsertEndChild(TiXmlElement("waveLength"))->ToElement();
+    pWaveLength->SetAttribute("R", Ogre::StringConverter::toString(mWaveLength->get().x).c_str());
+    pWaveLength->SetAttribute("G", Ogre::StringConverter::toString(mWaveLength->get().y).c_str());
+    pWaveLength->SetAttribute("B", Ogre::StringConverter::toString(mWaveLength->get().z).c_str());
+
+    TiXmlElement *pvClouds = pSkyX->InsertEndChild(TiXmlElement("vClouds"))->ToElement();
+    pvClouds->SetAttribute("windSpeed", Ogre::StringConverter::toString(mWindSpeed->get()).c_str());
+    pvClouds->SetAttribute("windDirection", Ogre::StringConverter::toString(mWindDirection->get()).c_str());
+    pvClouds->SetAttribute("noiseScale", Ogre::StringConverter::toString(mNoiseScale->get()).c_str());
+
+    return pSkyX;
+}
 
 //----------------------------------------------------------------------------
 //----HYDRAXEDITORFACTORY-----------------------------------------------------

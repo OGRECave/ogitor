@@ -79,6 +79,8 @@ namespace Ogitors
         inline virtual void    *getHandle() {return static_cast<void*>(mHandle);};
         virtual Ogre::SceneManager *getSceneManager();
 
+        virtual TiXmlElement *exportDotScene(TiXmlElement *pParent);
+
     protected:
         Hydrax::Hydrax                *mHandle;
         Hydrax::Module::ProjectedGrid *mModule;
