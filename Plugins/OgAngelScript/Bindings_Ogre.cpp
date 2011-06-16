@@ -75,10 +75,10 @@ namespace Ogitors
 	{
 		int r;
 
-        r = engine->RegisterObjectType("Sphere", sizeof(Ogre::Sphere), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
+        r = engine->RegisterObjectType("Sphere", sizeof(Ogre::Sphere), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Sphere", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in, float)",	asFUNCTION(SphereDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 
-        r = engine->RegisterObjectType("ColourValue", sizeof(Ogre::ColourValue), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
+        r = engine->RegisterObjectType("ColourValue", sizeof(Ogre::ColourValue), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("ColourValue", asBEHAVE_CONSTRUCT,  "void f()",	asFUNCTION(ColourValueDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour("ColourValue", asBEHAVE_CONSTRUCT,  "void f(float, float, float, float)",	asFUNCTION(ColourValueDefaultConstructor2),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectProperty("ColourValue", "float r", offsetof(Ogre::ColourValue, r)); assert( r >= 0 );
@@ -86,7 +86,7 @@ namespace Ogitors
 		r = engine->RegisterObjectProperty("ColourValue", "float b", offsetof(Ogre::ColourValue, b)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("ColourValue", "float a", offsetof(Ogre::ColourValue, a)); assert( r >= 0 );
 
-        r = engine->RegisterObjectType("Ray", sizeof(Ogre::Ray), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
+        r = engine->RegisterObjectType("Ray", sizeof(Ogre::Ray), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Ray", asBEHAVE_CONSTRUCT,  "void f()",	asFUNCTION(RayDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour("Ray", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in, const Vector3 &in)",	asFUNCTION(RayDefaultConstructor2),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 
@@ -97,7 +97,7 @@ namespace Ogitors
 		r = engine->RegisterObjectMethod("Ray", "void setOrigin(const Vector3 &in)",	asMETHOD(Ogre::Ray, setOrigin),	asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Ray", "void setDirection(const Vector3 &in)",	asMETHOD(Ogre::Ray, setDirection),	asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectType("AxisAlignedBox", sizeof(Ogre::AxisAlignedBox), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
+        r = engine->RegisterObjectType("AxisAlignedBox", sizeof(Ogre::AxisAlignedBox), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("AxisAlignedBox", asBEHAVE_CONSTRUCT,  "void f()",	asFUNCTION(AxisAlignedBoxDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour("AxisAlignedBox", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in, const Vector3 &in)",	asFUNCTION(AxisAlignedBoxDefaultConstructor2),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 
