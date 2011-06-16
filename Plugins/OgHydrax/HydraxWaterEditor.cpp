@@ -1055,6 +1055,17 @@ void CHydraxEditor::createProperties(OgitorsPropertyValueMap &params)
 
     mProperties.initValueMap(params);
 }
+//-----------------------------------------------------------------------------------------
+TiXmlElement *CHydraxEditor::exportDotScene(TiXmlElement *pParent)
+{
+    TiXmlElement *pHydrax = pParent->Parent()->InsertEndChild(TiXmlElement("hydrax"))->ToElement();
+    pHydrax->SetAttribute("configFile", mConfigFile->get().c_str());
+    pHydrax->SetAttribute("caelumIntegration", Ogre::StringConverter::toString(mCaelumIntegration->get()).c_str());
+
+    return pHydrax;
+}
+//-----------------------------------------------------------------------------------------
+
 
 //----------------------------------------------------------------------------
 //----HYDRAXEDITORFACTORY-----------------------------------------------------

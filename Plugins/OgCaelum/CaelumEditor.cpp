@@ -471,6 +471,85 @@ void CCaelumEditor::createProperties(Ogitors::OgitorsPropertyValueMap &params)
     mProperties.initValueMap(params);
 }
 //-----------------------------------------------------------------------------------------
+TiXmlElement *CCaelumEditor::exportDotScene(TiXmlElement *pParent)
+{
+    TiXmlElement *pCaelum = pParent->Parent()->InsertEndChild(TiXmlElement("caelum"))->ToElement();
+
+    TiXmlElement *pSun = pCaelum->InsertEndChild(TiXmlElement("sun"))->ToElement();
+    pSun->SetAttribute("enable", Ogre::StringConverter::toString(mSunEnable->get()).c_str());
+    pSun->SetAttribute("autoDisable", Ogre::StringConverter::toString(mSunAutoDisable->get()).c_str());
+    pSun->SetAttribute("position", Ogre::StringConverter::toString(mSunPosition->get()).c_str());
+    pSun->SetAttribute("colour", Ogre::StringConverter::toString(mSunColour->get()).c_str());
+    pSun->SetAttribute("lightColour", Ogre::StringConverter::toString(mSunLightColour->get()).c_str());
+    pSun->SetAttribute("ambientMultiplier", Ogre::StringConverter::toString(mSunAmbientMultiplier->get()).c_str());
+    pSun->SetAttribute("diffuseMultiplier", Ogre::StringConverter::toString(mSunDiffuseMultiplier->get()).c_str());
+    pSun->SetAttribute("specularMultiplier", Ogre::StringConverter::toString(mSunSpecularMultiplier->get()).c_str());
+    pSun->SetAttribute("castShadow", Ogre::StringConverter::toString(mSunCastShadow->get()).c_str());
+
+    TiXmlElement *pSunAttenuation = pSun->InsertEndChild(TiXmlElement("attenuation"))->ToElement();
+    pSunAttenuation->SetAttribute("distance", Ogre::StringConverter::toString(mSunAttenuationDistance->get()).c_str());
+    pSunAttenuation->SetAttribute("constantMultiplier", Ogre::StringConverter::toString(mSunAttenuationConstantMultiplier->get()).c_str());
+    pSunAttenuation->SetAttribute("linearMultiplier", Ogre::StringConverter::toString(mSunAttenuationLinearMultiplier->get()).c_str());
+    pSunAttenuation->SetAttribute("quadricMultiplier", Ogre::StringConverter::toString(mSunAttenuationQuadricMultiplier->get()).c_str());
+
+    TiXmlElement *pMoon = pCaelum->InsertEndChild(TiXmlElement("moon"))->ToElement();
+    pMoon->SetAttribute("enable", Ogre::StringConverter::toString(mMoonEnable->get()).c_str());
+    pMoon->SetAttribute("autoDisable", Ogre::StringConverter::toString(mMoonAutoDisable->get()).c_str());
+    pMoon->SetAttribute("ambientMultiplier", Ogre::StringConverter::toString(mMoonAmbientMultiplier->get()).c_str());
+    pMoon->SetAttribute("diffuseMultiplier", Ogre::StringConverter::toString(mMoonDiffuseMultiplier->get()).c_str());
+    pMoon->SetAttribute("specularMultiplier", Ogre::StringConverter::toString(mMoonSpecularMultiplier->get()).c_str());
+    pMoon->SetAttribute("castShadow", Ogre::StringConverter::toString(mMoonCastShadow->get()).c_str());
+
+    TiXmlElement *pMoonAttenuation = pMoon->InsertEndChild(TiXmlElement("attenuation"))->ToElement();
+    pMoonAttenuation->SetAttribute("distance", Ogre::StringConverter::toString(mMoonAttenuationDistance->get()).c_str());
+    pMoonAttenuation->SetAttribute("constantMultiplier", Ogre::StringConverter::toString(mMoonAttenuationConstantMultiplier->get()).c_str());
+    pMoonAttenuation->SetAttribute("linearMultiplier", Ogre::StringConverter::toString(mMoonAttenuationLinearMultiplier->get()).c_str());
+    pMoonAttenuation->SetAttribute("quadricMultiplier", Ogre::StringConverter::toString(mMoonAttenuationQuadricMultiplier->get()).c_str());
+
+    TiXmlElement *pClock = pCaelum->InsertEndChild(TiXmlElement("clock"))->ToElement();
+    pClock->SetAttribute("year", Ogre::StringConverter::toString(mClockYear->get()).c_str());
+    pClock->SetAttribute("month", Ogre::StringConverter::toString(mClockMonth->get()).c_str());
+    pClock->SetAttribute("day", Ogre::StringConverter::toString(mClockDay->get()).c_str());
+    pClock->SetAttribute("hour", Ogre::StringConverter::toString(mClockHour->get()).c_str());
+    pClock->SetAttribute("minute", Ogre::StringConverter::toString(mClockMinute->get()).c_str());
+    pClock->SetAttribute("second", Ogre::StringConverter::toString(mClockSecond->get()).c_str());
+    pClock->SetAttribute("speed", Ogre::StringConverter::toString(mClockSpeed->get()).c_str());
+
+    TiXmlElement *pObserver = pCaelum->InsertEndChild(TiXmlElement("observer"))->ToElement();
+    pObserver->SetAttribute("longitude", Ogre::StringConverter::toString(mLongitude->get()).c_str());
+    pObserver->SetAttribute("latitude", Ogre::StringConverter::toString(mLatitude->get()).c_str());
+
+    TiXmlElement *pLighting = pCaelum->InsertEndChild(TiXmlElement("lighting"))->ToElement();
+    pLighting->SetAttribute("singleLightsource", Ogre::StringConverter::toString(mLightingSingleLightSource->get()).c_str());
+    pLighting->SetAttribute("singleShadowsource", Ogre::StringConverter::toString(mLightingSingleShadowSource->get()).c_str());
+    pLighting->SetAttribute("manageAmbientLight", Ogre::StringConverter::toString(mLightingManageAmbientLight->get()).c_str());
+    pLighting->SetAttribute("minimumAmbientLight", Ogre::StringConverter::toString(mLightingMinimumAmbientLight->get()).c_str());
+
+    TiXmlElement *pFog = pCaelum->InsertEndChild(TiXmlElement("fog"))->ToElement();
+    pFog->SetAttribute("manage", Ogre::StringConverter::toString(mFogManage->get()).c_str());
+    pFog->SetAttribute("densityMultiplier", Ogre::StringConverter::toString(mFogDensityMultiplier->get()).c_str());
+
+    TiXmlElement *pStars = pCaelum->InsertEndChild(TiXmlElement("stars"))->ToElement();
+    pStars->SetAttribute("enable", Ogre::StringConverter::toString(mStarsEnable->get()).c_str());
+    pStars->SetAttribute("magnitudeScale", Ogre::StringConverter::toString(mStarsMagnitudeScale->get()).c_str());
+    pStars->SetAttribute("mag0PixelSize", Ogre::StringConverter::toString(mStarsMag0PixelSize->get()).c_str());
+    pStars->SetAttribute("minPixelSize", Ogre::StringConverter::toString(mStarsMinPixelSize->get()).c_str());
+    pStars->SetAttribute("maxPixelSize", Ogre::StringConverter::toString(mStarsMaxPixelSize->get()).c_str());
+
+    TiXmlElement *pClouds = pCaelum->InsertEndChild(TiXmlElement("clouds"))->ToElement();
+    for(int i = 0; i < 3; i++)
+    {
+        TiXmlElement *pCloudsLayer = pClouds->InsertEndChild(TiXmlElement("layer"))->ToElement();
+        pCloudsLayer->SetAttribute("enable", Ogre::StringConverter::toString(mCloudsEnabled[i]->get()).c_str());
+        pCloudsLayer->SetAttribute("coverage", Ogre::StringConverter::toString(mCloudsCoverage[i]->get()).c_str());
+        pCloudsLayer->SetAttribute("height", Ogre::StringConverter::toString(mCloudsHeight[i]->get()).c_str());
+        pCloudsLayer->SetAttribute("speed", Ogre::StringConverter::toString(mCloudsSpeed[i]->get()).c_str());
+    }
+
+    return pCaelum;
+}
+
+
 
 //--------------------------------------------------------------------------------------------------
 //-----CAELUMEDITORFACTORY--------------------------------------------------------------------------

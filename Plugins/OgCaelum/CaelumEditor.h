@@ -68,6 +68,8 @@ namespace Ogitors
 
         virtual void         createProperties(Ogitors::OgitorsPropertyValueMap &params);
 
+        virtual TiXmlElement *exportDotScene(TiXmlElement *pParent);
+
     protected:
         Caelum::CaelumSystem *mHandle;
         Ogre::SceneManager   *mSceneManager;
