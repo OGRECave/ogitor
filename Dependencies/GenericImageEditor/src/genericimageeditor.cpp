@@ -87,7 +87,7 @@ void GenericImageEditor::registerCodecFactory(QString extension, IImageEditorCod
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::unregisterCodecFactory(QString extension)
 {
-    ImageCodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
+    ImageCodecExtensionFactoryMap::iterator it = mRegisteredCodecFactories.end();
     it = mRegisteredCodecFactories.find(extension);
 
     if(it != mRegisteredCodecFactories.end())

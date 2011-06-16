@@ -75,7 +75,7 @@ class LineNumberArea;
    #define GTEExport
 #endif
 
-typedef std::map<QString, ITextEditorCodecFactory*> TextCodecExtensionFactoryMap;
+typedef std::map<std::string, ITextEditorCodecFactory*> TextCodecExtensionFactoryMap;
 
 //-----------------------------------------------------------------------------------------
 
