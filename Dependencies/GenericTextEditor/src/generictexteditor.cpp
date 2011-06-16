@@ -73,13 +73,13 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::registerCodecFactory(QString extension, ITextEditorCodecFactory* codec)
 {
-    mRegisteredCodecFactories.insert(TextCodecExtensionFactoryMap::value_type(extension, codec));
+    mRegisteredCodecFactories.insert(TextCodecExtensionFactoryMap::value_type(extension.toStdString(), codec));
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::unregisterCodecFactory(QString extension)
 {
-    TextCodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
-    it = mRegisteredCodecFactories.find(extension);
+    TextCodecExtensionFactoryMap::iterator it = mRegisteredCodecFactories.end();
+    it = mRegisteredCodecFactories.find(extension.toStdString());
 
     if(it != mRegisteredCodecFactories.end())
         mRegisteredCodecFactories.erase(it);
@@ -225,7 +225,7 @@ ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString ext
         extension = extensionOrFileName;
     
     TextCodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
-    it = mRegisteredCodecFactories.find(extension);
+    it = mRegisteredCodecFactories.find(extension.toStdString());
 
     if(it != mRegisteredCodecFactories.end())
         return it->second;

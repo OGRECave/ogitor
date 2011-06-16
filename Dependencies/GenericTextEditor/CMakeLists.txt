@@ -46,7 +46,7 @@ else(NOT QT4_FOUND)
 	set(GenericTextEditor_VERSION 0)
 	set(GenericTextEditor_VERSION_MAJOR 1)
 
-	include_directories(include)
+	include_directories("include")
 
 	include_directories(.)
 	include_directories(${OGITOR_INCLUDES})
