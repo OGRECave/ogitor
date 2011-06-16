@@ -23,9 +23,9 @@
 		int r;
 
 		// Register the type
-		r = engine->RegisterObjectType("Vector2", sizeof(Ogre::Vector2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
-		r = engine->RegisterObjectType("Vector3", sizeof(Ogre::Vector3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
-		r = engine->RegisterObjectType("Vector4", sizeof(Ogre::Vector4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
+		r = engine->RegisterObjectType("Vector2", sizeof(Ogre::Vector2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+		r = engine->RegisterObjectType("Vector3", sizeof(Ogre::Vector3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+		r = engine->RegisterObjectType("Vector4", sizeof(Ogre::Vector4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 
 		// Register the object properties
 		r = engine->RegisterObjectProperty("Vector2", "float x", offsetof(Ogre::Vector2, x)); assert( r >= 0 );

@@ -23,7 +23,7 @@
 		int r;
 
 		// Register the type
-		r = engine->RegisterObjectType("Quaternion", sizeof(Ogre::Quaternion), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA); assert( r >= 0 );
+        r = engine->RegisterObjectType("Quaternion", sizeof(Ogre::Quaternion), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 
 		// Register the object properties
 		r = engine->RegisterObjectProperty("Quaternion", "float w", offsetof(Ogre::Quaternion, w)); assert( r >= 0 );
