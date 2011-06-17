@@ -119,7 +119,7 @@ void CTerrainGroupEditor::setMousePosition(Ogre::Ray camRay)
         }
 
         mDecalNode->setPosition(pos);
-        mDecalFrustum->setVisible(true);
+        mDecalFrustum->setVisible(mEditMode != EM_NONE);
 
         float value = (float)mBrushSize * modulus;
 
@@ -148,7 +148,11 @@ void CTerrainGroupEditor::setEditMode(unsigned int mode)
     mModificationRect = Ogre::Rect(0,0,0,0);
 
     mEditMode = (EditMode)mode;
+
     mDecalFrustum->setVisible(mEditMode != EM_NONE);
+
+    if(mEditMode == EM_NONE)
+        mDecalNode->setPosition(Ogre::Vector3(999999,-999999,999999));
 }
 //-----------------------------------------------------------------------------------------
 void CTerrainGroupEditor::setColour(const Ogre::ColourValue& colour)
