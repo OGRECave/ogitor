@@ -363,6 +363,27 @@ bool CTerrainPageEditor::_setPGActive(OgitorsPropertyBase* property, const bool&
             mPGLayers[idx]->setFadeTechnique(static_cast<Forests::FadeTechnique>(mPGFadeTech[idx]->get()));
             mPGLayers[idx]->setRenderTechnique(static_cast<Forests::GrassTechnique>(mPGGrassTech[idx]->get()));
             mPGLayers[idx]->setMapBounds(bounds);
+
+            
+            int mapsize = parentEditor->getGrassDensityMapSize();
+            Ogre::uchar *data_src = mPGDensityMap.getData();
+
+            unsigned char rgbaShift[4];
+            Ogre::PixelUtil::getBitShifts(mPGDensityMap.getFormat(), rgbaShift);
+            int pos = rgbaShift[idx] / 8;
+
+            Forests::DensityMap *dmap = mPGLayers[idx]->getDensityMap();
+            if(dmap)
+            {
+                Ogre::PixelBox pbox = dmap->getPixelBox();
+                Ogre::uchar *data_dest = static_cast<Ogre::uchar*>(dmap->getPixelBox().data);
+
+                for(int i = 0;i < mapsize * mapsize;i++)
+                {
+                    data_dest[i] = data_src[pos];
+                    pos += 4;
+                }
+            }
         }
         else
         {
