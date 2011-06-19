@@ -82,13 +82,13 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::registerCodecFactory(QString extension, IImageEditorCodecFactory* codec)
 {
-    mRegisteredCodecFactories.insert(ImageCodecExtensionFactoryMap::value_type(extension, codec));
+    mRegisteredCodecFactories.insert(ImageCodecExtensionFactoryMap::value_type(extension.toStdString(), codec));
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::unregisterCodecFactory(QString extension)
 {
     ImageCodecExtensionFactoryMap::iterator it = mRegisteredCodecFactories.end();
-    it = mRegisteredCodecFactories.find(extension);
+    it = mRegisteredCodecFactories.find(extension.toStdString());
 
     if(it != mRegisteredCodecFactories.end())
         mRegisteredCodecFactories.erase(it);
@@ -179,7 +179,7 @@ IImageEditorCodecFactory* GenericImageEditor::findMatchingCodecFactory(QString e
         extension = extensionOrFileName;
     
     ImageCodecExtensionFactoryMap::const_iterator it = mRegisteredCodecFactories.end();
-    it = mRegisteredCodecFactories.find(extension);
+    it = mRegisteredCodecFactories.find(extension.toStdString());
 
     if(it != mRegisteredCodecFactories.end())
         return it->second;
