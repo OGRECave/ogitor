@@ -71,7 +71,7 @@ class ToolTipLabel;
    #define GIEExport
 #endif
 
-typedef std::map<QString, IImageEditorCodecFactory*> ImageCodecExtensionFactoryMap;
+typedef std::map<std::string, IImageEditorCodecFactory*> ImageCodecExtensionFactoryMap;
 
 //-----------------------------------------------------------------------------------------
 
