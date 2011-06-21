@@ -2010,7 +2010,7 @@ namespace OFS
             mStream.clear();
 
             bool done = false;
-            while(!done)
+            while(!done && (can_read > 0))
             {
                 if(can_read >= tmp_len)
                 {
