@@ -93,6 +93,8 @@ namespace OFS
         if(mWritePos != value)
         {
             mWritePos = value;
+            mWriteBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
+
             unsigned int block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
             int i = 0;
             unsigned int max_i = mEntryDesc->UsedBlocks.size();
@@ -128,6 +130,8 @@ namespace OFS
         if(mReadPos != value)
         {
             mReadPos = value;
+            mReadBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
+
             unsigned int block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
             int i = 0;
             unsigned int max_i = mEntryDesc->UsedBlocks.size();
@@ -1576,10 +1580,8 @@ namespace OFS
                         _markUnused(fileDesc->UsedBlocks[i]);
                     }
 
-                    for(unsigned int i = 1;i < fileDesc->UsedBlocks.size();i++)
-                    {
-                        fileDesc->UsedBlocks.erase(fileDesc->UsedBlocks.begin() + 1);
-                    }
+                    if(fileDesc->UsedBlocks.size() > 1)
+                        fileDesc->UsedBlocks.erase(fileDesc->UsedBlocks.begin() + 1, fileDesc->UsedBlocks.end());
 
                     fileDesc->UsedBlocks[0].NextBlock = 0;
                     fileDesc->FileSize = 0;
@@ -1659,10 +1661,8 @@ namespace OFS
                     _markUnused(fileDesc->UsedBlocks[i]);
                 }
 
-                for(unsigned int i = 1;i < fileDesc->UsedBlocks.size();i++)
-                {
-                    fileDesc->UsedBlocks.erase(fileDesc->UsedBlocks.begin() + 1);
-                }
+                if(fileDesc->UsedBlocks.size() > 1)
+                    fileDesc->UsedBlocks.erase(fileDesc->UsedBlocks.begin() + 1, fileDesc->UsedBlocks.end());
 
                 fileDesc->UsedBlocks[0].NextBlock = 0;
                 fileDesc->FileSize = 0;
@@ -2119,6 +2119,7 @@ namespace OFS
             if(write_pos_save + length > desc->FileSize)
             {
                 desc->FileSize = write_pos_save + length;
+                mStream.clear();
                 mStream.seekp(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), fstream::beg);
                 mStream.write((char*)&(desc->FileSize), sizeof(unsigned int));
                 mStream.flush();
