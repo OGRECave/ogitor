@@ -132,6 +132,10 @@ set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 
 # Fix the plugins configuration file for Linux
 if(UNIX)
+    set(DBG_POSTFIX "")
+    if(OGRE_LIBRARY_DBG)
+        set(DBG_POSTFIX "_d")
+    endif()
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/plugins.cfg.backup_copy)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/ogitor.desktop.in ${OGITOR_WORK_DIR}/RunPath/bin/qtOgitor.desktop)

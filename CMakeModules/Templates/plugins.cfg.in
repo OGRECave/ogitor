@@ -5,10 +5,10 @@ PluginFolder = @OGRE_PLUGIN_DIR_LINUX@
 PluginFolder = ../Plugins/dependencies
 
 # Define plugins
-Plugin = RenderSystem_GL
-Plugin = Plugin_ParticleFX
-Plugin = Plugin_CgProgramManager
-Plugin = Plugin_OctreeSceneManager
+Plugin = RenderSystem_GL@DBG_POSTFIX@
+Plugin = Plugin_ParticleFX@DBG_POSTFIX@
+Plugin = Plugin_CgProgramManager@DBG_POSTFIX@
+Plugin = Plugin_OctreeSceneManager@DBG_POSTFIX@
 Plugin = libOgreOfsPlugin
 #Plugin = libCaelum
 #Plugin = libHydrax
