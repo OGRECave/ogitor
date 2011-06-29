@@ -76,6 +76,9 @@ ENDIF(UNIX)
 
 ADD_EXECUTABLE(lua_executable ${Lua_SOURCE_DIR}/src/lua.c)
 TARGET_LINK_LIBRARIES(lua_executable lua_library_static ${LUA_LINKER_FLAGS})
+IF(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+	TARGET_LINK_LIBRARIES(lua_executable m)
+ENDIF()
 SET_TARGET_PROPERTIES(lua_executable PROPERTIES OUTPUT_NAME "lua")
 
 #ADD_EXECUTABLE(luac 
