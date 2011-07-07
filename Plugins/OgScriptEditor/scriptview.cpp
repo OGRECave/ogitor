@@ -120,7 +120,11 @@ ScriptViewWidget::ScriptViewWidget(QWidget *parent) : QWidget(parent)
     boxlayout->addWidget(treeWidget);
 
     generalCategory = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("General Scripts")));
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    QString iconpath(OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Plugins/Icons/project.svg").c_str());
+#else
     QString iconpath(OgitorsUtils::QualifyPath("../Plugins/Icons/project.svg").c_str());
+#endif
     generalCategory->setIcon(0, QIcon(iconpath));
     QFont fnt = generalCategory->font(0);
     fnt.setBold(true);
@@ -192,7 +196,7 @@ void ScriptViewWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
     {
         //reload the zone selection widget when a scene is loaded
         LoadState state = change_event->getType();
-	    
+
         if(state == LS_LOADED)
             prepareView();
         else if(state == LS_UNLOADED)

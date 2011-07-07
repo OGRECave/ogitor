@@ -12,16 +12,20 @@ PortalFactory::PortalFactory(OgitorsView *view) : CNodeEditorFactory(view)
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = false; //at the moment, we can't new add portals in the editor...
     mRequirePlacement = true;
-    mIcon =  "../Plugins/Icons/portal.svg";//"Icons/zone.svg";
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    mIcon = "/usr/share/qtOgitor/Plugins/Icons/portal.svg";//"Icons/zone.svg";
+#else
+    mIcon = "../Plugins/Icons/portal.svg";//"Icons/zone.svg";
+#endif
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
 
- 
+
     AddPropertyDefinition("parentnode","Portal::Zone","Parent zone of this portal",PROP_STRING, true, false);
     AddPropertyDefinition("destination","Portal::Destination Portal","Portal that this one is connected to.",PROP_STRING, true, false);
     AddPropertyDefinition("width","Portal::Width","Width of the portal.",PROP_REAL, true, false);
     AddPropertyDefinition("height","Portal::Height","Height of the portal.",PROP_REAL, true, false);
 
-    
+
 }
 //----------------------------------------------------------------------------------------
 CBaseEditor *PortalFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)
@@ -44,7 +48,7 @@ CBaseEditor *PortalFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyVa
         params["name"] = value;
         params.erase(ni);
     }
-    
+
     object->createProperties(params);
     object->mParentEditor->init(*parent);
     object->mParentZone->addPortal(object);

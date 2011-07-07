@@ -43,8 +43,7 @@ if(UNIX)
 		PATTERN "Plugins/icon_backup" EXCLUDE
 	)
 
-	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/resources.cfg
-		${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
+	install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
         ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
         ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
 		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml

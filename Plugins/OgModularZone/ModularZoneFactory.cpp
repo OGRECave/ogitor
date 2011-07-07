@@ -37,7 +37,11 @@ ModularZoneFactory::ModularZoneFactory(OgitorsView *view) : CNodeEditorFactory(v
     mEditorType = ETYPE_NODE;
     mAddToObjectList = false;//use the dragndrop widget
     mRequirePlacement = true;
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    mIcon = "/usr/share/qtOgitor/Plugins/Icons/zone.svg";//"Icons/zone.svg";
+#else
     mIcon = "../Plugins/Icons/zone.svg";//"Icons/zone.svg";
+#endif
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_DROP| CAN_UNDO | CAN_ACCEPTCOPY;
 
     AddPropertyDefinition("zonetemplate","Zone::Description File","XML file that defines this zone",PROP_INT, true, false);
@@ -132,7 +136,7 @@ void ModularZoneFactory::loadZoneTemplates(void)
                     ++key;
                 }
             }
-        }        
+        }
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -142,7 +146,7 @@ void ModularZoneFactory::setZoneType(Ogre::String zone)
 }
 //-----------------------------------------------------------------------------------------
 void ModularZoneFactory::setCurrentZoneTemplate(int key)
-{ 
+{
     //sets the current template
     std::map<int,ZoneInfo>::iterator value;
     value = mZoneTemplates.find(key);//check it is a valid key
@@ -180,12 +184,12 @@ int ModularZoneFactory::addZoneTemplate(ZoneInfo zone)
 
     mZoneTemplates.insert(ZoneInfoMap::value_type(key,zone));
     this->mZoneListWidget->addZone(key);
-    return key;    
+    return key;
 }
 //-----------------------------------------------------------------------------------------
 void ModularZoneFactory::updateZoneListWidget(int key)
 {
-    //I really would prefer not to have this function 
+    //I really would prefer not to have this function
     //but I don't want to add a dependency on the widget to the editor
     //This function calls the ZoneWidget's update function
     if(mZoneListWidget)
@@ -197,7 +201,7 @@ void ModularZoneFactory::updateZoneListWidget(int key)
 ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
 {
     ZoneInfo zone;
-        
+
     zone.mName = OgitorsUtils::ExtractFileName(filename);
 
     Ogre::String meshname,short_desc,long_desc;
@@ -217,7 +221,7 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
     ofsFile->getFileSize(handle,len);
     dest = new char[len];
     ofsFile->read(handle,dest,len);
-    
+
     TiXmlDocument doc;
     doc.Parse(dest);
     //if (!doc.LoadFile(dest)) return zone;
@@ -232,7 +236,7 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
         // should always have a valid root but handle gracefully if it doesn't
         pElem = doc.FirstChildElement("zonedescription");
         if (!pElem)
-        { 
+        {
             //return an empty ZoneInfo to indicate failure
             zone.mMesh = "";
             zone.mName = "";
@@ -247,8 +251,8 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
 
         //get mesh name
         if(pElem->Attribute("mesh"))meshname = pElem->Attribute("mesh");
-        else 
-        { 
+        else
+        {
             //return an empty ZoneInfo to indicate failure
             zone.mMesh = "";
             zone.mName = "";
@@ -261,7 +265,7 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
         zone.mMesh = meshname;
         //get number of portals
         if(pElem->QueryIntAttribute("portals",&portal_count)!=TIXML_SUCCESS)
-        { 
+        {
             //return an empty ZoneInfo to indicate failure
             zone.mMesh = "";
             zone.mName = "";
@@ -274,8 +278,8 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
 
         //get short description
         if(pElem->Attribute("short"))short_desc = pElem->Attribute("short");
-        else 
-        { 
+        else
+        {
             //return an empty ZoneInfo to indicate failure
             zone.mMesh = "";
             zone.mName = "";
@@ -287,8 +291,8 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
         zone.mShortDesc = short_desc;
         //get long description
         if(pElem->Attribute("long"))long_desc = pElem->Attribute("long");
-        else 
-        { 
+        else
+        {
             //return an empty ZoneInfo to indicate failure
             zone.mMesh = "";
             zone.mName = "";
@@ -306,14 +310,14 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
 
         //get the portal factory:
         CBaseEditorFactory* portalFactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("MZ Portal Object");
-        
+
         int count = 0;
         for( pElem; pElem; pElem=pElem->NextSiblingElement("portal"))
         {
             PortalInfo portal;
             Ogre::Vector3 position;
             Ogre::Quaternion orientation;
-            
+
             TiXmlElement* pData;
             //get the portal info:
             //portal dimensions
@@ -334,7 +338,7 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
             pData = pElem->FirstChild("orientation")->ToElement();
             if (pData)
             {
-                
+
                 //TODO: error handling - default values will not work
                 if(pData->QueryFloatAttribute("x",&orientation.x)!=TIXML_SUCCESS)orientation.x=0.0f;//on failure ???
                 if(pData->QueryFloatAttribute("y",&orientation.y)!=TIXML_SUCCESS)orientation.y=0.0f;//on failure ???

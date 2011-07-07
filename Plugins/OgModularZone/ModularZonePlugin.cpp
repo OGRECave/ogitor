@@ -41,9 +41,13 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
     Ogitors::DockWidgetData data;
     data.mCaption = "Modular Zones";
     data.mHandle = widget;
-    data.mIcon = "../Plugins/Icons/zone.svg";
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    data.mIcon = "/usr/share/qtOgitor/Plugins/Icons/zone.svg";//"Icons/zone.svg";
+#else
+    data.mIcon = "../Plugins/Icons/zone.svg";//"Icons/zone.svg";
+#endif
     data.mParent = DOCK_RESOURCES;
-       
+
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, zonefactory);
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, portalfactory);
     OgitorsRoot::getSingletonPtr()->RegisterToolBar(identifier,toolbar->getToolbar());

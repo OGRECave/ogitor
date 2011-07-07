@@ -50,22 +50,22 @@ ZoneListWidget::ZoneListWidget(QWidget* parent):QWidget(parent)
     mDragData.Parameters.clear();
 
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
-    
+
     verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     QHBoxLayout* horizontalLayout = new QHBoxLayout();
     horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
     filterBox = new QLineEdit(this);
     filterBox->setObjectName(QString::fromUtf8("filterBox"));
-    
+
     horizontalLayout->addWidget(filterBox);
-    
+
     clearFilterButton = new QToolButton(this);
     clearFilterButton->setObjectName(QString::fromUtf8("clearFilterButton"));
     clearFilterButton->setIcon(QIcon(":/icons/refresh.svg"));
-    
+
     horizontalLayout->addWidget(clearFilterButton);
     horizontalLayout->setMargin(0);
-    
+
     verticalLayout->addLayout(horizontalLayout);
 
     listWidget = new QListWidget(this);
@@ -76,15 +76,15 @@ ZoneListWidget::ZoneListWidget(QWidget* parent):QWidget(parent)
     listWidget->setDragDropMode(QAbstractItemView::DragOnly);
     listWidget->setWordWrap(true);
     listWidget->setMouseTracking(true);
-    
+
     verticalLayout->addWidget(listWidget);
     verticalLayout->setMargin(0);
 
     QObject::connect(clearFilterButton, SIGNAL(clicked()), filterBox, SLOT(clear()));
     QObject::connect(filterBox, SIGNAL(textChanged(QString)), this, SLOT(filterBoxTextChanged(QString)));
-    
+
     OgitorsRoot::getSingletonPtr()->RegisterDragDropHandler((void*)listWidget, this);
-    
+
     EventManager::getSingletonPtr()->connectEvent(EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(ZoneListWidget, onSceneLoadStateChange));
 
     /*this->setWindowTitle(QString::fromUtf8("Zones"));
@@ -116,17 +116,17 @@ void ZoneListWidget::prepareView()
 
     ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object"));
     if(!factory)return;
-        
+
     while(it != mIcons.end())
     {
-        
+
         QImage pImg(it->second, 96, 96, QImage::Format_ARGB32);
         QPixmap pmap = QPixmap::fromImage(pImg);
         QListWidgetItem *item = new QListWidgetItem(QIcon(pmap),(factory->getZoneTemplate(it->first))->mName.c_str() , listWidget);
-        item->setData(Qt::UserRole,QVariant(it->first));//key to ZoneTemplatesMap 
+        item->setData(Qt::UserRole,QVariant(it->first));//key to ZoneTemplatesMap
         item->setToolTip((factory->getZoneTemplate(it->first))->mShortDesc.c_str());// a short description of the zone
         item->setStatusTip((factory->getZoneTemplate(it->first))->mLongDesc.c_str());//a detailed description
-        
+
         listWidget->addItem(item);
         delete [] it->second;
         it++;
@@ -141,13 +141,17 @@ void ZoneListWidget::addZone(int key)
     ZoneInfo* zone = factory->getZoneTemplate(key);
     if(zone)
     {
-        
-        QIcon icon( "../Plugins/Icons/zone.svg");
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+        QIcon icon("/usr/share/qtOgitor/Plugins/Icons/zone.svg");
+#else
+        QIcon icon("../Plugins/Icons/zone.svg");
+#endif
         QListWidgetItem *item = new QListWidgetItem(icon,zone->mName.c_str() , listWidget);
-        item->setData(Qt::UserRole,QVariant(key));//key to ZoneTemplatesMap 
+        item->setData(Qt::UserRole,QVariant(key));//key to ZoneTemplatesMap
         item->setToolTip(zone->mShortDesc.c_str());// a short description of the zone
         item->setStatusTip(zone->mLongDesc.c_str());//a detailed description
-        
+
         listWidget->addItem(item);
     }
 }
@@ -156,7 +160,7 @@ void ZoneListWidget::updateZoneInfo(int key)
 {
     //TODO: there's gotta be a better way to do this...
 
-    //update zone description 
+    //update zone description
     ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object"));
     if(!factory)return;
     ZoneInfo* zone = factory->getZoneTemplate(key);
@@ -183,9 +187,9 @@ typedef std::map<int,Ogre::String> EntityMap;
 void ZoneListWidget::_createImages(ImageMap& retlist)
 {
     retlist.clear();
-    
-    Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual( "EntityTex", 
-                   Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, 
+
+    Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual( "EntityTex",
+                   Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D,
                    256, 256, 0, Ogre::PF_A8R8G8B8 , Ogre::TU_RENDERTARGET );
 
     Ogre::RenderTexture *rttTex = texture->getBuffer()->getRenderTarget();
@@ -215,7 +219,7 @@ void ZoneListWidget::_createImages(ImageMap& retlist)
 
     Ogre::Entity *mEntity;
 
-    unsigned char dataptr[300 * 300 * 6]; 
+    unsigned char dataptr[300 * 300 * 6];
     unsigned char *dataptr2;
     Ogre::PixelBox pb(256,256,1,Ogre::PF_A8R8G8B8, dataptr);
 
@@ -229,7 +233,7 @@ void ZoneListWidget::_createImages(ImageMap& retlist)
     }
 
     EntityMap::const_iterator ite = entities.begin();
-    
+
     while(ite != entities.end())
     {
         Ogre::String addstr = ite->second;
@@ -238,31 +242,31 @@ void ZoneListWidget::_createImages(ImageMap& retlist)
 
         mSceneMgr->getRootSceneNode()->attachObject(mEntity);
 
-        //TODO: It would be nice to retrieve a Preview Camera Position from 
+        //TODO: It would be nice to retrieve a Preview Camera Position from
         //the .zone file
         //TODO: also render portal outlines clearly so that the user can see
         //how the zone is laid out
         Ogre::Vector3 vSize = mEntity->getBoundingBox().getCorner(Ogre::AxisAlignedBox::NEAR_RIGHT_TOP);//.getHalfSize();//============
-        Ogre::Vector3 vCenter = mEntity->getBoundingBox().getCenter(); 
-    
+        Ogre::Vector3 vCenter = mEntity->getBoundingBox().getCenter();
+
 //FIXME ------ NICE PREVIEWS NEEDED - bigger
 
         vSize += Ogre::Vector3(vSize.z, vSize.z, vSize.z);
 
         float maxsize = std::max(std::max(vSize.x,vSize.y),vSize.z);
-    
+
         //vSize = Ogre::Vector3(0, 0, maxsize * 1.1f) + vCenter;
         vSize = Ogre::Vector3(maxsize * 0.5f, vSize.y, maxsize * 0.5f) + vCenter;
         //vSize.x +=vSize.x/2;//Maybe test to see which is larger x/2 or z/2 and use that?
         //vSize.z +=vSize.x/2;
         //RTTCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
-    
+
         RTTCam->setPosition(vSize.x,vSize.y,vSize.z);
         RTTCam->lookAt(vCenter.x,vCenter.y,vCenter.z);
 
         rttTex->update();
         rttTex->copyContentsToMemory(pb, Ogre::RenderTarget::FB_FRONT);
-        
+
 
         dataptr2 = new unsigned char[96 * 96 * 4];
         Ogre::PixelBox pb2(96,96,1,Ogre::PF_A8R8G8B8, dataptr2);
@@ -281,7 +285,7 @@ void ZoneListWidget::_createImages(ImageMap& retlist)
     Ogre::Root::getSingletonPtr()->destroySceneManager(mSceneMgr);
     Ogre::TextureManager::getSingletonPtr()->unload(texture->getName());
     Ogre::TextureManager::getSingletonPtr()->remove(texture->getName());
-}    
+}
 //----------------------------------------------------------------------------------------
 void ZoneListWidget::filterBoxTextChanged(QString text)
 {
@@ -312,7 +316,7 @@ bool ZoneListWidget::OnDragEnter()
         pvalue.propType = PROP_INT;
         pvalue.val = Ogre::Any(selected[0]->data(Qt::UserRole).toInt());
         mDragData.Parameters["zonetemplate"] = pvalue;
-        
+
         CBaseEditor *parent = OgitorsRoot::getSingletonPtr()->GetSceneManagerEditor();
         CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object");
         mDragData.Object = factory->CreateObject(&parent, mDragData.Parameters);
@@ -355,14 +359,14 @@ bool ZoneListWidget::OnDragMove (Ogre::Viewport *vp, unsigned int modifier, Ogre
 
     if(!hitfound)
     {
-        if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)         
-            vPos = mouseRay.getOrigin() + (mouseRay.getDirection() * 40.0f);         
-        else         
+        if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)
+            vPos = mouseRay.getOrigin() + (mouseRay.getDirection() * 40.0f);
+        else
             vPos = OgitorsRoot::getSingletonPtr()->GetGizmoIntersectCameraPlane(mDragData.Object, mouseRay);
     }
 
     mDragData.Object->getProperties()->setValue("position", vPos);
-    
+
     return true;
 }
 //----------------------------------------------------------------------------------------
@@ -375,11 +379,11 @@ void ZoneListWidget::OnDragWheel(Ogre::Viewport *vp, float delta)
     mDragData.Object->getProperties()->getValue("position", vPos);
     float distance = (vPos - vp->getCamera()->getDerivedPosition()).length() + (delta / 120.0f);
 
-    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)         
+    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)
         return;
-    else         
+    else
         vPos = vp->getCamera()->getDerivedPosition() + ((vPos - vp->getCamera()->getDerivedPosition()).normalisedCopy() * distance);
-    
+
     mDragData.Object->getProperties()->setValue("position", vPos);
 }
 //----------------------------------------------------------------------------------------
@@ -396,7 +400,7 @@ void ZoneListWidget::OnDragDropped(Ogre::Viewport *vp, Ogre::Vector2& position)
         mDragData.Parameters["position"] = params["position"];
 
         obj = OgitorsRoot::getSingletonPtr()->CreateEditorObject(0,mDragData.ObjectType, mDragData.Parameters, true, true);
-    
+
     }
 
     mDragData.Parameters.clear();
@@ -413,7 +417,7 @@ void ZoneListWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
     {
         //reload the zone selection widget when a scene is loaded
         LoadState state = change_event->getType();
-        
+
         if(state == LS_LOADED)
             prepareView();
         else if(state == LS_UNLOADED)

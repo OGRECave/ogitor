@@ -60,11 +60,11 @@ ObjectsViewWidget::ObjectsViewWidget(QWidget *parent) :
     listWidget->setIconSize(QSize(32,32));
     listWidget->setDragDropMode(QAbstractItemView::DragOnly);
     listWidget->setWordWrap(true);
-    
+
     QVBoxLayout *boxlayout = new QVBoxLayout(this);
     boxlayout->setMargin(0);
     boxlayout->addWidget(listWidget);
-    
+
     OgitorsRoot::getSingletonPtr()->RegisterDragDropHandler((void*)listWidget, this);
 }
 //----------------------------------------------------------------------------------------
@@ -114,10 +114,14 @@ void ObjectsViewWidget::prepareView()
     while(it != objects.end())
     {
 
-        if(it->second && it->second->mAddToObjectList) 
+        if(it->second && it->second->mAddToObjectList)
         {
-            if(it->second->mIcon != "") 
-                filename = "../Plugins/" + it->second->mIcon;
+            if(it->second->mIcon != "")
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+            filename = "/usr/share/qtOgitor/Plugins/" + it->second->mIcon;
+#else
+            filename = "../Plugins/" + it->second->mIcon;
+#endif
 
             itemname = it->second->mTypeName;
 
@@ -181,12 +185,12 @@ bool ObjectsViewWidget::OnDragEnter()
         pvalue.propType = PROP_VECTOR3;
         pvalue.val = Ogre::Any(Ogre::Vector3(999999,999999,999999));
         mDragData.Parameters["position"] = pvalue;
-            
+
         CBaseEditor *parent = OgitorsRoot::getSingletonPtr()->GetSceneManagerEditor();
         CBaseEditorFactory *entityfactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Entity Object");
         mDragData.Object = entityfactory->CreateObject(&parent, mDragData.Parameters);
         mDragData.Object->load();
-            
+
         static_cast<Ogre::Entity*>(mDragData.Object->getHandle())->setMaterialName("scbMATWIREFRAME");
         static_cast<Ogre::Entity*>(mDragData.Object->getHandle())->setQueryFlags(0);
 
@@ -224,17 +228,17 @@ bool ObjectsViewWidget::OnDragMove(Ogre::Viewport *vp, unsigned int modifier, Og
     {
         hitfound = OgitorsRoot::getSingletonPtr()->GetViewport()->GetHitPosition(mouseRay, vPos, mDragData.Object->getName());
     }
-    
+
     if(!hitfound)
     {
-        if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)         
-            vPos = mouseRay.getOrigin() + (mouseRay.getDirection() * 40.0f);         
-        else         
+        if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)
+            vPos = mouseRay.getOrigin() + (mouseRay.getDirection() * 40.0f);
+        else
             vPos = OgitorsRoot::getSingletonPtr()->GetGizmoIntersectCameraPlane(mDragData.Object, mouseRay);
     }
 
     mDragData.Object->getProperties()->setValue("position", vPos);
-    
+
     return true;
 }
 //----------------------------------------------------------------------------------------
@@ -247,11 +251,11 @@ void ObjectsViewWidget::OnDragWheel(Ogre::Viewport *vp, float delta)
     mDragData.Object->getProperties()->getValue("position", vPos);
     float distance = (vPos - vp->getCamera()->getDerivedPosition()).length() + (delta / 120.0f);
 
-    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)         
+    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)
         return;
-    else         
+    else
         vPos = vp->getCamera()->getDerivedPosition() + ((vPos - vp->getCamera()->getDerivedPosition()).normalisedCopy() * distance);
-    
+
     mDragData.Object->getProperties()->setValue("position", vPos);
 }
 //----------------------------------------------------------------------------------------
@@ -267,12 +271,12 @@ void ObjectsViewWidget::OnDragDropped(Ogre::Viewport *vp, Ogre::Vector2& positio
         mDragData.Object->getPropertyMap(params);
         mDragData.Object->destroy();
         mDragData.Object = 0;
-        
+
         mDragData.Parameters["position"] = params["position"];
     }
 
     CBaseEditor *object = OgitorsRoot::getSingletonPtr()->CreateEditorObject(0,mDragData.ObjectType, mDragData.Parameters, true, true);
-    
+
     if(object && object->isTerrainType())
         mOgitorMainWindow->getTerrainToolsWidget()->updateTerrainOptions(object->getTerrainEditor());
 

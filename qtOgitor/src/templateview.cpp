@@ -124,7 +124,7 @@ void TemplateViewWidget::selectionChanged()
     QList<QTreeWidgetItem*> list = treeWidget->selectedItems();
     if(list.size() == 0 || list[0]->parent() == 0)
     {
-        mCurrentTemplate = "";     
+        mCurrentTemplate = "";
         return;
     }
 
@@ -143,7 +143,11 @@ void TemplateViewWidget::prepareView()
     const ObjectTemplateMap& generalTemplates = OgitorsClipboardManager::getSingletonPtr()->getGeneralTemplates();
 
     rootitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("General Templates")));
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    QString iconpath(OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Plugins/Icons/project.svg").c_str());
+#else
     QString iconpath(OgitorsUtils::QualifyPath("../Plugins/Icons/project.svg").c_str());
+#endif
     rootitem->setIcon(0, QIcon(iconpath));
     QFont fnt = rootitem->font(0);
     fnt.setBold(true);
@@ -217,15 +221,15 @@ bool TemplateViewWidget::OnDragMove(Ogre::Viewport *vp, unsigned int modifier, O
     Ogre::Vector3 vPos;
     mDragObject->getProperties()->getValue("position", vPos);
 
-    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)         
-        vPos = mouseRay.getOrigin() + (mouseRay.getDirection() * 40.0f);         
-    else         
+    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)
+        vPos = mouseRay.getOrigin() + (mouseRay.getDirection() * 40.0f);
+    else
         vPos = OgitorsRoot::getSingletonPtr()->GetGizmoIntersectCameraPlane(mDragObject, mouseRay);
 
     if(modifier & Ogitors::DragDropControlModifier)
     {
         bool hitfound = OgitorsRoot::getSingletonPtr()->GetViewport()->GetHitPosition(mouseRay, vPos, dragnamelist);
-        
+
         if(!hitfound)
         {
             mDragObject->getProperties()->getValue("position", vPos);
@@ -246,9 +250,9 @@ void TemplateViewWidget::OnDragWheel(Ogre::Viewport *vp, float delta)
     mDragObject->getProperties()->getValue("position", vPos);
     float distance = (vPos - vp->getCamera()->getDerivedPosition()).length() + (delta / 120.0f);
 
-    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)         
+    if(vPos.x == 999999 && vPos.y == 999999 && vPos.z == 999999)
         return;
-    else         
+    else
         vPos = vp->getCamera()->getDerivedPosition() + ((vPos - vp->getCamera()->getDerivedPosition()).normalisedCopy() * distance);
 
     mDragObject->getProperties()->setValue("position", vPos);

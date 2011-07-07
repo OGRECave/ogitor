@@ -40,15 +40,23 @@ ModularZoneToolbar::ModularZoneToolbar(QWidget *parent):QWidget(parent)
     horizontalLayout->setObjectName(QString::fromUtf8("MZEHorizontalLayout"));
     horizontalLayout->setSpacing(4);
     horizontalLayout->setMargin(2);
-    
+
     QAction* mActAddProps = new QAction(QObject::tr("Add ParentZone Property"), this);
     mActAddProps->setStatusTip(QObject::tr("Add Zone Custom Properties to selected object"));
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    mActAddProps->setIcon( QIcon( "/usr/share/qtOgitor/Plugins/Icons/zoneprops.svg"));
+#else
     mActAddProps->setIcon( QIcon( "../Plugins/Icons/zoneprops.svg"));
+#endif
     mActAddProps->setCheckable(false);
 
     QAction* mActDesignZone = new QAction(QObject::tr("Convert to Zone"), this);
     mActDesignZone->setStatusTip(QObject::tr("Convert entity to zone for editing"));
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    mActDesignZone->setIcon( QIcon( "/usr/share/qtOgitor/Plugins/Icons/tozone.svg"));//why do MY icons never show up?
+#else
     mActDesignZone->setIcon( QIcon( "../Plugins/Icons/tozone.svg"));//why do MY icons never show up?
+#endif
     mActDesignZone->setCheckable(false);
 
     mZoneSelectionToolbar = new QToolBar(QObject::tr("Modular Zone"));
@@ -71,7 +79,7 @@ ModularZoneToolbar::ModularZoneToolbar(QWidget *parent):QWidget(parent)
 
     horizontalLayout->addWidget(ZoneSelectionGroupBox);
     ZoneSelectionGroupBox->setLayout(myGroupBoxLayout);
-    
+
 }
 //----------------------------------------------------------------------------------------
 ModularZoneToolbar::~ModularZoneToolbar(void)
@@ -91,12 +99,12 @@ void ModularZoneToolbar::addZoneProperties(void)
         {
         //TODO:
         /*It would be cool if a drop down option box could be added containing all the
-        zones. However, whenever a new zone was added, the options of every object with 
+        zones. However, whenever a new zone was added, the options of every object with
         this custom  property would have to be updated*/
-        
-        /*Adding physics props here would be handy - then I could select NONE, STATIC or DYNAMIC  
-        for an object. Also collision shape type. But how would I attach info about a collison shape 
-        to use. I wouldn't want to use BtOgres create box for example, I would want to define my own 
+
+        /*Adding physics props here would be handy - then I could select NONE, STATIC or DYNAMIC
+        for an object. Also collision shape type. But how would I attach info about a collison shape
+        to use. I wouldn't want to use BtOgres create box for example, I would want to define my own
         box that conforms to the shape better.*/
 
             Ogitors::ObjectVector objects;
@@ -155,7 +163,7 @@ void ModularZoneToolbar::createZone(void)
             zoneparams["orientation"] = entparams["orientation"];
             //set the init param to create a new object
             zoneparams["init"] = EMPTY_PROPERTY_VALUE;
-            
+
             //set the zone properties to suit a new empty zone
             OgitorsPropertyValue propValue;
             propValue.propType = PROP_INT;
@@ -164,17 +172,17 @@ void ModularZoneToolbar::createZone(void)
             propValue.propType = PROP_INT;
             propValue.val = Ogre::Any(0);//no portals yet
             zoneparams["portalcount"] = propValue;
-            
+
             //destroy the entity
             root->DestroyEditorObject(ent,true);
             //create a zone with the same mesh
             ModularZoneEditor* zone = dynamic_cast<ModularZoneEditor*>(root->CreateEditorObject(0,"Modular Zone Object",zoneparams,true,true));
-            //TODO: should AddtoTreeList be TRUE? This isn't really part of the scene, its just a new 
+            //TODO: should AddtoTreeList be TRUE? This isn't really part of the scene, its just a new
             //zone (unfinished) design. But it may make its easier to locate if you can selected from
             //the treetlist ... hmmm
             //... At the moment yes - so child portals can be selected for moving
 
-            //once a zone is created, set it to desgn mode true so it shows up with 
+            //once a zone is created, set it to desgn mode true so it shows up with
             //selectable verts for hanging portals on
             zone->setDesignMode();
             }
