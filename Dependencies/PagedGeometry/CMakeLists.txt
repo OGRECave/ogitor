@@ -24,7 +24,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
 	source/BatchedGeometry.cpp
 	source/BatchPage.cpp
-	source/GrassLoader.cpp 
+	source/GrassLoader.cpp
 	source/ImpostorPage.cpp
 	source/PagedGeometry.cpp
 	source/PropertyMaps.cpp
@@ -50,17 +50,8 @@ set(LIBRARY_OUTPUT_PATH  ../lib)
 set_target_properties(PagedGeometry PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(PagedGeometry PROPERTIES VERSION ${PG_VERSION} SOVERSION ${PG_VERSION_MAJOR})
 set_target_properties(PagedGeometry PROPERTIES COMPILE_DEFINITIONS PG_LIB)
-set_target_properties(PagedGeometry PROPERTIES SOLUTION_FOLDER Dependencies) 
+set_target_properties(PagedGeometry PROPERTIES SOLUTION_FOLDER Dependencies)
 
 target_link_libraries(PagedGeometry ${OGRE_LIBRARIES})
-
-#IF(UNIX AND NOT APPLE)
-#install(TARGETS Hydrax
-#		 LIBRARY DESTINATION Plugins/dependencies
-#		 CONFIGURATIONS Release)
-#install(TARGETS Hydrax
-#		 LIBRARY DESTINATION Plugins/dependencies
-#		 CONFIGURATIONS Debug)
-#ENDIF(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:

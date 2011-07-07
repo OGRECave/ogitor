@@ -25,3 +25,5 @@ glob:ogitor_dev.kdev4
 glob:qtOgitor/languages/translate.pro
 glob:RunPath/Media/*
 glob:RunPath/Projects/*
+syntax: glob
+qtOgitor/languages/ogitor_*.qm

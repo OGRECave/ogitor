@@ -20,11 +20,11 @@ if(WIN32)
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
-if(UNIX)
-	install(FILES
-		collection_ogitor.qhc
-		ogitor.qch
-		DESTINATION bin/Help)
-endif(UNIX)
+#if(UNIX)
+#	install(FILES
+#		collection_ogitor.qhc
+#		ogitor.qch
+#		DESTINATION bin/Help)
+#endif(UNIX)
 
 # vim: set sw=2 ts=2 noet:

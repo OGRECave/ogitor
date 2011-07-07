@@ -34,7 +34,7 @@ set(LIBRARY_OUTPUT_PATH ../lib)
 set_target_properties(OgSkyx PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(OgSkyx PROPERTIES VERSION ${OgSkyx_VERSION} SOVERSION ${OgSkyx_VERSION_MAJOR})
 set_target_properties(OgSkyx PROPERTIES	COMPILE_DEFINITIONS PLUGIN_EXPORT)
-set_target_properties(OgSkyx PROPERTIES SOLUTION_FOLDER Plugins) 
+set_target_properties(OgSkyx PROPERTIES SOLUTION_FOLDER Plugins)
 
 if(UNIX AND NOT APPLE)
 	add_custom_command(TARGET OgSkyx PRE_BUILD
@@ -53,5 +53,11 @@ if(WIN32)
 		RUNTIME DESTINATION Plugins
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
+
+IF(UNIX AND NOT APPLE)
+    install(TARGETS OgSkyx
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+ENDIF(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:

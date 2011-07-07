@@ -23,12 +23,12 @@ else(NOT QT4_FOUND)
 	)
 
 	set(SOURCE_FILES
-		./src/genericimageeditor.cpp	
+		./src/genericimageeditor.cpp
 		./src/genericimageeditorcodec.cpp
 		./src/heightimageeditorcodec.cpp
 	)
 
-	SET(MOC_SRCS2 
+	SET(MOC_SRCS2
 		./include/genericimageeditor.hxx
 		./include/iimageeditorcodec.hxx
 		./include/genericimageeditorcodec.hxx
@@ -82,6 +82,18 @@ else(NOT QT4_FOUND)
 			RUNTIME DESTINATION bin
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
+
+IF(UNIX AND NOT APPLE)
+
+set_target_properties( GenericImageEditor PROPERTIES OUTPUT_NAME "GenericImageEditor_Ogitor" VERSION
+${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
+install(TARGETS GenericImageEditor
+    LIBRARY DESTINATION lib
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)
+
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:

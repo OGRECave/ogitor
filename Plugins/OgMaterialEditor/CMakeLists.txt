@@ -35,7 +35,7 @@ else(NOT QT4_FOUND)
 		materialtexteditorcodec.cpp
 	)
 
-	set(MOC_SRCS2 
+	set(MOC_SRCS2
 		materialview.hxx
 		materialhighlighter.hxx
 		materialeditorprefseditor.hxx
@@ -47,7 +47,7 @@ else(NOT QT4_FOUND)
 
 	source_group("Moc Files" FILES ${MOC_SRCS})
 	source_group("Ui Files" FILES ${UI_FILES})
-	
+
 	qt4_add_resources(RESOURCE_SRCS ./res/resource.qrc)
 	source_group("Qrc Files" FILES ${RESOURCE_SRCS})
 
@@ -78,7 +78,7 @@ else(NOT QT4_FOUND)
 	set_target_properties(OgMaterialEditor PROPERTIES	INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(OgMaterialEditor PROPERTIES VERSION ${OgMaterialEditor_VERSION} SOVERSION ${OgMaterialEditor_VERSION_MAJOR})
 	set_target_properties(OgMaterialEditor PROPERTIES	COMPILE_DEFINITIONS PLUGIN_EXPORT)
-	set_target_properties(OgMaterialEditor PROPERTIES SOLUTION_FOLDER Plugins) 
+	set_target_properties(OgMaterialEditor PROPERTIES SOLUTION_FOLDER Plugins)
 
 	if(UNIX AND NOT APPLE)
 		add_custom_command(TARGET OgMaterialEditor PRE_BUILD
@@ -99,6 +99,13 @@ else(NOT QT4_FOUND)
 			RUNTIME DESTINATION Plugins
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
+
+    IF(UNIX AND NOT APPLE)
+        install(TARGETS OgMaterialEditor
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    ENDIF(UNIX AND NOT APPLE)
+
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:

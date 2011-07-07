@@ -244,15 +244,33 @@ if(UNIX AND NOT APPLE)
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
         DESTINATION ${PREFIX}
     )
+
     add_subdirectory(icons)
     kde4_update_iconcache()
-#TODO: install language files
-else()
+
+    INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+    INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+    INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+        PATTERN     "*.qm"
+        PATTERN     "*.ts" EXCLUDE
+        PATTERN     "*.pro" EXCLUDE
+        PATTERN     "*.exe" EXCLUDE
+        PATTERN     "*.bat" EXCLUDE
+    )
+    INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+        PATTERN     "qt_*.qm"
+        PATTERN     "ogitor_*.qm" EXCLUDE
+    )
+else(UNIX AND NOT APPLE)
+    # ie Windows
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
         DESTINATION ${PREFIX}
-        PATTERN ".svn" EXCLUDE
         PATTERN "translate.pro" EXCLUDE
         PATTERN "*.ts" EXCLUDE
+        PATTERN "*.exe" EXCLUDE
+        PATTERN "*.bat" EXCLUDE
     )
 endif(UNIX AND NOT APPLE)
 

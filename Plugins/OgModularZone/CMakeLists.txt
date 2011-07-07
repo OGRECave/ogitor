@@ -41,7 +41,7 @@ else(NOT QT4_FOUND)
 		portalsizedialog.cpp
 	)
 
-	set(MOC_SRCS2 
+	set(MOC_SRCS2
 		ModularZoneToolbar.hxx
 		ZoneListWidget.hxx
 		exportzonedialog.hxx
@@ -81,7 +81,7 @@ else(NOT QT4_FOUND)
 	set_target_properties(OgModularZone PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(OgModularZone PROPERTIES VERSION ${OgModularZone_VERSION} SOVERSION ${OgModularZone_VERSION_MAJOR})
 	set_target_properties(OgModularZone PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-	set_target_properties(OgModularZone PROPERTIES SOLUTION_FOLDER Plugins) 
+	set_target_properties(OgModularZone PROPERTIES SOLUTION_FOLDER Plugins)
 
 	if(UNIX AND NOT APPLE)
 		add_custom_command(TARGET OgModularZone PRE_BUILD
@@ -102,6 +102,13 @@ else(NOT QT4_FOUND)
 			RUNTIME DESTINATION Plugins
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
+
+    IF(UNIX AND NOT APPLE)
+        install(TARGETS OgModularZone
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    ENDIF(UNIX AND NOT APPLE)
+
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:

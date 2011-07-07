@@ -118,7 +118,7 @@ elseif (WIN32)
   # Comment out the following lines if you want non-Unicode version.
   add_definitions (-DUNICODE -D_UNICODE -UMBCS -U_MBCS -DINSIDE_LOG4CPLUS)
   set (log4cplus_postfix "${log4cplus_postfix}U")
-  
+
   #add_definitions (-DLOG4CPLUS_STATIC)
   #set (log4cplus_postfix "${log4cplus_postfix}S")
 endif ()
@@ -167,3 +167,13 @@ endif(WIN32)
 #add_subdirectory (loggingserver)
 #add_subdirectory (tests)
 
+IF(UNIX AND NOT APPLE)
+
+set_target_properties( log4cplus PROPERTIES OUTPUT_NAME "log4cplus_Ogitor" VERSION
+${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
+install(TARGETS log4cplus
+    LIBRARY DESTINATION lib
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)
