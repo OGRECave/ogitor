@@ -99,7 +99,7 @@ public:
     OgitorsRootPropertySetListener() {};
     ~OgitorsRootPropertySetListener() {};
 
-    void OnPropertyRemoved(OgitorsPropertySet* set, OgitorsPropertyBase* property) 
+    void OnPropertyRemoved(OgitorsPropertySet* set, OgitorsPropertyBase* property)
     {
         OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
     }
@@ -107,11 +107,11 @@ public:
     {
         OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
     }
-    void OnPropertyChanged(OgitorsPropertySet* set, OgitorsPropertyBase* property) 
+    void OnPropertyChanged(OgitorsPropertySet* set, OgitorsPropertyBase* property)
     {
         OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
     }
-    void OnPropertySetRebuilt(OgitorsPropertySet* set) 
+    void OnPropertySetRebuilt(OgitorsPropertySet* set)
     {
         OgitorsRoot::getSingletonPtr()->SetSceneModified(true);
     }
@@ -126,18 +126,18 @@ OgitorsPropertySetListener* OgitorsRoot::GetGlobalPropertyListener()
 }
 //-----------------------------------------------------------------------------------------
 OgitorsRoot::OgitorsRoot(Ogre::StringVector* pDisabledPluginPaths) :
-mUndoManager(0), mClipboardManager(0), mSceneManager(0), mSceneManagerEditor(0), mRenderWindow(0), mActiveViewport(0), 
-mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO), 
-mTerrainEditor(0), mTerrainEditorObject(0), mPagingEditor(0), mPagingEditorObject(0), mIsSceneModified(false), 
-mGlobalLightVisiblity(true), mGlobalCameraVisiblity(true), mSelRect(0), mSelectionNode(0), 
-mMouseListener(0), mKeyboardListener(0), 
-mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), mWorldSpaceGizmoOrientation(false), 
+mUndoManager(0), mClipboardManager(0), mSceneManager(0), mSceneManagerEditor(0), mRenderWindow(0), mActiveViewport(0),
+mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO),
+mTerrainEditor(0), mTerrainEditorObject(0), mPagingEditor(0), mPagingEditorObject(0), mIsSceneModified(false),
+mGlobalLightVisiblity(true), mGlobalCameraVisiblity(true), mSelRect(0), mSelectionNode(0),
+mMouseListener(0), mKeyboardListener(0),
+mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), mWorldSpaceGizmoOrientation(false),
 mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSource(0)
 {
     unsigned int i;
 
     mProjectFile = new OFS::OfsPtr();
-    
+
     mGizmoEntities[0] = mGizmoEntities[1] = mGizmoEntities[2] = 0;
     mGizmoEntities[3] = mGizmoEntities[4] = mGizmoEntities[5] = 0;
 
@@ -208,7 +208,7 @@ mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSourc
     mObjectDisplayOrder.push_back(ETYPE_FOLDER);
     mObjectDisplayOrder.push_back(ETYPE_LIGHT);
     mObjectDisplayOrder.push_back(ETYPE_CAMERA);
-    
+
     for(int x = ETYPE_CAMERA + 1;x < LAST_EDITOR;x++)
     {
         if(x != ETYPE_MULTISEL)
@@ -236,7 +236,7 @@ OgitorsRoot::~OgitorsRoot()
     mObjectDisplayOrder.clear();
 
     mRootEditor->destroy();
-    
+
     EditorObjectFactoryMap::iterator it = mEditorObjectFactories.begin();
     while(it != mEditorObjectFactories.end())
     {
@@ -286,7 +286,7 @@ void OgitorsRoot::ClearEditors()
             unldit++;
         }
     }
-    
+
     mRootEditor->destroy();
     mRootEditor = 0;
 
@@ -310,7 +310,7 @@ void OgitorsRoot::ClearEditors()
             mSystem->DisplayMessageDialog(errStr,DLGTYPE_OK);
         }
 #else
-        if(it->second) 
+        if(it->second)
             it->second->mInstanceCount = 0;
 #endif
         it++;
@@ -348,7 +348,7 @@ void OgitorsRoot::RegisterSerializer(void *pluginIdentifier, CBaseSerializer *se
 {
     if(!serializer) return;
     SerializerMap::iterator i = mSerializerList.find(serializer->GetTypeString());
-    if (i != mSerializerList.end()) 
+    if (i != mSerializerList.end())
         return;
 
     PluginEntryMap::iterator it = mPlugins.find(pluginIdentifier);
@@ -427,9 +427,9 @@ void OgitorsRoot::GetImportSerializerList(Ogre::StringVector &list)
 bool OgitorsRoot::TriggerImportSerializer(Ogre::String name)
 {
     SerializerMap::iterator i = mSerializerList.find(name);
-    if (i == mSerializerList.end()) 
+    if (i == mSerializerList.end())
         return false;
-  
+
     if(i->second->CanImport())
     {
         if(i->second->RequiresTerminateScene())
@@ -442,7 +442,7 @@ bool OgitorsRoot::TriggerImportSerializer(Ogre::String name)
 
         try
         {
-            if( i->second->Import() == SCF_OK ) 
+            if( i->second->Import() == SCF_OK )
                 return true;
             else
                 setLoadState(LS_UNLOADED);
@@ -454,40 +454,40 @@ bool OgitorsRoot::TriggerImportSerializer(Ogre::String name)
             return false;
         }
     }
-  
+
     return false;
 }
 //-----------------------------------------------------------------------------------------
 bool OgitorsRoot::TriggerExportSerializer(Ogre::String name)
 {
     SerializerMap::iterator i = mSerializerList.find(name);
-    if (i == mSerializerList.end()) 
+    if (i == mSerializerList.end())
         return false;
-    
+
     if(i->second->CanExport())
     {
-        if( i->second->Export() == SCF_OK) 
+        if( i->second->Export() == SCF_OK)
             return true;
     }
-    
+
     return false;
 }
 //-----------------------------------------------------------------------------------------
 CBaseEditorFactory *OgitorsRoot::GetEditorObjectFactory(const Ogre::String& typeName)
 {
     EditorObjectFactoryMap::iterator it = mEditorObjectFactories.find(typeName);
-    if(it == mEditorObjectFactories.end()) 
+    if(it == mEditorObjectFactories.end())
         return 0;
-    
+
     return it->second;
 }
 //-----------------------------------------------------------------------------------------
 unsigned int OgitorsRoot::GetTypeID(const Ogre::String& typeName)
 {
     EditorObjectFactoryMap::iterator it = mEditorObjectFactories.find(typeName);
-    if(it == mEditorObjectFactories.end()) 
+    if(it == mEditorObjectFactories.end())
         return 0;
-    
+
     return it->second->mTypeID;
 }
 //-----------------------------------------------------------------------------------------
@@ -525,11 +525,11 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList("../Plugins/debug/*Script_d.so",ScriptPluginList);
+    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/debug/*Script_d.so",ScriptPluginList);
 #else
-    mSystem->GetFileList("../Plugins/*Script.so",ScriptPluginList);
+    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/*Script.so",ScriptPluginList);
 #endif
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE 
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
     mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*Script_d.dylib", ScriptPluginList);
 #else
@@ -566,9 +566,9 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList("../Plugins/debug/*_d.so",PluginList);
+    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/debug/*_d.so",PluginList);
 #else
-    mSystem->GetFileList("../Plugins/*.so",PluginList);
+    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/*.so",PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -684,11 +684,11 @@ void OgitorsRoot::UnLoadPlugin(void *identifier)
             return;
         it++;
     }
-    
+
     Ogre::DynLib *lib = static_cast<Ogre::DynLib*>(identifier);
     DLL_STOP_PLUGIN pFunc = (DLL_STOP_PLUGIN)lib->getSymbol("dllStopPlugin");
     // Call stop function
-    if(pFunc) 
+    if(pFunc)
         pFunc();
 
     it = mPlugins.find(identifier);
@@ -709,15 +709,15 @@ void OgitorsRoot::UnLoadPlugins()
             Ogre::DynLib *lib = static_cast<Ogre::DynLib*>(it->first);
             DLL_STOP_PLUGIN pFunc = (DLL_STOP_PLUGIN)lib->getSymbol("dllStopPlugin");
             // Call stop function
-            if(pFunc) 
+            if(pFunc)
                 pFunc();
-            
+
             lib->unload();
             OGRE_DELETE lib;
         }
         it++;
     }
-    
+
     mPlugins.clear();
 }
 //-----------------------------------------------------------------------------------------
@@ -814,7 +814,7 @@ void OgitorsRoot::RegisterForUpdates(CBaseEditor *object)
 void OgitorsRoot::UnRegisterForUpdates(CBaseEditor *object)
 {
     NameObjectPairList::iterator i = mUpdateList.find(object->getName());
-    if (i != mUpdateList.end()) 
+    if (i != mUpdateList.end())
         mUpdateList.erase(i);
 }
 //-----------------------------------------------------------------------------------------
@@ -832,14 +832,14 @@ void OgitorsRoot::RegisterForScriptUpdates(CBaseEditor *object)
 void OgitorsRoot::UnRegisterForScriptUpdates(CBaseEditor *object)
 {
     NameObjectPairList::iterator i = mUpdateScriptList.find(object->getName());
-    if (i != mUpdateScriptList.end()) 
+    if (i != mUpdateScriptList.end())
         mUpdateScriptList.erase(i);
 }
 //-----------------------------------------------------------------------------------------
 bool OgitorsRoot::Update(float timePassed)
 {
     OgitorsScriptInterpreter::setTimeSinceLastFrame(timePassed);
-    
+
     UpdateFrameEvent evt(timePassed);
     EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 
@@ -848,7 +848,7 @@ bool OgitorsRoot::Update(float timePassed)
         NameObjectPairList::const_iterator i = mUpdateScriptList.begin();
         while(i != mUpdateScriptList.end())
         {
-            // We get the pointer first and increment since 
+            // We get the pointer first and increment since
             // Editor object may unregister itself during update
             CBaseEditor *editor = i->second;
             i++;
@@ -861,13 +861,13 @@ bool OgitorsRoot::Update(float timePassed)
     NameObjectPairList::const_iterator i = mUpdateList.begin();
     while(i != mUpdateList.end())
     {
-        // We get the pointer first and increment since 
+        // We get the pointer first and increment since
         // Editor object may unregister itself during update
         CBaseEditor *editor = i->second;
         i++;
         Changed |= editor->update(timePassed);
     }
-    
+
     ChangeSceneModified(Changed);
 
 
@@ -896,13 +896,13 @@ CBaseEditor * OgitorsRoot::FindObject(Ogre::String name, unsigned int type)
     if(type == 0)
     {
         i = mNameList.find(name);
-        if (i != mNameList.end()) 
+        if (i != mNameList.end())
             return i->second;
     }
     else
     {
         i = mNamesByType[type].find(name);
-        if (i != mNamesByType[type].end()) 
+        if (i != mNamesByType[type].end())
             return i->second;
     }
     return 0;
@@ -933,7 +933,7 @@ void OgitorsRoot::GetObjectList(unsigned int type, ObjectVector& list)
 {
     list.clear();
     if(type == ETYPE_MULTISEL) return;
-    
+
     if(type == 0)
     {
         NameObjectPairList::const_iterator it = mNameList.begin();
@@ -1012,7 +1012,7 @@ CBaseEditor *OgitorsRoot::CreateEditorObject(CBaseEditor *parent, const Ogre::St
 
     CBaseEditor *object = factory->CreateObject(&parent, params);
 
-    if(!object) 
+    if(!object)
         return 0;
 
     if(object->getObjectID() == 0)
@@ -1021,7 +1021,7 @@ CBaseEditor *OgitorsRoot::CreateEditorObject(CBaseEditor *parent, const Ogre::St
         AddObjectID(object->getObjectID(), object);
 
     RegisterObjectName(object->getName(), object);
- 
+
     parent->_addChild(object);
 
     if(addtotreelist)
@@ -1058,13 +1058,13 @@ CBaseEditor *OgitorsRoot::CloneEditorObject(CBaseEditor *object,bool addtotreeli
 {
     CBaseEditor *clone;
     CBaseEditor *parent = object->getParent();
-  
-    if(parent == 0) 
+
+    if(parent == 0)
         return 0;
 
     clone = object->getFactoryDynamic()->CloneObject(&parent, object);
 
-    if(!clone) 
+    if(!clone)
         return 0;
 
     clone->setObjectID(GetUniqueObjectID(clone));
@@ -1075,7 +1075,7 @@ CBaseEditor *OgitorsRoot::CloneEditorObject(CBaseEditor *object,bool addtotreeli
     OgitorsCustomPropertySet customPropertyClone;
     object->getCustomProperties()->cloneSet(customPropertyClone);
     clone->getCustomProperties()->initFromSet(customPropertyClone);
-    
+
     if(addtotreelist)
     {
         mSystem->InsertTreeItem(parent,clone,clone->getTypeID(),object->getTextColourInt());
@@ -1083,7 +1083,7 @@ CBaseEditor *OgitorsRoot::CloneEditorObject(CBaseEditor *object,bool addtotreeli
 
     if(display)
     {
-        clone->load();   
+        clone->load();
         clone->loadAllChildren(false);
         mMultiSelection->setSelection(clone);
     }
@@ -1149,7 +1149,7 @@ void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreeli
             }
         }
     }
-    
+
     if(mMultiSelection->contains(object))
     {
         object->setSelected(false);
@@ -1172,7 +1172,7 @@ void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreeli
     }
 
     if(mLoadState == LS_LOADING)
-    { 
+    {
         for(unsigned int p = 0;p < mPostSceneUpdateList.size();p++)
         {
             if(mPostSceneUpdateList[p] == object)
@@ -1225,7 +1225,7 @@ void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreeli
         mPagingEditor->removeObject(object);
 
     object->destroy(true);
-    
+
     SetSceneModified(true);
 }
 //-----------------------------------------------------------------------------------------
@@ -1328,7 +1328,7 @@ bool OgitorsRoot::OptionsReadCameraPositions(TiXmlElement *parent)
 
     int pos = 0;
     mProjectOptions.CameraSaveCount = 0;
-    if(!element) 
+    if(!element)
         return false;
     do
     {
@@ -1351,7 +1351,7 @@ bool OgitorsRoot::OptionsReadDirectories(TiXmlElement *parent, Ogre::StringVecto
     do
     {
         value = ValidAttr(element->Attribute("value"));
-        
+
         std::replace(value.begin(), value.end(), '\\', '/');
 
         if(value[0] == '.')
@@ -1441,7 +1441,7 @@ int OgitorsRoot::LoadScene(Ogre::String filename)
     int ret = defaultserializer->Import(filename);
 
     if(ret != Ogitors::SCF_OK)
-    {    
+    {
         msg = mSystem->Translate("Please load a Scene File...");
         mSystem->UpdateLoadProgress(-1, msg);
         setLoadState(LS_UNLOADED);
@@ -1457,7 +1457,7 @@ CMultiSelEditor *OgitorsRoot::GetSelection()
 {
     if(!GetSceneManager())
         return 0;
-    
+
     if(!mMultiSelection && mLoadState != LS_UNLOADED)
     {
         OgitorsPropertyValueMap params;
@@ -1496,7 +1496,7 @@ bool OgitorsRoot::AfterLoadScene()
     templateList.clear();
 
     OFS::FileList templatenames = (*mProjectFile)->listFiles("/Templates", OFS::OFS_FILE);
-    
+
     for(unsigned int i = 0;i < templatenames.size();i++)
     {
         Ogre::String tname = Ogre::String("/Templates/") + templatenames[i].name;
@@ -1584,7 +1584,7 @@ bool OgitorsRoot::AfterLoadScene()
         matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setAmbient(mProjectOptions.HighlightBBColour);
         matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setSelfIllumination(mProjectOptions.HighlightBBColour);
     }
-    
+
     result = Ogre::MaterialManager::getSingleton().createOrRetrieve("SelectHighlightBBMaterial", "General");
     if(!result.first.isNull())
     {
@@ -1638,7 +1638,7 @@ bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
 //-----------------------------------------------------------------------------------------
 bool OgitorsRoot::TerminateScene()
 {
-    if(mLoadState == LS_UNLOADED) 
+    if(mLoadState == LS_UNLOADED)
         return true;
 
     if(mIsSceneModified)
@@ -1651,7 +1651,7 @@ bool OgitorsRoot::TerminateScene()
         case DLGRET_NO:break;
         }
     }
-  
+
     SetRunState(RS_STOPPED);
     SetEditorTool(TOOL_SELECT);
 
@@ -1670,7 +1670,7 @@ bool OgitorsRoot::TerminateScene()
     mActiveViewport = 0;
 
     setLoadState(LS_UNLOADED);
-    
+
     ClearEditors();
 
     mSystem->ClearTreeItems();
@@ -1681,7 +1681,7 @@ bool OgitorsRoot::TerminateScene()
     mRenderWindow->removeAllViewports();
 
     Ogre::ResourceGroupManager * mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-    
+
     DestroyResourceGroup(PROJECT_RESOURCE_GROUP);
     DestroyResourceGroup(PROJECT_TEMP_RESOURCE_GROUP);
 
@@ -1694,7 +1694,7 @@ bool OgitorsRoot::TerminateScene()
     return true;
 }
 //-----------------------------------------------------------------------------------------
-void OgitorsRoot::HideSelectionRect() 
+void OgitorsRoot::HideSelectionRect()
 {
     if(mSelRect)
     {
@@ -1711,7 +1711,7 @@ void OgitorsRoot::ShowSelectionRect(Ogre::Vector4 size)
         mSelRect->detachFromParent();
         OGRE_DELETE mSelRect;
     }
-  
+
     mSelRect = OGRE_NEW Selection2D(true);
     mSelRect->setCorners(size.x,size.y,size.z,size.w);
     mSelRect->setMaterial("mtSELECTION");
@@ -1755,7 +1755,7 @@ void OgitorsRoot::SetCameraVisiblity(bool visibility)
 //-----------------------------------------------------------------------------------------
 void OgitorsRoot::GetAutoTrackTargets(Ogre::StringVector &list)
 {
-    list.clear(); 
+    list.clear();
     list.push_back("None");
     NameObjectPairList::const_iterator it = mNameList.begin();
     while(it != mNameList.end())
@@ -1928,7 +1928,7 @@ void OgitorsRoot::SetRunState(RunState state)
         mUndoManager->BeginCollection("Run Scene Scripts");
 
         mUpdateScriptList.clear();
-        
+
         NameObjectPairList::iterator it = mNameList.begin();
         while(it != mNameList.end())
         {
@@ -1938,7 +1938,7 @@ void OgitorsRoot::SetRunState(RunState state)
             it++;
         }
     }
-  
+
     mRunState = state;
 
     RunStateChangeEvent evt(state);

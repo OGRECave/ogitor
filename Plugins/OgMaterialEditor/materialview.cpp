@@ -105,7 +105,7 @@ void MaterialTreeWidget::contextMenuEvent(QContextMenuEvent *event)
 
                 OgitorsUtils::ParseUTFStringVector(menuList[i], vList);
                 if(vList.size() > 0 && vList[0] != "")
-                {                 
+                {
                     QAction *item = contextMenu->addAction(ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
                     if(vList.size() > 1)
                         item->setIcon(QIcon(ConvertToQString(vList[1])));
@@ -190,14 +190,14 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 
         mMaterialEditor->setMaterialPath(materialPath);
 
-        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(fileInfoList.getPointer()->at(0).filename, resourceGroup); 
+        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(fileInfoList.getPointer()->at(0).filename, resourceGroup);
         Ogre::String fullPath = fileInfoList.getPointer()->at(0).archive->getName() +  fileInfoList.getPointer()->at(0).filename;
         GenericTextEditor::getSingletonPtr()->displayTextFromFile(fullPath.c_str(), material->getName().c_str());
     }
     catch(Ogre::Exception e)
     {
         QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "This is only an internal, temporary material and therefore there is no displayable code available.");
-    }        
+    }
 }
 //----------------------------------------------------------------------------------------
 bool MaterialTreeWidget::OnDragEnter()
@@ -217,7 +217,7 @@ bool MaterialTreeWidget::OnDragMove(Ogre::Viewport *vp, unsigned int modifier, O
     Ogre::Entity *result;
     Ogre::Vector3 hitlocation;
     CBaseEditor *object = 0;
-    if(OgitorsUtils::PickEntity(mouseRay,&result,hitlocation)&&result->getName() != "HydraxMeshEnt")    
+    if(OgitorsUtils::PickEntity(mouseRay,&result,hitlocation)&&result->getName() != "HydraxMeshEnt")
     {
         Ogre::String sName = result->getName();
         object = OgitorsRoot::getSingletonPtr()->FindObject(sName);
@@ -238,7 +238,7 @@ void MaterialTreeWidget::OnDragDropped(Ogre::Viewport *vp, Ogre::Vector2& positi
     Ogre::Entity *result;
     Ogre::Vector3 hitlocation;
     CBaseEditor *object = 0;
-    if(OgitorsUtils::PickEntity(mouseRay,&result,hitlocation)&&result->getName() != "HydraxMeshEnt")    
+    if(OgitorsUtils::PickEntity(mouseRay,&result,hitlocation)&&result->getName() != "HydraxMeshEnt")
     {
         Ogre::String sName = result->getName();
         object = OgitorsRoot::getSingletonPtr()->FindObject(sName);
@@ -250,7 +250,7 @@ void MaterialTreeWidget::OnDragDropped(Ogre::Viewport *vp, Ogre::Vector2& positi
 //----------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------
-MaterialViewWidget::MaterialViewWidget(QWidget *parent) : QWidget(parent), mMaterialEditor(0), 
+MaterialViewWidget::MaterialViewWidget(QWidget *parent) : QWidget(parent), mMaterialEditor(0),
 mTechniqueEditor(0)
 {
     treeWidget = new MaterialTreeWidget(this);
@@ -287,7 +287,7 @@ void MaterialViewWidget::selectionChanged()
 {
     QList<QTreeWidgetItem*> list = treeWidget->selectedItems();
     if(list.size() == 0)
-    {    
+    {
         if(OgitorsRoot::getSingletonPtr()->GetSelection())
             OgitorsRoot::getSingletonPtr()->GetSelection()->setSelection(0);
         return;
@@ -350,7 +350,7 @@ void MaterialViewWidget::selectionChanged()
             catch(Ogre::Exception e)
             {
                 QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("This is only an internal, temporary material and therefore there is no displayable code available."));
-            }        
+            }
         }
     }
 }
@@ -368,7 +368,11 @@ void MaterialViewWidget::prepareView()
     QTreeWidgetItem* passitem = 0;
 
     rootitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Project Materials")));
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    QString iconpath("/usr/share/qtOgitor/Plugins/Icons/project.svg");
+#else
     QString iconpath(OgitorsUtils::QualifyPath("../Plugins/Icons/project.svg").c_str());
+#endif
     rootitem->setIcon(0, QIcon(iconpath));
     QFont fnt = rootitem->font(0);
     fnt.setBold(true);
@@ -416,7 +420,7 @@ void MaterialViewWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
     {
         // Reload the zone selection widget when a scene is loaded
         LoadState state = change_event->getType();
-	    
+
         if(state == LS_LOADED)
             prepareView();
         else if(state == LS_UNLOADED)

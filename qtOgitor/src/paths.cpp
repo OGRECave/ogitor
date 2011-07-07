@@ -69,14 +69,11 @@ std::string bundlePath()
 
 std::string resourcePath()
 {
-    return std::string("/usr/share/qtOgitor/");
-    #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
     return bundlePath() + "/Contents/Resources/" ;
-#elseif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    if(QDir::currentPath() == QString("/usr/bin")) {
-        return std::string("/usr/share/qtOgitor/");
-    }
-    return std::string("/usr/local/share/qtOgitor/");
+#endif
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    return std::string("/usr/share/qtOgitor/");
 #else
     return bundlePath() ;
 #endif
