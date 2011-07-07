@@ -2,6 +2,8 @@ project(QtOgitor)
 set(QT_MIN_VERSION "4.5.0")
 find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 
+include(/usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
+
 if(NOT QT4_FOUND)
     message(SEND_ERROR "Failed to find Qt 4.5 or greater.")
 else(NOT QT4_FOUND)
@@ -79,7 +81,7 @@ else(NOT QT4_FOUND)
         ./src/welcome.cpp
     )
 
-    SET(MOC_SRCS2 
+    SET(MOC_SRCS2
         ./include/aboutdialog.hxx
         ./include/actiontoolbar.hxx
         ./include/addscriptactiondialog.hxx
@@ -153,24 +155,24 @@ else(NOT QT4_FOUND)
 
         set(COPY_FRAMEWORKS ${OGRE_LIBRARIES} ${Cg_LIBRARY_FWK} "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/Ogitor.framework")
         set(COPY_RESOURCES "${MAC_PATH}/resources.cfg" "${MAC_PATH}/plugins.cfg" "${RUNPATH}/Media")
-        set(COPY_PLUGINS 
-            ${OGRE_RenderSystem_GL_LIBRARY_DBG} 
-            ${OGRE_Plugin_ParticleFX_LIBRARY_DBG} 
-            ${OGRE_Plugin_OctreeSceneManager_LIBRARY_DBG} 
+        set(COPY_PLUGINS
+            ${OGRE_RenderSystem_GL_LIBRARY_DBG}
+            ${OGRE_Plugin_ParticleFX_LIBRARY_DBG}
+            ${OGRE_Plugin_OctreeSceneManager_LIBRARY_DBG}
             ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG}
             "${RUNPATH}/Plugins/Icons"
         )
 
         set(COPY_COMPONENTS
-            ${OGRE_Terrain_LIBRARY} 
+            ${OGRE_Terrain_LIBRARY}
             ${OGRE_Paging_LIBRARY}
         )
 
         # Note: For OSX we have to add resources here as well
-        add_executable(qtOgitor MACOSX_BUNDLE 
-            ${SRCS} 
-            ${RESOURCE_SRCS} 
-            ${qtOgitor_res} 
+        add_executable(qtOgitor MACOSX_BUNDLE
+            ${SRCS}
+            ${RESOURCE_SRCS}
+            ${qtOgitor_res}
         )
     add_dependencies(qtOgitor OgCaelum)
     add_dependencies(qtOgitor OgHydrax)
@@ -231,25 +233,41 @@ else(NOT QT4_FOUND)
             COMMAND cp -r ${OGITORFILE} ../RunPath/bin/${TARGET})
     endif(UNIX AND NOT APPLE)
 
+if(UNIX AND NOT APPLE)
+        install(TARGETS qtOgitor
+            RUNTIME DESTINATION bin
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+endif(UNIX AND NOT APPLE)
+
+
+if(UNIX AND NOT APPLE)
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
+        DESTINATION ${PREFIX}
+    )
+    add_subdirectory(icons)
+    kde4_update_iconcache()
+#TODO: install language files
+else()
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
         DESTINATION ${PREFIX}
         PATTERN ".svn" EXCLUDE
         PATTERN "translate.pro" EXCLUDE
         PATTERN "*.ts" EXCLUDE
     )
+endif(UNIX AND NOT APPLE)
 
     if(WIN32)
         set(QT_DLL_DIR ${QT_BINARY_DIR})
 
         if(OGITOR_MESHMAGICK_INTERFACE)
-            set_target_properties(qtOgitor PROPERTIES 
+            set_target_properties(qtOgitor PROPERTIES
                 COMPILE_DEFINITIONS "QT_QTPROPERTYBROWSER_IMPORT;OGITOR_MESHMAGICK_INTERFACE")
         else(OGITOR_MESHMAGICK_INTERFACE)
-            set_target_properties(qtOgitor PROPERTIES 
+            set_target_properties(qtOgitor PROPERTIES
                 COMPILE_DEFINITIONS QT_QTPROPERTYBROWSER_IMPORT)
         endif(OGITOR_MESHMAGICK_INTERFACE)
 
-        install(FILES 
+        install(FILES
             ${QT_DLL_DIR}/QtCore4.dll
             ${QT_DLL_DIR}/QtGui4.dll
             ${QT_DLL_DIR}/QtSvg4.dll
@@ -264,7 +282,7 @@ else(NOT QT4_FOUND)
             ${QT_DLL_DIR}/phonon4.dll
             DESTINATION bin
             CONFIGURATIONS Release)
-        install(FILES 
+        install(FILES
             ${QT_DLL_DIR}/QtCored4.dll
             ${QT_DLL_DIR}/QtGuid4.dll
             ${QT_DLL_DIR}/QtSvgd4.dll
@@ -279,7 +297,7 @@ else(NOT QT4_FOUND)
             ${QT_DLL_DIR}/phonond4.dll
             DESTINATION bin
             CONFIGURATIONS Debug)
-        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon4.dll 
+        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon4.dll
             DESTINATION bin/iconengines
             CONFIGURATIONS Release)
         install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond4.dll
