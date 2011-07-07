@@ -36,10 +36,21 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
-	add_custom_command(TARGET OFS PRE_BUILD 
+	add_custom_command(TARGET OFS PRE_BUILD
 		COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
-	add_custom_command(TARGET OFS POST_BUILD 
+	add_custom_command(TARGET OFS POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
 
 	install(TARGETS OFS RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
+
+IF(UNIX AND NOT APPLE)
+
+set_target_properties( OFS PROPERTIES OUTPUT_NAME "OFS" VERSION
+${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
+install(TARGETS OFS
+    LIBRARY DESTINATION lib
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)

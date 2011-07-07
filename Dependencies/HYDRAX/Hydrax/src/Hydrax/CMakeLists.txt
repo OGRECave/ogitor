@@ -6,17 +6,17 @@ project(Hydrax)
 
 
 set(HEADER_FILES
-    CfgFileManager.h  
-    GPUNormalMapManager.h  
+    CfgFileManager.h
+    GPUNormalMapManager.h
     MaterialManager.h  TextureManager.h
-    DecalsManager.h   
-    Help.h                 
+    DecalsManager.h
+    Help.h
     Mesh.h
-    Enums.h           
-    Hydrax.h               
+    Enums.h
+    Hydrax.h
     Prerequisites.h
-    GodRaysManager.h  
-    Image.h                
+    GodRaysManager.h
+    Image.h
     RttManager.h
     Noise/Noise.h
     Noise/Perlin/Perlin.h
@@ -28,18 +28,18 @@ set(HEADER_FILES
 
 )
 set(SOURCE_FILES
-    CfgFileManager.cpp       
-    Help.cpp             
+    CfgFileManager.cpp
+    Help.cpp
     Prerequisites.cpp
-    DecalsManager.cpp        
-    Hydrax.cpp           
+    DecalsManager.cpp
+    Hydrax.cpp
     RttManager.cpp
-    Enums.cpp                
-    Image.cpp            
+    Enums.cpp
+    Image.cpp
     TextureManager.cpp
-    GodRaysManager.cpp       
+    GodRaysManager.cpp
     MaterialManager.cpp
-    GPUNormalMapManager.cpp  
+    GPUNormalMapManager.cpp
     Mesh.cpp
     Noise/Noise.cpp
     Noise/Perlin/Perlin.cpp
@@ -78,7 +78,7 @@ IF(WIN32)
 		COMMAND copy \"$(TargetPath)\" ..\\..\\..\\..\\..\\RunPath\\bin )
 ENDIF(WIN32)
 
-set_target_properties(Hydrax PROPERTIES SOLUTION_FOLDER Dependencies) 
+set_target_properties(Hydrax PROPERTIES SOLUTION_FOLDER Dependencies)
 
 target_link_libraries(Hydrax  ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -88,12 +88,13 @@ install(TARGETS Hydrax
 	CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 ENDIF(WIN32)
 
-#IF(UNIX AND NOT APPLE)
-#install(TARGETS Hydrax
-#	LIBRARY DESTINATION Plugins/dependencies
-#	CONFIGURATIONS Release)
-#install(TARGETS Hydrax
-#	LIBRARY DESTINATION Plugins/dependencies
-#	CONFIGURATIONS Debug)
-#ENDIF(UNIX AND NOT APPLE)
+IF(UNIX AND NOT APPLE)
 
+set_target_properties( Hydrax PROPERTIES OUTPUT_NAME "Hydrax_Ogitor" VERSION
+${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
+install(TARGETS Hydrax
+    LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)

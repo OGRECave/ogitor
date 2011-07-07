@@ -49,7 +49,7 @@ set(LIBRARY_OUTPUT_PATH  ../lib)
 set_target_properties(Skyx PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(Skyx PROPERTIES VERSION ${SKYX_VERSION} SOVERSION ${SKYX_VERSION_MAJOR})
 set_target_properties(Skyx PROPERTIES COMPILE_DEFINITIONS SKYX_LIB)
-set_target_properties(Skyx PROPERTIES SOLUTION_FOLDER Dependencies) 
+set_target_properties(Skyx PROPERTIES SOLUTION_FOLDER Dependencies)
 
 target_link_libraries(Skyx ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -64,13 +64,15 @@ if(WIN32)
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
-#IF(UNIX AND NOT APPLE)
-#install(TARGETS Skyx
-#	LIBRARY DESTINATION Plugins/dependencies
-#	CONFIGURATIONS Release)
-#install(TARGETS Skyx
-#	LIBRARY DESTINATION Plugins/dependencies
-#	CONFIGURATIONS Debug)
-#ENDIF(UNIX AND NOT APPLE)
+IF(UNIX AND NOT APPLE)
+
+set_target_properties( Skyx PROPERTIES OUTPUT_NAME "Skyx_Ogitor" VERSION
+${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
+install(TARGETS Skyx
+    LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:

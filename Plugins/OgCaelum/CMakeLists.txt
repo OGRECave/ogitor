@@ -32,7 +32,7 @@ add_library(OgCaelum SHARED ${HEADER_FILES} ${SOURCE_FILES})
 set(LIBRARY_OUTPUT_PATH ../lib)
 
 set_target_properties(OgCaelum PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
-set_target_properties(OgCaelum PROPERTIES SOLUTION_FOLDER Plugins) 
+set_target_properties(OgCaelum PROPERTIES SOLUTION_FOLDER Plugins)
 set_target_properties(OgCaelum PROPERTIES VERSION ${OgCaelum_VERSION} SOVERSION ${OgCaelum_VERSION_MAJOR})
 set_target_properties(OgCaelum PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 
@@ -53,5 +53,11 @@ if(WIN32)
 		RUNTIME DESTINATION Plugins
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
+
+IF(UNIX AND NOT APPLE)
+    install(TARGETS OgCaelum
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+ENDIF(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:

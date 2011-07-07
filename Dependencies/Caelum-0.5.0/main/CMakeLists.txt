@@ -5,24 +5,24 @@ cmake_policy(SET CMP0003 NEW)
 project(Caelum)
 
 set(HEADER_FILES
-	include/Astronomy.h							 
-	include/Caelum.h									 
-	include/CaelumExceptions.h				 
-	include/CaelumPlugin.h						 
-	include/CaelumSystem.h						 
-	include/CameraBoundElement.h			 
-	include/CaelumPrecompiled.h			 
-	include/CaelumPrerequisites.h		 
-	include/CaelumScriptTranslator.h  
-	include/CloudSystem.h			
-	include/DepthComposer.h		
+	include/Astronomy.h
+	include/Caelum.h
+	include/CaelumExceptions.h
+	include/CaelumPlugin.h
+	include/CaelumSystem.h
+	include/CameraBoundElement.h
+	include/CaelumPrecompiled.h
+	include/CaelumPrerequisites.h
+	include/CaelumScriptTranslator.h
+	include/CloudSystem.h
+	include/DepthComposer.h
 	include/FastGpuParamRef.h
-	include/FlatCloudLayer.h		
-	include/GeometryFactory.h	
-	include/GroundFog.h				
-	include/ImageHelper.h			
-	include/ImageStarfield.h		
-	include/InternalUtilities.h			
+	include/FlatCloudLayer.h
+	include/GeometryFactory.h
+	include/GroundFog.h
+	include/ImageHelper.h
+	include/ImageStarfield.h
+	include/InternalUtilities.h
 	include/Moon.h
 	include/OwnedPtr.h
 	include/PointStarfield.h
@@ -35,22 +35,22 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
-	src/Astronomy.cpp												
-	src/BrightStarCatalogue.cpp							
-	src/CaelumDefaultTypeDescriptorData.cpp	
-	src/CaelumPlugin.cpp											
-	src/CaelumPrecompiled.cpp								
-	src/CaelumScriptTranslator.cpp						
-	src/CaelumSystem.cpp											
-	src/CameraBoundElement.cpp								
-	src/CloudSystem.cpp											
-	src/DepthComposer.cpp										
-	src/FlatCloudLayer.cpp										
+	src/Astronomy.cpp
+	src/BrightStarCatalogue.cpp
+	src/CaelumDefaultTypeDescriptorData.cpp
+	src/CaelumPlugin.cpp
+	src/CaelumPrecompiled.cpp
+	src/CaelumScriptTranslator.cpp
+	src/CaelumSystem.cpp
+	src/CameraBoundElement.cpp
+	src/CloudSystem.cpp
+	src/DepthComposer.cpp
+	src/FlatCloudLayer.cpp
 	src/FastGpuParamRef.cpp
 	src/GeometryFactory.cpp
 	src/GroundFog.cpp
 	src/ImageHelper.cpp
-	src/InternalUtilities.cpp			
+	src/InternalUtilities.cpp
 	src/ImageStarfield.cpp
 	src/Moon.cpp
 	src/PointStarfield.cpp
@@ -87,13 +87,15 @@ if(WIN32)
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
-#IF(UNIX AND NOT APPLE)
-#install(TARGETS Caelum
-#	LIBRARY DESTINATION Plugins/dependencies
-#	CONFIGURATIONS Release)
-#install(TARGETS Caelum
-#	LIBRARY DESTINATION Plugins/dependencies
-#	CONFIGURATIONS Debug)
-#ENDIF(UNIX AND NOT APPLE)
+IF(UNIX AND NOT APPLE)
+
+set_target_properties( Caelum PROPERTIES OUTPUT_NAME "Caelum_Ogitor" VERSION
+${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
+install(TARGETS Caelum
+    LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:

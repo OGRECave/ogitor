@@ -30,7 +30,7 @@ ELSE(NOT QT4_FOUND)
   src/qtgroupboxpropertybrowser.h
   src/qtpropertybrowserutils_p.h
   )
-  
+
   include_directories(${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}/src)
   include_directories(src)
@@ -144,7 +144,7 @@ qt4_add_resources(
   QT4_ADD_RESOURCES(RESOURCE_SRCS src/qtpropertybrowser.qrc)
 
   #${extension_SRCS}
-  
+
   SET(SRCS   ${extension_MOC}
   ${qtpropertyeditor_MOC}
   ${qtpropertyeditor_SRCS}
@@ -174,5 +174,16 @@ install(TARGETS QtSolutions_PropertyBrowser
 	CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 ENDIF(WIN32)
 
-  ENDIF(NOT QT4_FOUND)
+IF(UNIX AND NOT APPLE)
+
+set_target_properties( QtSolutions_PropertyBrowser PROPERTIES OUTPUT_NAME "QtSolutions_PropertyBrowser_Ogitor" VERSION
+${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
+install(TARGETS QtSolutions_PropertyBrowser
+    LIBRARY DESTINATION lib
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)
+
+ENDIF(NOT QT4_FOUND)
 

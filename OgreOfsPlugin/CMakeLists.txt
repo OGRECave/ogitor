@@ -34,12 +34,21 @@ if(APPLE)
 endif(APPLE)
 
 if(WIN32)
-	add_custom_command(TARGET OgreOfsPlugin PRE_BUILD 
+	add_custom_command(TARGET OgreOfsPlugin PRE_BUILD
 		COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
-	add_custom_command(TARGET OgreOfsPlugin POST_BUILD 
+	add_custom_command(TARGET OgreOfsPlugin POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
 
 	install(TARGETS OgreOfsPlugin RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
+
+IF(UNIX AND NOT APPLE)
+
+install(TARGETS OgreOfsPlugin
+    LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
+ENDIF(UNIX AND NOT APPLE)
+
 
 # vim: set sw=2 ts=2 noet:

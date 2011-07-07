@@ -35,7 +35,7 @@ set(LIBRARY_OUTPUT_PATH ../lib)
 set_target_properties(DotSceneSerializer PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(DotSceneSerializer PROPERTIES VERSION ${DotSceneSerializer_VERSION} SOVERSION ${DotSceneSerializer_VERSION_MAJOR})
 set_target_properties(DotSceneSerializer PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-set_target_properties(DotSceneSerializer PROPERTIES SOLUTION_FOLDER Plugins) 
+set_target_properties(DotSceneSerializer PROPERTIES SOLUTION_FOLDER Plugins)
 
 if(UNIX AND NOT APPLE)
 	add_custom_command(TARGET DotSceneSerializer PRE_BUILD
@@ -52,9 +52,15 @@ if(WIN32)
 	add_custom_command(TARGET DotSceneSerializer POST_BUILD
 		COMMAND if exist ..\\..\\RunPath\\Plugins\\DotSceneSerializer_d.dll move ..\\..\\RunPath\\Plugins\\DotSceneSerializer_d.dll ..\\..\\RunPath\\Plugins\\debug)
 
-	install(TARGETS DotSceneSerializer 
-		RUNTIME DESTINATION Plugins 
+	install(TARGETS DotSceneSerializer
+		RUNTIME DESTINATION Plugins
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
+
+IF(UNIX AND NOT APPLE)
+    install(TARGETS DotSceneSerializer
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+ENDIF(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:

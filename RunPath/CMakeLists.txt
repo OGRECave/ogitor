@@ -35,8 +35,7 @@ endif(WIN32)
 
 if(UNIX)
 	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-		DESTINATION ${PREFIX}
-		PATTERN ".svn" EXCLUDE
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
 		PATTERN "languages" EXCLUDE
@@ -45,9 +44,11 @@ if(UNIX)
 	)
 
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/resources.cfg
-		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+		${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
+        ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
+        ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
 		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
-		DESTINATION bin
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
   )
 endif(UNIX)
 

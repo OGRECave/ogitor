@@ -23,7 +23,7 @@ else(NOT QT4_FOUND)
 		qtExample.cpp
 	)
 
-	SET(MOC_SRCS2 
+	SET(MOC_SRCS2
 		qtExample.h
 	)
 
@@ -60,7 +60,7 @@ else(NOT QT4_FOUND)
 	set_target_properties(ogQtExample PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(ogQtExample PROPERTIES VERSION ${ogQtExample_VERSION} SOVERSION ${ogQtExample_VERSION_MAJOR})
 	set_target_properties(ogQtExample PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-	set_target_properties(ogQtExample PROPERTIES SOLUTION_FOLDER Plugins) 
+	set_target_properties(ogQtExample PROPERTIES SOLUTION_FOLDER Plugins)
 
 	if(UNIX AND NOT APPLE)
 		add_custom_command(TARGET ogQtExample PRE_BUILD
@@ -81,6 +81,13 @@ else(NOT QT4_FOUND)
 			RUNTIME DESTINATION Plugins
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
+
+    IF(UNIX AND NOT APPLE)
+        install(TARGETS ogQtExample
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    ENDIF(UNIX AND NOT APPLE)
+
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:

@@ -54,8 +54,8 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     // load additional plugins
-    const Ogre::String& pluginPathDepends = "../../Dependencies/lib/";
-    mOgreRoot->loadPlugin(pluginPathDepends + "libCaelum.so");
+    //const Ogre::String& pluginPathDepends = "../../Dependencies/lib/";
+    //mOgreRoot->loadPlugin(pluginPathDepends + "libCaelum.so");
 #endif
 
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
@@ -105,7 +105,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
         if (rName == renderer.toStdString())
             break;
-        
+
         pRend++;
     }
 
@@ -149,7 +149,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
     keys.SPK_DOWN = Qt::Key_Q;
     keys.SPK_FOCUS_OBJECT = Qt::Key_F;
     // special keys
-    keys.SPK_DELETE = (Qt::Key_Delete & 0xFFF) + 0xFF; 
+    keys.SPK_DELETE = (Qt::Key_Delete & 0xFFF) + 0xFF;
     keys.SPK_SWITCH_AXIS = (Qt::Key_End & 0xFFF) + 0xFF;
     // shift
     keys.SPK_CLONE = (Qt::Key_Shift & 0xFFF) + 0xFF;
@@ -165,7 +165,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
     Ogitors::CViewportEditor::SetKeyboard(ViewKeyboard, keys);
 
     mSystem = OGRE_NEW QtOgitorSystem();
-    
+
     // Read the preferences concerning disabled plugins and pass on to OgitorsRoot
     Ogre::StringVector disabledPluginPaths;
     settings.beginGroup("preferences/disabledPlugins");
@@ -174,6 +174,8 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
         disabledPluginPaths.push_back(settings.value(keyList[i]).toString().toStdString());
     settings.endGroup();
     mOgitorsRoot = OGRE_NEW Ogitors::OgitorsRoot(&disabledPluginPaths);
+
+
 }
 //------------------------------------------------------------------------------------
 void readRecentFiles(QSettings& settings)
@@ -267,10 +269,10 @@ int main(int argc, char *argv[])
 
     if(languageFile != "ogitor_en.qm")
     {
-        QString lang = "../languages/qt_" + languageFile;
+        QString lang = QString(resourcePath().c_str()) + "languages/qt_" + languageFile;
         lang.remove("ogitor_");
 
-        QString lang2 = "../languages/" + languageFile;
+        QString lang2 = QString(resourcePath().c_str()) + "languages/" + languageFile;
 
         if(QFile::exists(lang) && QFile::exists(lang2))
         {
@@ -281,7 +283,7 @@ int main(int argc, char *argv[])
                 a.installTranslator(&ogitorTranslator);
         }
         else
-        {    
+        {
             // If the system-wide Qt translation file is present, load it.
             if(qtTranslator.load("qt_" + QLocale::system().name(),
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
@@ -289,13 +291,13 @@ int main(int argc, char *argv[])
                 a.installTranslator(&qtTranslator);
             }
             // Otherwise: load our own Qt translation file.
-            else if(qtTranslator.load("../languages/qt_" + QLocale::system().name()))
+            else if(qtTranslator.load(QString(resourcePath().c_str()) + "languages/qt_" + QLocale::system().name()))
             {
                 a.installTranslator(&qtTranslator);
             }
 
             // Install qtOgitor translator
-            if(ogitorTranslator.load("../languages/ogitor_" + QLocale::system().name()))
+            if(ogitorTranslator.load(QString(resourcePath().c_str()) + "languages/ogitor_" + QLocale::system().name()))
             {
                 a.installTranslator(&ogitorTranslator);
             }
@@ -322,7 +324,7 @@ int main(int argc, char *argv[])
 
     mOgitorMainWindow = new MainWindow();
     mOgitorMainWindow->show();
-    
+
     mOgitorMainWindow->setApplicationObject(&a);
 
     QString sceneToLoad = "";

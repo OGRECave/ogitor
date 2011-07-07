@@ -16,7 +16,7 @@ else(NOT QT4_FOUND)
 	file(GLOB UI_FILES *.ui)
 
 	set(HEADER_FILES
-		dialog.hxx 
+		dialog.hxx
 		inputwidgets.hxx
 		AngelDialogManagerPlugin.h
 	)
@@ -27,7 +27,7 @@ else(NOT QT4_FOUND)
 		AngelDialogManagerPlugin.cpp
 		)
 
-	set(MOC_SRCS2 
+	set(MOC_SRCS2
 		dialog.hxx
 		inputwidgets.hxx
 	)
@@ -70,7 +70,7 @@ else(NOT QT4_FOUND)
 	set_target_properties(OgAngelDialogManager PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(OgAngelDialogManager PROPERTIES VERSION ${OgAngelDialogManager_VERSION} SOVERSION ${OgAngelDialogManager_VERSION_MAJOR})
 	set_target_properties(OgAngelDialogManager PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-	set_target_properties(OgAngelDialogManager PROPERTIES SOLUTION_FOLDER Plugins) 
+	set_target_properties(OgAngelDialogManager PROPERTIES SOLUTION_FOLDER Plugins)
 
 	if(UNIX AND NOT APPLE)
 		add_custom_command(TARGET OgAngelDialogManager PRE_BUILD
@@ -91,6 +91,13 @@ else(NOT QT4_FOUND)
 			RUNTIME DESTINATION Plugins
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
+
+IF(UNIX AND NOT APPLE)
+    install(TARGETS OgAngelDialogManager
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+ENDIF(UNIX AND NOT APPLE)
+
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:
