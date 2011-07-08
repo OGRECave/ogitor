@@ -39,6 +39,7 @@ if(UNIX)
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
 		PATTERN "languages" EXCLUDE
+        PATTERN "Projects" EXCLUDE
 		PATTERN "bin" EXCLUDE
 		PATTERN "Plugins/icon_backup" EXCLUDE
 	)
