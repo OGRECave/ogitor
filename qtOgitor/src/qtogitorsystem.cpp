@@ -145,7 +145,11 @@ QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0),
     Ogitors::OgitorsUtils::SetExePath(QApplication::applicationDirPath().toStdString());
     QDir directory(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + QString("\\OgitorProjects"));
     if(!directory.exists())
-        directory.setPath("../Projects/");
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+    directory.setPath(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+#else
+    directory.setPath("../Projects/");
+#endif
     mProjectsDirectory = directory.absolutePath();
     mCalcBlendmapDlg = 0;
 }
