@@ -145,7 +145,7 @@ QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0),
     Ogitors::OgitorsUtils::SetExePath(QApplication::applicationDirPath().toStdString());
     QDir directory(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + QString("\\OgitorProjects"));
     if(!directory.exists())
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if defined(Q_WS_X11)
     directory.setPath(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
 #else
     directory.setPath("../Projects/");
@@ -177,7 +177,7 @@ void QtOgitorSystem::initTreeIcons()
 
             if(filenm != QString(""))
             {
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if defined(Q_WS_X11)
                 filenm = Ogitors::OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Plugins/" + filenm.toStdString()).c_str();
 #else
                 filenm = Ogitors::OgitorsUtils::QualifyPath("../Plugins/" + filenm.toStdString()).c_str();
@@ -185,7 +185,7 @@ void QtOgitorSystem::initTreeIcons()
                 mIconList[it->second->mTypeID] = filenm;
             }
             else
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+#if defined(Q_WS_X11)
                 mIconList[it->second->mTypeID] = QString(Ogitors::OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Plugins/Icons/project.svg").c_str());
 #else
                 mIconList[it->second->mTypeID] = QString(Ogitors::OgitorsUtils::QualifyPath("../Plugins/Icons/project.svg").c_str());
