@@ -164,9 +164,9 @@ ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 endif()
 
 if(WIN32)
-	add_custom_command(TARGET Ogitor PRE_BUILD 
+	add_custom_command(TARGET Ogitor PRE_BUILD
 		COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
-	add_custom_command(TARGET Ogitor POST_BUILD 
+	add_custom_command(TARGET Ogitor POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
 
 	install(TARGETS Ogitor RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
@@ -176,9 +176,9 @@ if(UNIX)
     install(TARGETS Ogitor
         LIBRARY DESTINATION lib
         CONFIGURATIONS RelWithDebInfo Release)
-    install(FILES
-    ${Ogitor_hdrs}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/OGITOR)
+#    install(FILES
+#    ${Ogitor_hdrs}
+#    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/OGITOR)
 endif()
 
 

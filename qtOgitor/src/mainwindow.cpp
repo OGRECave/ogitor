@@ -154,10 +154,17 @@ bool OgitorAssistant::startOgitorAssistant()
 #endif
 
         QStringList args;
+#if defined(Q_WS_X11)
+        args << QLatin1String("-collectionFile")
+        << QLatin1String("/usr/share/qtOgitor")
+        + QLatin1String("/Help/collection_ogitor.qhc")
+        << QLatin1String("-enableRemoteControl");
+#else
         args << QLatin1String("-collectionFile")
         << QLatin1String(Ogitors::OgitorsUtils::GetExePath().c_str())
         + QLatin1String("/Help/collection_ogitor.qhc")
         << QLatin1String("-enableRemoteControl");
+#endif
 
         proc->start(app, args);
 
@@ -182,7 +189,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
     actAddScriptToToolbar = 0;
 
     mTargetRenderCount = 30;
-    
+
     recentMapper = 0;
 
     setMinimumSize(400,300);
@@ -259,7 +266,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
     mAutoBackupTimer = new QTimer(this);
     connect(mAutoBackupTimer, SIGNAL(timeout()), this, SLOT(autoSaveScene()));
     mAutoBackupTimer->stop();
-    
+
     mPrefManager = new PreferencesManager(this);
 
     mOgitorAssistant = new OgitorAssistant;
@@ -293,8 +300,8 @@ MainWindow::~MainWindow()
     delete mTimer;
 }
 //------------------------------------------------------------------------------
-void MainWindow::setApplicationObject(QObject *obj) 
-{ 
+void MainWindow::setApplicationObject(QObject *obj)
+{
     mApplicationObject = obj;
     mAppActive = true;
     obj->installEventFilter(this);
@@ -322,7 +329,7 @@ void MainWindow::initHiddenRenderWindow()
 #endif
 
 #if defined(Q_WS_MAC)
-    hiddenParams["macAPICocoaUseNSView"] = "true";   
+    hiddenParams["macAPICocoaUseNSView"] = "true";
     hiddenParams["macAPI"] = "cocoa";
 #endif
 
@@ -389,8 +396,8 @@ void MainWindow::hideSubWindows()
             QString objName = widget->objectName();
             // Check if the widget is a dockwidget and if its not already defined as hidden
             // Qt defines widget attribute WA_WState_Hidden if a widget will be created but not displayed on screen
-            // restoreLayout also restores this attribute, so we get the correct state, 
-            // testing this attribute instead of isVisible() since isVisible will always 
+            // restoreLayout also restores this attribute, so we get the correct state,
+            // testing this attribute instead of isVisible() since isVisible will always
             // incorrectly return false when the window is first created but not updated yet...
             if(objName.endsWith("DockWidget", Qt::CaseInsensitive) && !widget->testAttribute(Qt::WA_WState_Hidden))
             {
@@ -491,7 +498,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(OgitorsRoot::getSingletonPtr()->TerminateScene())
     {
         delete mOgitorAssistant;
-        
+
         Ogre::LogManager::getSingleton().getDefaultLog()->removeListener(this);
 
         if(actFullScreen->isChecked())
@@ -508,8 +515,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
         showSubWindows();
 
         writeSettings();
-        
-        event->setAccepted(true);    
+
+        event->setAccepted(true);
     }
     else
     {
@@ -521,7 +528,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::retranslateUi()
 {
     QString appTitle = "qtOgitor ";
-    appTitle += Ogitors::OGITOR_VERSION;    
+    appTitle += Ogitors::OGITOR_VERSION;
     setWindowTitle(appTitle);
     explorerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Explorer", 0, QApplication::UnicodeUTF8));
     layerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Groups", 0, QApplication::UnicodeUTF8));
@@ -575,7 +582,7 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mResourcesToolBox->addItem(mObjectsViewWidget, QIcon(":/icons/objects.svg"), tr("Objects"));
     mResourcesToolBox->addItem(mEntityViewWidget, QIcon(":/icons/entity.svg"), tr("Meshes"));
     mResourcesToolBox->addItem(mTemplatesViewWidget, QIcon(":/icons/template.svg"), tr("Templates"));
-    
+
     resourcesDockWidget = new QDockWidget(parent);
     resourcesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
     resourcesDockWidget->setObjectName(QString::fromUtf8("resourcesDockWidget"));
@@ -662,7 +669,7 @@ void MainWindow::createSceneRenderWindow()
     renderWindowToolBar->addWidget(snapLabel);
     renderWindowToolBar->addWidget(mSnapMultiplierBox);
     renderWindowToolBar->addSeparator();
-    
+
     QSignalMapper *cameraMapper = new QSignalMapper(this);
     menuCameraPositionMain = new QMenu(this);
     menuCameraPositionMain->setIcon(QIcon(":/icons/camera.svg"));
@@ -673,12 +680,12 @@ void MainWindow::createSceneRenderWindow()
     mCameraSpeedSlider->setTickInterval(5);
     mCameraSpeedSlider->setTickPosition(QSlider::TicksBelow);
     mCameraSpeedSlider->setMaximumWidth(100);
-    
+
     QWidgetAction * sliderActionWidget = new QWidgetAction( this );
     sliderActionWidget->setDefaultWidget( mCameraSpeedSlider );
     sliderActionWidget->setText(tr("Camera Speed"));
     menuCameraPositionMain->addAction(sliderActionWidget);
-    
+
     menuCameraPositionMain->addSeparator();
     for(unsigned int i = 0;i < 10;i++)
     {
@@ -840,7 +847,7 @@ void MainWindow::createCustomToolbars()
 void MainWindow::createCustomDockWidgets()
 {
     Ogitors::DockWidgetDataList dockwidgets = OgitorsRoot::getSingletonPtr()->GetDockWidgets();
-    
+
     for(unsigned int i = 0;i < dockwidgets.size();i++)
     {
         if(dockwidgets[i].mParent == Ogitors::DOCK_MAIN)
@@ -901,7 +908,7 @@ void MainWindow::createCustomDockWidgets()
 void MainWindow::createCustomTabWindows()
 {
     Ogitors::TabWidgetDataList tabwidgets = OgitorsRoot::getSingletonPtr()->GetTabWidgets();
-    
+
     for(unsigned int i = 0;i < tabwidgets.size();i++)
     {
         QWidget *widget = static_cast<QWidget*>(tabwidgets[i].mHandle);
@@ -1056,7 +1063,7 @@ void MainWindow::addMenus()
     menuView->addSeparator();
     menuCamera->addAction(actCamSpeedPlus);
     menuCamera->addAction(actCamSpeedMinus);
-   
+
     menuTerrainTools = new QMenu(tr("Terrain Tools"), mMenuBar);
     menuTerrainTools->setObjectName(QString::fromUtf8("menuTerrainTools"));
     mMenuBar->addAction(menuTerrainTools->menuAction());
@@ -1309,16 +1316,16 @@ void MainWindow::timerLoop()
     //}
 
     bool isSceneLoaded = OgitorsRoot::getSingletonPtr()->IsSceneLoaded();
-    
+
     if(isMinimized() || !mAppActive || !isSceneLoaded)
     {
         if(mTimer->interval() != 200)
-            mTimer->setInterval(200); 
+            mTimer->setInterval(200);
     }
     else
     {
         if(mTimer->interval() != 0)
-            mTimer->setInterval(0); 
+            mTimer->setInterval(0);
     }
 
     if(isSceneLoaded)
@@ -1342,7 +1349,7 @@ void MainWindow::timerLoop()
     {
         updateLog(new QListWidgetItem(messages[i].mMessage, 0, messages[i].mLevel) );
     }
-    
+
     if(messages.size() > 0)
         logWidget->scrollToBottom();
 
@@ -1381,7 +1388,7 @@ void MainWindow::timerLoop()
         renderDelta += timediff;
 
         unsigned int TargetDelta;
-        
+
         if(mTargetRenderCount > 0)
             TargetDelta = 1000 / mTargetRenderCount;
         else
@@ -1403,7 +1410,7 @@ bool MainWindow::eventFilter(QObject *obj,  QEvent *event)
     {
         if (event->type() == QEvent::ApplicationActivate)
         {
-            // This gets called when the application starts, and when you switch back. 
+            // This gets called when the application starts, and when you switch back.
             inActivationEvent = true;
             mAppActive = true;
             inActivationEvent = false;
@@ -1411,7 +1418,7 @@ bool MainWindow::eventFilter(QObject *obj,  QEvent *event)
 
         else if (event->type() == QEvent::ApplicationDeactivate)
         {
-            // This gets called when the application closes, and when you switch away. 
+            // This gets called when the application closes, and when you switch away.
             inActivationEvent = true;
             mAppActive = false;
             inActivationEvent = false;
@@ -1432,7 +1439,7 @@ void MainWindow::onSceneRunStateChange(Ogitors::IEvent* evt)
     {
         //reload the zone selection widget when a scene is loaded
         RunState state = change_event->getType();
-    
+
         if(state == RS_STOPPED)
         {
             actPlayerRunPause->setEnabled(OgitorsRoot::getSingletonPtr()->IsSceneLoaded());
@@ -1471,7 +1478,7 @@ void MainWindow::onSceneEditorToolChange(Ogitors::IEvent* evt)
     {
         //reload the zone selection widget when a scene is loaded
         unsigned int tool = change_event->getType();
-    
+
         actSelect->setChecked(tool == TOOL_SELECT);
         actMove->setChecked(tool == TOOL_MOVE);
         actRotate->setChecked(tool == TOOL_ROTATE);
@@ -1492,14 +1499,14 @@ void MainWindow::onSceneModifiedChange(Ogitors::IEvent* evt)
     if(change_event)
     {
         bool state = change_event->getState();
-    
+
         if(state != actSave->isEnabled())
         {
             QString appTitle;
             appTitle = "qtOgitor ";
             appTitle += Ogitors::OGITOR_VERSION;
             if(state)
-                appTitle += QString(" - (*)"); 
+                appTitle += QString(" - (*)");
             else
                 appTitle += QString(" - ");
 
@@ -1552,12 +1559,12 @@ void MainWindow::onTerrainEditorChange(Ogitors::IEvent* evt)
 void MainWindow::autoSaveScene()
 {
     bool modified = OgitorsRoot::getSingletonPtr()->IsSceneModified();
-    
+
     // Build new file name
     QDateTime current = QDateTime::currentDateTime();
     QString exportfile = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->AutoBackupFolder.c_str();
     exportfile.append(QDir::separator());
-    exportfile.append(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()); 
+    exportfile.append(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str());
     exportfile.append(current.toString("_yyyy_MM_dd_HH_mm"));
 
     // Limited number of backups -> count current and delete one if needed
@@ -1578,14 +1585,14 @@ void MainWindow::autoSaveScene()
 
         // Got the find the oldest file and get rid of it.
         // To ensure all is correct, the creation dates of the files are compared,
-        // although in most (if not any) cases, the first file of the fileListBackup will be 
+        // although in most (if not any) cases, the first file of the fileListBackup will be
         // the one that was created first, since those file names are usually sorted by their names
         // and the backup date and time is encoded in the file name itself.
         if(fileListBackup.size() >= OgitorsRoot::getSingletonPtr()->GetProjectOptions()->AutoBackupNumber)
         {
             QDateTime oldestDateTime = fileListBackup[0].created();
             QString oldestFilePath = fileListBackup[0].filePath();
-            
+
             for(int i = 0; i < fileListBackup.size(); i++)
                 if(fileListBackup[i].created().toTime_t() < oldestDateTime.toTime_t())
                 {
