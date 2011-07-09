@@ -103,6 +103,21 @@ if(UNIX)
 	set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
 endif(UNIX)
 
+include(CheckTypeSize)
+CHECK_TYPE_SIZE("void*" OGITOR_PTR_SIZE BUILTIN_TYPES_ONLY)
+if (OGITOR_PTR_SIZE EQUAL 8)
+  set(OGITOR_PLATFORM_X64 TRUE)
+else ()
+  set(OGITOR_PLATFORM_X64 FALSE)
+endif ()
+
+if(UNIX)
+  # Fix x64 issues on Linux
+  if(OGITOR_PLATFORM_X64 AND NOT APPLE)
+    add_definitions(-fPIC)
+  endif()
+endif(UNIX)
+
 include_directories(${OGRE_INCLUDE_DIRS})
 include_directories(${OGRE_Terrain_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
