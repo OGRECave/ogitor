@@ -2,7 +2,10 @@ project(QtOgitor)
 set(QT_MIN_VERSION "4.5.0")
 find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 
-include(/usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
+if(UNIX AND NOT APPLE)
+    include(/usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
+endif(UNIX AND NOT APPLE)
+
 
 if(NOT QT4_FOUND)
     message(SEND_ERROR "Failed to find Qt 4.5 or greater.")
