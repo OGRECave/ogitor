@@ -78,7 +78,7 @@ else(NOT QT4_FOUND)
 	add_library(OgModularZone SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
-	set_target_properties(OgModularZone PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+#	set_target_properties(OgModularZone PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(OgModularZone PROPERTIES VERSION ${OgModularZone_VERSION} SOVERSION ${OgModularZone_VERSION_MAJOR})
 	set_target_properties(OgModularZone PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgModularZone PROPERTIES SOLUTION_FOLDER Plugins)

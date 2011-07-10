@@ -151,7 +151,7 @@ if(UNIX AND NOT APPLE)
 	add_custom_command(TARGET log4cplus PRE_BUILD
 		COMMAND mkdir -p ../../RunPath/bin)
 	add_custom_command(TARGET log4cplus POST_BUILD
-		COMMAND cp -r ../lib/liblog4cplus.* ../../RunPath/bin/)
+		COMMAND cp -r ../lib/liblog4cplus_Ogitor.* ../../RunPath/bin/)
 endif(UNIX AND NOT APPLE)
 
 if(WIN32)

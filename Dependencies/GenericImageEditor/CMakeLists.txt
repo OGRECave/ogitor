@@ -61,7 +61,7 @@ else(NOT QT4_FOUND)
 
         add_dependencies(GenericImageEditor OFS)
 
-	set_target_properties(GenericImageEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+#	set_target_properties(GenericImageEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(GenericImageEditor PROPERTIES VERSION ${GenericImageEditor_VERSION} SOVERSION ${GenericImageEditor_VERSION_MAJOR})
 	set_target_properties(GenericImageEditor PROPERTIES COMPILE_DEFINITIONS GENERICIMAGEEDITOR_EXPORT)
 
@@ -69,7 +69,7 @@ else(NOT QT4_FOUND)
 		add_custom_command(TARGET GenericImageEditor PRE_BUILD
 			COMMAND mkdir -p ../../RunPath/bin)
 		add_custom_command(TARGET GenericImageEditor POST_BUILD
-			COMMAND cp -r ../lib/libGenericImageEditor.* ../../RunPath/bin/)
+			COMMAND cp -r ../lib/libGenericImageEditor_Ogitor.* ../../RunPath/bin/)
 	endif(UNIX AND NOT APPLE)
 
 	if(WIN32)

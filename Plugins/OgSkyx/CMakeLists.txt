@@ -31,7 +31,7 @@ add_library(OgSkyx SHARED ${HEADER_FILES} ${SOURCE_FILES})
 #target_link_libraries(OgreMain Ogitor)
 set(LIBRARY_OUTPUT_PATH ../lib)
 
-set_target_properties(OgSkyx PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+#set_target_properties(OgSkyx PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(OgSkyx PROPERTIES VERSION ${OgSkyx_VERSION} SOVERSION ${OgSkyx_VERSION_MAJOR})
 set_target_properties(OgSkyx PROPERTIES	COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(OgSkyx PROPERTIES SOLUTION_FOLDER Plugins)
