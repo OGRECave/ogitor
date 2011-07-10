@@ -41,6 +41,6 @@ if(UNIX AND NOT APPLE)
         collection_ogitor.qhc
         ogitor.qch
         DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Help)
-endif(UNIX)
+endif(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:
