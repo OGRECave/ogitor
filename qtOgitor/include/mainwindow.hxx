@@ -378,7 +378,7 @@ private:
     void setupStatusBar();
     void updateActions();
     void setupLog();
-    void messageLogged (const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName);
+    void messageLogged (const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName, bool &skipThisMessage);
     void onSceneRunStateChange(Ogitors::IEvent* evt);
     
     void onSceneEditorToolChange(Ogitors::IEvent* evt);
