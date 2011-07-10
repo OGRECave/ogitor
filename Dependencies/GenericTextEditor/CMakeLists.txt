@@ -59,7 +59,7 @@ else(NOT QT4_FOUND)
 
         add_dependencies(GenericTextEditor OFS)
 
-	set_target_properties(GenericTextEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+#	set_target_properties(GenericTextEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(GenericTextEditor PROPERTIES VERSION ${GenericTextEditor_VERSION} SOVERSION ${GenericTextEditor_VERSION_MAJOR})
 	set_target_properties(GenericTextEditor PROPERTIES COMPILE_DEFINITIONS GENERICTEXTEDITOR_EXPORT)
 
@@ -67,7 +67,7 @@ else(NOT QT4_FOUND)
 		add_custom_command(TARGET GenericTextEditor PRE_BUILD
 			COMMAND mkdir -p ../../RunPath/bin)
 		add_custom_command(TARGET GenericTextEditor POST_BUILD
-			COMMAND cp -r ../lib/libGenericTextEditor.* ../../RunPath/bin/)
+			COMMAND cp -r ../lib/libGenericTextEditor_Ogitor.* ../../RunPath/bin/)
 	endif(UNIX AND NOT APPLE)
 
 	if(WIN32)

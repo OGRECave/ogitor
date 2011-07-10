@@ -68,7 +68,7 @@ else(NOT QT4_FOUND)
 	target_link_libraries(OgScriptEditor ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor GenericTextEditor)
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
-	set_target_properties(OgScriptEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+#	set_target_properties(OgScriptEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 	set_target_properties(OgScriptEditor PROPERTIES VERSION ${OgScriptEditor_VERSION} SOVERSION ${OgScriptEditor_VERSION_MAJOR})
 	set_target_properties(OgScriptEditor PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgScriptEditor PROPERTIES SOLUTION_FOLDER Plugins)

@@ -97,4 +97,8 @@ install(TARGETS Hydrax
     LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
     CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
+install(TARGETS Hydrax
+    LIBRARY DESTINATION lib
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+
 ENDIF(UNIX AND NOT APPLE)
