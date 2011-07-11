@@ -1153,6 +1153,11 @@ void MainWindow::setupStatusBar()
 //------------------------------------------------------------------------------
 static LogBuffer LOGBUFFER;
 
+void MainWindow::messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName)
+{
+    LOGBUFFER.append(lml, message);
+}
+//------------------------------------------------------------------------------
 void MainWindow::messageLogged(const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName, bool &skipThisMessage)
 {
     LOGBUFFER.append(lml, message);
