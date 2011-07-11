@@ -42,6 +42,7 @@ class OgreWidget;
 class GeneralPropertiesViewWidget;
 class CustomPropertiesViewWidget;
 class CalculateBlendMapDialog;
+class QProgressDialog;
 
 class QtOgitorSystem : public Ogitors::OgitorsSystem
 {
@@ -72,6 +73,9 @@ public:
     void GetFileList(Ogre::String path, Ogre::StringVector &list);
     void GetDirList(Ogre::String path, Ogre::StringVector &list);
     Ogre::String DisplayDirectorySelector(Ogre::UTFString title);
+    void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value);
+    void HideProgressDialog();
+    void UpdateProgressDialog(int value);
     Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
     Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
@@ -120,6 +124,7 @@ private:
     std::map<unsigned int, QString> mIconList;
     QString                      mProjectsDirectory;
     CalculateBlendMapDialog     *mCalcBlendmapDlg;
+    QProgressDialog             *mProgressDialog;
 };
 
 #endif // __qtogitorsystem_h__431D421B_ADFE_44b2_B788_1E94A4A1A418

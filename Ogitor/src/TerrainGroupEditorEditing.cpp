@@ -360,3 +360,21 @@ void CTerrainGroupEditor::recalculateLighting()
     mOgitorsRoot->SetSceneModified(true);
 }
 //-----------------------------------------------------------------------------------------
+void CTerrainGroupEditor::_modifyHeights(float scale, float offset)
+{
+    NameObjectPairList::iterator it = mChildren.begin();
+
+    OgitorsUndoManager::getSingletonPtr()->BeginCollection("Modify All Height Values");
+
+    while(it != mChildren.end())
+    {
+        CTerrainPageEditor *ed = static_cast<CTerrainPageEditor*>(it->second);
+        ed->_modifyHeights(scale, offset);
+        it++;
+    }
+
+    mOgitorsRoot->SetSceneModified(true);
+
+    OgitorsUndoManager::getSingletonPtr()->EndCollection(true);
+}
+//-----------------------------------------------------------------------------------------

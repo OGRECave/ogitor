@@ -311,7 +311,12 @@ namespace Ogitors
         bool _setPGGrassTech(OgitorsPropertyBase* property, const int& value);
 
 
-
+        /**
+        * Modifies the heightfield
+        * @param scale the scale to multiply current heights with
+        * @param offset value to offset current heights with (after scale)
+        */
+        void _modifyHeights(float scale, float offset);
         /**
         * Fetches empty layer index (internal)
         * @return empty layer index

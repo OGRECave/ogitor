@@ -113,6 +113,23 @@ namespace Ogitors
         */
         virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title) = 0;
         /**
+        * Displays Progress dialog
+        * @param title title of the dialog
+        * @param min minimum value of progress bar
+        * @param max maximum value of progress bar
+        * @param value current value of progress bar
+        */
+        virtual void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value) = 0;
+        /**
+        * Hides Progress dialog
+        */
+        virtual void HideProgressDialog() = 0;
+        /**
+        * Updates Progress dialog
+        * @param value current value of progress bar
+        */
+        virtual void UpdateProgressDialog(int value) = 0;
+        /**
         * Displays "Open File" dialog
         * @param title title of the dialog
         * @param extensionlist the list of extensions to filter out
@@ -317,6 +334,18 @@ namespace Ogitors
         * @copydoc OgitorsSystem::DisplayDirectorySelector(Ogre::UTFString)
         */
         virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title) {return "";};
+        /**
+        * @copydoc OgitorsSystem::DisplayProgressDialog(Ogre::UTFString, int, int, int)
+        */
+        virtual void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value) {};
+        /**
+        * @copydoc OgitorsSystem::HideProgressDialog()
+        */
+        virtual void HideProgressDialog() {};
+        /**
+        * @copydoc OgitorsSystem::UpdateProgressDialog(int)
+        */
+        virtual void UpdateProgressDialog(int value) {};
         /**
         * @copydoc OgitorsSystem::DisplayOpenDialog(Ogre::UTFString, Ogre::UTFStringVector&)
         */
