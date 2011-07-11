@@ -139,7 +139,7 @@ void QtOgitorSystem::DummyTranslationFunction()
 #undef tr
 }
 //-------------------------------------------------------------------------------
-QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0), mSceneTreeWidget(0), mLayerTreeWidget(0), mRenderViewWidget(0)
+QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0), mSceneTreeWidget(0), mLayerTreeWidget(0), mRenderViewWidget(0), mProgressDialog(0)
 {
     mIconList.clear();
     Ogitors::OgitorsUtils::SetExePath(QApplication::applicationDirPath().toStdString());
@@ -421,6 +421,39 @@ Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
 
     return path.toStdString();
+}
+//-------------------------------------------------------------------------------
+void QtOgitorSystem::DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value)
+{
+    if(mProgressDialog != 0)
+    {
+        delete mProgressDialog;
+        mProgressDialog = 0;
+    }
+
+    QString labeltext = ConvertToQString(title);
+    mProgressDialog = new QProgressDialog(labeltext, "", min, max, QApplication::activeWindow());
+    mProgressDialog->setValue(value);
+    mProgressDialog->setCancelButton(0);
+    mProgressDialog->setWindowModality(Qt::WindowModal);
+    Qt::WindowFlags flags = Qt::Popup;
+    mProgressDialog->setWindowFlags(flags);
+    mProgressDialog->show();
+    mProgressDialog->repaint();
+}
+//-------------------------------------------------------------------------------
+void QtOgitorSystem::HideProgressDialog()
+{
+    if(mProgressDialog != 0)
+    {
+        delete mProgressDialog;
+        mProgressDialog = 0;
+    }
+}
+//-------------------------------------------------------------------------------
+void QtOgitorSystem::UpdateProgressDialog(int value)
+{
+    mProgressDialog->setValue(value);
 }
 //-------------------------------------------------------------------------------
 Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)

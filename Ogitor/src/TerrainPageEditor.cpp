@@ -195,6 +195,7 @@ bool CTerrainPageEditor::getObjectContextMenu(UTFStringVector &menuitems)
     {
         menuitems.push_back(OTR("Re-Light"));
         menuitems.push_back(OTR("Calculate Blendmap"));
+        menuitems.push_back(OTR("Scale/Offset Height Values"));
         menuitems.push_back("-");
         menuitems.push_back(OTR("Import Heightmap"));
         menuitems.push_back(OTR("Export Heightmap"));
@@ -250,23 +251,39 @@ void CTerrainPageEditor::onObjectContextMenu(int menuresult)
     }
     else if(menuresult == 3)
     {
-        importHeightMap();
+        Ogre::NameValuePairList params;
+
+        params["title"] = "Scale/Offset values";
+        params["input1"] = "Scale";
+        params["input2"] = "Offset";
+
+        if(!mSystem->DisplayImportHeightMapDialog(params))
+            return;
+
+        Ogre::Real fScale = Ogre::StringConverter::parseReal(params["input1"]);
+        Ogre::Real fOffset = Ogre::StringConverter::parseReal(params["input2"]);
+
+        _modifyHeights(fScale, fOffset);
     }
     else if(menuresult == 4)
     {
-        exportHeightMap();
+        importHeightMap();
     }
     else if(menuresult == 5)
     {
-        exportCompositeMap();
+        exportHeightMap();
     }
     else if(menuresult == 6)
     {
+        exportCompositeMap();
+    }
+    else if(menuresult == 7)
+    {
         importBlendMap();
     }
-    else if(menuresult > 6)
+    else if(menuresult > 7)
     {
-        int lyID = menuresult - 6;
+        int lyID = menuresult - 7;
         importBlendMap(lyID);
     }
 }
@@ -1377,6 +1394,44 @@ void CTerrainPageEditor::_swapGrass(Ogre::Rect rect, float *data)
 
     if(unload)
         unLoad();
+}
+//-----------------------------------------------------------------------------------------
+void CTerrainPageEditor::_modifyHeights(float scale, float offset)
+{
+    bool unload = !mLoaded->get();
+    load(false);
+
+    OgitorsUndoManager::getSingletonPtr()->BeginCollection("Modify Height Values");
+
+    Ogre::Rect rect(0,0,mHandle->getSize(), mHandle->getSize());
+    _notifyModification(-1, rect);
+    _notifyEndModification();
+
+    float *data = mHandle->getHeightData();
+    int numvertexes = mHandle->getSize() * mHandle->getSize();
+
+    for(int px = 0;px < numvertexes;px++)
+    {
+        float val = (data[px] * scale) + offset;
+        data[px] = val;
+    }
+
+    mHandle->dirtyRect(rect);
+    mHandle->update();
+    
+    OgitorsUndoManager::getSingletonPtr()->EndCollection(true);
+
+    mOgitorsRoot->SetSceneModified(true);
+
+    if(unload)
+        unLoad();
+    else
+    {
+        Ogre::AxisAlignedBox bBox = mHandle->getWorldAABB();
+        Ogre::Rect dirty(bBox.getMinimum().x, bBox.getMinimum().z, bBox.getMaximum().x, bBox.getMaximum().z);
+
+        _refreshGrassGeometry(&dirty);
+    }
 }
 //-----------------------------------------------------------------------------------------
 

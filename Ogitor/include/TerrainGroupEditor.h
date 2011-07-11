@@ -360,6 +360,13 @@ namespace Ogitors
         void OnShadowsChange(const OgitorsPropertyBase* property, Ogre::Any value);
         void OnShadowsTechniqueChange(const OgitorsPropertyBase* property, Ogre::Any value);
 
+
+        /**
+        * Modifies the heightfields of all pages
+        * @param scale the scale to multiply current heights with
+        * @param offset value to offset current heights with (after scale)
+        */
+        void _modifyHeights(float scale, float offset);
         void importFullTerrainFromHeightMap();
         void exportHeightMaps();
         void exportCompositeMaps();

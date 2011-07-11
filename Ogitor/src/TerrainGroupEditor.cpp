@@ -133,6 +133,7 @@ bool CTerrainGroupEditor::getObjectContextMenu(UTFStringVector &menuitems)
 {
     menuitems.clear();
     menuitems.push_back(OTR("Add Page") + ";:/icons/additional.svg");
+    menuitems.push_back(OTR("Scale/Offset Height Values"));
     menuitems.push_back(OTR("Import Terrain From Heightmap"));
     menuitems.push_back(OTR("Export Heightmaps"));
     menuitems.push_back(OTR("Export Compositemaps"));
@@ -235,13 +236,29 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
     }
     else if(menuresult == 1)
     {
-        importFullTerrainFromHeightMap();
+        Ogre::NameValuePairList params;
+
+        params["title"] = "Scale/Offset values";
+        params["input1"] = "Scale";
+        params["input2"] = "Offset";
+
+        if(!mSystem->DisplayImportHeightMapDialog(params))
+            return;
+
+        Ogre::Real fScale = Ogre::StringConverter::parseReal(params["input1"]);
+        Ogre::Real fOffset = Ogre::StringConverter::parseReal(params["input2"]);
+
+        _modifyHeights(fScale, fOffset);
     }
     else if(menuresult == 2)
     {
-        exportHeightMaps();
+        importFullTerrainFromHeightMap();
     }
     else if(menuresult == 3)
+    {
+        exportHeightMaps();
+    }
+    else if(menuresult == 4)
     {
         exportCompositeMaps();
     }
