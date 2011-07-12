@@ -43,6 +43,10 @@ using namespace Ogre;
 ContextDef*       AngelScriptInterpreter::mActiveContext = 0;
 CBaseEditor*      AngelScriptInterpreter::mActiveObject = 0;
 
+static void getUpdateObjectGeneric(asIScriptGeneric *gen)
+{
+    gen->SetReturnObject(AngelScriptInterpreter::getUpdateObject());
+}
 //----------------------------------------------------------------------------
 AngelScriptInterpreter::AngelScriptInterpreter() : OgitorsScriptInterpreter()
 {
@@ -60,7 +64,7 @@ AngelScriptInterpreter::AngelScriptInterpreter() : OgitorsScriptInterpreter()
     r = mEngine->RegisterGlobalFunction("void sleep(uint)", asFUNCTION(AngelScriptInterpreter::sleep), asCALL_CDECL);assert(r >= 0);
     r = mEngine->RegisterGlobalFunction("float getTimeSinceLastUpdate()", asFUNCTION(AngelScriptInterpreter::getTimeSinceLastUpdate), asCALL_CDECL);assert(r >= 0);
     r = mEngine->RegisterGlobalFunction("float getTimeSinceLastFrame()", asFUNCTION(AngelScriptInterpreter::getTimeSinceLastFrame), asCALL_CDECL);assert(r >= 0);
-    r = mEngine->RegisterGlobalFunction("BaseEditor@ getUpdateObject()", asFUNCTION(AngelScriptInterpreter::getUpdateObject), asCALL_CDECL);assert(r >= 0);
+    r = mEngine->RegisterGlobalFunction("BaseEditor@ getUpdateObject()", asFUNCTION(getUpdateObjectGeneric), asCALL_GENERIC);assert(r >= 0);
 }
 //----------------------------------------------------------------------------
 AngelScriptInterpreter::~AngelScriptInterpreter()
@@ -527,7 +531,7 @@ Ogre::StringVector AngelScriptInterpreter::listFunctions(std::string &section)
 {
     Ogre::StringVector ret;
 
-    int n;
+    asUINT n;
 
     // List the application registered functions
     for( n = 0; n < mEngine->GetGlobalFunctionCount(); n++ )
