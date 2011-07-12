@@ -40,6 +40,7 @@
 #endif
 
 #include "TerrainMaterialGeneratorB.h"
+#include "TerrainMaterialGeneratorC.h"
 
 #include "BaseEditor.h"
 #include "OgitorsRoot.h"
@@ -88,6 +89,8 @@ mHandle(0), mBrushData(0), mModificationRect(0,0,0,0)
     mName->init("Terrain Group");
     mTextureGrass = "grass";
     mBrushName = "AllWhite.png";
+
+    mMaxLayersAllowed = 6;
 
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
     Ogre::String value = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/";

@@ -54,6 +54,7 @@ set(Ogitor_hdrs
 	./include/TerrainGroupEditor.h
 	./include/TerrainGroupUndo.h
 	./include/TerrainMaterialGeneratorB.h
+	./include/TerrainMaterialGeneratorC.h
 	./include/TerrainPageEditor.h
 	./include/ParticleEditor.h
 	./include/PlaneEditor.h
@@ -108,6 +109,7 @@ set(Ogitor_srcs
 	./src/TerrainGroupEditorImportExport.cpp
 	./src/TerrainGroupUndo.cpp
 	./src/TerrainMaterialGeneratorB.cpp
+	./src/TerrainMaterialGeneratorC.cpp
 	./src/TerrainPageEditor.cpp
 	./src/TerrainPageEditorGrass.cpp
 	./src/TerrainPageEditorImportExport.cpp

@@ -58,6 +58,8 @@ namespace Ogitors
     {
         friend class CTerrainGroupEditorFactory;
     public:
+        int getMaxLayersAllowed() { return mMaxLayersAllowed; };
+
         /// Gets the Handle to encapsulated object
         inline virtual void *getHandle() {return static_cast<void*>(mHandle);};
         virtual bool     setLayerImpl(unsigned int newlayer);
@@ -174,6 +176,7 @@ namespace Ogitors
         Ogre::TexturePtr         mDecalTexture;                     /** Decal texture handle */
         OgitorsScopedConnection  mShadowsConnection[2];
         Ogre::Rect               mModificationRect; 
+        int                      mMaxLayersAllowed;
 
         OgitorsProperty<Ogre::Real>   *mWorldSize;                /** World size property handle */
         OgitorsProperty<int>          *mMapSize;                  /** Map size property handle */
