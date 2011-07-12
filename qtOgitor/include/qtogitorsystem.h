@@ -81,6 +81,7 @@ public:
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
     bool DisplayTerrainDialog(Ogre::NameValuePairList &params);
     bool DisplayImportHeightMapDialog(Ogre::NameValuePairList &params);
+    bool DisplayEuclidDialog(Ogre::NameValuePairList &params);
     bool DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &params);
     void UpdateLoadProgress(float percentage, Ogre::UTFString msg);
     Ogre::UTFString Translate(Ogre::String& str);

@@ -43,6 +43,7 @@
 #include "propertiesviewcustom.hxx"
 #include "addterraindialog.hxx"
 #include "importheightmapdialog.hxx"
+#include "eucliddialog.hxx"
 #include "calculateblendmapdialog.hxx"
 #include "terraintoolswidget.hxx"
 
@@ -683,6 +684,46 @@ bool QtOgitorSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList &param
         params["input1"] = dlg.mInputScale->text().toStdString();
         params["input2"] = dlg.mInputBias->text().toStdString();
         params["inputCheckV"] = "false";
+        return true;
+    }
+    else
+        return false;
+}
+//-------------------------------------------------------------------------------
+bool QtOgitorSystem::DisplayEuclidDialog(Ogre::NameValuePairList &params)
+{
+    EuclidDialog dlg(QApplication::activeWindow());
+
+    Ogre::NameValuePairList::iterator it;
+
+    if((it = params.find("title")) != params.end())
+        dlg.setWindowTitle(params["title"].c_str());
+
+    if((it = params.find("input1")) != params.end())
+        dlg.input1label->setText(params["input1"].c_str());
+
+    if((it = params.find("input2")) != params.end())
+        dlg.input2label->setText(params["input2"].c_str());
+
+    if((it = params.find("input3")) != params.end())
+        dlg.input3Label->setText(params["input3"].c_str());
+
+    if((it = params.find("input1value")) != params.end())
+        dlg.mInputPitch->setText(params["input1value"].c_str());
+
+    if((it = params.find("input2value")) != params.end())
+        dlg.mInputYaw->setText(params["input2value"].c_str());
+
+    if((it = params.find("input3value")) != params.end())
+        dlg.mInputRoll->setText(params["input3value"].c_str());
+
+    params.clear();
+
+    if(dlg.exec() == QDialog::Accepted)
+    {
+        params["input1"] = dlg.mInputPitch->text().toStdString();
+        params["input2"] = dlg.mInputYaw->text().toStdString();
+        params["input3"] = dlg.mInputRoll->text().toStdString();
         return true;
     }
     else
