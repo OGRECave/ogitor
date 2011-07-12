@@ -81,7 +81,7 @@ mPageX(0), mPageY(0), mFirstTimeInit(false), mExternalDataHandle(0), mPGModified
     mPGLayerData[3] = 0;
     mPGDirtyRect.setNull();
 
-    for(int i = 0;i < MAX_LAYERS_ALLOWED;i++)
+    for(int i = 0;i < 16;i++)
     {
         mLayerWorldSize[i] = 0;
         mLayerDiffuse[i] = 0;
@@ -494,7 +494,9 @@ int CTerrainPageEditor::_createNewLayer(Ogre::String &texture,  Ogre::String& no
         }
     }
 
-    if(mLayerCount->get() == MAX_LAYERS_ALLOWED)
+    CTerrainGroupEditor *parentEditor = static_cast<CTerrainGroupEditor*>(mParentEditor->get());
+
+    if(mLayerCount->get() == parentEditor->getMaxLayersAllowed())
         return -1;
 
     layerID = mLayerCount->get();
@@ -506,8 +508,6 @@ int CTerrainPageEditor::_createNewLayer(Ogre::String &texture,  Ogre::String& no
 //-----------------------------------------------------------------------------------------
 void CTerrainPageEditor::_createLayer(int layerID, Ogre::String &texture,  Ogre::String& normal, Ogre::Real worldSize)
 {
-    assert(mLayerCount->get() < MAX_LAYERS_ALLOWED);
-
     OgitorsUndoManager::getSingletonPtr()->AddUndo(OGRE_NEW TerrainLayerUndo(mObjectID->get(), layerID, TerrainLayerUndo::LU_CREATE, texture, normal, worldSize));
 
     OgitorsUndoManager::getSingletonPtr()->BeginCollection("NULL");

@@ -45,8 +45,6 @@ namespace Forests
 
 namespace Ogitors
 {
-#define MAX_LAYERS_ALLOWED 6
-
     class TerrainLayerUndo;
     class TerrainHeightUndo;
     class TerrainBlendUndo;
@@ -213,9 +211,9 @@ namespace Ogitors
         OgitorsProperty<int>           *mLayerCount;            /** Layer(s) count */
         OgitorsProperty<bool>          *mTempDensityModified;   /** Is the density map modified and has a temporary save file? */
         OgitorsProperty<bool>          *mTempModified;          /** Is the page modified and has a temporary save file? */
-        OgitorsProperty<Ogre::Real>    *mLayerWorldSize[MAX_LAYERS_ALLOWED];
-        OgitorsProperty<Ogre::String>  *mLayerDiffuse[MAX_LAYERS_ALLOWED];
-        OgitorsProperty<Ogre::String>  *mLayerNormal[MAX_LAYERS_ALLOWED];
+        OgitorsProperty<Ogre::Real>    *mLayerWorldSize[16];
+        OgitorsProperty<Ogre::String>  *mLayerDiffuse[16];
+        OgitorsProperty<Ogre::String>  *mLayerNormal[16];
         OgitorsProperty<int>           *mMinBatchSize;
         OgitorsProperty<int>           *mMaxBatchSize;
 
