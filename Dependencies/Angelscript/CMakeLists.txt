@@ -95,11 +95,13 @@ set(ANGELSCRIPT_ADDON_HEADERS
 	add_on/scriptdictionary/scriptdictionary.h
 	add_on/scriptmath/scriptmath.h
 	add_on/scriptmath3d/scriptmath3d.h
-	add_on/scriptstring/scriptstring.h
+	add_on/scriptfile/scriptfile.h
 	add_on/scriptstdstring/scriptstdstring.h
 	add_on/scriptbuilder/scriptbuilder.h
+	add_on/scripthelper/scripthelper.h
 	add_on/vector3/as_ScriptOgreVector3.h
 	add_on/quaternion/as_ScriptOgreQuaternion.h
+	add_on/debugger/debugger.h
 )
 
 set(ANGELSCRIPT_ADDON_SOURCE
@@ -108,21 +110,27 @@ set(ANGELSCRIPT_ADDON_SOURCE
 	add_on/scriptdictionary/scriptdictionary.cpp
 	add_on/scriptmath/scriptmath.cpp
 	add_on/scriptmath3d/scriptmath3d.cpp
-	add_on/scriptstring/scriptstring.cpp
-	add_on/scriptstring/scriptstring_utils.cpp
+	add_on/scriptfile/scriptfile.h
 	add_on/scriptstdstring/scriptstdstring.cpp
+	add_on/scriptstdstring/scriptstdstring_utils.cpp
 	add_on/scriptbuilder/scriptbuilder.cpp
+	add_on/scripthelper/scripthelper.h
 	add_on/vector3/as_ScriptOgreVector3.cpp
 	add_on/quaternion/as_ScriptOgreQuaternion.cpp
+	add_on/debugger/debugger.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptarray
+	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptany
 	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptdictionary
 	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptmath
 	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptmath3d
-	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptstring
 	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptstdstring
+	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptfile
+	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scriptbuilder
+	${CMAKE_CURRENT_SOURCE_DIR}/add_on/scripthelper
+	${CMAKE_CURRENT_SOURCE_DIR}/add_on/debugger
 )
 
 add_definitions("-D_CRT_SECURE_NO_WARNINGS -DANGELSCRIPT_EXPORT -D_LIB")
@@ -136,11 +144,11 @@ if( OGITOR_PLATFORM_X64 )
 	if (WIN32)
 		#enable_language(ASM_MASM) // not needed ?
 		ADD_CUSTOM_COMMAND(
-		  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/as_callfunc_x64_msvc.obj
-		  COMMAND "ml64" /Fo ${CMAKE_CURRENT_BINARY_DIR}/as_callfunc_x64_msvc.obj /c ${CMAKE_CURRENT_SOURCE_DIR}/source/as_callfunc_x64_msvc.asm
-		  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/as_callfunc_x64_msvc.asm
+		  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/as_callfunc_x64_msvc_asm.obj
+		  COMMAND "ml64" /Fo ${CMAKE_CURRENT_BINARY_DIR}/as_callfunc_x64_msvc_asm.obj /c ${CMAKE_CURRENT_SOURCE_DIR}/source/as_callfunc_x64_msvc_asm.asm
+		  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/as_callfunc_x64_msvc_asm.asm
 		 ) 
-		 set(ANGELSCRIPT_SOURCE ${ANGELSCRIPT_SOURCE} ${CMAKE_CURRENT_BINARY_DIR}/as_callfunc_x64_msvc.obj)
+		 set(ANGELSCRIPT_SOURCE ${ANGELSCRIPT_SOURCE} ${CMAKE_CURRENT_BINARY_DIR}/as_callfunc_x64_msvc_asm.obj)
 	endif()
 endif()
 

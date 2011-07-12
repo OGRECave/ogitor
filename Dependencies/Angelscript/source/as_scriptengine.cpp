@@ -138,6 +138,10 @@ AS_API const char * asGetLibraryOptions()
 #ifdef AS_HAIKU
 		"AS_HAIKU "
 #endif
+#ifdef AS_ILLUMOS
+		"AS_ILLUMOS "
+#endif
+
 
 	// CPU family
 #ifdef AS_PPC
@@ -283,6 +287,10 @@ int asCScriptEngine::SetEngineProperty(asEEngineProp property, asPWORD value)
 		ep.expandDefaultArrayToTemplate = value ? true : false;
 		break;
 
+	case asEP_AUTO_GARBAGE_COLLECT:
+		ep.autoGarbageCollect = value ? true : false;
+		break;
+
 	default:
 		return asINVALID_ARG;
 	}
@@ -338,6 +346,9 @@ asPWORD asCScriptEngine::GetEngineProperty(asEEngineProp property) const
 
 	case asEP_EXPAND_DEF_ARRAY_TO_TMPL:
 		return ep.expandDefaultArrayToTemplate;
+
+	case asEP_AUTO_GARBAGE_COLLECT:
+		return ep.autoGarbageCollect;
 	}
 
 	return 0;
@@ -380,6 +391,7 @@ asCScriptEngine::asCScriptEngine()
 		ep.stringEncoding               = 0;         // utf8. 1 = utf16
 		ep.propertyAccessorMode         = 2;         // 0 = disable, 1 = app registered only, 2 = app and script created
 		ep.expandDefaultArrayToTemplate = false;
+		ep.autoGarbageCollect           = true;
 	}
 
 	gc.engine = this;
@@ -1702,29 +1714,6 @@ int asCScriptEngine::RegisterBehaviourToObjectType(asCObjectType *objectType, as
 
 		func.id = beh->templateCallback = AddBehaviourFunction(func, internal);
 	}
-#ifdef AS_DEPRECATED
-	// Since 2.20.0
-	else if( behaviour == asBEHAVE_INDEX )
-	{
-		// Verify that the var type is not used
-		if( VerifyVarTypeNotInFunction(&func) < 0 )
-			return ConfigError(asINVALID_DECLARATION);
-
-		// Verify that there is only one parameter
-		if( func.parameterTypes.GetLength() != 1 )
-			return ConfigError(asINVALID_DECLARATION);
-
-		// Verify that the return type is not void
-		if( func.returnType.GetTokenType() == ttVoid )
-			return ConfigError(asINVALID_DECLARATION);
-
-		// TODO: Verify that the operator hasn't been registered already
-
-		beh->operators.PushLast(behaviour);
-		func.id = AddBehaviourFunction(func, internal);
-		beh->operators.PushLast(func.id);
-	}
-#endif
 	else if( behaviour >= asBEHAVE_FIRST_GC &&
 		     behaviour <= asBEHAVE_LAST_GC )
 	{
@@ -2871,6 +2860,7 @@ void asCScriptEngine::CallObjectMethod(void *obj, asSSystemFunctionInterface *i,
 		} p;
 		p.func = (void (*)())(i->func);
 		void (asCSimpleDummy::*f)() = p.mthd;
+		obj = (void*)(size_t(obj) + i->baseOffset);
 		(((asCSimpleDummy*)obj)->*f)();
 	}
 	else
@@ -2936,6 +2926,7 @@ bool asCScriptEngine::CallObjectMethodRetBool(void *obj, int func)
 		} p;
 		p.func = (void (*)())(i->func);
 		bool (asCSimpleDummy::*f)() = (bool (asCSimpleDummy::*)())p.mthd;
+		obj = (void*)(size_t(obj) + i->baseOffset);
 		return (((asCSimpleDummy*)obj)->*f)();
 	}
 	else
@@ -3002,6 +2993,7 @@ int asCScriptEngine::CallObjectMethodRetInt(void *obj, int func)
 		} p;
 		p.func = (void (*)())(i->func);
 		int (asCSimpleDummy::*f)() = (int (asCSimpleDummy::*)())p.mthd;
+		obj = (void*)(size_t(obj) + i->baseOffset);
 		return (((asCSimpleDummy*)obj)->*f)();
 	}
 	else
@@ -3111,6 +3103,7 @@ void asCScriptEngine::CallObjectMethod(void *obj, void *param, asSSystemFunction
 		} p;
 		p.func = (void (*)())(i->func);
 		void (asCSimpleDummy::*f)(void *) = (void (asCSimpleDummy::*)(void *))(p.mthd);
+		obj = (void*)(size_t(obj) + i->baseOffset);
 		(((asCSimpleDummy*)obj)->*f)(param);
 	}
 	else
@@ -3207,9 +3200,9 @@ int asCScriptEngine::GarbageCollect(asDWORD flags)
 }
 
 // interface
-void asCScriptEngine::GetGCStatistics(asUINT *currentSize, asUINT *totalDestroyed, asUINT *totalDetected) const
+void asCScriptEngine::GetGCStatistics(asUINT *currentSize, asUINT *totalDestroyed, asUINT *totalDetected, asUINT *newObjects, asUINT *totalNewDestroyed) const
 {
-	gc.GetStatistics(currentSize, totalDestroyed, totalDetected);
+	gc.GetStatistics(currentSize, totalDestroyed, totalDetected, newObjects, totalNewDestroyed);
 }
 
 // interface
@@ -3968,7 +3961,7 @@ int asCScriptEngine::RegisterEnumValue(const char *typeName, const char *valueNa
 
 	int tokenLen;
 	asETokenClass tokenClass = ParseToken(valueName, 0, &tokenLen);
-	if( tokenClass != asTC_IDENTIFIER || tokenLen != strlen(valueName) )
+	if( tokenClass != asTC_IDENTIFIER || tokenLen != (int)strlen(valueName) )
 		return ConfigError(asINVALID_NAME);
 
 	for( unsigned int n = 0; n < ot->enumValues.GetLength(); n++ )

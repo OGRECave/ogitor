@@ -48,6 +48,9 @@ link_libraries( ${OGRE_LIBRARIES} Ogitor Angelscript)
 add_library(OgAngelScript SHARED ${HEADER_FILES} ${SOURCE_FILES})
 set(LIBRARY_OUTPUT_PATH ../lib)
 
+add_dependencies(OgAngelScript Ogitor)
+add_dependencies(OgAngelScript Angelscript)
+
 #set_target_properties(OgAngelScript PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(OgAngelScript PROPERTIES VERSION ${OgAngelScript_VERSION} SOVERSION ${OgAngelScript_VERSION_MAJOR})
 set_target_properties(OgAngelScript PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
