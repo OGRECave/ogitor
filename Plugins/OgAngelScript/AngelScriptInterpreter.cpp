@@ -48,6 +48,16 @@ static void getUpdateObjectGeneric(asIScriptGeneric *gen)
     gen->SetReturnObject(AngelScriptInterpreter::getUpdateObject());
 }
 //----------------------------------------------------------------------------
+static void getTimeSinceLastFrameGeneric(asIScriptGeneric *gen)
+{
+    gen->SetReturnFloat(AngelScriptInterpreter::getTimeSinceLastFrame());
+}
+//----------------------------------------------------------------------------
+static void getTimeSinceLastUpdateGeneric(asIScriptGeneric *gen)
+{
+    gen->SetReturnFloat(AngelScriptInterpreter::getTimeSinceLastUpdate());
+}
+//----------------------------------------------------------------------------
 AngelScriptInterpreter::AngelScriptInterpreter() : OgitorsScriptInterpreter()
 {
     mEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
@@ -62,8 +72,8 @@ AngelScriptInterpreter::AngelScriptInterpreter() : OgitorsScriptInterpreter()
     int r;
     r = mEngine->RegisterGlobalFunction("void yield()", asFUNCTION(AngelScriptInterpreter::yield), asCALL_CDECL);assert(r >= 0);
     r = mEngine->RegisterGlobalFunction("void sleep(uint)", asFUNCTION(AngelScriptInterpreter::sleep), asCALL_CDECL);assert(r >= 0);
-    r = mEngine->RegisterGlobalFunction("float getTimeSinceLastUpdate()", asFUNCTION(AngelScriptInterpreter::getTimeSinceLastUpdate), asCALL_CDECL);assert(r >= 0);
-    r = mEngine->RegisterGlobalFunction("float getTimeSinceLastFrame()", asFUNCTION(AngelScriptInterpreter::getTimeSinceLastFrame), asCALL_CDECL);assert(r >= 0);
+    r = mEngine->RegisterGlobalFunction("float getTimeSinceLastUpdate()", asFUNCTION(getTimeSinceLastUpdateGeneric), asCALL_GENERIC);assert(r >= 0);
+    r = mEngine->RegisterGlobalFunction("float getTimeSinceLastFrame()", asFUNCTION(getTimeSinceLastFrameGeneric), asCALL_GENERIC);assert(r >= 0);
     r = mEngine->RegisterGlobalFunction("BaseEditor@ getUpdateObject()", asFUNCTION(getUpdateObjectGeneric), asCALL_GENERIC);assert(r >= 0);
 }
 //----------------------------------------------------------------------------
