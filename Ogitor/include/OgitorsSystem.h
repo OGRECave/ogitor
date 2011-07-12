@@ -163,6 +163,12 @@ namespace Ogitors
         */
         virtual bool         DisplayImportHeightMapDialog(Ogre::NameValuePairList &params) = 0;
         /**
+        * Displays euclidean transform dialog
+        * @param params yaw, pitch, roll values as parameters
+        * @return true if dialog' result was accepted, otherwise false
+        */
+        virtual bool         DisplayEuclidDialog(Ogre::NameValuePairList &params) = 0;
+        /**
         * Displays blendmap calculation dialog
         * @param params additional blendmap parameters needed
         * @return true if dialog' result was accepted, otherwise false
@@ -366,6 +372,10 @@ namespace Ogitors
         * @copydoc OgitorsSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList)
         */
         virtual bool         DisplayImportHeightMapDialog(Ogre::NameValuePairList &params) {return false;};
+        /**
+        * @copydoc OgitorsSystem::DisplayEuclidDialog(Ogre::NameValuePairList)
+        */
+        virtual bool         DisplayEuclidDialog(Ogre::NameValuePairList &params) {return false;};
         /**
         * @copydoc OgitorsSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList)
         */

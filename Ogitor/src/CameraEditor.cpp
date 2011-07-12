@@ -541,6 +541,8 @@ bool CCameraEditor::getObjectContextMenu(UTFStringVector &menuitems)
         menuitems.push_back(OTR("Deactivate Camera"));
     }
 
+    menuitems.push_back(OTR("Euclidean Rotation"));
+
     return true;
 }
 //-------------------------------------------------------------------------------
@@ -548,8 +550,26 @@ void CCameraEditor::onObjectContextMenu(int menuresult)
 {
     if(menuresult == 0)
         mOgitorsRoot->GetViewport()->setCameraEditor(this);
-    else
+    else if(menuresult == 1)
         mOgitorsRoot->GetViewport()->setCameraEditor(0);
+    else if(menuresult == 2)
+    {
+        Ogre::NameValuePairList params;
+        if(mSystem->DisplayEuclidDialog(params))
+        {
+            Ogre::Real fYaw = Ogre::StringConverter::parseReal(params["input2"]);
+            Ogre::Real fPitch = Ogre::StringConverter::parseReal(params["input1"]);
+            Ogre::Real fRoll = Ogre::StringConverter::parseReal(params["input3"]);
+
+            Ogre::Quaternion quatR, quatY, quatP;
+            quatY.FromAngleAxis(Ogre::Degree(fYaw), Ogre::Vector3::UNIT_Y);
+            quatP.FromAngleAxis(Ogre::Degree(fPitch), Ogre::Vector3::UNIT_X);
+            quatR.FromAngleAxis(Ogre::Degree(fRoll), Ogre::Vector3::UNIT_Z);
+            Ogre::Quaternion newQuat = quatY * quatP * quatR;
+
+            mOrientation->set(newQuat);
+        }
+    }
 }
 //-----------------------------------------------------------------------------------------
 
