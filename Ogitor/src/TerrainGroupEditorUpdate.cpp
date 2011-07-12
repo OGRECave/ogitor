@@ -268,7 +268,11 @@ void CTerrainGroupEditor::_splat(CTerrainPageEditor *handle, Ogre::Vector3 &edit
     mLayer = handle->_getLayerID(mTextureDiffuse, mTextureNormal, mEditDirection);
 
     if(mLayer < 1)
+    {
+        Ogre::String msg = handle->getName() + " already has maximum number of supported layers...";
+        mSystem->DisplayMessageDialog(OTR(msg), DLGTYPE_OK);
         return;
+    }
 
     handle->_notifyModification(mLayer, maprect);
 
