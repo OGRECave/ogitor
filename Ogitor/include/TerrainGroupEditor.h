@@ -181,6 +181,7 @@ namespace Ogitors
         OgitorsProperty<Ogre::Real>   *mWorldSize;                /** World size property handle */
         OgitorsProperty<int>          *mMapSize;                  /** Map size property handle */
         OgitorsProperty<Ogre::String> *mPageNamePrefix;           /** Page Name Prefix property handle */
+        OgitorsProperty<int>          *mMaterialGeneratorType;    /** MaterialGeneratorType to be used */
         OgitorsProperty<bool>         *mColourMapEnabled;         /** Color flag property handle */
         OgitorsProperty<bool>         *mUseRayBoxDistanceCalculation;
         OgitorsProperty<int>          *mColourMapTextureSize;     /** Color map texture size property handle */
@@ -220,6 +221,13 @@ namespace Ogitors
         * @return true if terrain handle is valid 
         */
         bool _setWorldSize(OgitorsPropertyBase* property, const Ogre::Real& value);
+        /**
+        * Property setter for material generator type (internal)
+        * @param property Handle to property responsible for material generator type
+        * @param value new material generator type
+        * @return true if terrain handle is valid 
+        */
+        bool _setMaterialGeneratorType(OgitorsPropertyBase* property, const int& value);
         /**
         * Property setter for page name prefix (internal)
         * @param property Handle to property responsible for page name prefix
@@ -408,11 +416,14 @@ namespace Ogitors
 
         static PropertyOptionsVector *GetMaxBatchSizes() { return &mMaxBatchSizes; }
 
+        static PropertyOptionsVector *GetMaterialGeneratorTypes() { return &mMaterialGeneratorTypes; }
+
     private:
         static PropertyOptionsVector mColourMapSizeOptions;     /** Colour map size options property(ies) */
         static PropertyOptionsVector mMapSizeOptions;           /** Map size options property(ies) */
         static PropertyOptionsVector mMinBatchSizes;
         static PropertyOptionsVector mMaxBatchSizes;
+        static PropertyOptionsVector mMaterialGeneratorTypes;
     };
 
 }

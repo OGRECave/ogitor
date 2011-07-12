@@ -66,6 +66,7 @@ PropertyOptionsVector CTerrainGroupEditorFactory::mMapSizeOptions;
 PropertyOptionsVector CTerrainGroupEditorFactory::mColourMapSizeOptions;
 PropertyOptionsVector CTerrainGroupEditorFactory::mMinBatchSizes;
 PropertyOptionsVector CTerrainGroupEditorFactory::mMaxBatchSizes;
+PropertyOptionsVector CTerrainGroupEditorFactory::mMaterialGeneratorTypes;
 
 Ogre::TerrainGroup *StaticGroupPtr = 0;
 
@@ -129,6 +130,8 @@ void CTerrainGroupEditor::prepareBeforePresentProperties()
     definition = const_cast<OgitorsPropertyDef *>(mProperties.getProperty("blendmap::texturesize")->getDefinition());
     definition->setAccess(true, mChildren.size() == 0);
     definition = const_cast<OgitorsPropertyDef *>(mProperties.getProperty("pg::densitymapsize")->getDefinition());
+    definition->setAccess(true, mChildren.size() == 0);
+    definition = const_cast<OgitorsPropertyDef *>(mProperties.getProperty("materialgeneratortype")->getDefinition());
     definition->setAccess(true, mChildren.size() == 0);
 }
 //-----------------------------------------------------------------------------------------
@@ -331,20 +334,6 @@ bool CTerrainGroupEditor::load(bool async)
 
     mBrushData = OGRE_ALLOC_T(float, BRUSH_DATA_SIZE * BRUSH_DATA_SIZE, Ogre::MEMCATEGORY_GEOMETRY);
 
-    CSceneManagerEditor *mSceneMgr = static_cast<CSceneManagerEditor*>(mOgitorsRoot->GetSceneManagerEditor());
-
-    if(mSceneMgr->getShadowsEnabled())
-    {
-        Ogre::TerrainMaterialGeneratorB::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorB::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
-        matProfile->setReceiveDynamicShadowsEnabled(true);
-        matProfile->setReceiveDynamicShadowsLowLod(false);
-        matProfile->setReceiveDynamicShadowsDepth(true);
-        matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
-    }
-
-    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::enabled", CTerrainGroupEditor, OnShadowsChange, mShadowsConnection[0]);
-    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::technique", CTerrainGroupEditor, OnShadowsTechniqueChange, mShadowsConnection[1]);
-
     mTerrainGlobalOptions->setMaxPixelError(mMaxPixelError->get());
     mTerrainGlobalOptions->setCompositeMapSize(mCompositeMapTextureSize->get());
     mTerrainGlobalOptions->setCompositeMapDistance(mCompositeMapDistance->get());
@@ -354,8 +343,43 @@ bool CTerrainGroupEditor::load(bool async)
     mTerrainGlobalOptions->setSkirtSize(mSkirtSize->get());
     mTerrainGlobalOptions->setUseRayBoxDistanceCalculation(mUseRayBoxDistanceCalculation->get());
 
-    Ogre::TerrainMaterialGeneratorPtr matGenPtr(OGRE_NEW Ogre::TerrainMaterialGeneratorB(this, mDecalFrustum));
-    mTerrainGlobalOptions->setDefaultMaterialGenerator(matGenPtr);
+    if(mMaterialGeneratorType->get() == 1)
+    {
+        Ogre::TerrainMaterialGeneratorPtr matGenPtr(OGRE_NEW Ogre::TerrainMaterialGeneratorC(this, mDecalFrustum));
+        mTerrainGlobalOptions->setDefaultMaterialGenerator(matGenPtr);
+        mMaxLayersAllowed = 10;
+    }
+    else
+    {
+        Ogre::TerrainMaterialGeneratorPtr matGenPtr(OGRE_NEW Ogre::TerrainMaterialGeneratorB(this, mDecalFrustum));
+        mTerrainGlobalOptions->setDefaultMaterialGenerator(matGenPtr);
+        mMaxLayersAllowed = 6;
+    }
+
+    CSceneManagerEditor *mSceneMgr = static_cast<CSceneManagerEditor*>(mOgitorsRoot->GetSceneManagerEditor());
+
+    if(mSceneMgr->getShadowsEnabled())
+    {
+        if(mMaterialGeneratorType->get() == 1)
+        {
+            Ogre::TerrainMaterialGeneratorC::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorC::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(true);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(true);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
+        else
+        {
+            Ogre::TerrainMaterialGeneratorB::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorB::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(true);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(true);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
+    }
+
+    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::enabled", CTerrainGroupEditor, OnShadowsChange, mShadowsConnection[0]);
+    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::technique", CTerrainGroupEditor, OnShadowsTechniqueChange, mShadowsConnection[1]);
 
     mHandle = OGRE_NEW Ogre::TerrainGroup(mOgitorsRoot->GetSceneManager() ,Ogre::Terrain::ALIGN_X_Z, mMapSize->get(), mWorldSize->get());
     mHandle->setOrigin(Ogre::Vector3::ZERO);
@@ -448,6 +472,7 @@ void CTerrainGroupEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mWorldSize, "pageworldsize",Ogre::Real, 512.0f,0, SETTER(Ogre::Real, CTerrainGroupEditor, _setWorldSize));
     PROPERTY_PTR(mMapSize, "pagemapsize",int, 129, 0, SETTER(int, CTerrainGroupEditor, _setMapSize));
     PROPERTY_PTR(mPageNamePrefix, "pagenameprefix",Ogre::String, "Page", 0, SETTER(Ogre::String, CTerrainGroupEditor, _setPageNamePrefix));
+    PROPERTY_PTR(mMaterialGeneratorType, "materialgeneratortype",int, 0, 0, SETTER(int, CTerrainGroupEditor, _setMaterialGeneratorType));
     PROPERTY_PTR(mLightMapTextureSize, "lightmap::texturesize",int, 1024, 0, SETTER(int, CTerrainGroupEditor, _setLightMapTextureSize));
     PROPERTY_PTR(mBlendMapTextureSize, "blendmap::texturesize",int, 1024, 0, SETTER(int, CTerrainGroupEditor, _setBlendMapTextureSize));
     PROPERTY_PTR(mCompositeMapTextureSize, "tuning::compositemaptexturesize",int, 1024, 0, SETTER(int, CTerrainGroupEditor, _setCompositeMapTextureSize));
@@ -495,6 +520,46 @@ bool CTerrainGroupEditor::_setWorldSize(OgitorsPropertyBase* property, const Ogr
         static_cast<OgitorsProperty<Ogre::Real>*>(mOgitorsRoot->GetPagingEditorObject()->getProperties()->getProperty("terrainCellSize"))->set(value);
         static_cast<OgitorsProperty<Ogre::Real>*>(mOgitorsRoot->GetPagingEditorObject()->getProperties()->getProperty("terrainLoadRadius"))->set(value * 0.45f);
         static_cast<OgitorsProperty<Ogre::Real>*>(mOgitorsRoot->GetPagingEditorObject()->getProperties()->getProperty("terrainHoldRadius"))->set(value * 0.90f);
+    }
+
+    return true;
+}
+//-----------------------------------------------------------------------------------------
+bool CTerrainGroupEditor::_setMaterialGeneratorType(OgitorsPropertyBase* property, const int& value)
+{
+    if(value == 1)
+    {
+        Ogre::TerrainMaterialGeneratorPtr matGenPtr(OGRE_NEW Ogre::TerrainMaterialGeneratorC(this, mDecalFrustum));
+        mTerrainGlobalOptions->setDefaultMaterialGenerator(matGenPtr);
+        mMaxLayersAllowed = 10;
+    }
+    else
+    {
+        Ogre::TerrainMaterialGeneratorPtr matGenPtr(OGRE_NEW Ogre::TerrainMaterialGeneratorB(this, mDecalFrustum));
+        mTerrainGlobalOptions->setDefaultMaterialGenerator(matGenPtr);
+        mMaxLayersAllowed = 6;
+    }
+
+    CSceneManagerEditor *mSceneMgr = static_cast<CSceneManagerEditor*>(mOgitorsRoot->GetSceneManagerEditor());
+
+    if(mSceneMgr->getShadowsEnabled())
+    {
+        if(value == 1)
+        {
+            Ogre::TerrainMaterialGeneratorC::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorC::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(true);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(true);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
+        else
+        {
+            Ogre::TerrainMaterialGeneratorB::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorB::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(true);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(true);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
     }
 
     return true;
@@ -676,11 +741,22 @@ void CTerrainGroupEditor::OnShadowsChange(const OgitorsPropertyBase* property, O
 
     if(mSceneMgr->getShadowsTechnique() >= Ogre::SHADOWTYPE_TEXTURE_ADDITIVE && mSceneMgr->getShadowsTechnique() <= Ogre::SHADOWTYPE_TEXTURE_MODULATIVE_INTEGRATED)
     {
-        Ogre::TerrainMaterialGeneratorB::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorB::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
-        matProfile->setReceiveDynamicShadowsEnabled(newstate);
-        matProfile->setReceiveDynamicShadowsLowLod(false);
-        matProfile->setReceiveDynamicShadowsDepth(newstate);
-        matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        if(mMaterialGeneratorType->get() == 1)
+        {
+            Ogre::TerrainMaterialGeneratorC::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorC::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(newstate);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(newstate);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
+        else
+        {
+            Ogre::TerrainMaterialGeneratorB::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorB::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(newstate);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(newstate);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -692,11 +768,22 @@ void CTerrainGroupEditor::OnShadowsTechniqueChange(const OgitorsPropertyBase* pr
 
     if(mSceneMgr->getShadowsTechnique() >= Ogre::SHADOWTYPE_TEXTURE_ADDITIVE && mSceneMgr->getShadowsTechnique() <= Ogre::SHADOWTYPE_TEXTURE_MODULATIVE_INTEGRATED)
     {
-        Ogre::TerrainMaterialGeneratorB::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorB::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
-        matProfile->setReceiveDynamicShadowsEnabled(newstate);
-        matProfile->setReceiveDynamicShadowsLowLod(false);
-        matProfile->setReceiveDynamicShadowsDepth(newstate);
-        matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        if(mMaterialGeneratorType->get() == 1)
+        {
+            Ogre::TerrainMaterialGeneratorC::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorC::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(newstate);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(newstate);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
+        else
+        {
+            Ogre::TerrainMaterialGeneratorB::SM2Profile* matProfile = static_cast<Ogre::TerrainMaterialGeneratorB::SM2Profile*>(mTerrainGlobalOptions->getDefaultMaterialGenerator()->getActiveProfile());
+            matProfile->setReceiveDynamicShadowsEnabled(newstate);
+            matProfile->setReceiveDynamicShadowsLowLod(false);
+            matProfile->setReceiveDynamicShadowsDepth(newstate);
+            matProfile->setReceiveDynamicShadowsPSSM(static_cast<Ogre::PSSMShadowCameraSetup*>(mSceneMgr->getPSSMSetup().get()));
+        }
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -734,10 +821,16 @@ CTerrainGroupEditorFactory::CTerrainGroupEditorFactory(OgitorsView *view) : CBas
     mColourMapSizeOptions.push_back(PropertyOption("1024x1024", Ogre::Any((int)1024)));
     mColourMapSizeOptions.push_back(PropertyOption("2048x2048", Ogre::Any((int)2048)));
 
+    mMaterialGeneratorTypes.clear();
+    mMaterialGeneratorTypes.push_back(PropertyOption("Default", Ogre::Any((int)0)));
+    mMaterialGeneratorTypes.push_back(PropertyOption("Ogitor10", Ogre::Any((int)1)));
+
     AddPropertyDefinition("pageworldsize","World Size", "The size of page in world coordinates.",PROP_REAL);
     OgitorsPropertyDef *definition = AddPropertyDefinition("pagemapsize","Map Size", "The size of page in vertices per side.",PROP_INT);
     definition->setOptions(&mMapSizeOptions);
     AddPropertyDefinition("pagenameprefix","Page Name Prefix", "The Prefix to be added to page names.",PROP_STRING);
+    definition = AddPropertyDefinition("materialgeneratortype","Mat. Generator", "The material generator to be used.",PROP_INT);
+    definition->setOptions(&mMaterialGeneratorTypes);
     definition = AddPropertyDefinition("lightmap::texturesize","Light Map::Texture Size", "The size of lightmap texture.",PROP_INT);
     definition->setOptions(&mColourMapSizeOptions);
     definition = AddPropertyDefinition("blendmap::texturesize","Blend Map::Texture Size", "The size of blendmap texture.",PROP_INT);
