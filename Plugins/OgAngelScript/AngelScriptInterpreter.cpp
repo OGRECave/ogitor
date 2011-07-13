@@ -35,6 +35,8 @@
 #include "AngelScriptInterpreter.h"
 #include "Bindings.h"
 
+#include "debugger.h"
+
 #include "ofs.h"
 
 using namespace Ogitors;

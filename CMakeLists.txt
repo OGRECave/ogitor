@@ -143,6 +143,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptarray"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/quaternion"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/vector3"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/debugger"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"

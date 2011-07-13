@@ -1,6 +1,9 @@
 #include "debugger.h"
 #include <iostream>  // cout
 #include <sstream> // stringstream
+// Fixes linux problems:
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 
