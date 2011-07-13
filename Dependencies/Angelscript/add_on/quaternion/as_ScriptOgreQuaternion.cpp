@@ -18,12 +18,30 @@
 		new(self) Ogre::Quaternion(x,y,z);
 	}
 
-	void RegisterScriptOgreQuaternion(asIScriptEngine *engine)
+    static void CopyConstructQuaternion(const Ogre::Quaternion &other, Ogre::Quaternion *thisPointer)
+    {
+        new(thisPointer) Ogre::Quaternion(other);
+    }
+
+    static void DestructQuaternion(Ogre::Quaternion *thisPointer)
+    {
+	    thisPointer->~Quaternion();
+    }
+
+    static Ogre::Quaternion &QuaternionAssignment(Ogre::Quaternion *other, Ogre::Quaternion *self)
+    {
+	    return *self = *other;
+    }
+
+    void RegisterScriptOgreQuaternion(asIScriptEngine *engine)
 	{
 		int r;
 
 		// Register the type
         r = engine->RegisterObjectType("Quaternion", sizeof(Ogre::Quaternion), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(const Quaternion &in)",    asFUNCTION(CopyConstructQuaternion), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructQuaternion),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("Quaternion", "Quaternion &opAssign(Quaternion&in)", asFUNCTION(QuaternionAssignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
 		// Register the object properties
 		r = engine->RegisterObjectProperty("Quaternion", "float w", offsetof(Ogre::Quaternion, w)); assert( r >= 0 );

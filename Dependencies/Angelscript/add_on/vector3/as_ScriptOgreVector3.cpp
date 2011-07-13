@@ -18,14 +18,68 @@
         new(self) Ogre::Vector4(Ogre::Real(x), Ogre::Real(y), Ogre::Real(z), Ogre::Real(w));
 	}
 
+    static void CopyConstructVector2(const Ogre::Vector2 &other, Ogre::Vector2 *thisPointer)
+    {
+        new(thisPointer) Ogre::Vector2(other);
+    }
+
+    static void CopyConstructVector3(const Ogre::Vector3 &other, Ogre::Vector3 *thisPointer)
+    {
+        new(thisPointer) Ogre::Vector3(other);
+    }
+
+    static void CopyConstructVector4(const Ogre::Vector4 &other, Ogre::Vector4 *thisPointer)
+    {
+        new(thisPointer) Ogre::Vector4(other);
+    }
+
+    static void DestructVector2(Ogre::Vector2 *thisPointer)
+    {
+	    thisPointer->~Vector2();
+    }
+
+    static void DestructVector3(Ogre::Vector3 *thisPointer)
+    {
+	    thisPointer->~Vector3();
+    }
+
+    static void DestructVector4(Ogre::Vector4 *thisPointer)
+    {
+	    thisPointer->~Vector4();
+    }
+
+    static Ogre::Vector2 &Vector2Assignment(Ogre::Vector2 *other, Ogre::Vector2 *self)
+    {
+	    return *self = *other;
+    }
+
+    static Ogre::Vector3 &Vector3Assignment(Ogre::Vector3 *other, Ogre::Vector3 *self)
+    {
+	    return *self = *other;
+    }
+
+    static Ogre::Vector4 &Vector4Assignment(Ogre::Vector4 *other, Ogre::Vector4 *self)
+    {
+	    return *self = *other;
+    }
+
     void RegisterScriptOgreVector3(asIScriptEngine *engine)
 	{
 		int r;
 
 		// Register the type
 		r = engine->RegisterObjectType("Vector2", sizeof(Ogre::Vector2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectBehaviour("Vector2", asBEHAVE_CONSTRUCT,  "void f(const Vector2 &in)",    asFUNCTION(CopyConstructVector2), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("Vector2", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructVector2),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("Vector2", "Vector2 &opAssign(Vector2&in)", asFUNCTION(Vector2Assignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 		r = engine->RegisterObjectType("Vector3", sizeof(Ogre::Vector3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in)",    asFUNCTION(CopyConstructVector3), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructVector3),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("Vector3", "Vector3 &opAssign(Vector3&in)", asFUNCTION(Vector3Assignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 		r = engine->RegisterObjectType("Vector4", sizeof(Ogre::Vector4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectBehaviour("Vector4", asBEHAVE_CONSTRUCT,  "void f(const Vector4 &in)",    asFUNCTION(CopyConstructVector4), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("Vector4", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructVector4),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("Vector4", "Vector4 &opAssign(Vector4&in)", asFUNCTION(Vector4Assignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
 		// Register the object properties
 		r = engine->RegisterObjectProperty("Vector2", "float x", offsetof(Ogre::Vector2, x)); assert( r >= 0 );
