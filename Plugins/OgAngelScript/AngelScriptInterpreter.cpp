@@ -169,6 +169,8 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
 {
     Ogre::StringVector ret;
 
+    CDebugger* dbg = 0;
+
     int r = mBuilder->StartNewModule(mEngine, section.c_str());
     if( r < 0 )
     {
@@ -255,7 +257,13 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
 
     // Create our context, prepare it, and then execute
     asIScriptContext *ctx = mEngine->CreateContext();
-    ctx->SetExceptionCallback(asFUNCTION(ExceptionCallback), this, asCALL_CDECL);
+
+    dbg = new CDebugger();
+
+    dbg->TakeCommands(ctx);
+
+    ctx->SetLineCallback(asMETHOD(CDebugger, LineCallback), dbg, asCALL_THISCALL);
+    //ctx->SetExceptionCallback(asFUNCTION(ExceptionCallback), this, asCALL_CDECL);
     ctx->Prepare(funcId);
 
     ContextDef def;
@@ -280,6 +288,8 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
     mActiveContext = 0;
 
     ctx->Release();
+
+    delete dbg;
 
     return ret;
 }
@@ -473,6 +483,11 @@ Ogre::StringVector AngelScriptInterpreter::runUpdateFunction(std::string &sectio
         return ret;
     }
 
+    CDebugger* dbg = new CDebugger();
+
+    dbg->TakeCommands(ctx);
+    ctx->SetLineCallback(asMETHOD(CDebugger, LineCallback), dbg, asCALL_THISCALL);
+
     mActiveContext = def;
     mActiveObject = object;
 
@@ -502,6 +517,8 @@ Ogre::StringVector AngelScriptInterpreter::runUpdateFunction(std::string &sectio
 
     mActiveContext = 0;
     mActiveObject = 0;
+
+    delete dbg;
 
     return ret;
 }

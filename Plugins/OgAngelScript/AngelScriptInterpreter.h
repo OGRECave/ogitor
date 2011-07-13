@@ -47,6 +47,7 @@
 #include <angelscript.h>
 #include <scriptbuilder.h>
 #include "scripthelper.h"
+#include "debugger.h"
 
 namespace Ogitors
 {
