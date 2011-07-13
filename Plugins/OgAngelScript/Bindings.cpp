@@ -60,6 +60,7 @@
 #include "Bindings_Utils.h"
 #include "Bindings_Viewport.h"
 #include "Bindings_System.h"
+#include "ScriptStringExtensions.h"
 
 namespace Ogitors
 {
@@ -92,6 +93,24 @@ namespace Ogitors
             console->addOutput(Ogre::StringConverter::toString((Ogre::Real)number));
     }
     //-----------------------------------------------------------------------------------------
+    static void printEditorObjectInfo(CBaseEditor *object)
+    {
+        std::string text = "OBJECT INFO : {Null Object}";
+
+        if(object != 0)
+        {
+            text = "OBJECT INFO : {Name:' ";
+            text += object->getName().c_str();
+            text += " ', Type:' ";
+            text += object->getTypeName().c_str();
+            text += " '}";
+        }
+
+        OgitorsScriptConsole *console = OgitorsScriptConsole::getSingletonPtr();
+        if(console)
+            console->addOutput(text);
+    }
+    //-----------------------------------------------------------------------------------------
     static float UnitRandomImpl()
     {
         return Ogre::Math::UnitRandom();
@@ -102,215 +121,13 @@ namespace Ogitors
         return Ogre::Math::RangeRandom(a1, a2);
     }
     //-----------------------------------------------------------------------------------------
-    static void ConstructStringGenericInt(asIScriptGeneric * gen) 
-    {
-        int *a = static_cast<int*>(gen->GetAddressOfArg(0));
-        std::stringstream sstr;
-	    sstr << *a;
-        new (gen->GetObject()) std::string(sstr.str());
-    }
-    //-----------------------------------------------------------------------------------------
-    static void ConstructStringGenericUInt(asIScriptGeneric * gen) 
-    {
-        unsigned int *a = static_cast<unsigned int*>(gen->GetAddressOfArg(0));
-        std::stringstream sstr;
-	    sstr << *a;
-        new (gen->GetObject()) std::string(sstr.str());
-    }
-    //-----------------------------------------------------------------------------------------
-    static void ConstructStringGenericDouble(asIScriptGeneric * gen) 
-    {
-        double *a = static_cast<double*>(gen->GetAddressOfArg(0));
-        std::stringstream sstr;
-	    sstr << *a;
-        new (gen->GetObject()) std::string(sstr.str());
-    }
-    //-----------------------------------------------------------------------------------------
-    static void ConstructStringInt(int a, std::string *thisPointer) 
-    {
-        std::stringstream sstr;
-	    sstr << a;
-        new (thisPointer) std::string(sstr.str());
-    }
-    //-----------------------------------------------------------------------------------------
-    static void ConstructStringUInt(unsigned int a, std::string *thisPointer) 
-    {
-        std::stringstream sstr;
-	    sstr << a;
-        new (thisPointer) std::string(sstr.str());
-    }
-    //-----------------------------------------------------------------------------------------
-    static void ConstructStringDouble(double a, std::string *thisPointer) 
-    {
-        std::stringstream sstr;
-	    sstr << a;
-        new (thisPointer) std::string(sstr.str());
-    }
-    //-----------------------------------------------------------------------------------------
-    inline int getArgumentPos(const std::string &str, int count)
-    {
-        const char *data = str.c_str();
-
-        int pos = -1;
-        int val = 1000;
-        for(int i = 0;i < count;i++)
-        {
-            if(data[i] == '%' && i < (count - 1) && data[i + 1] >= '0' && data[i + 1] <= '9')
-            {
-                if(val > data[i + 1])
-                {
-                    pos = i;
-                    val = data[i + 1];
-                }
-
-                ++i;
-            }
-        }
-
-        return pos;
-    }
-    //-----------------------------------------------------------------------------------------
-    static std::string Arg(const std::string& f, std::string &str)
-    {
-        int count = str.length();
-        int pos = getArgumentPos(str, count);
-
-        if(pos > -1)
-        {
-            return str.substr(0, pos) + f + str.substr(pos + 2, count - (pos + 2));
-        }
-
-        return str;
-    }
-    //-----------------------------------------------------------------------------------------
-    static std::string Arg(int n, std::string &str)
-    {
-        int count = str.length();
-        int pos = getArgumentPos(str, count);
-
-        if(pos > -1)
-        {
-            std::ostringstream f;
-            f << n;
-            return str.substr(0, pos) + f.str() + str.substr(pos + 2, count - (pos + 2));
-        }
-
-        return str;
-    }
-    //-----------------------------------------------------------------------------------------
-    static std::string Arg(unsigned int n, std::string &str)
-    {
-        int count = str.length();
-        int pos = getArgumentPos(str, count);
-
-        if(pos > -1)
-        {
-            std::ostringstream f;
-            f << n;
-            return str.substr(0, pos) + f.str() + str.substr(pos + 2, count - (pos + 2));
-        }
-
-        return str;
-    }
-    //-----------------------------------------------------------------------------------------
-    static std::string Arg(double n, std::string &str)
-    {
-        int count = str.length();
-        int pos = getArgumentPos(str, count);
-
-        if(pos > -1)
-        {
-            std::ostringstream f;
-            f << n;
-            return str.substr(0, pos) + f.str() + str.substr(pos + 2, count - (pos + 2));
-        }
-
-        return str;
-    }
-    //-----------------------------------------------------------------------------------------
-    static int StringFind(const std::string &arg, std::string &str)
-    {
-        return str.find(arg);
-    }
-    //-----------------------------------------------------------------------------------------
-    static void StringReplace(const std::string &tofind, const std::string &toreplace, std::string &str)
-    {
-        int pos = str.find(tofind);
-        if(pos != -1)
-        {
-            str.erase(pos, tofind.length());
-            str.insert(pos, toreplace);
-        }
-    }
-    //-----------------------------------------------------------------------------------------
-    static int StringToInt(std::string &dest)
-    {
-        std::stringstream f(dest);
-        int val = 0;
-        f >> val;
-        
-        return val;
-    }
-    //-----------------------------------------------------------------------------------------
-    static unsigned int StringToUInt(std::string &dest)
-    {
-        std::stringstream f(dest);
-        unsigned int val = 0;
-        f >> val;
-        
-        return val;
-    }
-    //-----------------------------------------------------------------------------------------
-    static double StringToDouble(std::string &dest)
-    {
-        std::stringstream f(dest);
-        double val = 0;
-        f >> val;
-        
-        return val;
-    }
-    //-----------------------------------------------------------------------------------------
-    static std::string StringSubStr(int st, int len, std::string &str)
-    {
-        return str.substr(st, len);
-    }
-    //-----------------------------------------------------------------------------------------
-    static void StringErase(int pos, int length, std::string &dest)
-    {
-        dest.erase(pos, length);
-    }
-    //-----------------------------------------------------------------------------------------
     bool prepareScriptBindings(OgitorsRoot *root, asIScriptEngine *engine)
     {
         int r;
 
         RegisterScriptArray(engine, true);
         RegisterStdString(engine);
-
-	    if (strstr(asGetLibraryOptions(), "AS_MAX_PORTABILITY"))
-        {
-            r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f(int)",                 asFUNCTION(ConstructStringGenericInt), asCALL_GENERIC); assert( r >= 0 );
-            r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f(uint)",                 asFUNCTION(ConstructStringGenericUInt), asCALL_GENERIC); assert( r >= 0 );
-            r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f(double)",                 asFUNCTION(ConstructStringGenericDouble), asCALL_GENERIC); assert( r >= 0 );
-        }
-	    else
-        {
-            r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f(int)",                    asFUNCTION(ConstructStringInt), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f(uint)",                    asFUNCTION(ConstructStringUInt), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f(double)",                    asFUNCTION(ConstructStringDouble), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-            r = engine->RegisterObjectMethod("string", "string arg(const string &in) const", asFUNCTIONPR(Arg, (const std::string&, std::string&), std::string), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "string arg(int) const", asFUNCTIONPR(Arg, (int, std::string&), std::string), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "string arg(uint) const", asFUNCTIONPR(Arg, (unsigned int, std::string&), std::string), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "string arg(double) const", asFUNCTIONPR(Arg, (double, std::string&), std::string), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-
-            r = engine->RegisterObjectMethod("string", "void erase(int , int)", asFUNCTION(StringErase), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "string subString(int, int) const", asFUNCTION(StringSubStr), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "int find(const string &in) const", asFUNCTION(StringFind), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "void replaceString(const string &in, const string&in)", asFUNCTION(StringReplace), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "int toInt()", asFUNCTION(StringToInt), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "uint toUInt()", asFUNCTION(StringToUInt), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	        r = engine->RegisterObjectMethod("string", "double toDouble()", asFUNCTION(StringToDouble), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-        }
+        RegisterScriptStringExtensions(engine);
 
         RegisterUTFBindings(engine);
         RegisterScriptMath(engine);
@@ -344,6 +161,8 @@ namespace Ogitors
         r = engine->RegisterObjectBehaviour("BaseEditor", asBEHAVE_RELEASE, "void f()", asMETHOD(CBaseEditor,_release), asCALL_THISCALL); assert( r >= 0 );
 
         RegisterVector<Ogre::vector<CBaseEditor*>::type, CBaseEditor*>("EditorVector","BaseEditor@", engine);
+
+        r = engine->RegisterGlobalFunction("void printEditorObjectInfo(BaseEditor@)", asFUNCTION(printEditorObjectInfo), asCALL_CDECL);assert(r >= 0);
 
         RegisterPropertyBindings(engine);
         RegisterBaseEditorBindings(engine);

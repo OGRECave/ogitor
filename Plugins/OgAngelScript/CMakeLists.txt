@@ -17,6 +17,7 @@ set(HEADER_FILES
 	Bindings_UTF.h
 	Bindings_Utils.h
 	Bindings_Viewport.h
+        ScriptStringExtensions.h
 	scripthelper.h
 	stdvector.h
 )
@@ -29,6 +30,7 @@ set(SOURCE_FILES
 	Bindings_Ogre.cpp
 	Bindings_Property.cpp
 	Bindings_Viewport.cpp
+        ScriptStringExtensions.cpp
 	scripthelper.cpp
 )
 
