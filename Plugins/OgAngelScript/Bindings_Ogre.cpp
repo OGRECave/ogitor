@@ -46,10 +46,40 @@ namespace Ogitors
         new(self) Ogre::ColourValue(r, g, b, a);
 	}
 
+    static void CopyConstructColourValue(const Ogre::ColourValue &other, Ogre::ColourValue *thisPointer)
+    {
+        new(thisPointer) Ogre::ColourValue(other);
+    }
+
+    static void DestructColourValue(Ogre::ColourValue *thisPointer)
+    {
+	    thisPointer->~ColourValue();
+    }
+
+    static Ogre::ColourValue &ColourValueAssignment(Ogre::ColourValue *other, Ogre::ColourValue *self)
+    {
+	    return *self = *other;
+    }
+
     static void SphereDefaultConstructor(const Ogre::Vector3 origin, Ogre::Real radius, Ogre::AxisAlignedBox *self)
 	{
         new(self) Ogre::Sphere(origin, radius);
 	}
+
+    static void CopyConstructSphere(const Ogre::Sphere &other, Ogre::Sphere *thisPointer)
+    {
+        new(thisPointer) Ogre::Sphere(other);
+    }
+
+    static void DestructSphere(Ogre::Sphere *thisPointer)
+    {
+	    thisPointer->~Sphere();
+    }
+
+    static Ogre::Sphere &SphereAssignment(Ogre::Sphere *other, Ogre::Sphere *self)
+    {
+	    return *self = *other;
+    }
 
     static void AxisAlignedBoxDefaultConstructor(Ogre::AxisAlignedBox *self)
 	{
@@ -61,6 +91,21 @@ namespace Ogitors
 		new(self) Ogre::AxisAlignedBox(min, max);
 	}
 
+    static void CopyConstructAxisAlignedBox(const Ogre::AxisAlignedBox &other, Ogre::AxisAlignedBox *thisPointer)
+    {
+        new(thisPointer) Ogre::AxisAlignedBox(other);
+    }
+
+    static void DestructAxisAlignedBox(Ogre::AxisAlignedBox *thisPointer)
+    {
+	    thisPointer->~AxisAlignedBox();
+    }
+
+    static Ogre::AxisAlignedBox &AxisAlignedBoxAssignment(Ogre::AxisAlignedBox *other, Ogre::AxisAlignedBox *self)
+    {
+	    return *self = *other;
+    }
+
     static void RayDefaultConstructor(Ogre::Ray *self)
 	{
 		new(self) Ogre::Ray();
@@ -71,16 +116,37 @@ namespace Ogitors
 		new(self) Ogre::Ray(origin, direction);
 	}
 
+    static void CopyConstructRay(const Ogre::Ray &other, Ogre::Ray *thisPointer)
+    {
+        new(thisPointer) Ogre::Ray(other);
+    }
+
+    static void DestructRay(Ogre::Ray *thisPointer)
+    {
+	    thisPointer->~Ray();
+    }
+
+    static Ogre::Ray &RayAssignment(Ogre::Ray *other, Ogre::Ray *self)
+    {
+	    return *self = *other;
+    }
+
     void RegisterOgreBindings(asIScriptEngine *engine)
 	{
 		int r;
 
         r = engine->RegisterObjectType("Sphere", sizeof(Ogre::Sphere), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Sphere", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in, float)",	asFUNCTION(SphereDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
+        r = engine->RegisterObjectBehaviour("Sphere", asBEHAVE_CONSTRUCT,  "void f(const Sphere &in)",    asFUNCTION(CopyConstructSphere), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("Sphere", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructSphere),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("Sphere", "Sphere &opAssign(Sphere&in)", asFUNCTION(SphereAssignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
         r = engine->RegisterObjectType("ColourValue", sizeof(Ogre::ColourValue), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("ColourValue", asBEHAVE_CONSTRUCT,  "void f()",	asFUNCTION(ColourValueDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour("ColourValue", asBEHAVE_CONSTRUCT,  "void f(float, float, float, float)",	asFUNCTION(ColourValueDefaultConstructor2),	asCALL_CDECL_OBJLAST); assert(r >= 0);
+        r = engine->RegisterObjectBehaviour("ColourValue", asBEHAVE_CONSTRUCT,  "void f(const ColourValue &in)",    asFUNCTION(CopyConstructColourValue), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("ColourValue", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructColourValue),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("ColourValue", "ColourValue &opAssign(ColourValue&in)", asFUNCTION(ColourValueAssignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("ColourValue", "float r", offsetof(Ogre::ColourValue, r)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("ColourValue", "float g", offsetof(Ogre::ColourValue, g)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("ColourValue", "float b", offsetof(Ogre::ColourValue, b)); assert( r >= 0 );
@@ -89,6 +155,9 @@ namespace Ogitors
         r = engine->RegisterObjectType("Ray", sizeof(Ogre::Ray), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Ray", asBEHAVE_CONSTRUCT,  "void f()",	asFUNCTION(RayDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour("Ray", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in, const Vector3 &in)",	asFUNCTION(RayDefaultConstructor2),	asCALL_CDECL_OBJLAST); assert(r >= 0);
+        r = engine->RegisterObjectBehaviour("Ray", asBEHAVE_CONSTRUCT,  "void f(const Ray &in)",    asFUNCTION(CopyConstructRay), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("Ray", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructRay),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("Ray", "Ray &opAssign(Ray&in)", asFUNCTION(RayAssignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
 		// Register the object methods
 		r = engine->RegisterObjectMethod("Ray", "const Vector3& getOrigin()",	asMETHOD(Ogre::Ray, getOrigin),	asCALL_THISCALL); assert(r >= 0);
@@ -100,6 +169,9 @@ namespace Ogitors
         r = engine->RegisterObjectType("AxisAlignedBox", sizeof(Ogre::AxisAlignedBox), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("AxisAlignedBox", asBEHAVE_CONSTRUCT,  "void f()",	asFUNCTION(AxisAlignedBoxDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour("AxisAlignedBox", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in, const Vector3 &in)",	asFUNCTION(AxisAlignedBoxDefaultConstructor2),	asCALL_CDECL_OBJLAST); assert(r >= 0);
+        r = engine->RegisterObjectBehaviour("AxisAlignedBox", asBEHAVE_CONSTRUCT,  "void f(const AxisAlignedBox &in)",    asFUNCTION(CopyConstructAxisAlignedBox), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("AxisAlignedBox", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructAxisAlignedBox),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("AxisAlignedBox", "AxisAlignedBox &opAssign(AxisAlignedBox&in)", asFUNCTION(AxisAlignedBoxAssignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
 		// Register the object methods
         r = engine->RegisterObjectMethod("AxisAlignedBox", "const Vector3& getMinimum()",	asMETHODPR(Ogre::AxisAlignedBox, getMinimum, (void) const, const Ogre::Vector3&),	asCALL_THISCALL); assert(r >= 0);
