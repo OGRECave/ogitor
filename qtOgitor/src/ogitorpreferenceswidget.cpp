@@ -42,14 +42,21 @@
 #include "OgreRoot.h"
 #include "ogitorpreferenceswidget.hxx"
 
+#include "BaseEditor.h"
+#include "CameraEditor.h"
+#include "ViewportEditor.h"
+
+extern bool    ViewKeyboard[1024];
+
 //----------------------------------------------------------------------------------------
 OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, QWidget *parent) 
 : QWidget(parent)
 {
-    mPluginsChanged            = false;
-    mLanguageChanged        = false;
-    mRenderSystemChanged    = false;    
-    mVSyncChanged            = false;
+    mPluginsChanged        = false;
+    mLanguageChanged       = false;
+    mRenderSystemChanged   = false;    
+    mVSyncChanged          = false;
+    mKeyboardLayoutChanged = false;
     
     setPrefsSectionName(prefSectionName);
     
@@ -259,6 +266,9 @@ OgitorPreferencesWidget::~OgitorPreferencesWidget()
 //----------------------------------------------------------------------------------------
 void OgitorPreferencesWidget::getPreferences(Ogre::NameValuePairList& preferences)
 {
+    preferences.insert(Ogre::NameValuePairList::value_type("useAZERTY",
+        Ogre::StringConverter::toString(azertyCheckBox->isChecked())));
+
     preferences.insert(Ogre::NameValuePairList::value_type("skipSplash",
         Ogre::StringConverter::toString(splashscreenCheckBox->isChecked())));
 
@@ -309,6 +319,7 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
     
     loadLastCheckBox->setChecked(settings.value("loadLastLoadedScene", false).toBool());
     splashscreenCheckBox->setChecked(settings.value("skipSplash", false).toBool());
+    azertyCheckBox->setChecked(settings.value("useAZERTY", false).toBool());
 
     QString style = settings.value("customStyleSheet").toString();
     int result = styleSheetList->findText(style);
@@ -378,6 +389,7 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
     settings.endGroup();
     applyPreferences();
 
+    connect(azertyCheckBox,           SIGNAL(stateChanged(int)),        this, SLOT(keyboardLayoutChanged()));
     connect(splashscreenCheckBox,     SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
     connect(loadLastCheckBox,         SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
     connect(styleSheetList,           SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
@@ -431,6 +443,28 @@ bool OgitorPreferencesWidget::applyPreferences()
     if(mVSyncChanged)
         QMessageBox::warning(QApplication::activeWindow(), tr("Preferences"), tr("VSync usage will be changed when Ogitor is restarted!"), QMessageBox::Ok);
     mVSyncChanged = false;
+
+    if(mKeyboardLayoutChanged)
+    {
+        Ogitors::OgitorsSpecialKeys keys = Ogitors::CViewportEditor::GetKeyboard();
+
+        if(azertyCheckBox->isChecked())
+        {
+            // azerty keys
+            keys.SPK_LEFT = Qt::Key_Q;
+            keys.SPK_FORWARD = Qt::Key_Z;
+            keys.SPK_DOWN = Qt::Key_A;
+        }
+        else
+        {
+            // normal keys
+            keys.SPK_LEFT = Qt::Key_A;
+            keys.SPK_FORWARD = Qt::Key_W;
+            keys.SPK_DOWN = Qt::Key_Q;
+        }
+
+        Ogitors::CViewportEditor::SetKeyboard(ViewKeyboard, keys);
+    }
 
     //// Unload plugins
     //const Ogitors::PluginEntryMap* pPluginMap = Ogitors::OgitorsRoot::getSingletonPtr()->GetPluginMap();
@@ -486,6 +520,12 @@ void OgitorPreferencesWidget::fillOgreTab()
 void OgitorPreferencesWidget::setDirty()
 {
     emit isDirty();
+}
+//----------------------------------------------------------------------------------------
+void OgitorPreferencesWidget::keyboardLayoutChanged()
+{
+    mKeyboardLayoutChanged = true;
+    setDirty();
 }
 //----------------------------------------------------------------------------------------
 void OgitorPreferencesWidget::languageChanged()

@@ -58,6 +58,7 @@ public:
 
 public Q_SLOTS:
     void setDirty();
+    void keyboardLayoutChanged();
     void languageChanged();
     void treeChanged(QTreeWidgetItem* item, int row);
     void renderSystemChanged();
@@ -71,6 +72,7 @@ private:
 
     void fillOgreTab();
     
+    bool                    mKeyboardLayoutChanged;
     bool                    mPluginsChanged;
     bool                    mLanguageChanged;
     bool                    mRenderSystemChanged;

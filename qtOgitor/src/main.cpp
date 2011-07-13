@@ -113,6 +113,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
     int antialias = settings.value("antiAliasing", 0).toInt();
     bool vsync = settings.value("useVSync", false).toBool();
+    bool azerty = settings.value("useAZERTY", false).toBool();
     settings.endGroup();
 
     // Some standard rendering system configurations
@@ -140,15 +141,29 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
     //tmp->add(QKeySequence(Qt::Key_S).toString(), QString("Move Backward"), "SPK_BACKWARD", Qt::Key_S);
     //tmp->add(QKeySequence(Qt::Key_D).toString(), QString("Move Right"), "SPK_RIGHT", Qt::Key_D);
 
-    // normal keys
-    keys.SPK_LEFT = Qt::Key_A;
-    keys.SPK_RIGHT = Qt::Key_D;
-    keys.SPK_FORWARD = Qt::Key_W;
-    keys.SPK_BACKWARD = Qt::Key_S;
-    keys.SPK_UP = Qt::Key_E;
-    keys.SPK_DOWN = Qt::Key_Q;
-    keys.SPK_FOCUS_OBJECT = Qt::Key_F;
+    if(azerty)
+    {
+        // azerty keys
+        keys.SPK_LEFT = Qt::Key_Q;
+        keys.SPK_RIGHT = Qt::Key_D;
+        keys.SPK_FORWARD = Qt::Key_Z;
+        keys.SPK_BACKWARD = Qt::Key_S;
+        keys.SPK_UP = Qt::Key_E;
+        keys.SPK_DOWN = Qt::Key_A;
+    }
+    else
+    {
+        // normal keys
+        keys.SPK_LEFT = Qt::Key_A;
+        keys.SPK_RIGHT = Qt::Key_D;
+        keys.SPK_FORWARD = Qt::Key_W;
+        keys.SPK_BACKWARD = Qt::Key_S;
+        keys.SPK_UP = Qt::Key_E;
+        keys.SPK_DOWN = Qt::Key_Q;
+    }
+
     // special keys
+    keys.SPK_FOCUS_OBJECT = Qt::Key_F;
     keys.SPK_DELETE = (Qt::Key_Delete & 0xFFF) + 0xFF;
     keys.SPK_SWITCH_AXIS = (Qt::Key_End & 0xFFF) + 0xFF;
     // shift

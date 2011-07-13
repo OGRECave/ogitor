@@ -53,6 +53,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="azertyCheckBox">
+            <property name="text">
+             <string>Use AZERTY Keyboard Layout</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
