@@ -111,6 +111,11 @@ namespace Ogitors
             console->addOutput(text);
     }
     //-----------------------------------------------------------------------------------------
+    static void logMessage(unsigned int level, const std::string& text)
+    {
+        Ogre::LogManager::getSingletonPtr()->logMessage(text, (Ogre::LogMessageLevel)level);
+    }
+    //-----------------------------------------------------------------------------------------
     static float UnitRandomImpl()
     {
         return Ogre::Math::UnitRandom();
@@ -143,6 +148,7 @@ namespace Ogitors
         r = engine->RegisterGlobalFunction("void printConsole(int)", asFUNCTIONPR(printConsole, (int), void), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("void printConsole(uint)", asFUNCTIONPR(printConsole, (unsigned int), void), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("void printConsole(double)", asFUNCTIONPR(printConsole, (double), void), asCALL_CDECL);assert(r >= 0);
+        r = engine->RegisterGlobalFunction("void logMessage(uint, const string &in)", asFUNCTION(logMessage), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("float rand()", asFUNCTION(UnitRandomImpl), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("float rand(float, float)", asFUNCTION(RangeRandomImpl), asCALL_CDECL);assert(r >= 0);
 
