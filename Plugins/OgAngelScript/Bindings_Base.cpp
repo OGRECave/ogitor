@@ -62,7 +62,7 @@ namespace Ogitors
         r = engine->RegisterObjectMethod(name, "Vector3 getDerivedScale()", asMETHOD(classname, getDerivedScale), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "void setDerivedScale(Vector3)", asMETHOD(classname, setDerivedScale), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "PropertySet@ getProperties()", asMETHOD(classname, getProperties), asCALL_THISCALL);assert(r >= 0);\
-        r = engine->RegisterObjectMethod(name, "CustomPropertySet@ getCustomProperties(string &in)", asMETHOD(classname, getCustomProperties), asCALL_THISCALL);assert(r >= 0);\
+        r = engine->RegisterObjectMethod(name, "CustomPropertySet@ getCustomProperties()", asMETHOD(classname, getCustomProperties), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "Property@ getProperty(string &in)", asMETHOD(classname, getProperty), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "bool hasProperty(string &in)", asMETHOD(classname, hasProperty), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "string getName()", asMETHOD(classname, getName), asCALL_THISCALL);assert(r >= 0);\
