@@ -36,11 +36,12 @@
 #include "ScriptStringExtensions.h"
 #include "angelscript.h"
 #include "scriptstdstring.h"
+#include <cstring>
 
 namespace Ogitors
 {
     //-----------------------------------------------------------------------------------------
-    static void ConstructStringGenericInt(asIScriptGeneric * gen) 
+    static void ConstructStringGenericInt(asIScriptGeneric * gen)
     {
         int *a = static_cast<int*>(gen->GetAddressOfArg(0));
         std::stringstream sstr;
@@ -48,7 +49,7 @@ namespace Ogitors
         new (gen->GetObject()) std::string(sstr.str());
     }
     //-----------------------------------------------------------------------------------------
-    static void ConstructStringGenericUInt(asIScriptGeneric * gen) 
+    static void ConstructStringGenericUInt(asIScriptGeneric * gen)
     {
         unsigned int *a = static_cast<unsigned int*>(gen->GetAddressOfArg(0));
         std::stringstream sstr;
@@ -56,7 +57,7 @@ namespace Ogitors
         new (gen->GetObject()) std::string(sstr.str());
     }
     //-----------------------------------------------------------------------------------------
-    static void ConstructStringGenericDouble(asIScriptGeneric * gen) 
+    static void ConstructStringGenericDouble(asIScriptGeneric * gen)
     {
         double *a = static_cast<double*>(gen->GetAddressOfArg(0));
         std::stringstream sstr;
@@ -64,21 +65,21 @@ namespace Ogitors
         new (gen->GetObject()) std::string(sstr.str());
     }
     //-----------------------------------------------------------------------------------------
-    static void ConstructStringInt(int a, std::string *thisPointer) 
+    static void ConstructStringInt(int a, std::string *thisPointer)
     {
         std::stringstream sstr;
 	    sstr << a;
         new (thisPointer) std::string(sstr.str());
     }
     //-----------------------------------------------------------------------------------------
-    static void ConstructStringUInt(unsigned int a, std::string *thisPointer) 
+    static void ConstructStringUInt(unsigned int a, std::string *thisPointer)
     {
         std::stringstream sstr;
 	    sstr << a;
         new (thisPointer) std::string(sstr.str());
     }
     //-----------------------------------------------------------------------------------------
-    static void ConstructStringDouble(double a, std::string *thisPointer) 
+    static void ConstructStringDouble(double a, std::string *thisPointer)
     {
         std::stringstream sstr;
 	    sstr << a;
@@ -186,7 +187,7 @@ namespace Ogitors
         std::stringstream f(dest);
         int val = 0;
         f >> val;
-        
+
         return val;
     }
     //-----------------------------------------------------------------------------------------
@@ -195,7 +196,7 @@ namespace Ogitors
         std::stringstream f(dest);
         unsigned int val = 0;
         f >> val;
-        
+
         return val;
     }
     //-----------------------------------------------------------------------------------------
@@ -204,7 +205,7 @@ namespace Ogitors
         std::stringstream f(dest);
         double val = 0;
         f >> val;
-        
+
         return val;
     }
     //-----------------------------------------------------------------------------------------
