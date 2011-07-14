@@ -95,6 +95,7 @@ public:
 
     void                            onModifiedStateChanged(Ogitors::IEvent* evt);
     void                            onLoadStateChanged(Ogitors::IEvent* evt);
+    GenericTextEditorDocument*      getLastDocument() { return mLastDocument; }
 
 signals:
     void                            currentChanged(int);

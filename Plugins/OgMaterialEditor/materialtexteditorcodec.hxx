@@ -36,6 +36,8 @@
 #include "itexteditorcodec.hxx"
 #include "generictexteditor.hxx"
 
+#include <QtGui/QAction>
+
 #include <OgreString.h>
 #include <OgreScriptCompiler.h>
 
@@ -44,17 +46,23 @@
 class MaterialTextEditorCodec : public ITextEditorCodec, Ogre::ScriptCompilerListener 
 {
 public:
+    static QAction*  mActRefresh;
+    static QToolBar* mToolBar;
+
     MaterialTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
 
     QString         onBeforeDisplay(QString text);
     void            onAfterDisplay();
     void            onContextMenu(QContextMenuEvent* event);
     void            onKeyPressEvent(QKeyEvent *event);
+    void            onRefresh();
     void            onAddHighlighter();
     void            onAddCompleter();
     void            onDisplayRequest();
 
     void            handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const Ogre::String &file, int line, const Ogre::String &msg);
+
+    QToolBar*       getCustomToolBar(){ return mToolBar; };
 
     static  QString getMaterialText(const Ogre::String& input, const Ogre::String& find);
 

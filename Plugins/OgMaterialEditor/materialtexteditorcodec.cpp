@@ -45,7 +45,6 @@
 #include <QtCore/QSettings>
 
 //-----------------------------------------------------------------------------------------
-
 enum ColorType
 {
     NONE = 0,
@@ -54,6 +53,10 @@ enum ColorType
     SPECULAR,
     EMISSIVE
 };
+//-----------------------------------------------------------------------------------------
+
+QAction*  MaterialTextEditorCodec::mActRefresh = 0;
+QToolBar* MaterialTextEditorCodec::mToolBar = 0;
 
 //-----------------------------------------------------------------------------------------
 MaterialTextEditorCodec::MaterialTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon) : 
@@ -328,6 +331,27 @@ void MaterialTextEditorCodec::onKeyPressEvent(QKeyEvent *event)
                 Ogitors::OgitorsRoot::getSingletonPtr()->UpdateMaterialInScene(materialList[i].toStdString());
         }
     }
+}
+//-----------------------------------------------------------------------------------------
+void MaterialTextEditorCodec::onRefresh()
+{
+    mGenTexEdDoc->save();
+
+    QStringList materialList = findMaterialNames();
+
+    // Check if we are dealing with actual loaded Ogre materials here. If we previously found out
+    // that there is a script error proceed anyway.
+    Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+    if(mat.isNull() && !mScriptError)
+    {
+        QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("This material file seems to not be an active Ogre material. Please make sure it is declared as a scene asset and properly loaded."));      
+        return;
+    }
+
+    reloadMaterials(materialList);
+
+    for(int i = 0; i < materialList.size(); i++)
+        Ogitors::OgitorsRoot::getSingletonPtr()->UpdateMaterialInScene(materialList[i].toStdString());
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::onAddCompleter()

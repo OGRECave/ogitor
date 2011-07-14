@@ -36,6 +36,7 @@
 #include <QtCore/QString>
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QToolBar>
 
 //----------------------------------------------------------------------------------------
 
@@ -116,6 +117,11 @@ public:
     * Called whenever the document this codec instance is attached to is made visible due to a tab change.
     */
     virtual void    onTabChange(){};
+
+    /**
+    * Returns a custom toolbar instance for this codec.
+    */
+    virtual QToolBar* getCustomToolBar(){ return 0; };
 
     /**
     * Called whenever the document this codec instance is attached to is being closed. At this stage 

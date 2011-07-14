@@ -50,6 +50,7 @@ public:
     virtual ~MaterialTreeWidget();
 public Q_SLOTS:
     void contextMenu(int id);
+    
 protected:
     Ogitors::CMaterialEditor *mMaterialEditor;
 
@@ -84,6 +85,7 @@ public:
 
 public Q_SLOTS:
     void selectionChanged();
+    void refreshCurrentCodecMaterial();
 
 protected:
     MaterialTreeWidget              *treeWidget;
