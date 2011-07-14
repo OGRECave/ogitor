@@ -45,7 +45,7 @@ TextCodecExtensionFactoryMap GenericTextEditor::mRegisteredCodecFactories = Text
 //-----------------------------------------------------------------------------------------
 GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdiArea(parent)
 {
-    mParentTabWidget = static_cast<QTabWidget*>(parent);
+    mParentTabWidget = static_cast<QTabWidget*>(parent->parent());
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
 
@@ -55,6 +55,47 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     connect(tabBar, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
     connect(this,   SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+
+    mActSave = new QAction(tr("Save"), this);
+    mActSave->setStatusTip(tr("Save"));
+    mActSave->setIcon( QIcon( ":/icons/filesave.svg" ));
+    mActSave->setEnabled(false);
+    
+    mActEditCopy = new QAction(tr("Copy"), this);
+    mActEditCopy->setStatusTip(tr("Copy Selected"));
+    mActEditCopy->setIcon( QIcon( ":/icons/editcopy.svg"));
+    mActEditCopy->setEnabled(false);
+
+    mActEditCut = new QAction(tr("Cut"), this);
+    mActEditCut->setStatusTip(tr("Cut Selected"));
+    mActEditCut->setIcon( QIcon( ":/icons/editcut.svg"));
+    mActEditCut->setEnabled(false);
+
+    mActEditPaste = new QAction(tr("Paste"), this);
+    mActEditPaste->setStatusTip(tr("Paste From Clipboard"));
+    mActEditPaste->setIcon( QIcon( ":/icons/editpaste.svg"));
+    mActEditPaste->setEnabled(false);
+
+
+    mMainToolBar = new QToolBar();
+    mMainToolBar->setObjectName("renderwindowtoolbar");
+    mMainToolBar->setIconSize(QSize(20,20));
+    mMainToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    mMainToolBar->addAction(mActSave);
+    mMainToolBar->addSeparator();
+    mMainToolBar->addAction(mActEditCut);
+    mMainToolBar->addAction(mActEditCopy);
+    mMainToolBar->addAction(mActEditPaste);
+
+    QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+    mw->addToolBar(Qt::TopToolBarArea, mMainToolBar);
+
+    mLastDocument = 0;
+
+    connect(mActEditCut, SIGNAL(triggered()), this, SLOT(pasteAvailable()));
+    connect(mActEditCopy, SIGNAL(triggered()), this, SLOT(pasteAvailable()));
+    connect(mActSave, SIGNAL(triggered()), this, SLOT(onSave()));
+
 
     // Register the standard generic text editor codec extensions
     GenericTextEditorCodecFactory* genCodecFactory = new GenericTextEditorCodecFactory();
@@ -69,6 +110,22 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
 
     Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::MODIFIED_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericTextEditor, onModifiedStateChanged));
     Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericTextEditor, onLoadStateChanged));
+}
+//-----------------------------------------------------------------------------------------
+GenericTextEditor::~GenericTextEditor()
+{
+    Ogitors::EventManager::getSingletonPtr()->disconnectEvent(Ogitors::EventManager::MODIFIED_STATE_CHANGE, this);
+    Ogitors::EventManager::getSingletonPtr()->disconnectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this);
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::pasteAvailable()
+{
+    mActEditPaste->setEnabled(true);
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::onSave()
+{
+    mActSave->setEnabled(false);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::registerCodecFactory(QString extension, ITextEditorCodecFactory* codec)
@@ -116,6 +173,7 @@ bool GenericTextEditor::displayTextFromFile(QString filePath, QString optionalDa
     moveToForeground();   
 
     connect(document, SIGNAL(textChanged()), document, SLOT(documentWasModified()));
+    mActSave->setEnabled(false);
 
     return true;
 }
@@ -156,6 +214,7 @@ bool GenericTextEditor::displayText(QString docName, QString text, QString exten
     moveToForeground();
 
     connect(document, SIGNAL(textChanged()), document, SLOT(documentWasModified()));
+    mActSave->setEnabled(false);
 
     return true;
 }
@@ -184,6 +243,11 @@ bool GenericTextEditor::isDocAlreadyShowing(QString docName, GenericTextEditorDo
     return false;
 }
 //-----------------------------------------------------------------------------------------
+void GenericTextEditor::tabContentChange()
+{
+    mActSave->setEnabled(true);
+}
+//-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
 {
     QMdiSubWindow *sub = subWindowList()[index];
@@ -199,6 +263,19 @@ void GenericTextEditor::closeTab(int index)
         case QMessageBox::Cancel:   return;
         }
     }
+
+    if(mLastDocument == document)
+    {
+        disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
+        disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
+        disconnect(mActEditCopy, SIGNAL(triggered()), mLastDocument, SLOT(copy()));
+        disconnect(mActEditPaste, SIGNAL(triggered()), mLastDocument, SLOT(paste()));
+        disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+        mLastDocument = 0;
+    }
+
     sub->close();
     document->getCodec()->onClose();
     document->releaseFile();
@@ -256,7 +333,7 @@ QStringListModel* GenericTextEditor::modelFromFile(const QString& filePath)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::moveToForeground()
 {
-    mParentTabWidget->setCurrentIndex(mParentTabWidget->indexOf(this));
+    mParentTabWidget->setCurrentIndex(mParentTabWidget->indexOf(this->parentWidget()));
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::saveAll()
@@ -272,6 +349,17 @@ void GenericTextEditor::saveAll()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabChanged(int index)
 {
+    if(mLastDocument)
+    {
+        disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
+        disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
+        disconnect(mActEditCopy, SIGNAL(triggered()), mLastDocument, SLOT(copy()));
+        disconnect(mActEditPaste, SIGNAL(triggered()), mLastDocument, SLOT(paste()));
+        disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+    }
+    
     // -1 means that the last tab was just closed and so there is no one left anymore to switch to
     if(index != -1)
     {
@@ -279,6 +367,29 @@ void GenericTextEditor::tabChanged(int index)
         QList<QMdiSubWindow*> list = subWindowList();
         document = static_cast<GenericTextEditorDocument*>(subWindowList()[index]->widget());
         document->getCodec()->onTabChange();
+
+        bool retv;
+
+        connect(mActSave, SIGNAL(triggered()), document, SLOT(save()));
+        connect(mActEditCut, SIGNAL(triggered()), document, SLOT(cut()));
+        connect(mActEditCopy, SIGNAL(triggered()), document, SLOT(copy()));
+        connect(mActEditPaste, SIGNAL(triggered()), document, SLOT(paste()));
+        retv = connect(document, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+        retv = connect(document, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+        retv = connect(document, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+        mActSave->setEnabled(document->isTextModified());
+        mActEditCut->setEnabled(false);
+        mActEditCopy->setEnabled(false);
+
+        mLastDocument = document;
+    }
+    else
+    {
+        mActSave->setEnabled(false);
+        mActEditCut->setEnabled(false);
+        mActEditCopy->setEnabled(false);
+        mActEditPaste->setEnabled(false);
+        mLastDocument = 0;
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -306,7 +417,22 @@ void GenericTextEditor::onLoadStateChanged(Ogitors::IEvent* evt)
         Ogitors::LoadState state = change_event->getType();
 
         if(state == Ogitors::LS_UNLOADED)
-            close();
+        {
+            if(mLastDocument)
+            {
+                disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
+                disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
+                disconnect(mActEditCopy, SIGNAL(triggered()), mLastDocument, SLOT(copy()));
+                disconnect(mActEditPaste, SIGNAL(triggered()), mLastDocument, SLOT(paste()));
+                disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+                disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+                disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+            }
+            
+            mLastDocument = 0;
+
+            closeAllSubWindows();
+        }
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -668,7 +794,7 @@ void GenericTextEditorDocument::setTextModified(bool modified)
 {
     mTextModified = modified; 
     setWindowModified(modified);
-    Ogitors::OgitorsRoot::getSingletonPtr()->SetSceneModified(modified);
+    Ogitors::OgitorsRoot::getSingletonPtr()->ChangeSceneModified(modified);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::save()
