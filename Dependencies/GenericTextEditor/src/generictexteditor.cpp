@@ -342,13 +342,15 @@ void GenericTextEditor::saveAll()
     QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
     { 
-        document = static_cast<GenericTextEditorDocument*>(subWindowList()[i]->widget());
+        document = static_cast<GenericTextEditorDocument*>(list[i]->widget());
         document->save();
     }
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabChanged(int index)
 {
+    QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+
     if(mLastDocument)
     {
         disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
@@ -358,14 +360,18 @@ void GenericTextEditor::tabChanged(int index)
         disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
         disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
         disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+
+        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
+        if(tb != 0)
+            mw->removeToolBar(tb);
     }
-    
+
     // -1 means that the last tab was just closed and so there is no one left anymore to switch to
     if(index != -1)
     {
         GenericTextEditorDocument* document;
         QList<QMdiSubWindow*> list = subWindowList();
-        document = static_cast<GenericTextEditorDocument*>(subWindowList()[index]->widget());
+        document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
         document->getCodec()->onTabChange();
 
         bool retv;
@@ -382,6 +388,13 @@ void GenericTextEditor::tabChanged(int index)
         mActEditCopy->setEnabled(false);
 
         mLastDocument = document;
+
+        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
+        if(tb != 0)
+        {
+            mw->addToolBar(Qt::TopToolBarArea, tb);
+            tb->show();
+        }
     }
     else
     {
@@ -427,6 +440,12 @@ void GenericTextEditor::onLoadStateChanged(Ogitors::IEvent* evt)
                 disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
                 disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
                 disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+
+                QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+
+                QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
+                if(tb != 0)
+                    mw->removeToolBar(tb);
             }
             
             mLastDocument = 0;

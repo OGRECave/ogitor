@@ -62,6 +62,18 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
     preferencesEditorData.mSectionName = "materialEditor";
     preferencesEditorData.mHandle = mMaterialPrefsEditor;
 
+    MaterialTextEditorCodec::mActRefresh = new QAction("Refresh Material", GenericTextEditor::getSingletonPtr());
+    MaterialTextEditorCodec::mActRefresh->setStatusTip("Refresh Material");
+    MaterialTextEditorCodec::mActRefresh->setIcon( QIcon( ":/icons/refresh.svg"));
+    MaterialTextEditorCodec::mActRefresh->setEnabled(true);
+    MaterialTextEditorCodec::mActRefresh->connect(MaterialTextEditorCodec::mActRefresh, SIGNAL(triggered()), mMaterialViewWidget, SLOT(refreshCurrentCodecMaterial()));
+
+    MaterialTextEditorCodec::mToolBar = new QToolBar();
+    MaterialTextEditorCodec::mToolBar->setObjectName("renderwindowtoolbar");
+    MaterialTextEditorCodec::mToolBar->setIconSize(QSize(20,20));
+    MaterialTextEditorCodec::mToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    MaterialTextEditorCodec::mToolBar->addAction(MaterialTextEditorCodec::mActRefresh);
+
     MaterialTextEditorCodecFactory* matCodecFactory = new MaterialTextEditorCodecFactory();
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("material",     matCodecFactory);
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("cg",           matCodecFactory);
