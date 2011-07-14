@@ -36,15 +36,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QCompleter>
-#include <QtGui/QStringListModel>
-#include <QtGui/QScrollBar>
-#include <QtGui/QMdiArea>
-#include <QtGui/QMdiSubWindow>
-#include <QtGui/QSyntaxHighlighter>
+#include <QtGui/QtGui>
 
 #include "Ogitors.h"
 #include "OgreSingleton.h"
@@ -85,6 +77,7 @@ class GTEExport GenericTextEditor : public QMdiArea, public Ogre::Singleton<Gene
 
 public:
     GenericTextEditor(QString editorName, QWidget *parent = 0);
+    ~GenericTextEditor();
 
     bool                            displayTextFromFile(QString filePath, QString optionalData = "");
     bool                            displayText(QString docName, QString text, QString extension = "", QString optionalData = "");
@@ -106,6 +99,11 @@ public:
 signals:
     void                            currentChanged(int);
 
+public slots:
+    void                            tabContentChange();
+    void                            pasteAvailable();
+    void                            onSave();
+
 protected:
     bool                            isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
     bool                            isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
@@ -119,8 +117,18 @@ private slots:
 
 private:
      static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;
-     QTabWidget*                        mParentTabWidget;
-     bool                               mAllowDoubleDisplay;
+     
+     GenericTextEditorDocument* mLastDocument;
+     
+     QTabWidget* mParentTabWidget;
+     bool        mAllowDoubleDisplay;
+
+  
+     QToolBar*   mMainToolBar;
+     QAction*    mActSave;
+     QAction*    mActEditCut;
+     QAction*    mActEditCopy;
+     QAction*    mActEditPaste;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -138,7 +146,6 @@ public:
 
     void displayTextFromFile(QString docName, QString filePath, QString optionalData);
     void displayText(QString docName, QString text, QString optionalData);
-    void save();
     bool saveDefaultLogic();
     void releaseFile();
     void addCompleter(const QString keywordListFilePath);
@@ -153,6 +160,10 @@ public:
     inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
     inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
     inline QFile* getFile(){return &mFile;};
+
+public slots:
+    void save();
+
 
 protected:
     void resizeEvent(QResizeEvent *event);
