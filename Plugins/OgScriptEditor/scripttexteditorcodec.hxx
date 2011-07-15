@@ -40,16 +40,40 @@
 #include <OgreScriptCompiler.h>
 
 //----------------------------------------------------------------------------------------
+class ScriptTextEditorCodecToolBar : public QToolBar
+{
+    Q_OBJECT;
 
+public:
+    ScriptTextEditorCodecToolBar(const QString& name);
+    ~ScriptTextEditorCodecToolBar();
+
+public Q_SLOTS:
+    void onRefresh();
+    void onRun();
+
+protected:
+    QAction *mActRefresh;
+    QAction *mActRun;
+};
+//----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 class ScriptTextEditorCodec : public ITextEditorCodec
 {
 public:
+    static ScriptTextEditorCodecToolBar* mToolBar;
+
     ScriptTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
 
-    QString onBeforeDisplay(QString text);
-    void    onKeyPressEvent(QKeyEvent *event);
-    void    onAddHighlighter();
-    void    onAddCompleter();
+    QString   onBeforeDisplay(QString text);
+    void      onKeyPressEvent(QKeyEvent *event);
+    void      onAddHighlighter();
+    void      onAddCompleter();
+    void      onRefresh();
+    void      onRun();
+
+    QToolBar* getCustomToolBar(){ return mToolBar; };
 
 private:
     QString mScriptName;

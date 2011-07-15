@@ -55,9 +55,35 @@ enum ColorType
 };
 //-----------------------------------------------------------------------------------------
 
-QAction*  MaterialTextEditorCodec::mActRefresh = 0;
-QToolBar* MaterialTextEditorCodec::mToolBar = 0;
+MaterialTextEditorCodecToolBar* MaterialTextEditorCodec::mToolBar = 0;
 
+//-----------------------------------------------------------------------------------------
+MaterialTextEditorCodecToolBar::MaterialTextEditorCodecToolBar(const QString& name) : QToolBar(name), mActRefresh(0)
+{
+    mActRefresh = new QAction("Refresh Material", this);
+    mActRefresh->setStatusTip("Refresh Material");
+    mActRefresh->setIcon( QIcon( ":/icons/refresh.svg"));
+    mActRefresh->setEnabled(true);
+    connect(mActRefresh, SIGNAL(triggered()), this, SLOT(onRefresh()));
+
+    setObjectName("renderwindowtoolbar");
+    setIconSize(QSize(20,20));
+    setToolButtonStyle(Qt::ToolButtonIconOnly);
+    addAction(mActRefresh);
+}
+//-----------------------------------------------------------------------------------------
+MaterialTextEditorCodecToolBar::~MaterialTextEditorCodecToolBar()
+{
+}
+//-----------------------------------------------------------------------------------------
+void MaterialTextEditorCodecToolBar::onRefresh()
+{
+    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getLastDocument();
+    if(document != 0)
+    {
+        static_cast<MaterialTextEditorCodec*>(document->getCodec())->onRefresh();
+    }
+}
 //-----------------------------------------------------------------------------------------
 MaterialTextEditorCodec::MaterialTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon) : 
 ITextEditorCodec(genTexEdDoc, docName, documentIcon)

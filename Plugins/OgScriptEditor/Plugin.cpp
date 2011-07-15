@@ -46,6 +46,8 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 	
     mScriptViewWidget = new ScriptViewWidget();
 
+    ScriptTextEditorCodec::mToolBar = new ScriptTextEditorCodecToolBar("Script Actions");
+
 	Ogitors::DockWidgetData dockWidgetData;
 	dockWidgetData.mCaption = "AngleScripts";
     dockWidgetData.mHandle = mScriptViewWidget;
