@@ -93,6 +93,30 @@ namespace Ogitors
             console->addOutput(Ogre::StringConverter::toString((Ogre::Real)number));
     }
     //-----------------------------------------------------------------------------------------
+    static void printConsole(Ogre::Vector3 vec)
+    {
+        OgitorsScriptConsole *console = OgitorsScriptConsole::getSingletonPtr();
+        if(console)
+        {
+            std::string text = "Vector {";
+            text += Ogre::StringConverter::toString(vec);
+            text += "}";
+            console->addOutput(text);
+        }
+    }
+    //-----------------------------------------------------------------------------------------
+    static void printConsole(Ogre::Quaternion quat)
+    {
+        OgitorsScriptConsole *console = OgitorsScriptConsole::getSingletonPtr();
+        if(console)
+        {
+            std::string text = "Quaternion {";
+            text += Ogre::StringConverter::toString(quat);
+            text += "}";
+            console->addOutput(text);
+        }
+    }
+    //-----------------------------------------------------------------------------------------
     static void printEditorObjectInfo(CBaseEditor *object)
     {
         std::string text = "OBJECT INFO : {Null Object}";
@@ -148,6 +172,8 @@ namespace Ogitors
         r = engine->RegisterGlobalFunction("void printConsole(int)", asFUNCTIONPR(printConsole, (int), void), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("void printConsole(uint)", asFUNCTIONPR(printConsole, (unsigned int), void), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("void printConsole(double)", asFUNCTIONPR(printConsole, (double), void), asCALL_CDECL);assert(r >= 0);
+        r = engine->RegisterGlobalFunction("void printConsole(Vector3)", asFUNCTIONPR(printConsole, (Ogre::Vector3), void), asCALL_CDECL);assert(r >= 0);
+        r = engine->RegisterGlobalFunction("void printConsole(Quaternion)", asFUNCTIONPR(printConsole, (Ogre::Quaternion), void), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("void logMessage(uint, const string &in)", asFUNCTION(logMessage), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("float rand()", asFUNCTION(UnitRandomImpl), asCALL_CDECL);assert(r >= 0);
         r = engine->RegisterGlobalFunction("float rand(float, float)", asFUNCTION(RangeRandomImpl), asCALL_CDECL);assert(r >= 0);
