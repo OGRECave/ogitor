@@ -173,6 +173,7 @@ bool GenericTextEditor::displayTextFromFile(QString filePath, QString optionalDa
     moveToForeground();   
 
     connect(document, SIGNAL(textChanged()), document, SLOT(documentWasModified()));
+    
     mActSave->setEnabled(false);
 
     return true;
@@ -858,8 +859,12 @@ bool GenericTextEditorDocument::saveDefaultLogic()
         // used within Ogitor to prevent manipulation from outside).
         mFile.close();
         mFile.open(QIODevice::ReadWrite | QIODevice::Truncate);
-        if(mFile.write(toPlainText().toAscii()) == -1)
+        QString text = toPlainText();
+        if(mFile.write(text.toAscii()) == -1)
             return false;
+
+        mFile.close();
+        mFile.open(QIODevice::ReadOnly);
     }
 
     return true;

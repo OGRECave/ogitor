@@ -42,12 +42,27 @@
 #include <OgreScriptCompiler.h>
 
 //----------------------------------------------------------------------------------------
+class MaterialTextEditorCodecToolBar : public QToolBar
+{
+    Q_OBJECT;
 
+public:
+    MaterialTextEditorCodecToolBar(const QString& name);
+    ~MaterialTextEditorCodecToolBar();
+
+public Q_SLOTS:
+    void onRefresh();
+
+protected:
+    QAction *mActRefresh;
+};
+//----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 class MaterialTextEditorCodec : public ITextEditorCodec, Ogre::ScriptCompilerListener 
 {
 public:
-    static QAction*  mActRefresh;
-    static QToolBar* mToolBar;
+    static MaterialTextEditorCodecToolBar* mToolBar;
 
     MaterialTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
 

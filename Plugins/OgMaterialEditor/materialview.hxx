@@ -85,7 +85,6 @@ public:
 
 public Q_SLOTS:
     void selectionChanged();
-    void refreshCurrentCodecMaterial();
 
 protected:
     MaterialTreeWidget              *treeWidget;

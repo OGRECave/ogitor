@@ -48,7 +48,6 @@
 #include "EventManager.h"
 
 #include "materialview.hxx"
-#include "generictexteditor.hxx"
 #include "materialtexteditorcodec.hxx"
 
 using namespace Ogitors;
@@ -269,15 +268,6 @@ MaterialViewWidget::~MaterialViewWidget()
 {
     destroyScene();
     Ogitors::EventManager::getSingletonPtr()->disconnectEvent(EventManager::LOAD_STATE_CHANGE, this);
-}
-//----------------------------------------------------------------------------------------
-void MaterialViewWidget::refreshCurrentCodecMaterial()
-{
-    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getLastDocument();
-    if(document != 0)
-    {
-        static_cast<MaterialTextEditorCodec*>(document->getCodec())->onRefresh();
-    }
 }
 //----------------------------------------------------------------------------------------
 void MaterialViewWidget::destroyScene()

@@ -42,6 +42,54 @@
 #include "OgitorsScriptConsole.h"
 
 //-----------------------------------------------------------------------------------------
+
+ScriptTextEditorCodecToolBar* ScriptTextEditorCodec::mToolBar = 0;
+
+//-----------------------------------------------------------------------------------------
+ScriptTextEditorCodecToolBar::ScriptTextEditorCodecToolBar(const QString& name) : QToolBar(name), mActRefresh(0)
+{
+    mActRefresh = new QAction("Refresh Script", this);
+    mActRefresh->setStatusTip("Refresh Script");
+    mActRefresh->setIcon( QIcon( ":/icons/refresh.svg"));
+    mActRefresh->setEnabled(true);
+
+    mActRun = new QAction(tr("Run Script"), this);
+    mActRun->setStatusTip(tr("Run Script"));
+    mActRun->setIcon( QIcon( ":/icons/player_play.svg" ));
+    mActRun->setEnabled(true);
+
+    connect(mActRefresh, SIGNAL(triggered()), this, SLOT(onRefresh()));
+    connect(mActRun, SIGNAL(triggered()), this, SLOT(onRun()));
+
+    setObjectName("renderwindowtoolbar");
+    setIconSize(QSize(20,20));
+    setToolButtonStyle(Qt::ToolButtonIconOnly);
+    addAction(mActRefresh);
+    addAction(mActRun);
+}
+//-----------------------------------------------------------------------------------------
+ScriptTextEditorCodecToolBar::~ScriptTextEditorCodecToolBar()
+{
+}
+//-----------------------------------------------------------------------------------------
+void ScriptTextEditorCodecToolBar::onRefresh()
+{
+    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getLastDocument();
+    if(document != 0)
+    {
+        static_cast<ScriptTextEditorCodec*>(document->getCodec())->onRefresh();
+    }
+}
+//-----------------------------------------------------------------------------------------
+void ScriptTextEditorCodecToolBar::onRun()
+{
+    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getLastDocument();
+    if(document != 0)
+    {
+        static_cast<ScriptTextEditorCodec*>(document->getCodec())->onRun();
+    }
+}
+//-----------------------------------------------------------------------------------------
 ScriptTextEditorCodec::ScriptTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon) : 
 ITextEditorCodec(genTexEdDoc, docName, documentIcon)
 {
@@ -72,7 +120,7 @@ void ScriptTextEditorCodec::onKeyPressEvent(QKeyEvent *event)
     }
     else if(event->key() == Qt::Key_F6 && event->modifiers() == Qt::AltModifier)
     {
-        onSave();
+        mGenTexEdDoc->save();
 
         Ogre::String script;
         Ogitors::ObjectVector list;
@@ -95,6 +143,36 @@ void ScriptTextEditorCodec::onAddCompleter()
 {
     mGenTexEdDoc->addCompleter(":/syntax_highlighting/script.txt");
 }
+//-----------------------------------------------------------------------------------------
+void ScriptTextEditorCodec::onRefresh()
+{
+    mGenTexEdDoc->save();
+
+    Ogre::String script;
+    Ogitors::ObjectVector list;
+    Ogitors::OgitorsRoot::getSingletonPtr()->GetObjectList(0, list);
+
+    for(unsigned int i = 0;i < list.size();i++)
+    {
+        script = list[i]->getUpdateScript();
+
+        if(script == mScriptName.toStdString())
+        {
+            list[i]->setUpdateScript("");
+            list[i]->setUpdateScript(mScriptName.toStdString());
+        }
+    }
+}
+//-----------------------------------------------------------------------------------------
+void ScriptTextEditorCodec::onRun()
+{
+    mGenTexEdDoc->save();
+
+    std::string source = mDocName.toStdString();
+    Ogitors::OgitorsScriptConsole::getSingletonPtr()->runScript(source);
+}
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 ITextEditorCodec* ScriptTextEditorCodecFactory::create(GenericTextEditorDocument* genTexEdDoc, QString docName)
 {
