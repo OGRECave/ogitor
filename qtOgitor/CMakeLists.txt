@@ -3,11 +3,11 @@ set(QT_MIN_VERSION "4.5.0")
 find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 
 if(UNIX AND NOT APPLE)
-		if(EXISTS /usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
-				include(/usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
-		else()
-				include(/usr/share/apps/cmake/modules/KDE4Macros.cmake)
-		endif()
+    if(EXISTS /usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
+        include(/usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
+    else()
+        include(/usr/share/apps/cmake/modules/KDE4Macros.cmake)
+    endif()
 endif(UNIX AND NOT APPLE)
 
 
