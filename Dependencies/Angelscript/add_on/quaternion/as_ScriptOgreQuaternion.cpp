@@ -3,7 +3,12 @@
 	//-----------------------
 	// AngelScript functions
 	//-----------------------
-	static void QuaternionDefaultConstructor(float w, float x, float y, float z, Ogre::Quaternion *self)
+	static void QuaternionDefaultConstructor(Ogre::Quaternion *self)
+	{
+		new(self) Ogre::Quaternion();
+	}
+
+    static void QuaternionInitMainConstructor(float w, float x, float y, float z, Ogre::Quaternion *self)
 	{
 		new(self) Ogre::Quaternion(Ogre::Real(w), Ogre::Real(x), Ogre::Real(y), Ogre::Real(z));
 	}
@@ -39,8 +44,11 @@
 
 		// Register the type
         r = engine->RegisterObjectType("Quaternion", sizeof(Ogre::Quaternion), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f()",					asFUNCTION(QuaternionDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(float, float, float, float)",					asFUNCTION(QuaternionInitMainConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
         r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(const Quaternion &in)",    asFUNCTION(CopyConstructQuaternion), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-	    r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructQuaternion),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
+		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(const float, const Vector3)",					asFUNCTION(QuaternionInitConstructor),		asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(const Vector3, const Vector3, const Vector3)",	asFUNCTION(QuaternionOtherInitConstructor), asCALL_CDECL_OBJLAST); assert(r >= 0);
 	    r = engine->RegisterObjectMethod("Quaternion", "Quaternion &opAssign(Quaternion&in)", asFUNCTION(QuaternionAssignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
 		// Register the object properties
@@ -49,11 +57,6 @@
 		r = engine->RegisterObjectProperty("Quaternion", "float y", offsetof(Ogre::Quaternion, y)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Quaternion", "float z", offsetof(Ogre::Quaternion, z)); assert( r >= 0 );
 
-		// Register the constructors
-		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(float, float, float, float)",					asFUNCTION(QuaternionDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(const float, const Vector3)",					asFUNCTION(QuaternionInitConstructor),		asCALL_CDECL_OBJLAST); assert(r >= 0);
-		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(const Vector3, const Vector3, const Vector3)",	asFUNCTION(QuaternionOtherInitConstructor), asCALL_CDECL_OBJLAST); assert(r >= 0);
-		
 		// Register the object methods
 		r = engine->RegisterObjectMethod("Quaternion", "float Dot(const Quaternion &in) const", asMETHOD(Ogre::Quaternion, Dot),		asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Quaternion", "float Norm() const",					asMETHOD(Ogre::Quaternion, Norm),		asCALL_THISCALL); assert(r >= 0);
