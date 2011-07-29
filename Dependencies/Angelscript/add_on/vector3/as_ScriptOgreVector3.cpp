@@ -106,9 +106,9 @@
 	    r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f()",                     asFUNCTION(Vector3DefaultConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
         r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in)",    asFUNCTION(CopyConstructVector3), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f(float, float, float)",	asFUNCTION(Vector3InitConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
-	    
-        
-        r = engine->RegisterObjectMethod("Vector3", "Vector3 &opAssign(Vector3&in)", asFUNCTION(Vector3Assignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+
+
+/*        r = engine->RegisterObjectMethod("Vector3", "Vector3 &opAssign(Vector3&in)", asFUNCTION(Vector3Assignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );*/
         r = engine->RegisterObjectMethod("Vector3", "Vector3 crossProduct(const Vector3 &in) const",	asMETHOD(Ogre::Vector3, crossProduct),		asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Vector3", "Vector3 opAdd(const Vector3 &in) const",			asMETHODPR(Ogre::Vector3, operator+, (const Ogre::Vector3&) const,	Ogre::Vector3),	asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod("Vector3", "Vector3 opSub(const Vector3 &in) const",			asMETHODPR(Ogre::Vector3, operator-, (const Ogre::Vector3&) const,	Ogre::Vector3),	asCALL_THISCALL); assert(r >= 0);
