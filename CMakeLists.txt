@@ -137,6 +137,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/autowrapper"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptbuilder"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptstdstring"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptmath"
