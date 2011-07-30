@@ -43,6 +43,7 @@
 #include "angelscript.h"
 #include "scriptstdstring.h"
 #include "scriptmath.h"
+#include "aswrappedcall.h"
 #include "as_ScriptOgreQuaternion.h"
 #include "as_ScriptOgreVector3.h"
 #include "scriptarray.h"
