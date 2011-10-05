@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2011 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+/// Copyright (c) 2011 Andrew Fenn <andrewfenn@gmail.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -29,22 +29,32 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifndef ADDTERRAINDIALOG_HXX
-#define ADDTERRAINDIALOG_HXX
 
-#include <QtGui/QDialog>
+#pragma once
+
+#include <QtGui/QtGui>
+#include <QtGui/QGraphicsItem>
 #include <Ogre.h>
 
-#include "ui_addterraindialog.h"
 
-class AddTerrainDialog : public QDialog, public Ui::addterraindialog {
-    Q_OBJECT
+class UITerrainSquare : public QGraphicsRectItem
+{
 public:
-    AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
-    virtual ~AddTerrainDialog();
+    UITerrainSquare(QWidget *parent, Ogre::NameValuePairList *params);
+
+    void set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool selectable);
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
 private:
-    QGraphicsScene mScene;
-    void drawPageMap(Ogre::NameValuePairList &params);
+    QWidget *parent;
+    QPen pen;
+    QBrush brush;
+    signed int x;
+    signed int y;
+    Ogre::NameValuePairList *params;
+    bool selectable;
 };
 
-#endif // ADDTERRAINDIALOG_HXX

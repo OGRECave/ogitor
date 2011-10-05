@@ -29,41 +29,97 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+#include <../QtGui/qgraphicsitem.h>
+
 #include "addterraindialog.hxx"
 #include "OgitorsPrerequisites.h"
+#include "OgitorsSystem.h"
 #include "BaseEditor.h"
 #include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
+#include "CameraEditor.h"
+#include "ViewportEditor.h"
+#include "TerrainEditor.h"
+#include "TerrainPageEditor.h"
+#include "addtemplatedialog.hxx"
+#include "uiterrainsquare.hxx"
 
-AddTerrainDialog::AddTerrainDialog(QWidget *parent, QStringList& items) :
-    QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+AddTerrainDialog::AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params) 
+    : QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
+    this->setWindowFlags(Qt::Window);
     setupUi(this);
-    mPositionCombo->addItems(items);
-
-    unsigned int i;
-    Ogitors::PropertyOptionsVector *mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
-    if(mapDiffuse->size() == 0)
-        mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
-    for(i = 0;i < mapDiffuse->size();i++)
-    {
-        mDiffuseCombo->addItem((*mapDiffuse)[i].mKey.c_str());
-    }
-    
-    if(mapDiffuse->size())
-        mDiffuseCombo->setCurrentIndex(1);
-
-    Ogitors::PropertyOptionsVector *mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
-    if(mapNormal->size() == 0)
-        mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
-    for(i = 0;i < mapNormal->size();i++)
-    {
-        mNormalCombo->addItem((*mapNormal)[i].mKey.c_str());
-    }
-    if(mapNormal->size())
-        mNormalCombo->setCurrentIndex(1);
+    drawPageMap(params);
 }
 
+void AddTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
+{
+
+    Ogitors::CBaseEditor* editor = Ogitors::OgitorsRoot::getSingletonPtr()->GetTerrainEditorObject();
+
+    Ogitors::NameObjectPairList::iterator it;
+
+    int minX = -1, minY = -1, maxX = 1, maxY = 1, PX, PY;
+    for(it = editor->getChildren().begin(); it != editor->getChildren().end();it++)
+    {
+         Ogitors::CTerrainPageEditor *terrain = static_cast<Ogitors::CTerrainPageEditor*>(it->second);
+         PX = terrain->getPageX();
+         PY = terrain->getPageY();
+         minX = std::min(minX, PX - 1);
+         minY = std::min(minY, PY - 1);
+         maxX = std::max(maxX, PX + 1);
+         maxY = std::max(maxY, PY + 1);
+    }
+
+    int width = maxX - minX + 1;
+    int height = maxY - minY + 1;
+
+    mScene.setBackgroundBrush(QBrush(Qt::black));
+     
+    bool *mtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
+    for(int i = 0; i < width * height;++i)
+        mtx[i] = true;
+ 
+    for(it = editor->getChildren().begin(); it != editor->getChildren().end();it++)
+    {
+         Ogitors::CTerrainPageEditor *terrain = static_cast<Ogitors::CTerrainPageEditor*>(it->second);
+         PX = terrain->getPageX();
+         PY = terrain->getPageY();
+
+         mtx[((PY - minY) * width) + (PX - minX)] = false;
+    }
+
+    UITerrainSquare* rect;
+
+    for(int Y = 0;Y < height;++Y)
+    {
+        for(int X = 0;X < width;++X)
+        {
+            rect = new UITerrainSquare(this, &params);
+            rect->setRect(X*30, Y*30, 30, 30);
+
+            if(!mtx[(Y * width) + X])
+            {
+                rect->set((X + minX), (Y + minY), QPen(Qt::black), QBrush(QColor(71, 130, 71)), false);
+            } else {
+                rect->set((X + minX), (Y + minY), QPen(Qt::black), QBrush(QColor(52, 51, 49)), true);
+            }
+            mScene.addItem(rect);
+        }
+    }
+
+    OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
+
+    mPageGraphics->setScene(&mScene);
+    mPageGraphics->centerOn(0,0);
+    mPageGraphics->setDragMode(QGraphicsView::ScrollHandDrag);
+    mPageGraphics->setRenderHint(QPainter::Antialiasing);
+    mPageGraphics->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    mPageGraphics->show();
+}
+ 
 AddTerrainDialog::~AddTerrainDialog()
 {
 }
+
 

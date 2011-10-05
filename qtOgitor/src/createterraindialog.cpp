@@ -29,22 +29,48 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifndef ADDTERRAINDIALOG_HXX
-#define ADDTERRAINDIALOG_HXX
+#include <../QtGui/qgraphicsitem.h>
 
-#include <QtGui/QDialog>
-#include <Ogre.h>
+#include "createterraindialog.hxx"
+#include "OgitorsPrerequisites.h"
+#include "OgitorsSystem.h"
+#include "BaseEditor.h"
+#include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
+#include "CameraEditor.h"
+#include "ViewportEditor.h"
+#include "TerrainEditor.h"
+#include "TerrainPageEditor.h"
+#include "addtemplatedialog.hxx"
 
-#include "ui_addterraindialog.h"
+CreateTerrainDialog::CreateTerrainDialog(QWidget *parent) :
+    QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+{
+    setupUi(this);
 
-class AddTerrainDialog : public QDialog, public Ui::addterraindialog {
-    Q_OBJECT
-public:
-    AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
-    virtual ~AddTerrainDialog();
-private:
-    QGraphicsScene mScene;
-    void drawPageMap(Ogre::NameValuePairList &params);
-};
+    unsigned int i;
+    Ogitors::PropertyOptionsVector *mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
+    if(mapDiffuse->size() == 0)
+        mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
+    for(i = 0;i < mapDiffuse->size();i++)
+    {
+        mDiffuseCombo->addItem((*mapDiffuse)[i].mKey.c_str());
+    }
+    
+    if(mapDiffuse->size())
+        mDiffuseCombo->setCurrentIndex(1);
 
-#endif // ADDTERRAINDIALOG_HXX
+    Ogitors::PropertyOptionsVector *mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
+    if(mapNormal->size() == 0)
+        mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
+    for(i = 0;i < mapNormal->size();i++)
+    {
+        mNormalCombo->addItem((*mapNormal)[i].mKey.c_str());
+    }
+    if(mapNormal->size())
+        mNormalCombo->setCurrentIndex(1);
+}
+
+CreateTerrainDialog::~CreateTerrainDialog()
+{
+}
