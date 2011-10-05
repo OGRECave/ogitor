@@ -29,22 +29,20 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifndef ADDTERRAINDIALOG_HXX
-#define ADDTERRAINDIALOG_HXX
+
+#ifndef CREATETERRAINDIALOG_HXX
+#define CREATETERRAINDIALOG_HXX
 
 #include <QtGui/QDialog>
-#include <Ogre.h>
 
-#include "ui_addterraindialog.h"
+#include "ui_createterraindialog.h"
 
-class AddTerrainDialog : public QDialog, public Ui::addterraindialog {
+
+class CreateTerrainDialog : public QDialog, public Ui::createterraindialog {
     Q_OBJECT
 public:
-    AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
-    virtual ~AddTerrainDialog();
-private:
-    QGraphicsScene mScene;
-    void drawPageMap(Ogre::NameValuePairList &params);
+    CreateTerrainDialog(QWidget *parent);
+    virtual ~CreateTerrainDialog();
 };
 
-#endif // ADDTERRAINDIALOG_HXX
+#endif // CREATETERRAINDIALOG_HXX

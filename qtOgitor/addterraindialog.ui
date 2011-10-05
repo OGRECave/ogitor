@@ -1,122 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
- <class>addterraindialog</class>
- <widget class="QDialog" name="addterraindialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>232</width>
-    <height>177</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Add New Terrain Page</string>
-  </property>
-  <property name="modal">
-   <bool>true</bool>
-  </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+ <ui version="4.0">
+  <class>addterraindialog</class>
+  <widget class="QDialog" name="addterraindialog">
+   <property name="windowModality">
+    <enum>Qt::NonModal</enum>
+   </property>
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>140</y>
-     <width>171</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
-  <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
+     <x>0</x>
      <y>0</y>
-     <width>201</width>
-     <height>134</height>
+     <width>500</width>
+     <height>400</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Position (Horizontal x Vertical)</string>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
+   <property name="windowTitle">
+    <string>Add New Terrain Page</string>
+   </property>
+   <property name="modal">
+    <bool>true</bool>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QGraphicsView" name="mPageGraphics">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="mPositionCombo"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Base Layer Diffuse Texture</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="mDiffuseCombo"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Base Layer Normal Texture</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
+      <property name="midLineWidth">
+       <number>0</number>
       </property>
      </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="mNormalCombo"/>
     </item>
    </layout>
   </widget>
- </widget>
- <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>addterraindialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>addterraindialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
-</ui>
+  <resources/>
+  <connections/>
+ </ui>

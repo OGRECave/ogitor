@@ -36,6 +36,8 @@ else(NOT QT4_FOUND)
         ./src/colourpicker.cpp
         ./include/complexproperties.hxx
         ./src/complexproperties.cpp
+        ./include/createterraindialog.hxx
+        ./src/createterraindialog.cpp
         ./include/entityview.hxx
         ./src/entityview.cpp
         ./include/eucliddialog.hxx
@@ -84,6 +86,8 @@ else(NOT QT4_FOUND)
         ./src/templateview.cpp
         ./include/terraintoolswidget.hxx
         ./src/terraintoolswidget.cpp
+        ./include/uiterrainsquare.hxx
+        ./src/uiterrainsquare.cpp
         ./include/userdefined.hxx
         ./src/userdefined.cpp
         ./include/welcome.hxx
@@ -99,6 +103,7 @@ else(NOT QT4_FOUND)
         ./include/calculateblendmapdialog.hxx
         ./include/colourpicker.hxx
         ./include/complexproperties.hxx
+        ./include/createterraindialog.hxx
         ./include/entityview.hxx
         ./include/eucliddialog.hxx
         ./include/importheightmapdialog.hxx
@@ -120,6 +125,7 @@ else(NOT QT4_FOUND)
         ./include/shortcutsettings.hxx
         ./include/templateview.hxx
         ./include/terraintoolswidget.hxx
+        ./include/uiterrainsquare.hxx
         ./include/userdefined.hxx
         ./include/welcome.hxx
     )

@@ -624,31 +624,11 @@ void QtOgitorSystem::ShowMouseCursor(bool bShow)
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::DisplayTerrainDialog(Ogre::NameValuePairList &params)
 {
-    QStringList list;
-    Ogre::NameValuePairList::const_iterator it = params.begin();
-    while(it != params.end())
-    {
-        list.push_back(QString(it->second.c_str()));
-        it++;
-    }
-
-    AddTerrainDialog dlg(QApplication::activeWindow(), list);
     params.clear();
-
-    if(dlg.exec() == QDialog::Accepted)
-    {
-        Ogre::String pos = dlg.mPositionCombo->itemText(dlg.mPositionCombo->currentIndex()).toStdString();
-        std::replace(pos.begin(), pos.end(), 'x', ' ');
-        Ogre::Vector2 vpos = Ogre::StringConverter::parseVector2(pos);
-        params["init"] = "true";
-        params["pagex"] = Ogre::StringConverter::toString((int)vpos.x);
-        params["pagey"] = Ogre::StringConverter::toString((int)vpos.y);
-        params["diffuse"] = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
-        params["normal"] = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
-        return true;
-    }
-    else
-        return false;
+    AddTerrainDialog dlg(QApplication::activeWindow(), params);
+ 
+    dlg.exec();
+    return Ogre::StringConverter::parseBool(params["init"]);
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList &params)
