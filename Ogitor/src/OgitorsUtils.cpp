@@ -1119,7 +1119,7 @@ Ogre::String OgitorsUtils::GetObjectSaveStringV2(CBaseEditor *object, int indent
     }
     outStr += " name=\"" + object->getName() + "\"";
     outStr += " typename=\"" + object->getTypeName() + "\"";
-    /// If Object's parent name is "" then the parent is mRootEditor
+    // If Object's parent name is "" then the parent is mRootEditor
     if(object->getParent()->getName() != "" && addparent)
     {
         outStr += " parentnode=\"" + object->getParent()->getName() + "\"";
@@ -1234,8 +1234,8 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
  
             if(stream_size >= MAX_BUFFER_SIZE)
             {
-                //createFile accepts initial data to be written during alocation
-                //its an optimization, thats why we dont have to call Ofs:write after createFile
+                // CreateFile accepts initial data to be written during allocation
+                // It's an optimization, that's why we don't have to call Ofs:write after createFile
                 stream.read(tmp_buffer, MAX_BUFFER_SIZE);
                 try
                 {
@@ -1247,7 +1247,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
 
                     stream_size -= MAX_BUFFER_SIZE;
                 }
-                catch(OFS::Exception& e)
+                catch(OFS::Exception&)
                 {
                     stream.close();
                     continue;
@@ -1271,7 +1271,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
                         }
                     }
                 }
-                catch(OFS::Exception& e)
+                catch(OFS::Exception&)
                 {
                 }
 
@@ -1284,15 +1284,15 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
 
                 try
                 {
-                    //createFile accepts initial data to be written during alocation
-                    //its an optimization, thats why we dont have to call Ofs:write after createFile
+                    // CreateFile accepts initial data to be written during allocation
+                    // It's an optimization, that's why we don't have to call Ofs:write after createFile
                     if(mFile->createFile(fhandle, file_ofs_path.c_str(), stream_size, stream_size, tmp_buffer) != OFS::OFS_OK)
                     {
                         stream.close();
                         continue;
                     }
                 }
-                catch(OFS::Exception& e)
+                catch(OFS::Exception&)
                 {
                 }
 

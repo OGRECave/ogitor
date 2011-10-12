@@ -44,6 +44,7 @@ namespace Ogitors
     const event_id_type EventManager::EDITOR_TOOL_CHANGE             = event_id_type("editor_tool_change");
     const event_id_type EventManager::TERRAIN_EDITOR_CHANGE          = event_id_type("terrain_editor_change");
     const event_id_type EventManager::AFTER_SCENE_EXPORT             = event_id_type("after_scene_export");
+    const event_id_type EventManager::GLOBAL_PREPARE_VIEW            = event_id_type("global_prepare_view");
 
     event_id_type LoadStateChangeEvent::mID(EventManager::LOAD_STATE_CHANGE);
     event_id_type RunStateChangeEvent::mID(EventManager::RUN_STATE_CHANGE);
@@ -53,6 +54,7 @@ namespace Ogitors
     event_id_type UndoManagerNotificationEvent::mID(EventManager::UNDOMANAGER_NOTIFICATION);
     event_id_type TerrainEditorChangeEvent::mID(EventManager::TERRAIN_EDITOR_CHANGE);
     event_id_type AfterSceneExportEvent::mID(EventManager::AFTER_SCENE_EXPORT);
+    event_id_type GlobalPrepareViewEvent::mID(EventManager::GLOBAL_PREPARE_VIEW);
 
     // Pure virtual Destructor
     IEvent::~IEvent()

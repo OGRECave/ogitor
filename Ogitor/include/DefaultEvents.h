@@ -166,6 +166,22 @@ namespace Ogitors
         static event_id_type    mID;
         std::string             mName;
     };
+
+    //-----------------------------------------------------------------------------------------
+
+    class OgitorExport GlobalPrepareViewEvent : public IEvent
+    {
+    public:
+        GlobalPrepareViewEvent() {}
+        ~GlobalPrepareViewEvent() {}
+
+        const event_id_type& getID() const { return mID; }
+
+    private:
+        static event_id_type    mID;
+    };
+
+    //-----------------------------------------------------------------------------------------
 }
 
 #endif

@@ -41,6 +41,8 @@
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
+#include "DefaultEvents.h"
+#include "EventManager.h"
 
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
@@ -286,6 +288,11 @@ void ProjectFilesViewWidget::onCommandExtract()
     ofsWidget->extractFiles();
 }
 //----------------------------------------------------------------------------------------
+void ofsCallback(std::string msg)
+{
+    mOgitorMainWindow->updateLog(new QListWidgetItem(msg.c_str(), 0, 2));
+}
+//----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandDefrag()
 {
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
@@ -296,7 +303,8 @@ void ProjectFilesViewWidget::onCommandDefrag()
         QString tmpFile = fileName + ".tmp";
         
         // Step-1 defrag the file to temp file
-        ofsFile->defragFileSystemTo(tmpFile.toStdString().c_str());
+        OFS::LogCallBackFunction callback = ofsCallback;
+        ofsFile->defragFileSystemTo(tmpFile.toStdString().c_str(), &callback);
         // Step-2 make the temp file active file, so that we can overwrite the original file
         ofsFile->switchFileSystemTo(tmpFile.toStdString().c_str());
         // Step-3 copy temp file over original file and make it active
@@ -305,6 +313,7 @@ void ProjectFilesViewWidget::onCommandDefrag()
         QFile::remove(tmpFile);
 
         ofsWidget->refreshWidget();
+        mOgitorMainWindow->scrollLogToBottom();
     }
 }
 //----------------------------------------------------------------------------------------
@@ -466,5 +475,9 @@ void ProjectFilesViewWidget::onCommandMakeAsset()
     Ogitors::OgitorsRoot::getSingletonPtr()->ReloadUserResources();
     mOgitorMainWindow->getEntityViewWidget()->prepareView();
     mOgitorMainWindow->getTemplatesViewWidget()->prepareView();
+
+    // Send event so that all listening plugins get notified as well and can update their views
+    Ogitors::GlobalPrepareViewEvent evt;
+    Ogitors::EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //----------------------------------------------------------------------------------------

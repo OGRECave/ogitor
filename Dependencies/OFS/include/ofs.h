@@ -349,6 +349,8 @@ namespace OFS
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+    typedef void (*LogCallBackFunction)(std::string);
+
     class OfsExport _Ofs
     {
         friend class OfsPtr;
@@ -424,6 +426,7 @@ namespace OFS
         struct OfsEntryDesc;
 
         typedef void (*CallBackFunction)(void *userData, OfsEntryDesc* arg1, const char *arg2);
+        
 
         enum CallBackType
         {
@@ -519,9 +522,10 @@ namespace OFS
         /**
         * Makes a defragmented copy of the file system
         * @param dest path of the destination file
+        * @param logCallBackFunc method that gets called for each processed OFS component
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    defragFileSystemTo(const char *dest);
+        OfsResult    defragFileSystemTo(const char *dest, LogCallBackFunction* logCallbackFunc = NULL);
         /**
         * Copies the current file system and switches to it
         * @param dest path of the destination file
@@ -876,18 +880,19 @@ namespace OFS
     private:
         AUTO_MUTEX
         STATIC_AUTO_MUTEX
-        std::string               mFileName;     // Underlying filename of the file system
-        bool                      mActive;       // Is a file system mounted?
-        std::fstream              mStream;       // Handle of underlying file system
-        strFileHeader             mHeader;       // File System Header
-        OfsEntryDesc              mRootDir;      // Root directory definition
-        BlockDataVector           mFreeBlocks;   // Vector holding free(available) blocks in file system 
-        IdHandleMap               mActiveFiles;  // Map holding currently open files
-        UuidDescMap               mUuidMap;      // Map holding entry descriptors indexed with UUID
-        int                       mUseCount;     // Number of objects using this file system instance
-        bool                      mRecoveryMode; // Is recovery mode activated?
-        std::vector<CallBackData> mTriggers;     // Vector of File System Triggers */
-
+        std::string               mFileName;            // Underlying filename of the file system
+        bool                      mActive;              // Is a file system mounted?
+        std::fstream              mStream;              // Handle of underlying file system
+        strFileHeader             mHeader;              // File System Header
+        OfsEntryDesc              mRootDir;             // Root directory definition
+        BlockDataVector           mFreeBlocks;          // Vector holding free(available) blocks in file system 
+        IdHandleMap               mActiveFiles;         // Map holding currently open files
+        UuidDescMap               mUuidMap;             // Map holding entry descriptors indexed with UUID
+        int                       mUseCount;            // Number of objects using this file system instance
+        bool                      mRecoveryMode;        // Is recovery mode activated?
+        std::vector<CallBackData> mTriggers;            // Vector of File System Triggers 
+        LogCallBackFunction       mLogCallBackFunc;     // Function pointer to callback handler
+        
         static NameOfsHandleMap   mAllocatedHandles; // Static map containing all file system instances
 
         /* Private Constructor */

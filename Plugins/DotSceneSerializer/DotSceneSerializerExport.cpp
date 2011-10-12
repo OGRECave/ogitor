@@ -96,7 +96,7 @@ void extractOFS(Ogre::String path)
                         }
                     }
                 }
-                catch(OFS::Exception& e)
+                catch(OFS::Exception&)
                 {
                 }
 
