@@ -563,7 +563,7 @@ Ogre::StringVector AngelScriptInterpreter::listFunctions(std::string &section)
     asUINT n;
 
     // List the application registered functions
-    for( n = 0; n < mEngine->GetGlobalFunctionCount(); n++ )
+    for( n = 0; n < (asUINT)mEngine->GetGlobalFunctionCount(); n++ )
     {
         int id = mEngine->GetGlobalFunctionIdByIndex(n);
         asIScriptFunction *func = mEngine->GetFunctionDescriptorById(id);

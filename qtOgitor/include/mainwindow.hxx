@@ -256,6 +256,7 @@ public:
     void                            updateLoadTerminateActions(bool loaded);
 
     void updateLog(QListWidgetItem* item);
+    void scrollLogToBottom() {logWidget->scrollToBottom();};
 
     void showSubWindows();
     void hideSubWindows();

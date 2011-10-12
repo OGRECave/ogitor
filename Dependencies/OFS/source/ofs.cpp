@@ -165,12 +165,12 @@ namespace OFS
 
     _Ofs::_Ofs() : mActive(false), mUseCount(0), mRecoveryMode(false)
     {
-        mFileName = "";
-        mRootDir.Id = -1;
-        mRootDir.ParentId = -1;
-        mRootDir.Flags = OFS_DIR;
-        mRootDir.FileSize = 0;
-        mRootDir.Parent = NULL;
+        mFileName           = "";
+        mRootDir.Id         = -1;
+        mRootDir.ParentId   = -1;
+        mRootDir.Flags      = OFS_DIR;
+        mRootDir.FileSize   = 0;
+        mRootDir.Parent     = NULL;
     }
 
 //------------------------------------------------------------------------------
@@ -3174,7 +3174,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------------------
 
-    OfsResult _Ofs::defragFileSystemTo(const char *dest)
+    OfsResult _Ofs::defragFileSystemTo(const char *dest, LogCallBackFunction* logCallbackFunc)
     {
         LOCK_AUTO_MUTEX
 
@@ -3206,6 +3206,9 @@ namespace OFS
 
             for(unsigned int i = 0;i < allFiles.size();i++)
             {
+                if(logCallbackFunc)
+                    (*logCallbackFunc)(std::string("Defragmenting ").append(allFiles[i].name));
+
                 if(allFiles[i].flags & OFS::OFS_DIR)
                 {
                     destFile->createDirectoryUUID(allFiles[i].name.c_str(), allFiles[i].uuid);

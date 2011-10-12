@@ -82,6 +82,7 @@ public:
     void destroyScene();
 
     void onSceneLoadStateChange(Ogitors::IEvent* evt);
+    void onGlobalPrepareView(Ogitors::IEvent* evt);
 
 public Q_SLOTS:
     void selectionChanged();

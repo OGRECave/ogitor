@@ -262,12 +262,14 @@ mTechniqueEditor(0)
     connect(treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
 
     Ogitors::EventManager::getSingletonPtr()->connectEvent(EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(MaterialViewWidget, onSceneLoadStateChange));
+    Ogitors::EventManager::getSingletonPtr()->connectEvent(EventManager::GLOBAL_PREPARE_VIEW, this, true, 0, true, 0, EVENT_CALLBACK(MaterialViewWidget, onGlobalPrepareView));
 }
 //----------------------------------------------------------------------------------------
 MaterialViewWidget::~MaterialViewWidget()
 {
     destroyScene();
     Ogitors::EventManager::getSingletonPtr()->disconnectEvent(EventManager::LOAD_STATE_CHANGE, this);
+    Ogitors::EventManager::getSingletonPtr()->disconnectEvent(EventManager::GLOBAL_PREPARE_VIEW, this);
 }
 //----------------------------------------------------------------------------------------
 void MaterialViewWidget::destroyScene()
@@ -426,5 +428,10 @@ void MaterialViewWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
         else if(state == LS_UNLOADED)
             destroyScene();
     }
+}
+//----------------------------------------------------------------------------------------
+void MaterialViewWidget::onGlobalPrepareView(Ogitors::IEvent* evt)
+{
+    prepareView();
 }
 //----------------------------------------------------------------------------------------
