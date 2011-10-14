@@ -3053,10 +3053,33 @@ namespace OFS
 
             srcDesc->ParentId = dirDesc->Id;
             srcDesc->Parent = dirDesc;
-            mStream.clear();
-            mStream.seekp(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), fstream::beg);
-            mStream.write((char*)&(srcDesc->ParentId), sizeof(unsigned int));
-            mStream.flush();
+
+            std::string nName = _extractFileName(dest);
+            if( nName == "" || srcDesc->Name == nName )
+            {
+                mStream.clear();
+                mStream.seekp(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), fstream::beg);
+                mStream.write((char*)&(srcDesc->ParentId), sizeof(unsigned int));
+                mStream.flush();
+            }
+            else
+            {
+                int sz = nName.length();
+                if(sz > 251)
+                    nName.erase(251, sz - 251);
+
+                srcDesc->Name = nName;
+
+                mStream.clear();
+                mStream.seekp(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), fstream::beg);
+                mStream.write(srcDesc->Name.c_str(), srcDesc->Name.length() + 1);
+                mStream.flush();
+
+                mStream.clear();
+                mStream.seekp(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), fstream::beg);
+                mStream.write((char*)&(srcDesc->ParentId), sizeof(unsigned int));
+                mStream.flush();
+            }
 
             ret = OFS_OK;
         }
