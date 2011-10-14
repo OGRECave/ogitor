@@ -138,6 +138,8 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     toolBar->addSeparator();
     toolBar->addAction(actCommandExtract);
     toolBar->addAction(actCommandDefrag);
+
+    addFileFolderPath = "/";
 }
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::~ProjectFilesViewWidget()
@@ -204,30 +206,37 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
 {
     QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
  
+    addFileFolderPath = "/";
+
     if(selItems.size() > 0)
     {
-       QString path = selItems[0]->whatsThis(0);
+        QString path = selItems[0]->whatsThis(0);
+ 
+        if(path == "/")
+        {
+            actCommandMakeAsset->setEnabled(false);
+            actCommandMakeAsset->setChecked(false);
+            actCommandReadOnly->setChecked(false);
+            actCommandHidden->setChecked(false);
+            actCommandReadOnly->setEnabled(false);
+            actCommandHidden->setEnabled(false);
+            actCommandRename->setEnabled(false);
+            actCommandDelete->setEnabled(false);
+        }
+        else
+        {
+            if(path.endsWith("/"))
+                addFileFolderPath = path.toStdString();
 
-       if(path == "/")
-       {
-           actCommandAddFile->setEnabled(true);
-           actCommandAddFolder->setEnabled(true);
-           actCommandMakeAsset->setEnabled(false);
-           actCommandReadOnly->setEnabled(false);
-           actCommandHidden->setEnabled(false);
-           actCommandRename->setEnabled(false);
-           actCommandDelete->setEnabled(false);
-       }
-       else
-       {
-           actCommandAddFile->setEnabled(false);
-           actCommandAddFolder->setEnabled(false);
-           actCommandMakeAsset->setEnabled(true);
-           actCommandReadOnly->setEnabled(true);
-           actCommandHidden->setEnabled(true);
-           actCommandRename->setEnabled(true);
-           actCommandDelete->setEnabled(true);
-       }
+            actCommandMakeAsset->setEnabled(true);
+            actCommandMakeAsset->setChecked(true);
+            actCommandReadOnly->setChecked(true);
+            actCommandHidden->setChecked(true);
+            actCommandReadOnly->setEnabled(true);
+            actCommandHidden->setEnabled(true);
+            actCommandRename->setEnabled(true);
+            actCommandDelete->setEnabled(true);
+        }
 
         OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
         unsigned int flags = 0;
@@ -253,8 +262,6 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
     }
     else
     {
-        actCommandAddFile->setEnabled(false);
-        actCommandAddFolder->setEnabled(false);
         actCommandMakeAsset->setEnabled(false);
         actCommandMakeAsset->setChecked(false);
         actCommandReadOnly->setChecked(false);
@@ -264,6 +271,9 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
         actCommandRename->setEnabled(false);
         actCommandDelete->setEnabled(false);
     }
+
+    actCommandAddFile->setEnabled(true);
+    actCommandAddFolder->setEnabled(true);
 
     QPoint globalPos = ofsWidget->mapToGlobal(pos);
     menuCommands->exec( globalPos );
@@ -454,7 +464,7 @@ void ProjectFilesViewWidget::onCommandAddFolder()
 
     QStringList folders(folderName.c_str());
     if(!folders.empty())
-        ofsWidget->addFiles("/", folders);
+        ofsWidget->addFiles(addFileFolderPath.c_str(), folders);
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandAddFile()
@@ -464,7 +474,7 @@ void ProjectFilesViewWidget::onCommandAddFile()
 
     QStringList files(fileName.c_str());
     if(!files.empty())
-        ofsWidget->addFiles("/", files);
+        ofsWidget->addFiles(addFileFolderPath.c_str(), files);
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onCommandMakeAsset()

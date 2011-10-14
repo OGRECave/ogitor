@@ -67,6 +67,7 @@ public Q_SLOTS:
     void onCommandMakeAsset();
 
 protected:
+    std::string     addFileFolderPath;
     OfsTreeWidget*  ofsWidget;
     QVBoxLayout*    vboxLayout;
     QToolBar*       toolBar;

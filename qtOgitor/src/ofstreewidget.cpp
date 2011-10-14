@@ -480,6 +480,7 @@ void OfsTreeWidget::extractFiles()
                 else
                     mFile->getFileEntry(name.toStdString().c_str(), entry);
 
+                entry.name = name.toStdString();
                 theList.push_back(entry);
             }
         }
