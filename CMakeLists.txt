@@ -214,7 +214,7 @@ add_subdirectory(SceneLoader)
 
 add_subdirectory(RunPath)
 
-add_subdirectory(Help)
+#add_subdirectory(Help)
 
 add_custom_target(lupdate
 	COMMAND ${PROJECT_SOURCE_DIR}/gen-qt-projectfile ${PROJECT_SOURCE_DIR} > ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
