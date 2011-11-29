@@ -42,7 +42,7 @@
 
 //-----------------------------------------------------------------------------------------
 
-template<> GenericImageEditor* Ogre::Singleton<GenericImageEditor>::ms_Singleton = 0;
+template<> GenericImageEditor* Ogre::Singleton<GenericImageEditor>::msSingleton = 0;
 ImageCodecExtensionFactoryMap GenericImageEditor::mRegisteredCodecFactories = ImageCodecExtensionFactoryMap();
 
 //-----------------------------------------------------------------------------------------
