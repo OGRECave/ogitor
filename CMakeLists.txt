@@ -94,8 +94,8 @@ if(APPLE)
 	find_package(CG REQUIRED)
 endif(APPLE)
 
-if(NOT "${OGRE_VERSION_NAME}" STREQUAL "Byatis")
-	message(SEND_ERROR "You need Ogre 1.8 Byatis to build this.")
+if((NOT "${OGRE_VERSION_NAME}" STREQUAL "Byatis") AND (NOT "${OGRE_VERSION_NAME}" STREQUAL "Ghadamon"))
+	message(SEND_ERROR "You need Ogre 1.8 Byatis or later to build this.")
 endif()
 
 if(UNIX)
