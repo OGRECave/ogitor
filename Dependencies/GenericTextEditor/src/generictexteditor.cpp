@@ -39,7 +39,7 @@
 
 //-----------------------------------------------------------------------------------------
 
-template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::msSingleton = 0;
+template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::ms_Singleton = 0;
 TextCodecExtensionFactoryMap GenericTextEditor::mRegisteredCodecFactories = TextCodecExtensionFactoryMap();
 
 //-----------------------------------------------------------------------------------------
