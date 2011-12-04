@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
 
     QString sceneToLoad = "";
     QString lastLoadedScene = settings.value("preferences/lastLoadedScene", "").toString();
-    if((settings.value("preferences/loadLastLoadedScene", false).toBool()) && (fileArg.isEmpty()))
+    if(settings.value("preferences/loadLastLoadedScene", false).toBool() && fileArg.isEmpty())
     {
         if(!lastLoadedScene.isEmpty())
         {

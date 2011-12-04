@@ -30,7 +30,7 @@ namespace Caelum
     }
 
     CaelumPlugin& CaelumPlugin::getSingleton () {  
-        assert (msSingleton);
+        assert (ms_Singleton);
         return *ms_Singleton;  
     }
 
