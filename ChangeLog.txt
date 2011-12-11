@@ -1,0 +1,3300 @@
+Small permission test
+	* [r1339] ChangeLog.txt: fixes #18
+	* [r1338] ChangeLog.txt: Fixes IssueID #18
+	* [r1337] ChangeLog.txt, Documentation/svn2cl-0.9-win,
+	  Documentation/svn2cl-0.9-win/authors.xml,
+	  Documentation/svn2cl-0.9-win/generate_changelog_HTML.bat,
+	  Documentation/svn2cl-0.9-win/generate_changelog_TEXT.bat,
+	  Documentation/svn2cl-0.9-win/original docs,
+	  Documentation/svn2cl-0.9-win/original docs/ChangeLog,
+	  Documentation/svn2cl-0.9-win/original docs/NEWS,
+	  Documentation/svn2cl-0.9-win/original docs/README,
+	  Documentation/svn2cl-0.9-win/original docs/TODO,
+	  Documentation/svn2cl-0.9-win/README.txt,
+	  Documentation/svn2cl-0.9-win/svn2cl.1,
+	  Documentation/svn2cl-0.9-win/svn2cl.cmd,
+	  Documentation/svn2cl-0.9-win/svn2cl.vbs,
+	  Documentation/svn2cl-0.9-win/svn2cl.xsl,
+	  Documentation/svn2cl-0.9-win/svn2html.css,
+	  Documentation/svn2cl-0.9-win/svn2html.xsl: Are commits being
+	  parsed by Redmine ?
+	  IssueID #18
+
+
+2009-08-04  stealth977
+
+	* [r1336] OgitorsDLL/include/VisualHelper.h,
+	  OgitorsDLL/src/ParticleEditor.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp,
+	  OgitorsDLL/src/VisualHelper.cpp,
+	  RunPath/Media/EditorResources/Ogitor.material,
+	  RunPath/Plugins/PropertySheets/ParticleFX.xml: - Fix to
+	  CViewportEditor::OnDragMove()
+	  - Implementing a visual helper for particle editor object
+	* [r1335] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp, qtOgitor/src/main.cpp:
+	  The roles of FREE TRANSFORM and SNAP TO GROUND changed, now its
+	  always FREE_TRANSFORM unless SNAP_GROUND modifier key is pressed
+	* [r1334] OgitorsDLL/src/BaseEditor.cpp,
+	  OgitorsDLL/src/OBBoxRenderable.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp,
+	  OgitorsDLL/src/VisualHelper.cpp: - Mostly Cosmetic Changes to
+	  Selection Boxes
+	  - The Entity Visual Helper uses the same name to create its model
+	  as its parent
+	* [r1333] OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp: FREE_TRANSFORM mode now
+	  moves the objects on the plane with a normal of Camera's back
+	  direction
+	* [r1332] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp, qtOgitor/src/main.cpp: -
+	  Changes to OgitorsRoot::PickGizmos(), it now doesnt make a scene
+	  query since we already know the pointers to Gizmos, which makes
+	  it at least 5x faster
+	  - Changes to various Gizmo affecting code, to use the new Gizmo
+	  Pointers for speed
+	  - Change to TOOL_MOVE, it now snaps object to ground when no axis
+	  is selected
+	  - A new modifier key SPK_FREE_TRANSFORM when used during
+	  TOOL_MOVE, it bypasses snap to ground (needs improvements)
+	  - Change to OgitorsRoot::PickEntity, it now accepts an
+	  excludeobject parameter, which is the name of entity to exclude
+	  from pick list
+	* [r1331] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp, qtOgitor/src/main.cpp:
+	  Snap to Ground movement implementation (buggy at the moment)
+
+2009-08-04  acolyte
+
+	* [r1330] OgitorsDLL/include/CameraVisualHelper.h,
+	  OgitorsDLL/include/LightVisualHelper.h,
+	  OgitorsDLL/include/OgitorsDelegates.h,
+	  OgitorsDLL/include/OgitorsSingleton.h,
+	  OgitorsDLL/src/BaseEditor.cpp: Added documentation for helper
+	  classes
+	  references #6: Create documentation for Ogitor DLL
+	* [r1329] OgitorsDLL/include/OgitorsDefinitions.h: Completed
+	  OgitorsDefinitions.h
+	  references #6: Create documentation for Ogitor DLL
+
+2009-08-03  stealth977
+
+	* [r1328] OgitorsDLL/include/BaseEditor.h,
+	  OgitorsDLL/include/OgitorsPhysics.h,
+	  OgitorsDLL/include/OgitorsPrerequisites.h,
+	  OgitorsDLL/include/OgitorsRoot.h, OgitorsDLL/src/BaseEditor.cpp,
+	  OgitorsDLL/src/OgitorsPhysics.cpp,
+	  OgitorsDLL/src/OgitorsRoot.cpp: First Empty Declaration of
+	  OgitorsPhysics Abstract Singleton Class that is ging to be used
+	  as the wrapper for any Physics library
+	* [r1327] OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/src/EntityEditor.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp: - Added
+	  OgitorsRoot::PickSubMesh(entity, point) which raycasts from
+	  camera to the point and finds the intersecting sub mesh index
+	  - Now CEntityEditor sets the material of the sub entity, where
+	  the material is dropped instead of setting the material of whole
+	  mesh
+	* [r1326] qtOgitor/include/objectsview.hxx,
+	  qtOgitor/src/mainwindow.cpp, qtOgitor/src/objectsview.cpp:
+	  Objects View Panel now correctly updates itself according to an
+	  Object's Factory's CanInstantiate() function result: Hides if can
+	  not instantiate anymore
+
+2009-08-03  acolyte
+
+	* [r1325] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/OgitorsSystem.h,
+	  OgitorsDLL/include/UndoManager.h: Updated OgitorsDefinitions.h
+	  (not yet finished) and finished UndoManager file
+	  references #6: Create documentation for Ogitor DLL
+	* [r1324] OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/OgitorsSceneSerializer.h,
+	  OgitorsDLL/include/OgitorsSystem.h: Finished documentation for
+	  OgitorsSystem
+	  references #6: Create documentation for Ogitor DLL
+
+2009-08-02  stealth977
+
+	* [r1323] ReadMe.txt: RSS Test 3!!
+	* [r1322] ReadMe.txt: Test Commit 2
+	* [r1321] ReadMe.txt: RSS Test
+	* [r1320] CMakeModules/packaging/win.bmp,
+	  CMakeModules/packaging/win.psd: - Changed Install Image
+	  - Added psd version
+	* [r1319] CMakeLists.txt: cmake fix for the install bmp
+	* [r1318] CMakeModules/FindCEGUI.cmake,
+	  CMakeModules/FindOGRE.cmake: small CMAKE change to remove CEGUI
+
+2009-08-02  jacmoe2
+
+	* [r1317] ChangeLog.txt: Commit hook test.
+	  refs #1
+	* [r1316] ChangeLog.txt: Commit hook test.
+	  ref #1
+
+2009-08-02  stealth977
+
+	* [r1315] OgitorsDLL/include/PagedTerrainEditor.h,
+	  OgitorsDLL/include/PagedTerrainManager.h,
+	  OgitorsDLL/include/TerrainEditor.h,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/PagedTerrainEditor.cpp,
+	  OgitorsDLL/src/PagedTerrainManagerEditing.cpp,
+	  OgitorsDLL/src/PagedTerrainManagerUpdate.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp,
+	  Plugins/OgHydrax/HydraxWaterEditor.cpp,
+	  Plugins/OgHydrax/HydraxWaterEditor.h,
+	  qtOgitor/src/mainwindow.cpp, qtOgitor/src/mainwindowactions.cpp,
+	  qtOgitor/src/ogrewidget.cpp: - TerrainEditor virtual class's
+	  methods are renamed to start with lowercase
+	  - Fixed a bug in CPagedTerrainManager::_splat
+	  - ReActivated Hydrax's add/removeDepthTechnique by defining it as
+	  a property, passing a materialname to
+	  getProperties()->setValue("technique_add", materialname) will add
+	  the depth technique to that material
+	  
+	  - Implemented CPagedTerrainManager::getMaterialNames()
+
+2009-08-02  acolyte
+
+	* [r1314] OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/OgitorsSceneSerializer.h,
+	  OgitorsDLL/include/OgitorsSystem.h: OgitorsSystem documentation
+	  added
+	  references #6: Create documentation for Ogitor DLL
+
+2009-08-02  jacmoe2
+
+	* [r1313] ChangeLog.txt: RSS test :P
+
+2009-08-02  stealth977
+
+	* [r1312] ReadMe.txt: A RSS Test Commit
+
+2009-08-02  acolyte
+
+	* [r1311] OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp: Finished
+	  documenting COgitorsRoot
+	  -Widgets referencing functions are renamed to -Gizmo
+
+2009-08-02  stealth977
+
+	* [r1310] OgitorsDLL/src/ViewportEditorEvents.cpp,
+	  qtOgitor/include/mainwindow.hxx, qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_nl.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  qtOgitor/res/icons/fileclose.svg, qtOgitor/res/qtOgitor.qrc,
+	  qtOgitor/src/mainwindow.cpp, qtOgitor/src/mainwindowactions.cpp,
+	  RunPath/languages/ogitor_tr.qm: - Language Files Update
+	  closes #8: Modified scene should put a star in titlebar
+	  closes #10: Make SWITCH_AXIS cycle between different axes *and*
+	  no axes
+	  closes #11: Implement Close Scene
+	* [r1309] OgitorsDLL/src/PagedTerrainManagerUpdate.cpp:
+	  CPagedTerrainManager::_splat enhancement. Now it takes care of
+	  adjusting the blend factors of the layers above the edited layer
+	  (EXPERIMENTAL)
+
+2009-08-01  stealth977
+
+	* [r1308] OgitorsDLL/src/PagedTerrainManagerUpdate.cpp: small
+	  performance update from CPagedTerrainManager::_splat
+
+2009-08-01  jacmoe2
+
+	* [r1307] default.doxygen, Documentation/API,
+	  Documentation/API/API_docs_goes_here.txt,
+	  Documentation/footer.html, Documentation/header.html,
+	  Documentation/style.css: Changed doxygen file to output API docs
+	  to Documentation/API.
+	  Added header and footer html and a stylesheet.
+	  refs #6: Create documentation for Ogitor DLL
+
+2009-08-01  stealth977
+
+	* [r1306] qtOgitor/src/preferencesmanager.cpp:
+	  getPreferencesWidget() correction
+
+2009-08-01  acolyte
+
+	* [r1305] OgitorsDLL/include/BaseEditor.h,
+	  OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/BaseEditor.cpp, OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp: Additional documentation
+	  for COgitorsRoot, rename of -Widget to -Gizmo function(s).
+
+2009-08-01  stealth977
+
+	* [r1304] OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp: All WIDGET
+	  definitions renamed to GIZMO
+	* [r1303] ReadMe.txt: test
+
+2009-08-01  acolyte
+
+	* [r1302] OgitorsDLL/src/OgitorGUI.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp: Commits were failing,
+	  PickWidget to PickGizmo rename in header files
+	* [r1301] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/OgitorsSystem.h: Renamed PickWidget to
+	  PickGizmo (COgitorsRoot)
+	  Added additional documentation to COgitorsRoot
+	* [r1300] OgitorsDLL/include/OgitorGUI.h,
+	  OgitorsDLL/include/OgitorsRoot.h: Added documentation (Root still
+	  needs a little more)
+
+2009-07-31  stealth977
+
+	* [r1299] OgitorsDLL/include/UndoManager.h,
+	  OgitorsDLL/src/SceneManagerEditor.cpp,
+	  OgitorsDLL/src/UndoManager.cpp: - Now SceneManagerEditor accepts
+	  paste operations
+	  - Fixed a bug with OgitorsUndoManager's clipboard, causing a
+	  crash when copied second time
+	* [r1298] qtOgitor/src/preferencesmanager.cpp,
+	  qtOgitor/src/shortcuts.cpp: - shortcuts fix
+	  The description shouldnt be read from registry!!
+	* [r1297] qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_nl.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  RunPath/languages/ogitor_tr.qm: Language Files Update + Turkish
+	  Translation Update
+	* [r1296] OgitorsDLL/src/MaterialEditor.cpp,
+	  qtOgitor/include/materialview.hxx, qtOgitor/src/materialview.cpp:
+	  - CMaterialEditor's getObjectContextMenu and onObjectContextMenu
+	  implemented
+	  - Add/Delete Technique/Pass from material view context menu
+	  implemented
+
+2009-07-31  fusion44
+
+	* [r1295] qtOgitor/include/ogitorpreferenceswidget.hxx,
+	  qtOgitor/src/main.cpp, qtOgitor/src/ogitorpreferenceswidget.cpp:
+	  - Selected language is now correctly loaded at Ogitor startup
+	  - Language selection is not hardcoded anymore
+
+2009-07-31  stealth977
+
+	* [r1294] OgitorsDLL/include/UndoManager.h,
+	  OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp,
+	  qtOgitor/include/mainwindow.hxx,
+	  qtOgitor/src/mainwindowactions.cpp, qtOgitor/src/sceneview.cpp:
+	  Copy / Cut / Paste / Delete menu items are added to right click
+	  context menu of Scene View
+	* [r1293] Ogitor.sln, OgitorInstall.bmp, OgitorInstall.psd,
+	  OgitorLogo.psd, OgitorLogoSmall.psd, ogitorweblogo.png,
+	  ogitorweblogo.psd, OGREPREPARE.bat, Resources,
+	  Resources/OgitorInstall.bmp, Resources/OgitorInstall.psd,
+	  Resources/OgitorLogo.psd, Resources/OgitorLogoSmall.psd,
+	  Resources/ogitorweblogo.png, Resources/ogitorweblogo.psd,
+	  SetEnvVarsOgre.bat: - Images and Image Templates now moved to
+	  Resources
+	  - Deleted unnecessary files
+	  - Ogitor.sln removed, please use CMAKE
+	* [r1292] qtOgitor/src/mainwindow.cpp: Mesh Magick Tab is now
+	  hidden till its complete...
+
+2009-07-30  stealth977
+
+	* [r1291] CopyOgreDLLs.bat,
+	  OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/UndoManager.h,
+	  OgitorsDLL/src/BillboardSetEditor.cpp,
+	  OgitorsDLL/src/CameraEditor.cpp, OgitorsDLL/src/EntityEditor.cpp,
+	  OgitorsDLL/src/LightEditor.cpp, OgitorsDLL/src/MarkerEditor.cpp,
+	  OgitorsDLL/src/NodeEditor.cpp, OgitorsDLL/src/ParticleEditor.cpp,
+	  OgitorsDLL/src/PlaneEditor.cpp, OgitorsDLL/src/UndoManager.cpp,
+	  qtOgitor/include/mainwindow.hxx, qtOgitor/res/icons/editcopy.svg,
+	  qtOgitor/res/icons/editcut.svg,
+	  qtOgitor/res/icons/editdelete.svg,
+	  qtOgitor/res/icons/editpaste.svg, qtOgitor/res/qtOgitor.qrc,
+	  qtOgitor/src/mainwindowactions.cpp: - Added 2 new Editor Flags
+	  CAN_ACCEPTCOPY and CAN_ACCEPTPASTE, the later defines if other
+	  objects can be a pasted to this object...
+	  - Added new Copy/Cut/Delete/Paste SVG Icons
+	  - Added Copy/Cut/Delete/Paste actions
+	  - Added Copy(...) and Paste(...) functions to OgitorsUndoManager
+	* [r1290] ReadMe.txt: closes #5: try
+
+2009-07-30  jacmoe2
+
+	* [r1289] ReadMe.txt: closes #4
+	* [r1288] ReadMe.txt: fixes #3: Post commit hook test.
+	* [r1287] ReadMe.txt:
+	* [r1286] ReadMe.txt:
+	* [r1285] ReadMe.txt: closes #3: Post commit hook test.
+	* [r1284] ReadMe.txt:
+	* [r1283] ReadMe.txt: closes #3: Post commit hook test.
+	* [r1282] ReadMe.txt: closes #2: test ticket
+	* [r1281] ReadMe.txt: OMG! It works! :D
+	  refs #2: test ticket
+	* [r1280] ReadMe.txt: closes #1: Update Readme.txt
+	* [r1279] ReadMe.txt: fix #1: Update Readme.txt
+	* [r1278] ReadMe.txt: closes #1: Update Readme.txt
+	* [r1277] ReadMe.txt: closes #1: Update Readme.txt
+	* [r1276] ReadMe.txt: fixes #1: Update Readme.txt
+	* [r1275] ReadMe.txt: fixes #1: Update Readme.txt
+
+2009-07-29  jacmoe2
+
+	* [r1274] ReadMe.txt: closes #1: Update Readme.txt
+	* [r1273] ReadMe.txt: #command close #2
+	* [r1272] ReadMe.txt: #command close #1
+	* [r1271] ReadMe.txt: closes #1
+	  Goddammit
+	* [r1270] ReadMe.txt: closes #1
+	* [r1269] ReadMe.txt: testing again
+	* [r1268] ReadMe.txt: Damn you, commit-hook
+	* [r1267] ReadMe.txt: Sorry guys! :)
+	  I am going nuts.
+	* [r1266] ReadMe.txt: sdfdsfw
+	* [r1265] ReadMe.txt: closes #1
+	* [r1264] ReadMe.txt: close #1
+	* [r1263] ReadMe.txt: #command closes #1
+	* [r1262] ReadMe.txt: closes #1
+	* [r1261] ReadMe.txt: sdfsdf
+	* [r1260] ReadMe.txt: sdf
+	* [r1259] ReadMe.txt: sdf
+	* [r1258] ReadMe.txt: sdf
+	* [r1257] ReadMe.txt: test
+	* [r1256] ReadMe.txt: sdf
+	* [r1255] ReadMe.txt: sf
+	* [r1254] ReadMe.txt: sdf
+	* [r1253] ReadMe.txt: testing
+	* [r1252] ReadMe.txt: closes #1
+	* [r1251] ReadMe.txt: closes #1
+	* [r1250] ReadMe.txt: closes #1
+	* [r1249] ReadMe.txt: closes #1
+	* [r1248] ReadMe.txt: closes #1
+	* [r1247] ReadMe.txt: closes #1
+	* [r1246] ReadMe.txt: closes #1
+	* [r1245] ReadMe.txt: #command closes #1
+	* [r1244] ReadMe.txt: #command closes #1
+	* [r1243] ReadMe.txt: #command closes #1
+	* [r1242] ReadMe.txt: #command closes #1
+	* [r1241] ReadMe.txt: closes #1
+	* [r1240] ReadMe.txt: New homepage updated.
+	  Ref #1
+
+2009-07-29  stealth977
+
+	* [r1239] ogitorweblogo.png, ogitorweblogo.psd:
+
+2009-07-28  stealth977
+
+	* [r1238] OgitorsDLL/include/MaterialEditor.h,
+	  OgitorsDLL/src/MaterialEditor.cpp, qtOgitor/src/materialview.cpp,
+	  RunPath/Plugins/PropertySheets/Material.xml: Material View
+	  Changes Part II
+	* [r1237] qtOgitor/res/icons/pass.svg,
+	  qtOgitor/res/icons/technique.svg, qtOgitor/res/qtOgitor.qrc,
+	  qtOgitor/src/materialview.cpp, qtOgitor/src/ogrewidget.cpp: Some
+	  changes to material view Part I
+
+2009-07-27  fusion44
+
+	* [r1236] qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/src/ogitorpreferenceswidget.cpp,
+	  qtOgitor/src/preferencesmanager.cpp: - PreferencesManager small
+	  fixes
+
+2009-07-27  stealth977
+
+	* [r1235] OgitorsDLL/include/BaseEditor.h,
+	  OgitorsDLL/include/BillboardSetEditor.h,
+	  OgitorsDLL/include/CameraEditor.h,
+	  OgitorsDLL/include/EntityEditor.h,
+	  OgitorsDLL/include/LightEditor.h,
+	  OgitorsDLL/include/MarkerEditor.h,
+	  OgitorsDLL/include/MaterialEditor.h,
+	  OgitorsDLL/include/NodeEditor.h,
+	  OgitorsDLL/include/OgitorsSystem.h,
+	  OgitorsDLL/include/PagedTerrainEditor.h,
+	  OgitorsDLL/include/PagedTerrainManager.h,
+	  OgitorsDLL/include/ParticleEditor.h,
+	  OgitorsDLL/include/PlaneEditor.h,
+	  OgitorsDLL/include/SceneManagerEditor.h,
+	  OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/BaseEditor.cpp,
+	  OgitorsDLL/src/BillboardSetEditor.cpp,
+	  OgitorsDLL/src/CameraEditor.cpp, OgitorsDLL/src/EntityEditor.cpp,
+	  OgitorsDLL/src/LightEditor.cpp, OgitorsDLL/src/MarkerEditor.cpp,
+	  OgitorsDLL/src/MaterialEditor.cpp, OgitorsDLL/src/NodeEditor.cpp,
+	  OgitorsDLL/src/PagedTerrainEditor.cpp,
+	  OgitorsDLL/src/PagedTerrainManager.cpp,
+	  OgitorsDLL/src/ParticleEditor.cpp,
+	  OgitorsDLL/src/PlaneEditor.cpp,
+	  OgitorsDLL/src/SceneManagerEditor.cpp,
+	  OgitorsDLL/src/ViewportEditor.cpp,
+	  Plugins/OgCaelum/CaelumEditor.cpp,
+	  Plugins/OgCaelum/CaelumEditor.h,
+	  Plugins/OgHydrax/HydraxWaterEditor.cpp,
+	  Plugins/OgHydrax/HydraxWaterEditor.h,
+	  qtOgitor/include/propertiesview.hxx,
+	  qtOgitor/include/qtogitorsystem.h,
+	  qtOgitor/src/propertiesview.cpp, qtOgitor/src/qtogitorsystem.cpp,
+	  SceneLoader/WinSystem.h: - Added
+	  OgitorsSystem::PresentPropertiesView()
+	  - Changed setupPropertiesWnd() functions to
+	  setupPropertiesWnd(bool present) where present parameter decides
+	  if the window will be displayed (updated)
+
+2009-07-26  jacmoe2
+
+	* [r1234] qtOgitor/include/shortcuts.hxx,
+	  qtOgitor/languages/ogitor_da.ts, qtOgitor/languages/ogitor_de.ts,
+	  qtOgitor/languages/ogitor_fr.ts, qtOgitor/languages/ogitor_nl.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  qtOgitor/languages/translate.pro, qtOgitor/shortcutsettings.ui,
+	  qtOgitor/src/shortcuts.cpp, qtOgitor/src/shortcutsettings.cpp,
+	  RunPath/languages/ogitor_da.qm: Forgot go add shortcutsettings.ui
+	  to the translation pro file properly.
+	  Language update.
+	  Shortcut preferences page refinements.
+	* [r1233] RunPath/languages/ogitor_da.qm: Danish translation update
+	  (shortcut settings)
+	* [r1232] qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_nl.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts:
+	  Language updates (shortcut settings)
+
+2009-07-26  hellrizzer
+
+	* [r1231] Plugins/ogParticleUniverse/ParticleUniverseEditor.cpp,
+	  Plugins/ogParticleUniverse/ParticleUniverseEditor.h: PU that
+	  compiles
+
+2009-07-26  stealth977
+
+	* [r1230] qtOgitor/qtpropertybrowser-2.5/src/qtpropertybrowser.cpp,
+	  qtOgitor/qtpropertybrowser-2.5/src/qtpropertybrowser.h,
+	  qtOgitor/qtpropertybrowser-2.5/src/qttreepropertybrowser.cpp,
+	  qtOgitor/src/propertiesview.cpp: WARNING - QTPROPERTYBROWSER
+	  NEEDS A REBUILD
+	  - Hacked once more and implemented displaying of groups as BOLD
+	* [r1229] OgitorsDLL/include/MaterialEditor.h,
+	  OgitorsDLL/src/MaterialEditor.cpp: More material properties work
+	* [r1228] OgitorsDLL/src/MaterialEditor.cpp,
+	  qtOgitor/src/propertiesview.cpp:
+	* [r1227] OgitorsDLL/include/MaterialEditor.h,
+	  OgitorsDLL/src/MaterialEditor.cpp:
+
+2009-07-25  jacmoe2
+
+	* [r1226] qtOgitor/src/shortcuts.cpp: Shortcuts works - sans mouse
+	  button detection.
+
+2009-07-25  stealth977
+
+	* [r1225] qtOgitor/src/materialview.cpp,
+	  qtOgitor/src/qtogitorsystem.cpp: Workaround for QT not setting
+	  TreeWidgetItem Font as bold style
+
+2009-07-25  jacmoe2
+
+	* [r1224] qtOgitor/include/shortcuts.hxx,
+	  qtOgitor/include/shortcutsettings.hxx, qtOgitor/src/main.cpp,
+	  qtOgitor/src/shortcuts.cpp, qtOgitor/src/shortcutsettings.cpp:
+	  More ShortCutSettings work.
+
+2009-07-25  stealth977
+
+	* [r1223] qtOgitor/src/mainwindowactions.cpp:
+	* [r1222] qtOgitor/src/mainwindowactions.cpp:
+	* [r1221] qtOgitor/src/mainwindowactions.cpp:
+	* [r1220] OgitorsDLL/include/MaterialEditor.h,
+	  OgitorsDLL/include/OgitorsPrerequisites.h,
+	  OgitorsDLL/src/BaseEditor.cpp, OgitorsDLL/src/MaterialEditor.cpp,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  qtOgitor/include/materialview.hxx, qtOgitor/src/materialview.cpp,
+	  qtOgitor/src/ogrewidget.cpp: Started to add material properties
+	  to display/change
+
+2009-07-25  jacmoe2
+
+	* [r1219] AUTHORS, qtOgitor/languages/ogitor_nl.ts,
+	  RunPath/languages/ogitor_nl.qm: Dutch translation courtesy of
+	  Ruud v A. :)
+
+2009-07-25  stealth977
+
+	* [r1218] Ogitor.sln, RunPath/Plugins/PropertySheets/Material.xml:
+
+2009-07-25  jacmoe2
+
+	* [r1217] qtOgitor/include/magickwidget.hxx,
+	  qtOgitor/include/mainwindow.hxx,
+	  qtOgitor/include/qtogitorsystem.h,
+	  qtOgitor/include/shortcuts.hxx, qtOgitor/src/magickwidget.cpp,
+	  qtOgitor/src/main.cpp, qtOgitor/src/mainwindow.cpp,
+	  qtOgitor/src/preferencesmanager.cpp,
+	  qtOgitor/src/qtogitorsystem.cpp, qtOgitor/src/shortcuts.cpp,
+	  qtOgitor/src/shortcutsettings.cpp: QSettings uses the stack,
+	  rather than the heap. Much simpler.
+	  Some more shortcut work.
+	* [r1216] qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_nl.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  qtOgitor/languages/qt_de.ts, qtOgitor/languages/qt_fr.ts,
+	  qtOgitor/languages/qt_ru.ts, qtOgitor/languages/translate.pro,
+	  qtOgitor/res/icons/qtOgitor.svg, RunPath/languages/ogitor_da.qm:
+	  Language updates.
+
+2009-07-25  stealth977
+
+	* [r1215] OgitorsDLL/CMakeLists.txt,
+	  OgitorsDLL/include/MaterialEditor.h,
+	  OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/OgitorsRoot.h, OgitorsDLL/OgitorsDLL.vcproj,
+	  OgitorsDLL/src/MaterialEditor.cpp,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp: -
+	  KeyboardListener Added
+	  - MaterialEditor implementation started
+
+2009-07-25  jacmoe2
+
+	* [r1214] RunPath/languages/qt_de.qm, RunPath/languages/qt_fr.qm,
+	  RunPath/languages/qt_ru.qm: German, Russian and French system
+	  language files added.
+
+2009-07-24  stealth977
+
+	* [r1213] OgitorsDLL/include/OgitorsSystem.h,
+	  OgitorsDLL/src/BaseEditor.cpp,
+	  OgitorsDLL/src/BillboardSetEditor.cpp,
+	  OgitorsDLL/src/EntityEditor.cpp,
+	  OgitorsDLL/src/PagedTerrainEditor.cpp,
+	  OgitorsDLL/src/ParticleEditor.cpp,
+	  OgitorsDLL/src/ViewportEditor.cpp,
+	  Plugins/OgCaelum/CaelumEditor.cpp,
+	  qtOgitor/include/propertiesview.hxx,
+	  qtOgitor/include/qtogitorsystem.h,
+	  qtOgitor/src/propertiesview.cpp, qtOgitor/src/qtogitorsystem.cpp,
+	  SceneLoader/WinSystem.h: MAJOR CHANGES:
+	  - Particle Editor now is affected by its node's scale
+	  - All CreateXXXProperty functions now accept the initial value as
+	  the last argument, which prevents a second call to set its value,
+	  making the properties view much faster...
+	* [r1212] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/src/BaseEditor.cpp: CCustom Property Improvements Part
+	  II
+	  -vector2 type added
+	  -vector3 type added
+	  -vector4 type added
+	  -quaternion type added
+
+2009-07-24  jacmoe2
+
+	* [r1211] CMakeLists.txt: Don't build SampleLoadApp on Linux/Mac -
+	  for now.
+
+2009-07-23  jacmoe2
+
+	* [r1210] CMakeModules/FindOIS.cmake, SceneLoader/CMakeLists.txt,
+	  SceneLoader/resource.rc, SceneLoader/SampleLoadApp.ico,
+	  SceneLoader/Terrain.cpp: SampleLoadApp Cmaked.
+
+2009-07-23  stealth977
+
+	* [r1209] SceneLoader/SampleLoadApp.suo:
+
+2009-07-23  jacmoe2
+
+	* [r1208] CMakeLists.txt, SceneLoader/CMakeLists.txt:
+	  Cmake-ification of SceneLoader - part 1 (sans OIS)
+
+2009-07-23  stealth977
+
+	* [r1207] SceneLoader/ExampleApplication.h,
+	  SceneLoader/SampleLoadApp.suo, SceneLoader/SampleLoadApp.vcproj,
+	  SceneLoader/Terrain.h, SceneLoader/WinSystem.h: Finally, i
+	  tweaked the SampleLoadApp to comply with the changes of past few
+	  months :P
+	* [r1206] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/OgitorsSystem.h,
+	  OgitorsDLL/src/BaseEditor.cpp,
+	  OgitorsDLL/src/BillboardSetEditor.cpp,
+	  OgitorsDLL/src/OgitorsRootPropertyFunctions.cpp,
+	  OgitorsDLL/src/PagedTerrainEditor.cpp,
+	  OgitorsDLL/src/ViewportEditor.cpp,
+	  Plugins/OgCaelum/CaelumEditor.cpp,
+	  qtOgitor/include/propertiesview.hxx,
+	  qtOgitor/include/qtogitorsystem.h, qtOgitor/qtOgitor.vcproj,
+	  qtOgitor/src/propertiesview.cpp, qtOgitor/src/qtogitorsystem.cpp:
+	  Long Postponed Custom Property Tweaks Part I
+
+2009-07-23  jacmoe2
+
+	* [r1205] OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp, qtOgitor/CMakeLists.txt,
+	  qtOgitor/include/paths.h,
+	  qtOgitor/include/preferencesmanager.hxx,
+	  qtOgitor/include/shortcuts.hxx,
+	  qtOgitor/include/shortcutsettings.hxx,
+	  qtOgitor/languages/translate.pro,
+	  qtOgitor/res/icons/controls.svg, qtOgitor/res/qtOgitor.qrc,
+	  qtOgitor/shortcutsettings.ui, qtOgitor/src/paths.cpp,
+	  qtOgitor/src/preferencesmanager.cpp, qtOgitor/src/shortcuts.cpp,
+	  qtOgitor/src/shortcutsettings.cpp: Keyboard shortcut preference
+	  page.
+	  Some PreferencesManager hacking.
+
+2009-07-23  stealth977
+
+	* [r1204] Ogitor.sln, qtOgitor/include/mainwindow.hxx,
+	  qtOgitor/languages/ogitor_da.ts, qtOgitor/languages/ogitor_de.ts,
+	  qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  qtOgitor/res/icons/material.svg, qtOgitor/res/qtOgitor.qrc,
+	  qtOgitor/src/mainwindow.cpp, qtOgitor/src/mainwindowactions.cpp,
+	  qtOgitor/src/materialview.cpp, RunPath/languages/ogitor_tr.qm: -
+	  Added Material Icon
+	  - Added Material Dock Window Toggle Icon to statusbar and View
+	  Menu
+	  - Updated Turkish Translation
+	* [r1203] qtOgitor/src/magickwidget.cpp:
+	* [r1202] qtOgitor/src/magickwidget.cpp:
+	* [r1201] qtOgitor/src/magickwidget.cpp:
+	* [r1200] qtOgitor/include/magickwidget.hxx,
+	  qtOgitor/src/magickwidget.cpp: Now you can drag&drop from entity
+	  view to MeshMagick panel
+
+2009-07-23  jacmoe2
+
+	* [r1199] qtOgitor/src/main.cpp:
+
+2009-07-22  stealth977
+
+	* [r1198] OgitorsDLL/src/BillboardSetEditor.cpp,
+	  OgitorsDLL/src/EntityEditor.cpp, OgitorsDLL/src/PlaneEditor.cpp:
+	* [r1197] OgitorsDLL/include/BillboardSetEditor.h,
+	  OgitorsDLL/include/PlaneEditor.h,
+	  OgitorsDLL/src/BillboardSetEditor.cpp,
+	  OgitorsDLL/src/EntityEditor.cpp, OgitorsDLL/src/PlaneEditor.cpp:
+	  Drag&Drop materials are now can be undone
+	* [r1196] qtOgitor/src/ogrewidget.cpp: Drag&Drop material setting
+	  support Fix :)
+	* [r1195] OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp,
+	  qtOgitor/src/materialview.cpp, qtOgitor/src/ogrewidget.cpp:
+	  Drag&Drop setting materials of objects implemented!!!
+	* [r1194] OgitorsDLL/src/ViewportEditorEvents.cpp:
+	* [r1193] OgitorsDLL/include/BaseEditor.h,
+	  OgitorsDLL/include/BillboardSetEditor.h,
+	  OgitorsDLL/include/EntityEditor.h,
+	  OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/PlaneEditor.h,
+	  OgitorsDLL/src/BillboardSetEditor.cpp,
+	  OgitorsDLL/src/EntityEditor.cpp, OgitorsDLL/src/PlaneEditor.cpp:
+	  - Drag&Drop Material support
+	  - SWITCH_AXIS now defaults to X AXIS when no axis is selected
+	* [r1192] qtOgitor/include/mainwindow.hxx,
+	  qtOgitor/src/mainwindow.cpp, qtOgitor/src/mainwindowactions.cpp,
+	  qtOgitor/src/ogrewidget.cpp: FPS Slider Removed
+	* [r1191] qtOgitor/src/ogrewidget.cpp:
+	* [r1190] OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp:
+	* [r1189] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/src/PagedTerrainManagerUpdate.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp, qtOgitor/src/main.cpp:
+	  Special Keys reimplemented to support custom key bindings
+	* [r1188] qtOgitor/include/propertiesview.hxx,
+	  qtOgitor/src/propertiesview.cpp: There was an old hack about
+	  runtime created properties which could result in memory leaks and
+	  even crashes if used improperly by plugin developers.
+	  
+	  It is now fixed.
+	* [r1187] OgitorsDLL/include/LightEditor.h,
+	  OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/include/OgitorsRoot.h,
+	  OgitorsDLL/include/ViewportEditor.h,
+	  OgitorsDLL/src/BaseEditor.cpp, OgitorsDLL/src/LightEditor.cpp,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  OgitorsDLL/src/OgitorsRootUtilityFunctions.cpp,
+	  OgitorsDLL/src/ViewportEditorEvents.cpp: Now OgitorsRoot has 2
+	  new functions:
+	  CaptureMouse(MouseListener*)
+	  ReleaseMouse()
+	  
+	  when you pass a listener to CaptureMouse(...) all mouse events
+	  which are usually sent to and processed by the active viewport
+	  are redirected to the listener class instead, until ReleaseMouse
+	  is called...
+	* [r1186] qtOgitor/qtOgitor.vcproj:
+	* [r1185] qtOgitor/qt-gui-toolkit-msvc-9.0.rules,
+	  qtOgitor/qtOgitor.vcproj:
+
+2009-07-22  jacmoe2
+
+	* [r1184] qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  RunPath/languages/ogitor_da.qm, RunPath/languages/ogitor_de.qm,
+	  RunPath/languages/ogitor_fr.qm,
+	  RunPath/languages/ogitor_pt_BR.qm,
+	  RunPath/languages/ogitor_ru.qm, RunPath/languages/ogitor_tr.qm:
+	  Language files update.
+	  Danish translation update.
+
+2009-07-22  stealth977
+
+	* [r1183] qtOgitor/qtOgitor.vcproj:
+
+2009-07-22  jacmoe2
+
+	* [r1182] qtOgitor/ui: Source code reorganization of qtOgitor done.
+	  We have to live with the ui files in project root, for now.
+	* [r1181] qtOgitor/aboutdialog.ui, qtOgitor/addterraindialog.ui,
+	  qtOgitor/CMakeLists.txt, qtOgitor/importheightmapdialog.ui,
+	  qtOgitor/languages/translate.pro,
+	  qtOgitor/ogitorpreferencestab.ui, qtOgitor/settingsdialog.ui,
+	  qtOgitor/shortcutsettings.ui, qtOgitor/ui/aboutdialog.ui,
+	  qtOgitor/ui/addterraindialog.ui,
+	  qtOgitor/ui/importheightmapdialog.ui,
+	  qtOgitor/ui/ogitorpreferencestab.ui,
+	  qtOgitor/ui/settingsdialog.ui, qtOgitor/ui/shortcutsettings.ui,
+	  qtOgitor/ui/userdefineddialog.ui, qtOgitor/userdefineddialog.ui:
+	  Moving ui-files back to qtOgitor root directory.
+	* [r1180] qtOgitor/languages/translate.pro,
+	  qtOgitor/res/stylesheets, qtOgitor/stylesheets:
+	* [r1179] qtOgitor/aboutdialog.cpp, qtOgitor/aboutdialog.hxx,
+	  qtOgitor/aboutdialog.ui, qtOgitor/addterraindialog.cpp,
+	  qtOgitor/addterraindialog.hxx, qtOgitor/addterraindialog.ui,
+	  qtOgitor/CMakeLists.txt, qtOgitor/complexproperties.cpp,
+	  qtOgitor/complexproperties.hxx, qtOgitor/entityview.cpp,
+	  qtOgitor/entityview.hxx, qtOgitor/icons, qtOgitor/images,
+	  qtOgitor/importheightmapdialog.cpp,
+	  qtOgitor/importheightmapdialog.hxx,
+	  qtOgitor/importheightmapdialog.ui, qtOgitor/include,
+	  qtOgitor/include/aboutdialog.hxx,
+	  qtOgitor/include/addterraindialog.hxx,
+	  qtOgitor/include/complexproperties.hxx,
+	  qtOgitor/include/entityview.hxx,
+	  qtOgitor/include/importheightmapdialog.hxx,
+	  qtOgitor/include/magickwidget.hxx,
+	  qtOgitor/include/mainwindow.hxx,
+	  qtOgitor/include/materialview.hxx,
+	  qtOgitor/include/objectsview.hxx,
+	  qtOgitor/include/ogitorpreferenceswidget.hxx,
+	  qtOgitor/include/ogrewidget.hxx, qtOgitor/include/paths.h,
+	  qtOgitor/include/preferencesmanager.hxx,
+	  qtOgitor/include/propertiesview.hxx,
+	  qtOgitor/include/qtogitorsystem.h,
+	  qtOgitor/include/sceneview.hxx,
+	  qtOgitor/include/settingsdialog.hxx,
+	  qtOgitor/include/shortcutsettings.hxx,
+	  qtOgitor/include/userdefined.hxx, qtOgitor/magickwidget.cpp,
+	  qtOgitor/magickwidget.hxx, qtOgitor/main.cpp,
+	  qtOgitor/mainwindow.cpp, qtOgitor/mainwindow.hxx,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/materialview.cpp,
+	  qtOgitor/materialview.hxx, qtOgitor/objectsview.cpp,
+	  qtOgitor/objectsview.hxx, qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/ogitorpreferenceswidget.hxx, qtOgitor/ogrewidget.cpp,
+	  qtOgitor/ogrewidget.hxx, qtOgitor/ogscene.ico,
+	  qtOgitor/paths.cpp, qtOgitor/paths.h,
+	  qtOgitor/preferencesmanager.cpp, qtOgitor/preferencesmanager.hxx,
+	  qtOgitor/propertiesview.cpp, qtOgitor/propertiesview.hxx,
+	  qtOgitor/qtOgitor.ico, qtOgitor/qtOgitor.png,
+	  qtOgitor/qtOgitor.qrc, qtOgitor/qtogitorsystem.cpp,
+	  qtOgitor/qtogitorsystem.h, qtOgitor/res, qtOgitor/res/icons,
+	  qtOgitor/res/images, qtOgitor/res/ogscene.ico,
+	  qtOgitor/res/qtOgitor.ico, qtOgitor/res/qtOgitor.png,
+	  qtOgitor/res/qtOgitor.qrc, qtOgitor/res/resource.rc,
+	  qtOgitor/resource.rc, qtOgitor/sceneview.cpp,
+	  qtOgitor/sceneview.hxx, qtOgitor/settingsdialog.cpp,
+	  qtOgitor/settingsdialog.hxx, qtOgitor/settingsdialog.ui,
+	  qtOgitor/shortcutsettings.cpp, qtOgitor/shortcutsettings.hxx,
+	  qtOgitor/shortcutsettings.ui, qtOgitor/src,
+	  qtOgitor/src/aboutdialog.cpp, qtOgitor/src/addterraindialog.cpp,
+	  qtOgitor/src/complexproperties.cpp, qtOgitor/src/entityview.cpp,
+	  qtOgitor/src/importheightmapdialog.cpp,
+	  qtOgitor/src/magickwidget.cpp, qtOgitor/src/main.cpp,
+	  qtOgitor/src/mainwindow.cpp, qtOgitor/src/mainwindowactions.cpp,
+	  qtOgitor/src/materialview.cpp, qtOgitor/src/objectsview.cpp,
+	  qtOgitor/src/ogitorpreferenceswidget.cpp,
+	  qtOgitor/src/ogrewidget.cpp, qtOgitor/src/paths.cpp,
+	  qtOgitor/src/preferencesmanager.cpp,
+	  qtOgitor/src/propertiesview.cpp, qtOgitor/src/qtogitorsystem.cpp,
+	  qtOgitor/src/sceneview.cpp, qtOgitor/src/settingsdialog.cpp,
+	  qtOgitor/src/shortcutsettings.cpp, qtOgitor/src/userdefined.cpp,
+	  qtOgitor/ui, qtOgitor/ui/aboutdialog.ui,
+	  qtOgitor/ui/addterraindialog.ui,
+	  qtOgitor/ui/importheightmapdialog.ui,
+	  qtOgitor/ui/ogitorpreferencestab.ui,
+	  qtOgitor/ui/settingsdialog.ui, qtOgitor/ui/shortcutsettings.ui,
+	  qtOgitor/ui/userdefineddialog.ui, qtOgitor/userdefined.cpp,
+	  qtOgitor/userdefined.hxx, qtOgitor/userdefineddialog.ui:
+	  Warning!!
+	  Major reorg of qtOgitor sources in progress.
+	* [r1178] AUTHORS, qtOgitor/languages/translate.pro: Updated
+	  language project file.
+
+2009-07-22  stealth977
+
+	* [r1177] qtOgitor/mainwindow.cpp, qtOgitor/mainwindow.hxx,
+	  qtOgitor/materialview.cpp, qtOgitor/materialview.hxx,
+	  qtOgitor/ogrewidget.cpp: more materials view work
+	* [r1176] qtOgitor/CMakeLists.txt, qtOgitor/materialview.cpp,
+	  qtOgitor/materialview.hxx, qtOgitor/qtOgitor.vcproj: Started
+	  Implementing Materials View Docking Window
+
+2009-07-21  fusion44
+
+	* [r1175] qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/ogitorpreferenceswidget.cpp: The Ogre Tab in
+	  OgitorPreferencesEditor gets saved and loaded now.
+
+2009-07-21  jacmoe2
+
+	* [r1174] qtOgitor/magickwidget.hxx: Small case sensivity
+	  correction for Unix.
+
+2009-07-21  stealth977
+
+	* [r1173] qtOgitor/magickwidget.cpp:
+	* [r1172] qtOgitor/magickwidget.cpp:
+	* [r1171] qtOgitor/magickwidget.cpp, qtOgitor/magickwidget.hxx:
+	  Some more MeshMagick work, MeshManager::load() causes an
+	  exception????
+
+2009-07-20  fusion44
+
+	* [r1170] AUTHORS, qtOgitor/ogitorpreferenceswidget.cpp: Completed
+	  my name in the AUTHOS file ;) and small fix in the
+	  OgitorPreferencesWidget.
+	* [r1169] qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/ogitorpreferenceswidget.hxx: More work on
+	  OgitorPreferencesWidget
+	* [r1168] qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/ogitorpreferenceswidget.cpp: On first startup aqua will
+	  be the default style.
+
+2009-07-20  stealth977
+
+	* [r1167] qtOgitor/mainwindow.cpp:
+
+2009-07-20  jacmoe2
+
+	* [r1166] AUTHORS: Proper credit for dermont. :)
+
+2009-07-20  stealth977
+
+	* [r1165] qtOgitor/magickwidget.cpp, qtOgitor/magickwidget.hxx:
+	  mesh magick gui work
+	* [r1164] qtOgitor/mainwindow.cpp, qtOgitor/mainwindow.hxx: log
+	  functions cleanup
+	* [r1163] qtOgitor/mainwindow.cpp, qtOgitor/mainwindow.hxx,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/ogrewidget.hxx: Log
+	  Fixed, please check the new implementation and notify me about
+	  the problems, if there are any...
+
+2009-07-19  stealth977
+
+	* [r1162] AUTHORS:
+
+2009-07-19  jacmoe2
+
+	* [r1161] AUTHORS: Translators added.
+	  Dermont added to project VIPs.
+	* [r1160] AUTHORS: Updated AUTHORS
+	  - added Stefan 'fusion44' St. as developer.
+	  - added Zintus as contributor of Russian translation.
+
+2009-07-19  fusion44
+
+	* [r1159] qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/stylesheets/KDE4.qss: - KDE4 stylesheet modified
+
+2009-07-19  jacmoe2
+
+	* [r1158] qtOgitor/mainwindow.cpp, qtOgitor/stylesheets/aqua.qss,
+	  qtOgitor/stylesheets/KDE4.qss, qtOgitor/stylesheets/obsidian.qss:
+
+2009-07-19  fusion44
+
+	* [r1157] qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/ogitorpreferenceswidget.hxx,
+	  qtOgitor/preferencesmanager.cpp, qtOgitor/qtOgitor.qrc,
+	  qtOgitor/stylesheets/KDE4.qss: - Preferences are saved and
+	  restored now at startup
+
+2009-07-19  jacmoe2
+
+	* [r1156] qtOgitor/icons/fullscreen.svg: Refs #4
+
+2009-07-19  stealth977
+
+	* [r1155] qtOgitor/magickwidget.cpp, qtOgitor/magickwidget.hxx:
+	  MeshMagick integration some gui work
+	* [r1154] OgitorsDLL/src/PagedTerrainEditor.cpp:
+	* [r1153] qtOgitor/stylesheets/aqua.qss:
+
+2009-07-18  fusion44
+
+	* [r1152] qtOgitor/entityview.cpp, qtOgitor/entityview.hxx,
+	  qtOgitor/mainwindow.cpp, qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/ogitorpreferenceswidget.hxx,
+	  qtOgitor/preferencesmanager.cpp, qtOgitor/preferencesmanager.hxx:
+	  - added a filterBox to the EntityViewWidget
+	  - moved the OgitorPreferencesWidget static to PreferencesManager
+
+2009-07-18  jacmoe2
+
+	* [r1151] qtOgitor/mainwindow.cpp: Setting timer interval to 0,
+	  bringing down CPU usage even more. :)
+
+2009-07-18  stealth977
+
+	* [r1150] qtOgitor/mainwindow.cpp, qtOgitor/mainwindowactions.cpp,
+	  qtOgitor/ogrewidget.cpp, qtOgitor/qtOgitor.vcproj: CPU USAGE
+	  fixed :)
+
+2009-07-18  jacmoe2
+
+	* [r1149] qtOgitor/mainwindowactions.cpp, qtOgitor/ogrewidget.cpp,
+	  qtOgitor/ogrewidget.hxx: Getting rid of OgreWidget::mTimer.
+	* [r1148] qtOgitor/icons/filenew.svg, qtOgitor/icons/ogscene.png,
+	  qtOgitor/icons/ogscene.svg, qtOgitor/icons/qtOgitor.ico,
+	  qtOgitor/icons/qtOgitor.png, qtOgitor/icons/toolbar.svg,
+	  qtOgitor/languages/translate.pro, qtOgitor/main.cpp,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/ogscene.ico,
+	  qtOgitor/qtOgitor.ico, qtOgitor/qtOgitor.png,
+	  qtOgitor/qtOgitor.qrc: New icon for qtOgitor.
+
+2009-07-18  stealth977
+
+	* [r1147] qtOgitor/CMakeLists.txt, qtOgitor/magickwidget.cpp,
+	  qtOgitor/magickwidget.hxx, qtOgitor/mainwindow.cpp,
+	  qtOgitor/qtOgitor.vcproj: Mesh Magick Window added
+	* [r1146]
+	  RunPath/Projects/SampleScene/Materials/hang.bridge.01.boards.jpg,
+	  RunPath/Projects/SampleScene/Materials/hang.bridge.01.material,
+	  RunPath/Projects/SampleScene/Materials/hang.bridge.01.pole.end.jpg,
+	  RunPath/Projects/SampleScene/Materials/hang.bridge.01.pole.jpg,
+	  RunPath/Projects/SampleScene/Materials/hang.bridge.01.ropes.png,
+	  RunPath/Projects/SampleScene/Models/hang.bridge.01.mesh: Missing
+	  files
+	* [r1145] qtOgitor/ogitorpreferenceswidget.cpp:
+
+2009-07-17  jacmoe2
+
+	* [r1144] qtOgitor/main.cpp, qtOgitor/mainwindow.cpp,
+	  qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/preferencesmanager.cpp, qtOgitor/qtogitorsystem.cpp:
+	  Using default constructor for our QSettings objects.
+
+2009-07-17  squirell
+
+	* [r1143] qtOgitor/mainwindow.cpp:
+	* [r1142] qtOgitor/main.cpp, qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/qtOgitor.qrc, qtOgitor/stylesheets/osx.qss: Started
+	  creation of OSX stylesheet
+
+2009-07-17  jacmoe2
+
+	* [r1141] qtOgitor/mainwindow.cpp, qtOgitor/preferencesmanager.cpp,
+	  qtOgitor/qtogitorsystem.cpp: Preferences work.
+	* [r1140] qtOgitor/preferencesmanager.cpp:
+	* [r1139] qtOgitor/preferencesmanager.cpp:
+	* [r1138] qtOgitor/main.cpp, qtOgitor/ogitorpreferencestab.ui,
+	  qtOgitor/ogitorpreferenceswidget.cpp,
+	  qtOgitor/ogitorpreferenceswidget.hxx,
+	  qtOgitor/preferencesmanager.cpp, qtOgitor/preferencesmanager.hxx,
+	  qtOgitor/qtogitorsystem.cpp, qtOgitor/qtogitorsystem.h:
+	  SomeFusions preferences patch applied.
+	* [r1137] qtOgitor/icons/about.svg, qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/filenew.svg, qtOgitor/icons/filesave.svg,
+	  qtOgitor/icons/filesaveas.svg, qtOgitor/icons/help.svg,
+	  qtOgitor/icons/messages.svg, qtOgitor/icons/ogscene.png,
+	  qtOgitor/icons/ogscene.svg, qtOgitor/icons/settings.svg,
+	  qtOgitor/languages/ogitor_da.ts, qtOgitor/ogscene.ico,
+	  RunPath/languages/ogitor_da.qm: Icon fixups.
+	  Small Danish translation adjustments.
+
+2009-07-17  squirell
+
+	* [r1136] Dependencies/MeshMagick/CMakeLists.txt,
+	  Mac/resources.cfg, OgitorsDLL/src/OgitorsRoot.cpp,
+	  qtOgitor/CMakeLists.txt, qtOgitor/main.cpp,
+	  RunPath/Projects/SampleScene/Materials/StdQuad_vp.cg,
+	  RunPath/Projects/SampleScene/Materials/StdQuad_vp.glsl,
+	  RunPath/Projects/SampleScene/Materials/StdQuad_vp.program: Minor
+	  OSX fixes, icons work properly now
+
+2009-07-16  jacmoe2
+
+	* [r1135] qtOgitor/icons/messages.svg:
+	* [r1134] qtOgitor/CMakeLists.txt,
+	  qtOgitor/languages/translate.pro, qtOgitor/paths.cpp,
+	  qtOgitor/paths.h, qtOgitor/shortcutsettings.cpp,
+	  qtOgitor/shortcutsettings.hxx, qtOgitor/shortcutsettings.ui: Not
+	  much, but an empty start: ShortcutSettings.
+
+2009-07-16  stealth977
+
+	* [r1133] Dependencies/MeshMagick/MeshMagick_vc2008.sln,
+	  Ogitor.sln:
+
+2009-07-16  jacmoe2
+
+	* [r1132] qtOgitor/icons/about.svg, qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/filenew.svg, qtOgitor/icons/filesave.svg,
+	  qtOgitor/icons/filesaveas.svg, qtOgitor/icons/fullscreen.svg,
+	  qtOgitor/icons/help.svg, qtOgitor/icons/messages.svg,
+	  qtOgitor/icons/redo.svg, qtOgitor/icons/undo.svg: Icon work -
+	  revert if you don't like.
+	  The icons should probably be toned down a bit.
+	* [r1131] qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/camspeedminus.svg,
+	  qtOgitor/icons/camspeedplus.svg,
+	  RunPath/Plugins/Icons/camera.svg: Camera icons update.
+
+2009-07-16  stealth977
+
+	* [r1130] qtOgitor/icons/camera.svg:
+	* [r1129] qtOgitor/icons/camera.svg:
+
+2009-07-16  jacmoe2
+
+	* [r1128] RunPath/Plugins/Icons/camera.svg:
+	* [r1127] qtOgitor/icons/camsave.svg, RunPath/CMakeLists.txt:
+	* [r1126] qtOgitor/mainwindowactions.cpp: Use regular file new
+	  icon, not ogscene icon.
+	* [r1125] qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/camspeedminus.svg,
+	  qtOgitor/icons/camspeedplus.svg:
+	* [r1124] qtOgitor/icons/camera.svg, qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/camspeedminus.svg,
+	  qtOgitor/icons/camspeedplus.svg: Small camera icon improvements
+	  (?)
+	* [r1123] qtOgitor/icons/fileopen.svg: Brighter fileopen icon.
+	* [r1122] qtOgitor/icons/filenew.svg:
+	* [r1121] qtOgitor/icons/ogscene.svg, qtOgitor/ogscene.ico:
+	* [r1120] qtOgitor/icons/filenew.svg, qtOgitor/icons/fileopen.svg,
+	  qtOgitor/icons/messages.svg, qtOgitor/icons/ogscene.png,
+	  qtOgitor/icons/settings.svg: New icons. :)
+
+2009-07-16  stealth977
+
+	* [r1119] qtOgitor/mainwindow.cpp, qtOgitor/mainwindow.hxx,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/ogrewidget.cpp: Scene
+	  Load/Terminate dependent actions are moved outside of
+	  updateActions() function...
+
+2009-07-16  jacmoe2
+
+	* [r1118] Dependencies/include/MeshMagick/MeshMagick.h,
+	  Dependencies/include/MeshMagick/MeshMagickPrerequisites.h,
+	  Dependencies/include/MeshMagick/MmEditableBone.h,
+	  Dependencies/include/MeshMagick/MmEditableMesh.h,
+	  Dependencies/include/MeshMagick/MmEditableSkeleton.h,
+	  Dependencies/include/MeshMagick/MmInfoTool.h,
+	  Dependencies/include/MeshMagick/MmInfoToolFactory.h,
+	  Dependencies/include/MeshMagick/MmMeshMergeTool.h,
+	  Dependencies/include/MeshMagick/MmMeshMergeToolFactory.h,
+	  Dependencies/include/MeshMagick/MmMeshUtils.h,
+	  Dependencies/include/MeshMagick/MmOgreEnvironment.h,
+	  Dependencies/include/MeshMagick/MmOptimiseTool.h,
+	  Dependencies/include/MeshMagick/MmOptimiseToolFactory.h,
+	  Dependencies/include/MeshMagick/MmOptionsParser.h,
+	  Dependencies/include/MeshMagick/MmRenameTool.h,
+	  Dependencies/include/MeshMagick/MmRenameToolFactory.h,
+	  Dependencies/include/MeshMagick/MmStatefulMeshSerializer.h,
+	  Dependencies/include/MeshMagick/MmStatefulSkeletonSerializer.h,
+	  Dependencies/include/MeshMagick/MmTool.h,
+	  Dependencies/include/MeshMagick/MmToolFactory.h,
+	  Dependencies/include/MeshMagick/MmToolManager.h,
+	  Dependencies/include/MeshMagick/MmToolUtils.h,
+	  Dependencies/include/MeshMagick/MmTransformTool.h,
+	  Dependencies/include/MeshMagick/MmTransformToolFactory.h,
+	  Dependencies/MeshMagick/CMakeLists.txt, qtOgitor/CMakeLists.txt:
+	  MeshMagick stuff.
+	* [r1117] CMakeLists.txt,
+	  Dependencies/MeshMagick/include/MmEditableBone.h,
+	  Dependencies/MeshMagick/include/MmEditableMesh.h,
+	  Dependencies/MeshMagick/include/MmEditableSkeleton.h,
+	  Dependencies/MeshMagick/include/MmInfoToolFactory.h,
+	  Dependencies/MeshMagick/include/MmOptionsParser.h: MeshMagick
+	  fixes.
+	* [r1116] Dependencies/MeshMagick/CMakeLists.txt,
+	  Dependencies/MeshMagick/include/MmEditableBone.h,
+	  Dependencies/MeshMagick/include/MmEditableMesh.h,
+	  Dependencies/MeshMagick/include/MmEditableSkeleton.h,
+	  Dependencies/MeshMagick/include/MmMeshMergeToolFactory.h,
+	  Dependencies/MeshMagick/include/MmOgreEnvironment.h,
+	  Dependencies/MeshMagick/include/MmOptimiseTool.h,
+	  Dependencies/MeshMagick/include/MmOptimiseToolFactory.h,
+	  Dependencies/MeshMagick/include/MmRenameToolFactory.h,
+	  Dependencies/MeshMagick/include/MmTool.h,
+	  Dependencies/MeshMagick/include/MmToolFactory.h,
+	  Dependencies/MeshMagick/include/MmToolManager.h,
+	  Dependencies/MeshMagick/include/MmTransformToolFactory.h: Added
+	  missing exports.
+	* [r1115] qtOgitor/icons/fileopen.svg, qtOgitor/icons/ogscene.svg,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/qtOgitor.qrc:
+
+2009-07-16  stealth977
+
+	* [r1114] Dependencies/include/MeshMagick, Dependencies/MeshMagick,
+	  Dependencies/MeshMagick/AUTHORS,
+	  Dependencies/MeshMagick/bootstrap, Dependencies/MeshMagick/cmake,
+	  Dependencies/MeshMagick/cmake/FindOGRE.cmake,
+	  Dependencies/MeshMagick/CMakeLists.txt,
+	  Dependencies/MeshMagick/configure.in,
+	  Dependencies/MeshMagick/COPYING, Dependencies/MeshMagick/include,
+	  Dependencies/MeshMagick/include/Makefile.am,
+	  Dependencies/MeshMagick/include/MeshMagick.h,
+	  Dependencies/MeshMagick/include/MeshMagickPrerequisites.h,
+	  Dependencies/MeshMagick/include/MmEditableBone.h,
+	  Dependencies/MeshMagick/include/MmEditableMesh.h,
+	  Dependencies/MeshMagick/include/MmEditableSkeleton.h,
+	  Dependencies/MeshMagick/include/MmInfoTool.h,
+	  Dependencies/MeshMagick/include/MmInfoToolFactory.h,
+	  Dependencies/MeshMagick/include/MmMeshMergeTool.h,
+	  Dependencies/MeshMagick/include/MmMeshMergeToolFactory.h,
+	  Dependencies/MeshMagick/include/MmMeshUtils.h,
+	  Dependencies/MeshMagick/include/MmOgreEnvironment.h,
+	  Dependencies/MeshMagick/include/MmOptimiseTool.h,
+	  Dependencies/MeshMagick/include/MmOptimiseToolFactory.h,
+	  Dependencies/MeshMagick/include/MmOptionsParser.h,
+	  Dependencies/MeshMagick/include/MmRenameTool.h,
+	  Dependencies/MeshMagick/include/MmRenameToolFactory.h,
+	  Dependencies/MeshMagick/include/MmStatefulMeshSerializer.h,
+	  Dependencies/MeshMagick/include/MmStatefulSkeletonSerializer.h,
+	  Dependencies/MeshMagick/include/MmTool.h,
+	  Dependencies/MeshMagick/include/MmToolFactory.h,
+	  Dependencies/MeshMagick/include/MmToolManager.h,
+	  Dependencies/MeshMagick/include/MmToolUtils.h,
+	  Dependencies/MeshMagick/include/MmTransformTool.h,
+	  Dependencies/MeshMagick/include/MmTransformToolFactory.h,
+	  Dependencies/MeshMagick/Makefile.am,
+	  Dependencies/MeshMagick/meshmagick.cbp,
+	  Dependencies/MeshMagick/meshmagick.pc.cmake,
+	  Dependencies/MeshMagick/meshmagick.pc.in,
+	  Dependencies/MeshMagick/MeshMagick.sln,
+	  Dependencies/MeshMagick/MeshMagick.vcproj,
+	  Dependencies/MeshMagick/meshmagick.xcodeproj,
+	  Dependencies/MeshMagick/meshmagick.xcodeproj/project.pbxproj,
+	  Dependencies/MeshMagick/MeshMagick_vc2008.sln,
+	  Dependencies/MeshMagick/MeshMagick_vc2008.vcproj,
+	  Dependencies/MeshMagick/README, Dependencies/MeshMagick/src,
+	  Dependencies/MeshMagick/src/main.cpp,
+	  Dependencies/MeshMagick/src/Makefile.am,
+	  Dependencies/MeshMagick/src/MeshMagick.cpp,
+	  Dependencies/MeshMagick/src/MmEditableBone.cpp,
+	  Dependencies/MeshMagick/src/MmEditableMesh.cpp,
+	  Dependencies/MeshMagick/src/MmEditableSkeleton.cpp,
+	  Dependencies/MeshMagick/src/MmInfoTool.cpp,
+	  Dependencies/MeshMagick/src/MmInfoToolFactory.cpp,
+	  Dependencies/MeshMagick/src/MmMeshMergeTool.cpp,
+	  Dependencies/MeshMagick/src/MmMeshMergeToolFactory.cpp,
+	  Dependencies/MeshMagick/src/MmMeshUtils.cpp,
+	  Dependencies/MeshMagick/src/MmOgreEnvironment.cpp,
+	  Dependencies/MeshMagick/src/MmOptimiseTool.cpp,
+	  Dependencies/MeshMagick/src/MmOptimiseToolFactory.cpp,
+	  Dependencies/MeshMagick/src/MmOptionsParser.cpp,
+	  Dependencies/MeshMagick/src/MmRenameTool.cpp,
+	  Dependencies/MeshMagick/src/MmRenameToolFactory.cpp,
+	  Dependencies/MeshMagick/src/MmStatefulMeshSerializer.cpp,
+	  Dependencies/MeshMagick/src/MmStatefulSkeletonSerializer.cpp,
+	  Dependencies/MeshMagick/src/MmTool.cpp,
+	  Dependencies/MeshMagick/src/MmToolManager.cpp,
+	  Dependencies/MeshMagick/src/MmToolsUtils.cpp,
+	  Dependencies/MeshMagick/src/MmTransformTool.cpp,
+	  Dependencies/MeshMagick/src/MmTransformToolFactory.cpp,
+	  Dependencies/MeshMagick/TEMPLATE, Dependencies/MeshMagick/TODO,
+	  Ogitor.sln, qtOgitor/qtOgitor.vcproj: MeshMagick Integration Part
+	  I:
+	  Adding meshmagick as a dependency, please create the required
+	  CMake files...
+
+2009-07-16  jacmoe2
+
+	* [r1113] RunPath/languages/ogitor_da.qm:
+	* [r1112] qtOgitor/icons/about.svg, qtOgitor/icons/additional.svg,
+	  qtOgitor/icons/camera.svg, qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/camspeedminus.svg,
+	  qtOgitor/icons/camspeedplus.svg, qtOgitor/icons/clear.svg,
+	  qtOgitor/icons/copy.svg, qtOgitor/icons/cut.svg,
+	  qtOgitor/icons/debuginfo.svg, qtOgitor/icons/deform.svg,
+	  qtOgitor/icons/entity.svg, qtOgitor/icons/error.svg,
+	  qtOgitor/icons/exit.svg, qtOgitor/icons/export.svg,
+	  qtOgitor/icons/filenew.svg, qtOgitor/icons/fileopen.svg,
+	  qtOgitor/icons/filesave.svg, qtOgitor/icons/filesaveas.svg,
+	  qtOgitor/icons/find.svg, qtOgitor/icons/fullscreen.svg,
+	  qtOgitor/icons/grid.svg, qtOgitor/icons/help.svg,
+	  qtOgitor/icons/import.svg, qtOgitor/icons/info.svg,
+	  qtOgitor/icons/lock.svg, qtOgitor/icons/messages.svg,
+	  qtOgitor/icons/move.svg, qtOgitor/icons/node.svg,
+	  qtOgitor/icons/objects.svg, qtOgitor/icons/ogscene.png,
+	  qtOgitor/icons/ogscene.svg, qtOgitor/icons/paint.svg,
+	  qtOgitor/icons/paste.svg, qtOgitor/icons/pmpoints.svg,
+	  qtOgitor/icons/pmsolid.svg, qtOgitor/icons/pmwireframe.svg,
+	  qtOgitor/icons/polymode.svg, qtOgitor/icons/preferences.svg,
+	  qtOgitor/icons/properties.svg, qtOgitor/icons/redo.svg,
+	  qtOgitor/icons/relight.svg, qtOgitor/icons/rotate.svg,
+	  qtOgitor/icons/scale.svg, qtOgitor/icons/scene.svg,
+	  qtOgitor/icons/search.svg, qtOgitor/icons/select.svg,
+	  qtOgitor/icons/settings.svg, qtOgitor/icons/showhide.svg,
+	  qtOgitor/icons/smooth.svg, qtOgitor/icons/sort.svg,
+	  qtOgitor/icons/splat.svg, qtOgitor/icons/toolbar.svg,
+	  qtOgitor/icons/translate.svg, qtOgitor/icons/undo.svg,
+	  qtOgitor/icons/unlock.svg, qtOgitor/icons/warning.svg,
+	  qtOgitor/languages/ogitor_da.ts, qtOgitor/ogscene.ico,
+	  qtOgitor/resource.rc: Ogscene icon added. Some icon cleanup.
+	  Danish translation update.
+
+2009-07-15  stealth977
+
+	* [r1111] qtOgitor/mainwindow.cpp, qtOgitor/ogrewidget.cpp:
+	* [r1110] qtOgitor/main.cpp: fixed exiting in debug mode
+
+2009-07-15  jacmoe2
+
+	* [r1109] qtOgitor/icons/copy.svg, qtOgitor/icons/fileopen.svg,
+	  qtOgitor/icons/fullscreen.svg, qtOgitor/icons/paste.svg: Cleaned
+	  svg icons for errors - I hope.
+	* [r1108] qtOgitor/main.cpp: Fix for previous commit.
+	* [r1107] qtOgitor/main.cpp: Exit the application if the user drops
+	  anything other than an Ogitor scene file (.ogscene) on the
+	  application icon. Don't start qtOgitor at all.
+	* [r1106] qtOgitor/CMakeLists.txt: Don't install QtOpenGL.dll.
+	* [r1105] qtOgitor/resource.rc:
+	* [r1104] qtOgitor/qtOgitor.ico, qtOgitor/qtOgitor.png: New
+	  qtOgitor icon.
+
+2009-07-15  stealth977
+
+	* [r1103] qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  qtOgitor/qtogitorsystem.cpp, RunPath/languages/ogitor_tr.qm:
+	  Language Files Update
+
+2009-07-15  jacmoe2
+
+	* [r1102] CMakeLists.txt, qtOgitor/main.cpp,
+	  qtOgitor/mainwindow.cpp, qtOgitor/mainwindowactions.cpp,
+	  qtOgitor/ogrewidget.cpp, qtOgitor/ogrewidget.hxx,
+	  qtOgitor/qtOgitor.ico: Make qtOgitor indicate that it is loading
+	  a scene, when opening one from the command line.
+	  Installer fix in CMakeLists.txt
+	* [r1101] qtOgitor/main.cpp, qtOgitor/mainwindow.cpp,
+	  qtOgitor/mainwindow.hxx, qtOgitor/mainwindowactions.cpp: qtOgitor
+	  can now open ogscene files from the command line.
+	  Just drop a scene file on the qtOgitor icon.
+	  When qtOgitor is installed, you can double-click a ogscene file
+	  to open it.
+	* [r1100] qtOgitor/qtOgitor.ico:
+
+2009-07-14  jacmoe2
+
+	* [r1099] qtOgitor/CMakeLists.txt:
+	* [r1098] Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt,
+	  OgitorsDLL/src/CMakeLists.txt,
+	  Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt,
+	  qtOgitor/CMakeLists.txt: Fix against spaces in directory names.
+	* [r1097] Plugins/OgHydrax/CMakeLists.txt: Post-build error fixed
+	  in ogHydrax referencing ogCaelum.
+	* [r1096] CMakeLists.txt: Now we create RunPath/bin prior to
+	  building any project, just to be on the safe side.
+	* [r1095] qtOgitor/mainwindow.cpp, qtOgitor/ogrewidget.cpp: Resize
+	  hog found: MainWindow::messageLogged updates the logwindow in
+	  real-time. It really shouldn't. Kills the loop when the window is
+	  being resized.
+
+2009-07-14  stealth977
+
+	* [r1094] qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/ogrewidget.hxx,
+	  RunPath/languages/ogitor_tr.qm: Now it shows "Loading Scene..."
+	  while loading the scene file...
+
+2009-07-14  jacmoe2
+
+	* [r1093] qtOgitor/mainwindow.cpp: Setting the timerinterval to 0
+	  in main timerloop should make it more responsive.
+	* [r1092] qtOgitor/ogrewidget.cpp: Removed timerloop in OgreWidget.
+	  Seems to run faster now. :)
+	* [r1091] qtOgitor/languages/ogitor_da.ts,
+	  RunPath/languages/ogitor_da.qm: Small Danish translation update.
+
+2009-07-14  stealth977
+
+	* [r1090] RunPath/bin/plugins_debug.cfg:
+	* [r1089] qtOgitor/languages/ogitor_tr.ts,
+	  RunPath/languages/ogitor_tr.qm: Turkish Translation Update
+	* [r1088] qtOgitor/languages/ogitor_da.ts,
+	  qtOgitor/languages/ogitor_de.ts, qtOgitor/languages/ogitor_fr.ts,
+	  qtOgitor/languages/ogitor_pt_BR.ts,
+	  qtOgitor/languages/ogitor_ru.ts, qtOgitor/languages/ogitor_tr.ts:
+	* [r1087] qtOgitor/ogrewidget.cpp, qtOgitor/qtOgitor.vcproj: Timer
+	  was being deleted onTerminateScene, instead it is only stopped
+	  now
+
+2009-07-14  jacmoe2
+
+	* [r1086] qtOgitor/CMakeLists.txt, qtOgitor/mainwindow.cpp: Stopped
+	  a "Cannot send events to objects owned by a different thread"
+	  assert failure in mainwindow.cpp caused by a call to
+	  logWidget->scrollToBottom(). Needs fixing.
+	* [r1085] CMakeLists.txt: Added OGITOR_INSTALL option which should
+	  be set to TRUE if building the Ogitors Installer.
+
+2009-07-14  stealth977
+
+	* [r1084] qtOgitor/entityview.cpp: Entity View duplicate tiems
+	  problem fixed
+	* [r1083] qtOgitor/mainwindowactions.cpp, qtOgitor/qtOgitor.vcproj,
+	  RunPath/bin/plugins_debug.cfg: small fixes
+
+2009-07-13  jacmoe2
+
+	* [r1082] RunPath/CMakeLists.txt:
+
+2009-07-13  stealth977
+
+	* [r1081] CopyOgreDLLs.bat:
+	* [r1080] Dependencies/include/CAELUM/CaelumPrecompiled.h,
+	  Dependencies/include/CAELUM/CaelumPrerequisites.h,
+	  Dependencies/include/CAELUM/SkyLight.h, qtOgitor/qtOgitor.vcproj:
+
+2009-07-13  jacmoe2
+
+	* [r1079] qtOgitor/mainwindow.cpp: Ogitor works again - against
+	  newest Ogre. :)
+	* [r1078] CMakeLists.txt:
+	* [r1077] OgitorInstall.bmp, OgitorInstall.psd:
+	* [r1076] redist/msvcp90.dll, redist/msvcr90.dll:
+
+2009-07-13  stealth977
+
+	* [r1075]
+	  Dependencies/Caelum-0.4.0/main/include/CaelumPrecompiled.h,
+	  Dependencies/Caelum-0.4.0/main/include/CaelumPrerequisites.h,
+	  Dependencies/Caelum-0.4.0/main/include/SkyLight.h,
+	  Dependencies/Caelum-0.4.0/main/src/Astronomy.cpp,
+	  qtOgitor/main.cpp, qtOgitor/mainwindow.cpp,
+	  qtOgitor/qtOgitor.vcproj,
+	  RunPath/Media/EditorResources/CAELUM/moon.material,
+	  RunPath/Media/EditorResources/CAELUM/Sun.material:
+
+2009-07-13  jacmoe2
+
+	* [r1074] qtOgitor/mainwindow.cpp, qtOgitor/ogrewidget.cpp,
+	  qtOgitor/ogrewidget.hxx: Fixed crash on OgreWidget timer.
+
+2009-07-12  jacmoe2
+
+	* [r1073] qtOgitor/mainwindow.cpp:
+	* [r1072] CMakeModules/Templates/ogitor.desktop.in:
+	* [r1071] CMakeLists.txt, CMakeModules/Templates/ogitor.desktop.in,
+	  CMakeModules/Templates/plugins.cfg.in: KDE desktop file added.
+	* [r1070] CMakeModules/Templates/ogitor.desktop.in:
+	* [r1069] CMakeLists.txt:
+	* [r1068] CMakeLists.txt, CMakeModules/packaging,
+	  CMakeModules/packaging/FileAssociation.nsh,
+	  CMakeModules/packaging/NSIS.template.in,
+	  CMakeModules/packaging/qtOgitor.desktop,
+	  CMakeModules/packaging/README.txt,
+	  CMakeModules/packaging/win.bmp: Installer stuff. :)
+	* [r1067] redist/dxwebsetup.exe, redist/README.txt,
+	  redist/vcredist_x86.exe: Evil files removed. :P
+	  You need to put dxwebsetup.exe and
+	  vcredist_x86.exe in the OGITOR_SOURCE/redist directory prior to
+	  building the installer.
+	* [r1066] qtOgitor/entityview.cpp, qtOgitor/mainwindow.cpp,
+	  qtOgitor/qtogitorsystem.cpp: Now, the entitycache is created in
+	  the project directory. :)
+	* [r1065] qtOgitor/qtogitorsystem.cpp: qtOgitor now loads the
+	  sample scene from %USERPROFILE%\OgitorProjects if that directory
+	  exists.
+	  The same goes for saving.
+	* [r1064] qtOgitor/main.cpp, qtOgitor/mainwindow.cpp,
+	  qtOgitor/qtogitorsystem.cpp: Some fixes for use of registry for
+	  settings.
+	* [r1063] CMakeLists.txt, qtOgitor/mainwindow.cpp,
+	  qtOgitor/qtogitorsystem.cpp: Changed to QSettings::NativeFormat.
+	  This means the registry on Windows.
+	  Need to deal with that in the uninstaller.
+	  Succesfully copy of SampleScene to %USERPROFILE%\OgitorProjects.
+	* [r1062] CMakeLists.txt:
+
+2009-07-12  stealth977
+
+	* [r1061] RunPath/Plugins/debug:
+	* [r1060] Plugins/DotSceneSerializer/DotSceneSerializer.vcproj,
+	  Plugins/OgCaelum/OgCaelum.vcproj,
+	  Plugins/OgHydrax/OgHydrax.vcproj:
+	* [r1059] CopyOgreDLLs.bat, RunPath/bin/plugins_debug.cfg,
+	  RunPath/Debug:
+
+2009-07-12  jacmoe2
+
+	* [r1058] RunPath/Plugins/icon_backup:
+	* [r1057] CMakeLists.txt,
+	  Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt,
+	  OgitorsDLL/src/CMakeLists.txt,
+	  Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt,
+	  qtOgitor/CMakeLists.txt: Installer work.
+	* [r1056] CMakeLists.txt,
+	  Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt,
+	  qtOgitor/propertiesview.cpp, qtOgitor/propertiesview.hxx: Struct
+	  PropertySheet is in conflict with Microsoft SDK, renamed to
+	  sPropertySheet.
+	  OgitorsRoot now loads debug plugins from RunPath/Plugins/debug.
+	  Adjustment of CMake scripts for post-build processing of the
+	  plugins.
+	* [r1055] CMakeLists.txt,
+	  Dependencies/Caelum-0.4.0/main/CMakeLists.txt, OgitorInstall.bmp:
+	  Removed wxOgitor from CPack install.
+	  Changed installation logo.
+
+2009-07-11  jacmoe2
+
+	* [r1054] qtOgitor/CMakeLists.txt:
+	* [r1053] CMakeLists.txt: Removed solution folders for CMake
+	  generated projects - CMake doesn't support it.
+	  Need to hack CMake itself to make it do that.
+	* [r1052] qtOgitor/CMakeLists.txt: Added some project folders to
+	  qtOgitor MSVC project to put moc_* and *.ui files in.
+	* [r1051] CMakeLists.txt: Added "CMake" Visual Studio solution
+	  folder with ALL_BUILD, ZERO_CHECK, INSTALL and PACKAGE.
+
+2009-07-11  stealth977
+
+	* [r1050] CopyOgreDLLs.bat,
+	  Dependencies/Caelum-0.4.0/main/Caelum_vs9.vcproj,
+	  Dependencies/HYDRAX/Hydrax/Hydrax.vcproj,
+	  OgitorsDLL/OgitorsDLL.vcproj, qtOgitor/qtOgitor.vcproj:
+
+2009-07-11  jacmoe2
+
+	* [r1049] CMakeLists.txt:
+	* [r1048] CMakeLists.txt, qtOgitor/main.cpp,
+	  RunPath/CMakeLists.txt: Adjustments to plugin configuration file
+	  loading.
+	  CMake install fixes for win32.
+	* [r1047] RunPath/Debug/plugins.cfg,
+	  RunPath/Debug/plugins_debug.cfg: Achtung: Plugins.cfg in
+	  RunPath/Debug renamed to plugins_debug.cfg !!
+	* [r1046] RunPath/Debug/plugins.cfg:
+	* [r1045] RunPath/Debug/linux_plugins.cfg,
+	  RunPath/Debug/Plugins.cfg:
+	* [r1044] CMakeLists.txt, qtOgitor/CMakeLists.txt:
+	* [r1043] Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt,
+	  OgitorsDLL/src/CMakeLists.txt,
+	  Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt:
+	  Everything post-build copies to RunPath/bin, release and debug
+	  modes.
+	  Removed installation of targets.
+	* [r1042] CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt,
+	  OgitorsDLL/src/CMakeLists.txt, qtOgitor/CMakeLists.txt: Merging
+	  Debug and bin output directories in progress.
+
+2009-07-11  stealth977
+
+	* [r1041] qtOgitor/mainwindow.cpp, qtOgitor/mainwindowactions.cpp,
+	  qtOgitor/ogrewidget.cpp, qtOgitor/ogrewidget.hxx,
+	  qtOgitor/qtOgitor.vcproj:
+
+2009-07-10  jacmoe2
+
+	* [r1040] RunPath/CMakeLists.txt: Don't install icon_backup. :)
+	* [r1039] Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt:
+	  Added pre-build command to the plugins - should create the
+	  plugins directory if it doesn't exsist.
+	* [r1038] CMakeModules/Templates/plugins.cfg.in:
+	* [r1037] CMakeModules/Templates/plugins.cfg.in,
+	  Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt:
+	  Dependencies gets installed to RunPath/Plugins/dependencies now.
+	  Caelum and Hydrax.
+	  Only Caelum is functional, though.
+	* [r1036] CMakeModules/Templates/plugins.cfg.in: Hydrax is broken -
+	  commenting out.
+	* [r1035] Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt:
+	* [r1034] CMakeModules/Templates/plugins.cfg.in: Caelum and Hydrax
+	  turned on by default in plugins.cfg on Linux.
+	  Make install will put them in ${OGRE_PLUGIN_DIR_LINUX}.
+	* [r1033] Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt: Now, make
+	  install will require root priviliges: Hydrax and Caelum installs
+	  to ${OGRE_PLUGIN_DIR_LINUX}.
+	  This could be optional..
+	* [r1032] CMakeModules/Templates/plugins.cfg.in: Changed Caelum to
+	  libCaelum and Hydrax to libHydrax in plugins.cfg.in.
+	  Still requires manual install, for now.
+	* [r1031] Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt:
+	  Linux fixes - post-build copy of plugins.
+	* [r1030] CMakeLists.txt: Plugin.cfg fix for Linux. /lib/OGRE
+	  instead of just /lib
+	* [r1029] VCRedist:
+	* [r1028] redist, redist/dxwebsetup.exe,
+	  redist/Microsoft.VC90.CRT.manifest, redist/msvcm90.dll,
+	  redist/vcredist_x86.exe:
+	* [r1027] qtOgitor/CMakeLists.txt: Added installation of QtSvg icon
+	  engine plugin.
+	* [r1026] VCRedist/Microsoft.VC90.CRT.manifest,
+	  VCRedist/msvcm90.dll, VCRedist/msvcp90.dll, VCRedist/msvcr90.dll:
+	  Can't use VC90.CRT.manifest and local vc runtimes without
+	  stripping manifests from plugin DLLs.
+	  Need to use the vc redist installer instead.
+	* [r1025] qtOgitor/main.cpp: Removed config file and log file to
+	  minimize writing to the filesystem. (Installer preparation).
+	  Tested on Linux - will test ASAP on Windows.
+	* [r1024] qtOgitor/CMakeLists.txt: Oops - post-build copied
+	  qtOgitor to Plugins instead of bin - fixed. :)
+	* [r1023] Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt:
+	  Linux fix for post-build copy of plugins.
+	* [r1022] qtOgitor/icons/debuginfo.svg, qtOgitor/icons/error.svg,
+	  qtOgitor/icons/find.svg, qtOgitor/icons/info.svg,
+	  qtOgitor/icons/search.svg, qtOgitor/icons/warning.svg: Some icons
+	  - small improvements to messages actions.
+	* [r1021] qtOgitor/CMakeLists.txt:
+	* [r1020] qtOgitor/icons/select.svg:
+
+2009-07-10  squirell
+
+	* [r1019] OgitorsDLL/src/CMakeLists.txt,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt:
+	  CMake osx updates (dont need toneed to copy libraries)
+
+2009-07-10  jacmoe2
+
+	* [r1018] qtOgitor/icons/polymode.svg: Polygon mode icon.
+	* [r1017] qtOgitor/CMakeLists.txt: Linux fixes to qtOgitor
+	  post-build copy.
+	* [r1016] qtOgitor/icons/rotate.svg:
+
+2009-07-09  jacmoe2
+
+	* [r1015] Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt,
+	  Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt,
+	  qtOgitor/CMakeLists.txt, qtOgitor/icons/rotate.svg:
+	  Solutionfolders, post-build copy for qtOgitor for win32.
+	* [r1014] Dependencies/Caelum-0.4.0/main/CMakeLists.txt,
+	  Dependencies/HYDRAX/Hydrax/src/Hydrax/CMakeLists.txt,
+	  Plugins/DotSceneSerializer/CMakeLists.txt,
+	  Plugins/OgCaelum/CMakeLists.txt, Plugins/OgHydrax/CMakeLists.txt,
+	  qtOgitor/CMakeLists.txt: Post-build copy of plugins and qtOgitor
+	  on Linux.
+
+2009-07-09  stealth977
+
+	* [r1013] qtOgitor/mainwindow.cpp:
+
+2009-07-09  jacmoe2
+
+	* [r1012] qtOgitor/icons/pmpoints.svg, qtOgitor/icons/pmsolid.svg,
+	  qtOgitor/icons/pmwireframe.svg: Better icons for polygon mode.
+	  Need to remake the polygon mode button icon.
+	* [r1011] test_patch.patch:
+	* [r1010] test_patch.patch:
+	* [r1009] qtOgitor/CMakeLists.txt:
+	* [r1008] qtOgitor/CMakeLists.txt: Fixed qtpropertybrowser not
+	  being linked in correctly in debug mode.
+	* [r1007] qtOgitor/CMakeLists.txt, RunPath/bin/resources.cfg:
+
+2009-07-08  squirell
+
+	* [r1006] OgitorsDLL/src/CMakeLists.txt, qtOgitor/CMakeLists.txt:
+	  Updated CMake to properly copy Ogitor framework on OSX
+
+2009-07-08  jacmoe2
+
+	* [r1005] CMakeModules/Templates/plugins.cfg.in: Commented out
+	  Caelum for Linux.
+	* [r1004] qtOgitor/icons/settings.svg,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/ogrewidget.hxx,
+	  qtOgitor/qtogitorsystem.cpp: More SVG'ing - I think that's it,
+	  for now.
+	* [r1003] qtOgitor/icons/export.svg, qtOgitor/icons/filenew.svg,
+	  qtOgitor/icons/filesave.svg, qtOgitor/icons/filesaveas.svg,
+	  qtOgitor/icons/import.svg, qtOgitor/icons/lock.svg,
+	  qtOgitor/icons/redo.svg, qtOgitor/icons/splat.svg,
+	  qtOgitor/icons/toolbar.svg, qtOgitor/icons/undo.svg,
+	  qtOgitor/icons/unlock.svg:
+
+2009-07-08  stealth977
+
+	* [r1002] qtOgitor/objectsview.cpp: another fix :)
+	* [r1001] qtOgitor/objectsview.cpp: little correction to icon size
+	  setting
+
+2009-07-08  jacmoe2
+
+	* [r1000] qtOgitor/qtOgitor.qrc:
+	* [r999] qtOgitor/icons/debuginfo.png,
+	  qtOgitor/icons/debuginfo.svg, qtOgitor/icons/error.png,
+	  qtOgitor/icons/error.svg, qtOgitor/icons/find.png,
+	  qtOgitor/icons/find.svg, qtOgitor/icons/info.png,
+	  qtOgitor/icons/info.svg, qtOgitor/icons/paint.png,
+	  qtOgitor/icons/paint.svg, qtOgitor/icons/paintcolor.png,
+	  qtOgitor/icons/scene.png, qtOgitor/icons/scene.svg,
+	  qtOgitor/icons/search.png, qtOgitor/icons/search.svg,
+	  qtOgitor/icons/select.png, qtOgitor/icons/select.svg,
+	  qtOgitor/icons/sort.png, qtOgitor/icons/sort.svg,
+	  qtOgitor/icons/warning.png, qtOgitor/icons/warning.svg: Only one
+	  png left now..
+	* [r998] qtOgitor/icons/debuginfo.png, qtOgitor/icons/error.png,
+	  qtOgitor/icons/find.png, qtOgitor/icons/info.png,
+	  qtOgitor/icons/paint.png, qtOgitor/icons/paintcolor.png,
+	  qtOgitor/icons/rotate.svg, qtOgitor/icons/scene.png,
+	  qtOgitor/icons/search.png, qtOgitor/icons/select.png,
+	  qtOgitor/icons/sort.png, qtOgitor/icons/warning.png,
+	  RunPath/Plugins/icon_backup/caelum.png,
+	  RunPath/Plugins/icon_backup/node.png,
+	  RunPath/Plugins/icon_backup/pagedterrainmanager.png,
+	  RunPath/Plugins/icon_backup/particle.png,
+	  RunPath/Plugins/icon_backup/tsm.png,
+	  RunPath/Plugins/icon_backup/viewport.png,
+	  RunPath/Plugins/Icons/caelum.svg, RunPath/Plugins/Icons/node.svg,
+	  RunPath/Plugins/Icons/pagedterrainmanager.svg,
+	  RunPath/Plugins/Icons/particle.svg,
+	  RunPath/Plugins/Icons/tsm.svg,
+	  RunPath/Plugins/Icons/viewport.svg: Icon improvements
+	* [r997] OgitorsDLL/src/NodeEditor.cpp,
+	  OgitorsDLL/src/OgitorsRoot.cpp, qtOgitor/objectsview.cpp: Changed
+	  all plugin icons to use SVG, except multisel.
+
+2009-07-08  stealth977
+
+	* [r996] OgitorsDLL/src/OgitorsRoot.cpp:
+	* [r995] qtOgitor/objectsview.cpp:
+	* [r994] qtOgitor/ogrewidget.cpp:
+
+2009-07-08  jacmoe2
+
+	* [r993] RunPath/Plugins/icon_backup/pagedterrain.png,
+	  RunPath/Plugins/icon_backup/pagedterrainmanager.png,
+	  RunPath/Plugins/icon_backup/project.png,
+	  RunPath/Plugins/icon_backup/tsm.png,
+	  RunPath/Plugins/Icons/pagedterrain.png,
+	  RunPath/Plugins/Icons/pagedterrainmanager.png,
+	  RunPath/Plugins/Icons/tsm.png:
+	* [r992] RunPath/Plugins/Icons/pagedterrain.png,
+	  RunPath/Plugins/Icons/pagedterrain.svg,
+	  RunPath/Plugins/Icons/pagedterrain32.png,
+	  RunPath/Plugins/Icons/pagedterrainmanager.png,
+	  RunPath/Plugins/Icons/pagedterrainmanager.svg,
+	  RunPath/Plugins/Icons/pagedterrainmanager32.png,
+	  RunPath/Plugins/Icons/project.png,
+	  RunPath/Plugins/Icons/project.svg, RunPath/Plugins/Icons/tsm.png,
+	  RunPath/Plugins/Icons/tsm.svg, RunPath/Plugins/Icons/tsm16.png:
+
+2009-07-08  stealth977
+
+	* [r991] OgitorsDLL/include/OgitorsDefinitions.h,
+	  OgitorsDLL/src/OgitorsRoot.cpp,
+	  Plugins/OgCaelum/CaelumEditor.cpp,
+	  Plugins/OgHydrax/HydraxWaterEditor.cpp, qtOgitor/entityview.cpp,
+	  qtOgitor/mainwindow.cpp, qtOgitor/qtOgitor.qrc,
+	  qtOgitor/qtogitorsystem.cpp: Icon changes applied to root
+	* [r990] qtOgitor/icons/additional.svg:
+
+2009-07-08  jacmoe2
+
+	* [r989] RunPath/Plugins/icon_backup,
+	  RunPath/Plugins/icon_backup/caelum.png,
+	  RunPath/Plugins/icon_backup/camera.png,
+	  RunPath/Plugins/icon_backup/entity.png,
+	  RunPath/Plugins/icon_backup/hydrax.png,
+	  RunPath/Plugins/icon_backup/light.png,
+	  RunPath/Plugins/icon_backup/marker.png,
+	  RunPath/Plugins/icon_backup/node.png,
+	  RunPath/Plugins/icon_backup/particle.png,
+	  RunPath/Plugins/icon_backup/plane.png,
+	  RunPath/Plugins/icon_backup/viewport.png,
+	  RunPath/Plugins/Icons/caelum.png,
+	  RunPath/Plugins/Icons/camera.png,
+	  RunPath/Plugins/Icons/entity.png,
+	  RunPath/Plugins/Icons/hydrax.png,
+	  RunPath/Plugins/Icons/light.png,
+	  RunPath/Plugins/Icons/marker.png, RunPath/Plugins/Icons/node.png,
+	  RunPath/Plugins/Icons/particle.png,
+	  RunPath/Plugins/Icons/plane.png,
+	  RunPath/Plugins/Icons/viewport.png: Moved png's to a temporary
+	  backup directory.
+	* [r988] RunPath/Plugins/Icons/billboardset.svg,
+	  RunPath/Plugins/Icons/billboardset16.png,
+	  RunPath/Plugins/Icons/billboardset32.png,
+	  RunPath/Plugins/Icons/caelum.png,
+	  RunPath/Plugins/Icons/caelum.svg,
+	  RunPath/Plugins/Icons/caelum16.png,
+	  RunPath/Plugins/Icons/caelum32.png,
+	  RunPath/Plugins/Icons/camera.png,
+	  RunPath/Plugins/Icons/camera.svg,
+	  RunPath/Plugins/Icons/camera16.png,
+	  RunPath/Plugins/Icons/camera32.png,
+	  RunPath/Plugins/Icons/entity.png,
+	  RunPath/Plugins/Icons/entity.svg,
+	  RunPath/Plugins/Icons/entity16.png,
+	  RunPath/Plugins/Icons/entity32.png,
+	  RunPath/Plugins/Icons/hydrax.png,
+	  RunPath/Plugins/Icons/hydrax.svg,
+	  RunPath/Plugins/Icons/hydrax16.png,
+	  RunPath/Plugins/Icons/hydrax32.png,
+	  RunPath/Plugins/Icons/light.png, RunPath/Plugins/Icons/light.svg,
+	  RunPath/Plugins/Icons/light16.png,
+	  RunPath/Plugins/Icons/light32.png,
+	  RunPath/Plugins/Icons/marker.png,
+	  RunPath/Plugins/Icons/marker.svg,
+	  RunPath/Plugins/Icons/marker16.png,
+	  RunPath/Plugins/Icons/marker32.png,
+	  RunPath/Plugins/Icons/node.png, RunPath/Plugins/Icons/node.svg,
+	  RunPath/Plugins/Icons/node16.png,
+	  RunPath/Plugins/Icons/node32.png,
+	  RunPath/Plugins/Icons/octree16.png,
+	  RunPath/Plugins/Icons/pagedterrain16.png,
+	  RunPath/Plugins/Icons/pagedterrainmanager16.png,
+	  RunPath/Plugins/Icons/particle.png,
+	  RunPath/Plugins/Icons/particle.svg,
+	  RunPath/Plugins/Icons/particle16.png,
+	  RunPath/Plugins/Icons/particle32.png,
+	  RunPath/Plugins/Icons/plane.png, RunPath/Plugins/Icons/plane.svg,
+	  RunPath/Plugins/Icons/plane16.png,
+	  RunPath/Plugins/Icons/plane32.png,
+	  RunPath/Plugins/Icons/viewport.png,
+	  RunPath/Plugins/Icons/viewport.svg,
+	  RunPath/Plugins/Icons/viewport16.png,
+	  RunPath/Plugins/Icons/viewport32.png: Reorg in Plugins/Icons. :)
+	* [r987] qtOgitor/icons/about.png, qtOgitor/icons/additional.png,
+	  qtOgitor/icons/additional.svg, qtOgitor/icons/camera.png,
+	  qtOgitor/icons/camsave.png, qtOgitor/icons/camspeedminus.png,
+	  qtOgitor/icons/camspeedplus.png, qtOgitor/icons/clear.png,
+	  qtOgitor/icons/copy.png, qtOgitor/icons/cut.png,
+	  qtOgitor/icons/deform.png, qtOgitor/icons/entity.png,
+	  qtOgitor/icons/exit.png, qtOgitor/icons/export.png,
+	  qtOgitor/icons/filenew.png, qtOgitor/icons/fileopen.png,
+	  qtOgitor/icons/filerecent.png, qtOgitor/icons/filesave.png,
+	  qtOgitor/icons/filesaveas.png, qtOgitor/icons/fullscreen.png,
+	  qtOgitor/icons/grid.png, qtOgitor/icons/help.png,
+	  qtOgitor/icons/import.png, qtOgitor/icons/lock.png,
+	  qtOgitor/icons/messages.png, qtOgitor/icons/move.png,
+	  qtOgitor/icons/node.png, qtOgitor/icons/objects.png,
+	  qtOgitor/icons/paste.png, qtOgitor/icons/pmpoints.png,
+	  qtOgitor/icons/pmsolid.png, qtOgitor/icons/pmwireframe.png,
+	  qtOgitor/icons/polymode.png, qtOgitor/icons/preferences.png,
+	  qtOgitor/icons/properties.png, qtOgitor/icons/redo.png,
+	  qtOgitor/icons/rotate.png, qtOgitor/icons/scale.png,
+	  qtOgitor/icons/settings.png, qtOgitor/icons/showhide.png,
+	  qtOgitor/icons/smooth.png, qtOgitor/icons/splat.png,
+	  qtOgitor/icons/toolbar.png, qtOgitor/icons/undo.png,
+	  qtOgitor/icons/unlock.png: Deleted the png's anyway - it is more
+	  confusing than helpful.
+	* [r986] qtOgitor/mainwindow.cpp:
+	* [r985] qtOgitor/mainwindowactions.cpp:
+	* [r984] qtOgitor/qtOgitor.qrc:
+	* [r983] qtOgitor/icons/camera.svg, qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/deform.svg, qtOgitor/icons/grid.svg,
+	  qtOgitor/icons/pmpoints.svg, qtOgitor/icons/pmsolid.svg,
+	  qtOgitor/icons/pmwireframe.svg, qtOgitor/icons/rotate.svg,
+	  qtOgitor/icons/smooth.svg, qtOgitor/icons/translate.svg:
+
+2009-07-08  stealth977
+
+	* [r982] qtOgitor/qtOgitor.vcproj:
+
+2009-07-08  jacmoe2
+
+	* [r981] qtOgitor/icons/rotate.svg, qtOgitor/icons/scale.svg,
+	  qtOgitor/mainwindow.cpp, qtOgitor/mainwindowactions.cpp,
+	  qtOgitor/qtOgitor.qrc:
+	* [r980] qtOgitor/icons/messages.svg:
+	* [r979] qtOgitor/qtOgitor.qrc:
+	* [r978] qtOgitor/icons/messages.png, qtOgitor/icons/messages.svg,
+	  qtOgitor/icons/properties.svg, qtOgitor/icons/toolbar.png,
+	  qtOgitor/icons/toolbar.svg:
+	* [r977] qtOgitor/icons/about.png, qtOgitor/icons/about.svg,
+	  qtOgitor/icons/additional.png, qtOgitor/icons/additional.svg,
+	  qtOgitor/icons/camera.png, qtOgitor/icons/camera.svg,
+	  qtOgitor/icons/camsave.png, qtOgitor/icons/camsave.svg,
+	  qtOgitor/icons/camspeedminus.png,
+	  qtOgitor/icons/camspeedminus.svg,
+	  qtOgitor/icons/camspeedplus.png, qtOgitor/icons/camspeedplus.svg,
+	  qtOgitor/icons/clear.png, qtOgitor/icons/clear.svg,
+	  qtOgitor/icons/copy.png, qtOgitor/icons/copy.svg,
+	  qtOgitor/icons/cut.png, qtOgitor/icons/cut.svg,
+	  qtOgitor/icons/debuginfo.png, qtOgitor/icons/deform.png,
+	  qtOgitor/icons/deform.svg, qtOgitor/icons/entity.png,
+	  qtOgitor/icons/entity.svg, qtOgitor/icons/error.png,
+	  qtOgitor/icons/exit.png, qtOgitor/icons/exit.svg,
+	  qtOgitor/icons/export.png, qtOgitor/icons/export.svg,
+	  qtOgitor/icons/filenew.png, qtOgitor/icons/filenew.svg,
+	  qtOgitor/icons/fileopen.png, qtOgitor/icons/fileopen.svg,
+	  qtOgitor/icons/filerecent.png, qtOgitor/icons/filesave.png,
+	  qtOgitor/icons/filesave.svg, qtOgitor/icons/filesaveas.png,
+	  qtOgitor/icons/filesaveas.svg, qtOgitor/icons/find.png,
+	  qtOgitor/icons/fullscreen.png, qtOgitor/icons/fullscreen.svg,
+	  qtOgitor/icons/grid.png, qtOgitor/icons/help.png,
+	  qtOgitor/icons/help.svg, qtOgitor/icons/import.png,
+	  qtOgitor/icons/import.svg, qtOgitor/icons/info.png,
+	  qtOgitor/icons/lock.png, qtOgitor/icons/lock.svg,
+	  qtOgitor/icons/messages.png, qtOgitor/icons/messages.svg,
+	  qtOgitor/icons/move.png, qtOgitor/icons/move.svg,
+	  qtOgitor/icons/node.png, qtOgitor/icons/node.svg,
+	  qtOgitor/icons/objects.png, qtOgitor/icons/objects.svg,
+	  qtOgitor/icons/paint.png, qtOgitor/icons/paint.svg,
+	  qtOgitor/icons/paintcolor.png, qtOgitor/icons/paste.png,
+	  qtOgitor/icons/paste.svg, qtOgitor/icons/pmpoints.png,
+	  qtOgitor/icons/pmsolid.png, qtOgitor/icons/pmwireframe.png,
+	  qtOgitor/icons/polymode.png, qtOgitor/icons/polymode.svg,
+	  qtOgitor/icons/preferences.png, qtOgitor/icons/preferences.svg,
+	  qtOgitor/icons/properties.png, qtOgitor/icons/redo.png,
+	  qtOgitor/icons/redo.svg, qtOgitor/icons/relight.png,
+	  qtOgitor/icons/relight.svg, qtOgitor/icons/rotate.png,
+	  qtOgitor/icons/rotate.svg, qtOgitor/icons/scale.png,
+	  qtOgitor/icons/scale.svg, qtOgitor/icons/scene.png,
+	  qtOgitor/icons/scene.svg, qtOgitor/icons/search.png,
+	  qtOgitor/icons/select.png, qtOgitor/icons/select.svg,
+	  qtOgitor/icons/settings.png, qtOgitor/icons/settings.svg,
+	  qtOgitor/icons/showhide.png, qtOgitor/icons/showhide.svg,
+	  qtOgitor/icons/smooth.png, qtOgitor/icons/smooth.svg,
+	  qtOgitor/icons/sort.png, qtOgitor/icons/splat.png,
+	  qtOgitor/icons/splat.svg, qtOgitor/icons/toolbar.png,
+	  qtOgitor/icons/toolbar.svg, qtOgitor/icons/undo.png,
+	  qtOgitor/icons/undo.svg, qtOgitor/icons/unlock.png,
+	  qtOgitor/icons/unlock.svg, qtOgitor/icons/warning.png: New icon
+	  set.
+	  Needs some work.
+	  Added png's too, but only as a convenience when viewing the icons
+	  from the shell.
+	  Some of the png's doesn't have a corresponding svg.
+	* [r976] qtOgitor/icons/16x16, qtOgitor/icons/32x32,
+	  qtOgitor/mainwindow.cpp, qtOgitor/mainwindow.hxx,
+	  qtOgitor/mainwindowactions.cpp, qtOgitor/qtOgitor.qrc: Massive
+	  icon rework.
+
+2009-07-08  stealth977
+
+	* [r974] .:
+
+2009-07-08  jacmoe2
+
+	* [r971] : Moved VCRedist out of RunPath.
+	  Added a batch script to move compiled translation files to
+	  RunPath/languages.
+	  Maybe a shell script for Linux?
+	* [r970] : Reverted change from rev 968 - if this creates problems
+	  for OSX, please refix.
+	* [r969] : Now using svg for the big icons.
+	  Need to convert small icons too, and after that the icon
+	  directory will be merged in only one.
+
+2009-07-08  squirell
+
+	* [r968] : Minor updates for OSX
+
+2009-07-08  jacmoe2
+
+	* [r967] : SVG icons added - some of them good, others bad. But a
+	  nice start.
+	* [r966] :
+	* [r965] : Brazilian Portuguese by s0lidnuts. :)
+	* [r964] :
+	* [r963] : QT Brazilian Portuguese language file.
+	* [r962] : CV9 Redist added.
+
+2009-07-07  jacmoe2
+
+	* [r961] : Fix for the fix of the spelling error.
+	* [r960] : Spelling error corrected.
+	  Not 'archieve' but 'archive'.
+	* [r959] : Make a backup copy of plugins.cfg on Linux - it's
+	  generated during make, not make install.
+
+2009-07-07  stealth977
+
+	* [r958] :
+
+2009-07-07  jacmoe2
+
+	* [r957] :
+
+2009-07-07  stealth977
+
+	* [r956] :
+
+2009-07-07  jacmoe2
+
+	* [r955] : Language files updated.
+	  12 new entries for exsisting translations.
+	  Brazilian Portuguese added.
+	* [r954] : Fix to CMake scripts for Linux.
+	* [r953] : Renamed Plugins.cfg to plugins.cfg to ensure
+	  consistency.
+	* [r952] : Auto plugin.cfg generation on Linux.
+	* [r951] : Added Linux plugin directory hack. Needed to preprocess
+	  the plugins configuration file.
+	* [r950] :
+	* [r949] : Convenience batch script for setting OGRE_CTHUGHA
+	  variable added.
+	* [r948] : Changed build system to use the OGRE_CTHUGHA environment
+	  variable.
+	  Everybody: please delete the cache and reconfigure.
+
+2009-07-07  xadh00m
+
+	* [r947] : - commented GUIPlugIn in cmakelist, cmake complained
+	  about missing GUIPlugin
+
+2009-07-07  stealth977
+
+	* [r946] : Viewport Corruption Problems Fixed!!! Woohooo
+	  Another showstopper down!!
+	* [r945] : - SceneOptions Completed
+	  - Most of OGUIWidgets deleted and the functions in OgitorsRoot
+	  also deleted (now obsolete)
+	  - qtOgitor now can display registered custom toolbars if there
+	  are any, we need to create a plugin project to test
+	* [r944] :
+	* [r943] : OgitorMFC is now obsolete
+
+2009-07-06  jacmoe2
+
+	* [r942] : Some Messages icons..
+
+2009-07-06  stealth977
+
+	* [r941] : Some more settings dialog implementation, only assets
+	  tab left now
+	* [r940] :
+
+2009-07-06  jacmoe2
+
+	* [r939] :
+
+2009-07-06  stealth977
+
+	* [r938] :
+
+2009-07-06  jacmoe2
+
+	* [r937] :
+
+2009-07-06  stealth977
+
+	* [r936] :
+
+2009-07-06  jacmoe2
+
+	* [r935] :
+	* [r934] :
+	* [r933] : Russian and French translations from Zintus and
+	  Shadow007
+
+2009-07-06  stealth977
+
+	* [r932] :
+
+2009-07-06  jacmoe2
+
+	* [r931] :
+
+2009-07-06  stealth977
+
+	* [r930] : Core Translations Part 3
+	  - OpenDialog and SaveDialog now use UTFString and UTFStringVector
+	  - getObjectContextMenu and getPropertyContextMenu now using
+	  UTFStringVector
+	  - Core Translation complete, need to check on Linux and MAC for
+	  string transformation problems (UTF <-> QString)
+
+2009-07-06  jacmoe2
+
+	* [r929] :
+	* [r928] :
+
+2009-07-06  stealth977
+
+	* [r927] : Core Translation Part 2
+	  - DisplayMessageDialog made Unicode
+
+2009-07-06  jacmoe2
+
+	* [r926] :
+	* [r925] :
+	* [r924] : Russian translation - thanks Zintus! :)
+	* [r923] :
+
+2009-07-06  xadh00m
+
+	* [r922] : - draft for german translation
+
+2009-07-06  jacmoe2
+
+	* [r921] :
+	* [r920] :
+
+2009-07-06  stealth977
+
+	* [r919] :
+
+2009-07-06  jacmoe2
+
+	* [r918] : Added the -no-obsolete flag to batch file.
+	  And a compile batch file too.
+
+2009-07-06  stealth977
+
+	* [r917] : Core Strings added
+	  OgitorsSystem::Translate added
+
+2009-07-06  jacmoe2
+
+	* [r916] :
+	* [r915] :
+	* [r914] : French translation file added.
+	  Moved the entitycache back into bin.
+	  Removed QtOpenGl from qtOgitor.vcproj.
+	* [r913] :
+	* [r912] :
+	* [r911] : Added entries to the Russian translation file. Needs
+	  translation!
+	  Updated translation project.
+
+2009-07-06  stealth977
+
+	* [r910] :
+	* [r909] :
+	* [r908] :
+	* [r907] :
+	* [r906] :
+	* [r905] :
+	* [r904] : removed non required tr() macros
+	* [r903] :
+	* [r902] :
+
+2009-07-06  hellrizzer
+
+	* [r901] : Russian translation for qtOgitor
+
+2009-07-06  jacmoe2
+
+	* [r900] : Added QtPropertyBrowser to translations.
+	* [r899] : Only copy the qm language files when installing, not
+	  sources.
+	* [r898] :
+	* [r897] :
+	* [r896] : Localized ogrewidget information overlay.
+	* [r895] : Danish translation complete.
+	* [r894] : Lost in translation..
+	* [r893] : More translation work..
+	* [r892] : Language translation in progress..
+	* [r891] :
+	* [r890] : Danish Qt translation file added.
+	* [r889] : Turkish QT translation file added.
+	* [r888] : Some awful Danish translations..
+	* [r887] : Language files update.
+	* [r886] : Language files reorg.
+	  CMake script updated to install language files to RunPath.
+	* [r885] :
+	* [r884] :
+
+2009-07-05  jacmoe2
+
+	* [r883] : Initial translation build files.
+	* [r882] : Resize bug squashed. Do not set size constraints on
+	  dockwidgets.
+
+2009-07-05  stealth977
+
+	* [r881] :
+	* [r880] : I fixed preferences spreading all over the application
+	  and core!!!
+
+2009-07-05  fusion44
+
+	* [r879] : Fixed a bug in Ogitors preferences page
+	* [r878] : Updates to the PreferencesManager, Ogitors "Appearence"
+	  tab now works!
+
+2009-07-05  jacmoe2
+
+	* [r877] :
+
+2009-07-05  stealth977
+
+	* [r876] : a new style sheet option
+	* [r875] :
+	* [r874] :
+	* [r873] : - use Q_SLOTS and Q_SIGNALS instead of slot and signal
+	  - dont forget to add the resource to SVN when you define it in
+	  qtOgitor.qrc
+	* [r872] :
+
+2009-07-05  fusion44
+
+	* [r871] : Updates to the ogitor preferences tab.
+
+2009-07-05  stealth977
+
+	* [r870] : Dont Click an Empty Property Browser Bug Fixed :)
+	* [r869] : Started Implementing Project Settings Dialog
+
+2009-07-04  stealth977
+
+	* [r868] : - added bool applyPreferences() to PreferenceEditor
+	  virtual class
+	  - Redirected PreferenceDialog's OK() and Apply() buttons to
+	  PreferenceMnager, so we an inform the editors and even reject the
+	  operation if they return false...
+	* [r867] :
+	* [r866] : little tweaks, the page icon size reduced to 64x64
+	* [r865] : changed all QRectF::setX() and QRectF::setY() calls with
+	  moveLeft() and moveTop(), thanx dermont for pointing out
+	* [r864] :
+	* [r863] :
+	* [r862] :
+	* [r861] :
+
+2009-07-04  jacmoe2
+
+	* [r860] : Moved ini file back into 'bin' - fixed default size of
+	  main window.
+	  CMake adjustments for WIN32.
+
+2009-07-04  fusion44
+
+	* [r859] : First version of the PreferencesManager added.
+
+2009-07-04  jacmoe2
+
+	* [r858] : Some standard keyboard shortcuts.
+
+2009-07-04  stealth977
+
+	* [r857] :
+	* [r856] : Camera Positions fully working
+
+2009-07-04  jacmoe2
+
+	* [r855] : Message window wired up. The search feature needs
+	  refining, and the clear action is too dangerous (should be
+	  wrapped).
+
+2009-07-04  stealth977
+
+	* [r854] :
+
+2009-07-04  jacmoe2
+
+	* [r853] : Log actions added - needs to be wired up.
+	* [r852] : Turning off install on Linux, again.
+	* [r851] : Style fixes for Linux.
+	* [r850] : Small style fix.
+
+2009-07-03  jacmoe2
+
+	* [r849] : Menu work.
+	* [r848] : Save the Path. (Open and Save dialogs)
+
+2009-07-03  stealth977
+
+	* [r847] : Fixed the visual problem of BOTTOM TABS
+	* [r846] : now getObjectContextMenu() and getPropertyContextMenu()
+	  support custom menu icons, the returned StrinVector items are
+	  treated as ";" separated string lists, the first item before ";"
+	  is the menu text, the second item is the icon filename, soon when
+	  QT becomes the ONLY GUI, the functions will change to return a
+	  OGUIMenu type which will make it possible to define nested menus
+	  for objects/properties with their custom icons
+	* [r845] : When minimized, rendering does not occur anymore, also
+	  timer loop frequency drops to once every 200ms
+	* [r844] : WARNINGs added as a custom level (lml 4) to Log
+	  output...
+	* [r843] :
+	* [r842] : updateActions will be called every 200ms
+
+2009-07-03  jacmoe2
+
+	* [r841] : :)
+	* [r840] :
+	* [r839] : MainToolBar visibility persisted. Tweaks to the toggle
+	  action.
+
+2009-07-03  stealth977
+
+	* [r838] :
+
+2009-07-03  jacmoe2
+
+	* [r837] :
+	* [r836] : Fixed MainWindow::toggleToolBar.
+
+2009-07-03  stealth977
+
+	* [r835] : CPagedTerrainEditor is now also saving native
+	  Ogre::Terrain binary format in TerrainDirectory/nativebinary
+
+2009-07-03  jacmoe2
+
+	* [r834] : GUI stuff - toggle buttons.
+
+2009-07-03  stealth977
+
+	* [r833] :
+	* [r832] : New Icons added/changed
+	* [r831] :
+	* [r830] : User Defined Property Dialog added
+
+2009-07-03  jacmoe2
+
+	* [r829] : CMake goof corrected. (I hope)
+	* [r828] : qtOgitor Logging.
+
+2009-07-03  stealth977
+
+	* [r827] : CentralWidget is now a TAB WIDGET, we may add other
+	  windows to it in the future, currently only TAB is RENDER
+	* [r826] : Visual Improvements
+
+2009-07-03  jacmoe2
+
+	* [r825] : Ogitor Log widget and CMakeLists adjustments.
+
+2009-07-03  stealth977
+
+	* [r824] :
+	* [r823] :
+
+2009-07-03  jacmoe2
+
+	* [r822] : Really close to get this install business working on
+	  Linux. Still some RPath issues.
+	* [r821] :
+
+2009-07-02  jacmoe2
+
+	* [r820] : Linux fix.
+	* [r819] : Remove Ogre in Program Files.
+	* [r818] :
+	* [r817] : Cleaned up CMake files.
+	* [r816] : ui_ files are generated, shouldn't be added to svn.
+	  Changed icons for show/hide scene objects.
+	  Updated qtOgitor CMakeLists.
+
+2009-07-02  stealth977
+
+	* [r815] :
+	* [r814] :
+	* [r813] : wxOgitor REMOVED, currently qtOgitor is almost complete
+	  and has much better functionality
+	* [r812] : Camera Polygon Mode tool button implemented
+	* [r811] : - Window Icon added
+	  - qtOgitor.qss moved to resource file
+	* [r810] :
+	* [r809] : Camera Options Toolbar Added
+	  - Save Camera Position not implemented
+	  - Camera Polygon Mode not implemented
+	* [r808] : - Import and Export Serializer Menus Added to "File"
+	  Menu
+	  - Splash Screen Implemented
+	* [r807] : Toggle Toolbar added to View Menu
+	* [r806] :
+	* [r805] : Import Heightmap Dialog Implemented
+	* [r804] : add terrain dialog implemented
+	* [r803] : Properties View Context Menu Implemented
+	  (Except Custom Properties)
+	* [r802] : Scene View Context Menu Implemented
+	* [r801] : Brush Size and Intensity Sliders are wired to Ogitors
+	  Root
+	  Now terrain editing controls are fully implemented
+	* [r800] :
+	* [r799] :
+	* [r798] :
+	* [r797] : Scene View Drag & Drop
+	* [r796] :
+
+2009-07-01  squirell
+
+	* [r795] : CgProgramManager is now correctly copied on OSX, work
+	  around for small bug
+
+2009-07-01  stealth977
+
+	* [r794] : GUI Additions
+	* [r793] : GUI Improvements
+	* [r792] :
+	* [r791] : some action wiring
+	* [r790] :
+	* [r789] : small changes, dont forget to recompile
+	  QTPropertyBrowser
+
+2009-07-01  jacmoe2
+
+	* [r788] : :)
+
+2009-07-01  stealth977
+
+	* [r787] : ALL SETTER FUNCTIONS CHANGED TO setXXX(const T& value,
+	  bool display)
+	  
+	  QTPROPERTYBROWSER CODE PATCHED, PLEASE RECOMPILE
+	* [r786] : ALL SETTER FUNCTIONS CHANGED TO setXXX(const T& value,
+	  bool display)
+	  
+	  QTPROPERTYBROWSER CODE PATCHED, PLEASE RECOMPILE
+
+2009-06-30  jacmoe2
+
+	* [r785] : Bleh. Qtpropertybrowser CMake script is not, not
+	  working.
+
+2009-06-30  stealth977
+
+	* [r784] : complex property fixes
+
+2009-06-30  jacmoe2
+
+	* [r783] : Don't save window geometry in fullscreen mode.
+
+2009-06-30  stealth977
+
+	* [r782] :
+
+2009-06-30  jacmoe2
+
+	* [r781] : Toggle fullscreen option.
+
+2009-06-30  squirell
+
+	* [r780] : Got rid of Ogitor xcode project, build system is now
+	  cmake
+	* [r779] : More OSX work
+
+2009-06-30  jacmoe2
+
+	* [r778] : Express solution gone.
+	* [r777] : Oops - added the QtPropertyBrowser export define to
+	  wxOgitor by mistake - fixing.
+
+2009-06-30  squirell
+
+	* [r776] : Mac cmake fixes
+
+2009-06-30  jacmoe2
+
+	* [r775] : Small layout issue fixed.
+	* [r774] : Compile fixes for advanced properties.
+	* [r773] :
+	* [r772] : Complex properties compiles. :)
+
+2009-06-30  hellrizzer
+
+	* [r771] :
+
+2009-06-29  stealth977
+
+	* [r770] : Terrain Tools Tab Almost Complete, just need sliders and
+	  SIGNAL connections
+	* [r769] : GUI Improvements
+	* [r768] :
+	* [r767] : GUI Improvements
+	* [r766] : Working on GUI
+	* [r765] : Some Cleanup :)
+	* [r764] :
+	* [r763] : Binding Property Changes to Ogitors Core
+	* [r762] : - Added CreateEnumProperty
+	  - Improved Property Browser
+	* [r761] :
+	* [r760] : %90 of property sheet implementation done
+	* [r759] : some more interface wiring
+
+2009-06-29  jacmoe2
+
+	* [r758] : Linux install CMake fix.
+	  Added complexproperties to qtOgitor.
+
+2009-06-29  stealth977
+
+	* [r757] : some more interface wiring
+	* [r756] : Save, load, saveas linked to actions
+	* [r755] : - Drag & Drop Editor Object Placement Implemented
+	  - Some small fixes
+	* [r754] : Fixed some QueryFlags issues
+	* [r753] :
+	* [r752] : added a #ifdef USE_COMPLEX_PROPERTIES
+	* [r751] : almost complete
+	* [r750] :
+	* [r749] : LINK PROBLEM TO BE SOLVED
+
+2009-06-28  stealth977
+
+	* [r748] :
+	* [r747] : some more property implementation
+	* [r746] :
+	* [r745] : some more property implementation
+	* [r744] : Just tidied up the main window
+	* [r743] :
+
+2009-06-28  hellrizzer
+
+	* [r742] : Billboards now visible, materials are assignable
+
+2009-06-28  stealth977
+
+	* [r741] : Daniel Protopopov has joined the Team
+	  (Acolyte)(Hellrizer)
+
+2009-06-28  hellrizzer
+
+	* [r740] :
+	* [r739] :
+
+2009-06-28  stealth977
+
+	* [r738] : Properties View Implementation (Not Complete)
+	* [r737] : problem with restore fixed
+	* [r736] :
+	* [r735] :
+
+2009-06-27  stealth977
+
+	* [r734] : toying with property browser
+
+2009-06-27  jacmoe2
+
+	* [r733] :
+	* [r732] : CMake script updated for qtOgitor
+
+2009-06-27  stealth977
+
+	* [r731] :
+	* [r730] :
+	* [r729] :
+	* [r728] : Drag&Drop Entity placement implemented, all the other
+	  object types will be next :)
+	* [r727] : CreateColourProperty
+	  CreateQuaternionProperty
+	  CreateVector2Property
+	  CreateVector3Property
+	  CreateVector4Property
+	  
+	  added to OgitorsSystem
+	* [r726] :
+	* [r725] :
+
+2009-06-27  jacmoe2
+
+	* [r724] : Fix for flicker. :)
+
+2009-06-27  stealth977
+
+	* [r723] :
+
+2009-06-27  jacmoe2
+
+	* [r722] : Try settings some Qt window flags to avoid flickering.
+	* [r721] : Some fixes to the Linux CMake install - not done yet.
+	  Also reverted two-liner button descriptions. To make the
+	  alignment bug visible.
+
+2009-06-27  stealth977
+
+	* [r720] : fixed the render window problems
+	* [r719] :
+	* [r718] :
+	* [r717] :
+	* [r716] :
+	* [r715] : Template Simplification (removed extra typename U since
+	  it is equal to T)
+	* [r714] : - added const char OGITOR_VERSION[]
+	  - wired entity view to ogre widget for OnTerminate and OnLoad
+	  operations
+	  - Removed ugly casting from CONNECT_PROPERTY
+
+2009-06-27  jacmoe2
+
+	* [r713] : Restored the log.
+	  It renders in Linux again - thanks Dermont. :)
+	* [r712] : Fixed scene resize bug when a scene has been loaded.
+
+2009-06-27  stealth977
+
+	* [r711] : some little fixes
+
+2009-06-27  jacmoe2
+
+	* [r710] : Restored saving of Ogre.cfg - will deal with the
+	  installer later.
+	  Fixed version not being updated in the aboutdialog.
+	* [r709] : GDB is useless - switching to a better debugger..
+	* [r708] : Fix for Linux.
+	* [r707] : Tabs to spaces.
+	* [r706] : Layout problems fixed!
+	  You can now safely dock to the left hand side.
+
+2009-06-26  jacmoe2
+
+	* [r705] :
+	* [r704] : Path fixes.
+	* [r703] :
+	* [r702] : We can't save anything in program files.
+	  Changed to using QString directory =
+	  QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+	* [r701] : EntityView added to CMake script.
+	* [r700] : Changing Release destination to 'bin' instead of
+	  'Release'
+
+2009-06-26  stealth977
+
+	* [r699] :
+
+2009-06-26  jacmoe2
+
+	* [r698] : CPack now creates a proper installer! :)
+	* [r697] : Install script now copies plugins to RunPath on Win32.
+	  Fixed the copying of qtOgitor stylesheet?
+
+2009-06-26  stealth977
+
+	* [r696] : Some fixes :) (TreeItem Handles are now refreshed after
+	  a Drag/Drop in Scene View)
+	* [r695] : Now all editors store a pointer to their TreeItem
+	  Handle... (For much faster Scene View operations, no need to make
+	  a name lookup now)
+	* [r694] :
+	* [r693] : OnIdle implemented as a QTimer (no onIdle in QT)
+	* [r692] :
+	* [r691] : Toolbar Alignments Fixes
+	  Dont forget to copy the new stylesheet to RunPath
+	* [r690] :
+	* [r689] :
+	* [r688] : Woohoo, i fixed almost all problems including the layout
+	  problems :)
+	  - The problem was because we were initializing Render Window
+	  BEFORE readSettings(), readSettings was causing problems for the
+	  render window, now it is initialized after reading settings and
+	  no visual artifacts now
+
+2009-06-26  jacmoe2
+
+	* [r687] : Some Windows fixes.
+	  Very bad layout problems - flickers. Looks like an extra, black
+	  viewport stuck in the right corner..
+
+2009-06-25  jacmoe2
+
+	* [r686] : I ought to tag this moment. Rendering in QWidget in
+	  Linux.
+	  This commit fixes the last three commits which were broken due to
+	  SVN conflicts.
+	* [r685] :
+	* [r684] : D'oh.
+	* [r683] : We don't use no QGLWidget no more.
+	* [r682] : OMG - it renders. Using a QWidget in Linux. :D
+	* [r681] : :(
+	* [r680] : Fixes after the revert.
+	* [r679] : Reverted OgreWidget to rev. 649
+	* [r678] : Hacked QGLWidget to a QWidget - thanks to Dermont. :)
+	  Needs some fixing, but at least it runs.
+	* [r677] : Some Install script functions restored for Linux.
+	  We lost our Linux handle, unfortunately..
+
+2009-06-25  stealth977
+
+	* [r676] :
+
+2009-06-25  jacmoe2
+
+	* [r675] : It runs again in Linux - woo-hoo! :)
+
+2009-06-25  stealth977
+
+	* [r674] :
+	* [r673] :
+	* [r672] :
+	* [r671] : Properties View - QtOgitorsSystem connection (functions
+	  not implemented yet)
+	* [r670] : properties view
+	* [r669] :
+	* [r668] :
+	* [r667] : Added a SceneViewWidget and implemented qtogitorsystem
+	  Tree related functions
+
+2009-06-25  jacmoe2
+
+	* [r666] : Yes! Commit no. 666 - proper exe icon for qtOgitor. :)
+
+2009-06-25  stealth977
+
+	* [r665] : implemented most of qtogitorsystem platform functions
+
+2009-06-25  jacmoe2
+
+	* [r664] : CMake Linux fix?
+	* [r663] :
+	* [r662] : CPack doesn't work at all. :(
+	* [r661] : Some more CMake install stuff.
+	* [r660] : Installation script in progress.
+	* [r659] : Made the CMake scripts more useful by actually adding
+	  the headers to the source.
+	  Ought to keep Visual Studio users happy. :)
+
+2009-06-24  jacmoe2
+
+	* [r658] : Deleted QT Creator project since it's not needed.
+	* [r657] : qtOgitor now builds using CMake in Linux too.
+	  Doesn't run, because the window handle is wrong. (needs
+	  QGLWidget).
+	* [r656] : qtOgitor builds under CMake.
+	* [r655] :
+	* [r654] :
+
+2009-06-24  stealth977
+
+	* [r653] :
+
+2009-06-24  jacmoe2
+
+	* [r652] : Setting Ogre Cthugha as required in CMake script.
+	* [r651] :
+	* [r650] : Catch up with Stealth fixes. :)
+
+2009-06-24  stealth977
+
+	* [r649] :
+
+2009-06-24  jacmoe2
+
+	* [r648] :
+	* [r647] : Case sensitivity fixes.
+	* [r646] :
+
+2009-06-24  stealth977
+
+	* [r645] : Render Window (OgreWidget) functions of QtOgitor is
+	  almost complete
+	* [r644] :
+
+2009-06-24  enricozz
+
+	* [r643] : - changed names to correct ones
+
+2009-06-24  stealth977
+
+	* [r642] : - About Dialog version changed to v0.3.0b
+	  - Splash images changed to new images
+	* [r641] :
+	* [r640] :
+	* [r639] : fix for empty material name
+	* [r638] : Some little changes in Caelum and Hydrax Plugins
+	  - They were partially compatible with the new framework (just
+	  enough to work)
+	  - Now they are much more compatible, still not complete
+	* [r637] :
+	* [r636] : Copyright Year Change
+	* [r635] : addition of CBillboardSetEditor, a contribution by
+	  Daniel Protopopov <dprpg@yahoo.com>
+	  - It is not ready to be used yet
+	* [r634] : OgitorMFC now searches terraintextures group for files
+	  with name XXX_diffuse.png and adds them to available terrain
+	  Textures list, it also checks if XXX_normal.png exists and adds
+	  it as the normal file
+	  
+	  CPagedTerrainManager now can detect if a diffuse texture has a
+	  normal file with it, if so, it also uses the normal file during
+	  splatting...
+	* [r633] : - Fixed a few places where terrain instances needs to be
+	  reloaded but loosing blendmap data during unload
+	  
+	  - Terrain editing now operates on a 3x3 terrain page rectangle,
+	  so that the neighboring pages are also edited if the editing area
+	  is partially on them
+	  * the current page (where the mouse cursor hits) and the 8
+	  neighbors of it get notified of edit
+
+2009-06-24  jacmoe2
+
+	* [r632] : Small Linux fixes. Everything builds now - I am not
+	  kidding. :)
+
+2009-06-23  jacmoe2
+
+	* [r631] : Fixed WIN32 wxOgitor resource file.
+	  Removed Code::Blocks files.
+	* [r630] : More CMake fixes: added WIN32 to addtarget of wxOgitor.
+	  Ensures a windows application.
+	  WIN32 is ignored on Linux/Mac.
+	* [r629] : CMake stuff. Should compile now. :)
+	* [r628] :
+	* [r627] : Warning: This is probably utterly broken. :P
+
+2009-06-23  squirell
+
+	* [r626] : Minor mac updates
+
+2009-06-23  stealth977
+
+	* [r625] : Implemented SMOOTH for Ogre::Terrain
+	  NOTE: Although SMOOTH and DEFORM functions are accurate, they
+	  will make Ogitor crash due to Ogre::Terrain problems
+	  (Ogre::Terrain::updateGeometry() is not working yet)
+
+2009-06-23  jacmoe2
+
+	* [r624] : Small CMake update - fixes problems on Windows.
+
+2009-06-23  stealth977
+
+	* [r623] :
+	* [r622] :
+	* [r621] :
+
+2009-06-23  jacmoe2
+
+	* [r620] : wxOgitor builds now - still problems running it from a
+	  local build directory.
+
+2009-06-23  stealth977
+
+	* [r619] : * Now Edit Direction is taken into account when
+	  splatting (EditDirection=add/remove)
+	  
+	  * Now CPagedTerrainEditor searches for an empty layer before
+	  creating a new one
+	* [r618] : some little fixes to enable terrain editing even when
+	  sub pages are selected (previously it only enabled it when
+	  Terrain Manager is selected...
+	* [r617] : Splatting changes
+	  - The brush size is size in vertexes in DEFORM MODE
+	  - The brush size is size in BlendMap pixels in SPLAT_MODE
+	* [r616] : the World Size parameter of layers can be changed now
+	  (though it doesnt affect the scene since it cant set the
+	  namedconstant, reported sinbad about it
+	  
+	  NOTE: but it will display correctly when you save and reload...
+	* [r615] : Saving and Loading of Ogre::Terrain
+	  - Heightmap
+	  - Layers and Blendmaps
+	* [r614] : Splatting is now working, still didnt implement saving
+	  the splat maps
+
+2009-06-23  jacmoe2
+
+	* [r613] : Everything builds except for wxOgitor which dies in
+	  wxPGPropterty related trouble.
+	  I wonder what OgreProperty is? Removed it.
+	* [r612] : Fixes to CMake scripts. Migth be broken.
+
+2009-06-22  jacmoe2
+
+	* [r611] : Upgraded cmake script repository.
+	* [r610] : Formatting fixes.
+
+2009-06-22  squirell
+
+	* [r609] : Updated OSX readme
+	* [r608] : OSX environment variables for headers
+
+2009-06-22  stealth977
+
+	* [r607] :
+	* [r606] :
+	* [r605] : Improving PropertySheet properties of Ogre::Terrain
+
+2009-06-22  jacmoe2
+
+	* [r604] : Small fixes.
+
+2009-06-22  stealth977
+
+	* [r603] : - Many fixes
+	  - wxOgitor now has the AddTerrain and ImportHeightMap dialogs
+	* [r602] : added missing files
+	* [r601] : Changed how CPagedTerrainManager manages its pages
+	  - Now Manager has a grid of pages, all empty at first, when you
+	  add a page, it checks for empty grid cells and lets user select
+	  an empty cell to create the page
+	  - The pages all inherit the values from the parent (Manager)
+	  
+	  * wxOgitor not fixed yet to use the new system
+
+2009-06-22  jacmoe2
+
+	* [r600] : Plugin loading functions - take one.
+
+2009-06-21  jacmoe2
+
+	* [r599] : Some menu and actions work.
+	* [r598] : Tested in Linux - small QT project adjustments.
+	* [r597] : QT Creator project debug configuration fixed.
+	  Resources is now loaded in a resource file.
+	  About dialog added.
+
+2009-06-20  jacmoe2
+
+	* [r596] : Removed main toolbar, as it's not really needed.
+	  Cleanup in prep for more toolbar work.
+
+2009-06-20  squirell
+
+	* [r595] : Updated to work with OSX
+
+2009-06-20  jacmoe2
+
+	* [r594] : All lowercase ogrewidget
+	* [r593] :
+	* [r592] :
+	* [r591] :
+	* [r590] :
+	* [r589] :
+	* [r588] :
+	* [r587] :
+	* [r586] : Project files now uses Ogitor environment variables on
+	  Windows:
+	  OGREHEAD_INCLUDE and OGREHEAD_LIB.
+	* [r585] : Windows fixes.
+	* [r584] : qtOgitor now working in Linux.
+	  This broke Windows - going to fix.
+	* [r583] : Small QT Creator project fix.
+	* [r582] : Added qtpropertybrowser sources again.
+	* [r581] :
+	* [r580] : Crap. This is not working in Linux. :(
+
+2009-06-19  jacmoe2
+
+	* [r579] : Cthugha fixes.
+	* [r578] : Changes to qtOgitor.pro for Linux.
+	* [r577] : QT Creator project added.
+	* [r576] : Some fixes related to the MOC compiler.
+	* [r575] : Initial qtOgitor commit.
+
+2009-06-19  stealth977
+
+	* [r574] :
+	* [r573] : Terrain editing improvements for OgreTerrain
+	* [r572] : more decal stuff
+	* [r571] : Decal changes
+	* [r570] : Implementing Decal for Ogre::Terrain
+	* [r569] : added a missing file
+
+2009-06-18  stealth977
+
+	* [r568] : Some fixes and improvements to Ogre Terrain system
+	* [r567] :
+	* [r566] :
+	* [r565] :
+	* [r564] : changed to DX
+	* [r563] : Hydrax Compositor was causing problems, trying to fix
+	* [r562] :
+	* [r560] : PagedTerrainManager Changes
+	* [r559] :
+	* [r558] : Changing Dialogs according to Ogre Terrain
+	* [r556] :
+	* [r555] :
+	* [r554] :
+	* [r553] :
+	* [r552] : Added CPagedTerrainManager class, root of all
+	  CPagedTerrainEditor classes, will supply the functionality to
+	  work on them
+
+2009-06-17  stealth977
+
+	* [r551] : Hydrax fix, position property was not defined :P
+	* [r550] :
+	* [r549] : OgreTerrain a bit more improved :)
+	* [r548] : little fixes
+	* [r547] : SceneManagerEditor fixes :)
+	* [r546] : Ogre::Terrain test, currently has some problems:
+	  - The textures dont show up
+	  - When deleted and recreated, Ogre::WorkQueue causes exceptions
+	* [r545] : - Added Empty CPagedTerrainEditor class
+	  - Changed Version to v0.3.0b
+	* [r544] :
+	* [r543] : OgitorsConnection now does not disconnect on
+	  destruction, instead there is a new class called
+	  OgitorsScopedConnection which disconnects on destruction
+	* [r542] : submeshdata fix
+
+2009-06-16  stealth977
+
+	* [r540] : New OgitorsSignal and OgitorsConnection classes for
+	  SIGNAL implementation
+	  - Now we dont use boost::function or boost::signal
+	* [r539] : a new backup, will implement new signal system
+	* [r538] : Getter and Setters of OgitorsProperty now use a custom
+	  Very Fast Delegate class instead of boost
+	* [r537] : another backup
+	* [r536] : backup for further experiments
+	* [r535] : Added OgitorsPropertyScopedConnection
+	  - It auto disconnects when out of scope (owner class destroyed)
+	* [r534] : Destroy signal was not being emitted, fixed now
+	* [r533] : DEFINE_REQUIRED_PROPERTIES(classname)
+	  IMPLEMENT_REQUIRED_PROPERTIES(classname)
+	  Macros added, they define and wire following required properties:
+	  - name
+	  - parent
+	  - selected
+	  - destroyed
+	  
+	  CEditorObserver class removed, now connections are wired directly
+	  to properties
+	* [r532] : Change to property system
+
+2009-06-15  stealth977
+
+	* [r531] : OgreProperty based implementation OgitorsProperty added
+	  - Now BLEED can be compiled with OGRE v1.6.2 till we need
+	  OgreTerrain
+	* [r529] : Better View Grid Adjusting to Camera Height :)
+	* [r528] : * Various Property Sheet changes
+	  * floatformat removed from property sheets, MFC now displays
+	  floats with required precision like wxOgitor does
+	  * OnNameChange implemented for AutoTracking editors so that when
+	  their autotracktarget changes name, they adjust themselves
+	  * AutoTracking property is restored before position and
+	  orientation so that undo behaves normal (setting orientation
+	  before autotracktarget makes it obsolete)
+	  * GetColourProperty and SetColourProperty now uses
+	  Ogre::ColourValue instead of unsigned int
+	  * CPlaneEditor now displays position and orientation
+
+2009-06-14  stealth977
+
+	* [r527] : now property sheet properties can have type vector2-3-4
+	  and also define the field names as fieldx|y|z|w="<fieldname>"
+	  
+	  Changed Camera.xml and Light.xml to use vector2|3|4 for their
+	  properties, also changed the classes to SetProperty and
+	  handleCustomFunction according to new property sheets
+	* [r526] :
+	* [r525] :
+	* [r524] : OnDestroy fix for CEditorObserver
+	* [r523] : some fixes
+	* [r521] : wxOgitor fix for latest wxWidgets
+	* [r519] :
+
+2009-06-13  stealth977
+
+	* [r518] :
+	* [r517] : DotScene Importer Plugin adjusted to new framework
+	* [r515] : AutoTracking related fixes
+	* [r514] : CLightVisualHelper is now autonomous too :)
+	* [r513] : CameraVisualHelper changes:
+	  - renamed to CCameraVisualHelper
+	  - Merged with CEntityVisualHelper
+	  - It is fully autonomous now :) All code inside cameraeditor is
+	  removed since it now tracks its parent and adjusts to it
+	* [r512] : fixed the Observer not AUTO UNREGISTERING itself in
+	  destructor
+	* [r511] : CEditorObserver now unregisters in destructor
+	* [r510] : Fixed AutoTrackTarget problems
+	* [r508] : * Made CEntityVisualHelper more autonomous. Removed
+	  updateHelper() function and calls.
+	  - CEntityVisualHelper now OBSERVES its parent and changes
+	  position / orientation according to it
+	  - It also observes its parent's parent for scale changes and
+	  adjusts its position (for Camera and Light)
+	* [r507] : GUIPlugin example active again, OgitorExpress files
+	  needs updating though, also CMake files for Hydrax and Caelum
+	  needs updating (they need OgreProperty.lib)
+	* [r506] : Hydrax and Caelum are working again, actually i just
+	  converted them to new framework but just enough to work, they
+	  still need many adjustments :)
+
+2009-06-12  stealth977
+
+	* [r505] :
+	* [r504] :
+	* [r503] : some real time functions converted to offline
+	* [r502] :
+	* [r501] : * RenameEditorObject removed from OgitorsRoot
+	  * RenameObject removed from CBaseEditorFactory
+	* [r500] : OgitorsRoot::GetAutoTrackTargets(...) implementation
+	* [r499] : all Editor Objects are also EditorObservers now
+	* [r498] :
+	* [r497] :
+	* [r496] : * restore() function modified
+	  * default setNameImpl() modified, now doesnt recreate the editor
+	  object
+	* [r495] : copyright violation, unneeded anyway
+	* [r493] :
+	* [r492] :
+	* [r491] :
+	* [r490] : new framework
+
+2009-06-06  stealth977
+
+	* [r481] :
+
+
+//--  v0.2.4b  --//
+* Undo/Redo Support for Multi Selection
+* Undo/Redo Support for custom properties
+* Undo/Redo Support for Changing Nodes via Drag/Drop
+* Undo/Redo Support now active in wxOgitor too
+* Nodes and Cameras now have Auto Tracking Target Property
+* Viewport now correctly saves/loads compositors
+* Multiple Viewport Suport with their own compositors
+* Viewports now have Left, Top, Width, Height, OverlaysEnabled, SkiesEnabled, ShadowsEnabled properties
+* Node Locking/Unlocking
+* Viewports now sav/load their internal camera properties, also expose the FOV and clipdistance of inernal camera
+
+//--  v0.2.3b  --//
+* Multi Selection can be combined with another multi selection (Hold SHIFT and make another selection)
+* New Selection can be subtracted from Multi Selection (Hold ALT and make another selection)
+* Basic UNDO / REDO (Yet, OgitorMFC only)
+* New Event Processing allowing both OgitorMFC and wxOgitor use the same core functions
+
+//--  v0.2.1b  --//
+* Many, many, many small to medium size bug fixes :)
+* Now Light's visualize their Light Coverage similar to 3D Modeling tools
+* Selecting a node displays bounding boxes of the objects under that node 
+  (Excluding Entities, their node displays BB for them)
+* Snap to Grid is implemented for TRANSLATION (press CTRL while translating)
+* Snap to Angle is implemented for ROTATION (press CTRL for 5 Degree, SHIFT for 15 Degree intervals)
+* New Editor Object: CPlaneEditor
+* New Experimental Serializer: DotScene Serializer (Only Imports at the moment and have some elements not implemented)
+* Cameras now have Visual Helpers which show the Frustum Planes and Direction
+* Multi Selection - Move/Scale/Rotate Implemented
+* New Selection and Highlighting Behavior
+
+//--  v0.1.8a  --//
+* The Ogitors Framework had major changes
+* Now the Framework supports 2 types of plugins: Editor Object plugins and Serializer (Import/Export) Plugins
+* Cloning of objects now possible through Editor Object Factories and more stable
+* Renaming of Objects now possible (Except ETL/Hydrax/Caelum)
+* New Scene Format (*.ogscene) and importer for old Scene Format (*.scn) added
+* Object toolbar is now dynamic, listing additions from plugins
+
+//--  v0.1.7a  --//
+* SubEntity visibility problem fixed
+* Hydrax crash bug when disabling Underwater effects fixed
+* Wrong Display and Crash bug when you disable hydrax and splat terrain, fixed
+* Now it gives a warning when the file can not be loaded
+* Basic Grass Layer added, can not be edited at the moment
+
+
+//--  v0.1.6a  --//
+* Light Attenuation Property added
+* Cloud Speed now has 6 digit precision
+* Node Scale is now correctly applied when cloning objects
+* Fixed issue with ETL crashing when deleted and re-added
+* Now Hydrax Preserves its original Water Colour Property while still interpolating it with Caelum SunLight
+* Camera Model changed //Thanks to Xadhoom
+* Pivot Materials changed //Thanks to Xadhoom
+* Fixed Problem with Camera and Light Visual Entities and Pivots showing wrong when under a scene node
+* Camera Clip Ranges and Light Attenuations are now correctly cloned
+* Fixed Translation problems When a Camera / Light is under a scenenode
+* Added Dynamic Lighting Ambient + Point Lights for Terrain
+* Hydrax has a new property "Active" to show/hide hydrax water plane
+* Different Light Types have different models now //Thanks to Xadhoom
+* Setting colour property by hand now works
+* Widgets now adjust during translation
+* Fixed Crash Issue When Creating a New Scene
+* Fixed Crash Issue When you delete the first light in demo scene and create another
+* Fixed Entity Scale not cloning issue
+* Lights can properly rotate and translate now
+
+//--  v0.1.5a  --//
+* Camera Object Near / Far clip distance can be set
+* Now you can switch view to a Camera Object, all movement in switch mode affects camera
+* Medium Caelum Support (Still Buggy)
+
+//--  v0.1.3a  --//
+* Removed "Modified ETL" dependency
+* Fixed Hydrax problems after ETL splatting
+* Hydrax Objects can be deleted now
+* When loading another scene, ETL Brush/color/Texture options are preserved now
+* Changed RibbonBar Layout, now there is more space for render window
+* Increased ranges of Brush Size and Intensity
+* Entities and Lights now correctly display and set "Cast Shadows"
+* ETL Terrain has 2 new properties Light Direction and Colour for shadowmap calculation
+* Fixed a bug with group lists in Property Grid
+
+//--  v0.1.2a  --//
+* THE CORE SYSTEMS ARE NOW COMPLETELY PLATFORM INDEPENDENT
+* Fixed X-Axis showing opposite Direction!!!!
+* Fixed typo problems
+* Fixed Save button not getting active after project settings change
+* Fixed ETL Tools still active problem during add new object
+* Now application warns you and quits saving if the save path contains locale specific characters
+* Property Sheet has more control over displaying float values. The precision of float values of propertiescan be set by "floatformat" attribute of property sheets, default = "%.2f"
+* Material of ETL Terrain now saved in ETL Directory with the used programs.
+* During MOVE, if the new position does not intersect with the translation plane, the object stays at last valid position
+
+//--  v0.1.0a  --//
+* Now most of the buttons in the GUI transfer focus to Render View after they process their command
+* Ambient Light can be set from the Scenemanager Properties now
+* Ability to set SceneManager SkyBox (from SceneManager's Properties)
+* FPS Control is not a menu anymore, its a slider on the statusbar
+* Now Object Oriented camera movement, rotation  and focus points the pivot point instead of Object's BoundingBox's Center
+* Some Major Widget Changes:
+- Widgets are no longer created per object, now there is only one widget instance saving up precious Ogre Resources
+- Widgets are now rendered on top of objects (OVERLAY - 1)
+- Widgets can be selected no matter there are other objects infront of selected object
+- Widgets Change Appearance according to MOVE / ROTATE / SCALE modes
+- Widgets are Hilited when mouse is over, or when an axis is selected from toolbar
+- Widgets have a fixed size on the screen
+* Fixed a nasty bug causing crashes (Hydrax Issue actually)
+* Fixed screen not rendering problem when another scene is loaded
+* Delete Object shortcut moved to DEL key from "D" key
+* Now Hydrax can be added to new scenes as well
+* Now Scenes containing Hydrax Object can be Saved As correctly.. 
+* WSAD Camera movement is back, also Q for up E for down movement...
+* Right Click during MOVE/SCALE/TRANSFORM cancels the operation and returns object state to the state beforeoperation
+* Changing of axis during MOVE/SCALE/TRANSFORM is changed to TAB key since right click is now used as cancel
+* Object Placement Changes:
+- New Entity/Camera/Light is always created under RootSceneNode (but can be drag dropped to another node)
+- Use right mouse button on Render Window to place mentioned objects, after clicking their buttons
+- when you press RightMB the object is placed on terrain if there is one at the click point, if not object is placed at the click point 5 units infront of camera and the placement distance can be made further away / closer by using mousewheel, when you release right MB the object can no longer be manipulated by mousewheel
+* Hydrax Options are now configurable (Only for ProjectedGridVertex at the moment)
+
+
+
+//--  v0.0.9a  --//
+* Fixed some bugs about movement and rotation etc.
+* Added a New Scene Dialog still Under Construction
+* You can also view current projects options (but can not change)
+* Added User defined asset directories, if you dont define them
+  You wont be able to add models / materials to scene
+* Now new scenes are Directory based instead of file based, it
+  has its own directories for ETL and Hydrax (Hydrax support is not implemented yet)
+
+//--  v0.0.8a  --//
+* Versioning system changed, added one more digit to reflect rapid updates
+  now it is v0.0.8a instead of v0.8a
+* EXPERIMENTAL: WHEN NO AXIS SELECTED, DEFAULT MOVEMENT PLANE
+  IS THE PLANE WITH SELECTED OBJECT AS ORIGIN AND
+  CAMERA'S BACK VECTOR AS NORMAL (PERPENDICULAR TO CAMERA DIRECTION) 
+* Object Oriented Key is changed to ALT Key instead of CTRL Key
+* Fixed Bug: When drag/dropping objects to other nodes, 
+  Bounding boxes and widgets were not moving
+* Panning improved (now has Dragging Effect)
+* Rotating around selected object slowed down for precision, 
+  cameraspeed was affecting rotation around Y Axis, fixed now.
+* Now can focus on anything but SceneManagers and ETL Terrains
+* You can use "F" key to focus on objects, "D" key or CTRL+DEL to delete selected object
+* ETL_Terrain's cursor was not updating when camera moves, it now updates at all times
+* ETL_Terrain's deformer now works with 1/3 the intensity
+* Now your last camera position is saved when you save scene
+  And restored when you load the scene
+* HELP BUTTON NOW WORKS =) A small help is included
+* Some Medium Refactoring of Editor Framework done:
+* Main change is the ETL_Terrain is not a node anymore, it has following effects on
+  saved files:
+    - The children of ETL_Terrain node are now children of the node ETL Terrain belongs to
+    - The saved files as testscene.ETL_Node.* are named to testscene.ETL_Terrain.*
+ 
+
+//--  v0.7a  --//
+* Rotations are not affected by Camera Speed now
+* Lights / cameras, Axis widgets and grid is not affected by polygon_mode of the camera now
+* Now only when you CTRL+LEFTCLICK on object, it does the focus animation on object
+* Also CTRL+F focuses on currently selected object too
+* CTRL + DELETE now deletes objects
+* Objects have a light yellow bounding box now (not axis aligned, real bounding box)
+  Nodes and Nodetypes (ETLTerrain fox example) still shows the white node AABB
+* Fixed problem changing values in Property Window
+* Fixed problem with loader, it now supports new scene format
+* Added a FPS display on the statusbar, its only usefull when you select OgreFPS->50 FPS 
+  which is unrestricted render mode, all other modes are Forced FPS modes, so you'll see
+  a FPS closer to your selected FPS (of course unless its a heavy scene and you catually
+  render below your forced FPS)
+  
+
+
+//--  v0.6a  --//
+* Object oriented movement key is changed to CTRL key from SHIFT key
+  CTRL + LEFTMB: Works as Select even if using another tool
+  CTRL + RIGHTMB + MOVE: Rotate camera around object
+  CTRL + MOUSEWHEEL: Zoom in to / Zoom out of object
+* Camera Options panel added, you can now set polygon mode to SOLID/WIREFRAME/POINTS
+* Camera Speed can be adjusted and affects all kinds of cam movement including camera rotation
+  +speed = %20 more speed, -speed = %20 less speed
+* Now Entities can be cloned, SHIFT + LEFTCLICK on an object and move,
+  you will be moving a clone of the original entity
+
+
+//--  v0.5a  --//
+* Added ability to save and restore Camera Positions
+* Added icons on statusbar to show/hide windows
+* Changed property sheet loading, now every object type has its own property sheet
+  So, soon i will add support for user defined properties per Object
+* Material Property of Entity Objects' Sub Entities can now be changed
+* Drag / Drop support on Scene View, you can drag drop objects to change parent nodes
+* Saved Camera positions are now correctly written to and read from scene file
+* CTRL+0..9 now selects saved camera position 0 to 9
+
+
+
+//--  v0.4a  --//
+* Fixed crash issue when Open/Close/New Scene clicked
+* Changed behaviour of Tools, now you can not select both ETL_Tools and usual move/rotate etc. tools together, only one is selected at a time
+* The terrain tool gizmo is hidden when no ETL_Tool is active (Deform, splat etc.)
+* Fixed Scenebuilder taking CPU time when not active
+* Changed Camera Rotations, now right mouse btn is used instead of keys
+* Added Map Cells Per Texture option to Add ETL Dialog, 
+  it defines per how many map cells the splat texture is being repeated.
+* Added Support for moving / scaling on 2 axises
+* SHIFT + RIGHTMB + move : now rotates around selected object
+* Now New Scene opens a blank scene with only a Scenemanager
+
+
+//--  v0.3a  --//
+* Picking Algorithm changed, now it has accuracy to the polygon level
+* Minor improvements to Save/Load so that Non-Nodes are written and displayed first
+* Show / Hide windows are not checkboxes anymore, using a menu for it
+* Added option to Show / Hide Grid
+* Added Support for ETL type terrain
+* Fixed problem while saving scene (default .scn extension now added to filename)
