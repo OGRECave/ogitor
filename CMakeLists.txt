@@ -90,6 +90,16 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_
 
 find_package(OGRE REQUIRED)
 
+if(UNIX)
+    # Newer ld versions need this linked explicitly
+    find_package(Threads REQUIRED)
+    add_definitions(${CMAKE_THREAD_LIBS_INIT})
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
+    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
+endif(UNIX)
+
+
 if(APPLE)
 	find_package(CG REQUIRED)
 endif(APPLE)
