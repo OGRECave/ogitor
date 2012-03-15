@@ -40,6 +40,16 @@
 #include "TerrainEditor.h"
 #include "MultiSelEditor.h"
 #include "ViewportEditor.h"
+#include "TerrainPageEditor.h"
+#include "TerrainGroupEditor.h"
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#include "OgreTerrain.h"
+#include "OgreTerrainGroup.h"
+#else
+#include "Terrain/OgreTerrain.h"
+#include "Terrain/OgreTerrainGroup.h"
+#endif
 
 namespace Ogitors
 {
@@ -576,7 +586,8 @@ void CViewportEditor::OnMouseLeftUp (Ogre::Vector2 point, unsigned int buttons)
         mEditorAxis = 0;
         mVolumeSelecting = false;
     }
-    else if(!mIsEditing || !mMouseMovedSignal)
+    
+	if(!mIsEditing)
     {
         if(mViewKeyboard[mSpecial.SPK_ALWAYS_SELECT] && terED && terED->getEditMode() > 0)
         {
@@ -758,9 +769,45 @@ CBaseEditor* CViewportEditor::GetObjectUnderMouse(Ogre::Ray &mouseRay, bool pick
             selected = mOgitorsRoot->FindObject(sName);
         }
 
-        if(pickterrain && !selected && mOgitorsRoot->GetTerrainEditor() && mOgitorsRoot->GetTerrainEditor()->hitTest(mouseRay))
+        if(pickterrain && !selected && mOgitorsRoot->GetTerrainEditor() && 
+            mOgitorsRoot->GetTerrainEditor()->hitTest(mouseRay))
         {
-            selected = mOgitorsRoot->GetTerrainEditorObject();
+			/* Set default selection to the TerrainGroup unless we find the page */
+			selected = mOgitorsRoot->GetTerrainEditorObject(); 
+
+			Ogre::String name = mOgitorsRoot->GetTerrainEditorObject()->getTypeName();
+
+			/* Only attempt to select the page if it's a Terrain Group Object type */
+			if(name == "Terrain Group Object") 
+            {
+				CTerrainGroupEditor* terrainGroupEditor = (CTerrainGroupEditor*)selected;
+				Ogre::TerrainGroup* handle = (Ogre::TerrainGroup*)terrainGroupEditor->getHandle();
+
+				/* Calculate the page we intersect */
+				Ogre::TerrainGroup::RayResult rayresult = handle->rayIntersects(mouseRay);
+				if(rayresult.hit) 
+                {
+					long x, y;
+					handle->convertWorldPositionToTerrainSlot(rayresult.position, &x, &y);
+                    
+					/* Loop over all pages and find the one matching the X and Y value retrieved before */
+	                CTerrainPageEditor* terrainPageEditor;
+                    Ogitors::NameObjectPairList &list = terrainGroupEditor->getChildren();
+                    Ogitors::NameObjectPairList::iterator it = list.begin();
+					while(it != list.end()) 
+                    {
+						terrainPageEditor = (CTerrainPageEditor*)it->second;
+
+                        if(terrainPageEditor->getPageX() == x && terrainPageEditor->getPageY() == y)  
+                        {
+                            selected = it->second;
+                            break;
+                        }                        
+                        else
+                            it++;
+					}
+				}
+			}
         }
     }
 
