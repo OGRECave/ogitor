@@ -192,11 +192,6 @@ void OgreWidget::timerLoop()
     if(mOgitorMainWindow->isMinimized())
         return;
 
-    if(mRenderStop)
-    {
-        if(QMessageBox::information(this,"qtOgitor", tr("Render Device is Lost! Please click ok to continue.."), QMessageBox::Ok) == QMessageBox::Ok)
-            mRenderStop = false;
-    }
     update();
 }
 //------------------------------------------------------------------------------------

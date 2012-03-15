@@ -168,8 +168,6 @@ protected:
     {
          if(mScreenResize)
              return;
-         if(eventName == "DeviceLost") 
-             mRenderStop = true;
     };
 
     void onSceneLoadStateChange(Ogitors::IEvent* evt);
