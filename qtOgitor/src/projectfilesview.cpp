@@ -229,7 +229,7 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
                 addFileFolderPath = path.toStdString();
 
             actCommandMakeAsset->setEnabled(true);
-            actCommandMakeAsset->setChecked(true);
+            actCommandMakeAsset->setChecked(false);
             actCommandReadOnly->setChecked(true);
             actCommandHidden->setChecked(true);
             actCommandReadOnly->setEnabled(true);
@@ -256,8 +256,6 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
         {
             if((*it) == path.toStdString())
                 actCommandMakeAsset->setChecked(true);
-            else
-                actCommandMakeAsset->setChecked(false);
         }
     }
     else
@@ -481,7 +479,26 @@ void ProjectFilesViewWidget::onCommandMakeAsset()
 {
     QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
     QString name = selItems[0]->whatsThis(0);
-    Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories.push_back(name.toStdString());
+    bool found = false;
+
+    Ogre::StringVector::iterator it;
+    it = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories.begin();
+
+    while(it != Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories.end())
+    {
+        if((*it) == name.toStdString())
+        {
+            found = true;
+            Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories.erase(it);
+            break;
+        }
+        else
+            it++;
+    }
+
+    if(!found)
+        Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories.push_back(name.toStdString());
+    
     Ogitors::OgitorsRoot::getSingletonPtr()->ReloadUserResources();
     mOgitorMainWindow->getEntityViewWidget()->prepareView();
     mOgitorMainWindow->getTemplatesViewWidget()->prepareView();
