@@ -3290,6 +3290,9 @@ namespace OFS
                 }
             }
 
+            if(logCallbackFunc)
+                (*logCallbackFunc)(std::string("Defragmenting completed."));
+
             delete [] tmp_buffer;
 
             ret = OFS_OK;
