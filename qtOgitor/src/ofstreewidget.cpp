@@ -244,6 +244,18 @@ void OfsTreeWidget::refreshWidget()
         disconnect(this, SIGNAL(itemExpanded( QTreeWidgetItem * )), this, SLOT(onItemExpanded( QTreeWidgetItem * )));
     }
 
+    // Save current expansion state
+    QStringList list;
+    NameTreeWidgetMap::iterator it = mItemMap.begin();
+    
+    while(it != mItemMap.end())
+    {
+        if(it->second->isExpanded())
+            list << it->second->whatsThis(0);
+
+        it++;
+    }
+
     clear();
 
     mItemMap.clear();
@@ -278,7 +290,7 @@ void OfsTreeWidget::refreshWidget()
             scrollToItem(it->second);
             setItemSelected(it->second, true);
         }
-    }
+    }    
 
     connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
 
@@ -286,6 +298,15 @@ void OfsTreeWidget::refreshWidget()
     {
         connect(this, SIGNAL(itemCollapsed( QTreeWidgetItem * )), this, SLOT(onItemCollapsed( QTreeWidgetItem * )));
         connect(this, SIGNAL(itemExpanded( QTreeWidgetItem * )), this, SLOT(onItemExpanded( QTreeWidgetItem * )));
+    }
+
+    // Restore expansion state
+    foreach(QString string, list)
+    {
+        it = mItemMap.find(string.toStdString());
+
+        if(it != mItemMap.end())
+            it->second->setExpanded(true);
     }
 }
 //----------------------------------------------------------------------------------------
