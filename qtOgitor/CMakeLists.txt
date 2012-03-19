@@ -5,8 +5,12 @@ find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 if(UNIX AND NOT APPLE)
     if(EXISTS /usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
         include(/usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
-    else()
+				set("HAS_KDE", true)
+		endif()
+
+		if(EXISTS /usr/share/apps/cmake/modules/KDE4Macros.cmake)
         include(/usr/share/apps/cmake/modules/KDE4Macros.cmake)
+				set("HAS_KDE", true)
     endif()
 endif(UNIX AND NOT APPLE)
 
@@ -262,8 +266,10 @@ if(UNIX AND NOT APPLE)
         DESTINATION ${PREFIX}
     )
 
-    add_subdirectory(icons)
-    kde4_update_iconcache()
+		if (${HAS_KDE})
+	    add_subdirectory(icons)
+	    kde4_update_iconcache()
+		endif()
 
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
