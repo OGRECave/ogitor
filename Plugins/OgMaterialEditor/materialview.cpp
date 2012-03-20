@@ -130,7 +130,7 @@ void MaterialTreeWidget::contextMenu(int id)
 {
     if(mMaterialEditor)
     {
-        mMaterialEditor->onObjectContextMenu(id);
+        /*mMaterialEditor->onObjectContextMenu(id);
         QTreeWidgetItem *item = static_cast<QTreeWidgetItem*>(mMaterialEditor->getSceneTreeItemHandle());
         while(item->childCount() > 0)
             item->removeChild(item->child(0));
@@ -157,7 +157,7 @@ void MaterialTreeWidget::contextMenu(int id)
                 passitem->setWhatsThis(0, QString("%1").arg((t << 8) + p));
                 techitem->addChild(passitem);
             }
-        }
+        }*/
     }
 }
 //----------------------------------------------------------------------------------------
