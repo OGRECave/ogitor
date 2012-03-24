@@ -1,4 +1,6 @@
 syntax: glob
+*.kdev4
+.directory
 *.depends
 CMakeFiles
 CMakeCache.txt
