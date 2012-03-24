@@ -1,3 +1,8 @@
+ATTENTION:
+Source code is now being hosted on Bitbucket!
+hg.ogitor.org will become read-only in a very short time, so it's not to be used.
+
+
 IMPORTANT NOTE: Starting from this new repository, heavy binaries are moved out of Ogitor Source Control. 
 The directories "RunPath/Media" and "RunPath/Projects" are now available as a seperate download. 
 To be able to build and run Ogitor, you will need the following files downloaded and extracted into "RunPath" folder:
@@ -24,7 +29,7 @@ http://forum.ogitor.org/
 Browse the source here:
 https://bitbucket.org/jacmoe/ogitor/src
 
-Bugitor Issue Tracker is here:
+Issue Tracker is here:
 http://tracker.ogitor.org/projects/ogitor
 
 Mercurial repository address:
