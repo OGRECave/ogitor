@@ -1623,16 +1623,26 @@ bool OgitorsRoot::AfterLoadScene()
 bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
 {
     COFSSceneSerializer *defaultserializer = OGRE_NEW COFSSceneSerializer();
+    setLoadState(LS_LOADING);
 
     if(defaultserializer->Export(SaveAs, exportfile) == SCF_OK)
     {
         //mUndoManager->Clear();
         OGRE_DELETE defaultserializer;
+        
+        if (SaveAs)
+        {
+            /* Since the ogscene name changes when the filename changes
+            refresh the tree view and update the titlebar name */
+            FillTreeView();
+        }
+        setLoadState(LS_LOADED);
         return true;
     }
 
     OGRE_DELETE defaultserializer;
-
+    
+    setLoadState(LS_LOADED);
     return false;
 }
 //-----------------------------------------------------------------------------------------

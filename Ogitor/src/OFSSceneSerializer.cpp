@@ -269,67 +269,71 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     OFS::OfsPtr& mFile = ogRoot->GetProjectFile();
 
     PROJECTOPTIONS *pOpt = ogRoot->GetProjectOptions();
-    Ogre::String fileName = ogRoot->GetProjectFile()->getFileSystemName();
 
     bool forceSave = false;
+    Ogre::String fileLocation = ogRoot->GetProjectFile()->getFileSystemName();
+    Ogre::String fileName = "";
 
-    Ogre::String restoreFileSystemPath = "";
-    // If SaveAs is TRUE, use the OgitorsSystem Functions to retrieve
-    // a FileName and also copy the contents of current scene to the new location
-    if(SaveAs)
+    if (!exportfile.empty())
     {
-        Ogre::String oldFileName = fileName;
+        // Save location was passed, so use this filename
+        fileLocation = exportfile;
+    }
 
+    if (SaveAs)
+    {
+        // Saving at a different location
         UTFStringVector extlist;
         extlist.push_back(OTR("Ogitor Scene File"));
         extlist.push_back("*.ofs");
-        fileName = mSystem->DisplaySaveDialog(OTR("Save As"),extlist);
-        if(fileName == "") 
+        fileLocation = mSystem->DisplaySaveDialog(OTR("Save As"),extlist);
+        if(fileLocation == "") 
             return SCF_CANCEL;
-
-        Ogre::String oldProjDir = pOpt->ProjectDir;
-        Ogre::String oldProjName = pOpt->ProjectName + ".ogscene";
-
-        pOpt->ProjectName = OgitorsUtils::ExtractFileName(fileName);
-        int typepos = pOpt->ProjectName.find_last_of(".");
-        if(typepos != -1)
-            pOpt->ProjectName.erase(typepos,pOpt->ProjectName.length() - typepos);
-
-        pOpt->ProjectDir = OgitorsUtils::ExtractFilePath(fileName);
-
-        mFile->moveFileSystemTo(fileName.c_str());
-
-        mFile->deleteFile(oldProjName.c_str());
 
         forceSave = true;
     }
-    else
+
+    fileName = OgitorsUtils::ExtractFileName(fileLocation);
+    int dotpos = fileName.find_last_of(".");
+    if (dotpos > 0)
     {
-        // Save location was passed, so use that one
-        if(!exportfile.empty())
-        {
-            fileName = exportfile;
-            
-            if(exportfile.substr(exportfile.length() - 4, 4) != ".ofs")
-                fileName += ".ofs";
-
-            fileName = OgitorsUtils::QualifyPath(fileName);
-
-            restoreFileSystemPath = mFile->getFileSystemName();
-            
-            mFile->moveFileSystemTo(fileName.c_str());
-        }
+        fileName.erase(dotpos, fileName.length() - dotpos);
     }
 
-    fileName = OgitorsUtils::ExtractFileName(fileName);
-    int dotpos = fileName.find_last_of(".");
-    fileName.erase(dotpos, fileName.length() - dotpos);
-    fileName += ".ogscene";
+    fileLocation = OgitorsUtils::ExtractFilePath(fileLocation);
 
-    if(!SaveAs)
-        fileName += ".tmp";
+    // Change the project directory to the new path
+    pOpt->ProjectDir = fileLocation;
+    fileLocation = fileLocation+fileName+".ofs";
 
-    // Open a stream to output our XML Content and write the general header
+    if (SaveAs && mFile->moveFileSystemTo(fileLocation.c_str()) != OFS::OFS_OK)
+    {
+        return SCF_ERRFILE;
+    }
+
+    if (_writeFile(fileName+".ogscene", forceSave) != SCF_OK)
+    {
+        return SCF_ERRFILE;
+    }
+
+    ogRoot->SetSceneModified(false);
+
+    if (SaveAs)
+    {
+        mFile->deleteFile(pOpt->ProjectName.c_str());
+        pOpt->ProjectName = fileName;
+    }
+
+    return SCF_OK;
+}
+//-----------------------------------------------------------------------------
+int COFSSceneSerializer::_writeFile(Ogre::String exportfile, const bool forceSave)
+{
+    if (exportfile.empty())
+        return SCF_ERRUNKNOWN;
+
+    OgitorsRoot *ogRoot = OgitorsRoot::getSingletonPtr();
+    // Open a stream to output our XML Content and write the general headercopyFile
     std::stringstream outfile;
 
     outfile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -361,25 +365,9 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     }
     outfile << "</OGITORSCENE>\n";
 
-    OgitorsUtils::SaveStreamOfs(outfile, fileName);
-    
-    ogRoot->SetSceneModified(false);
-
-    if(SaveAs)
-    {
-        ogRoot->TerminateScene();
-        ogRoot->LoadScene(fileName);
-    }
-    else
-    {
-        Ogre::String delfile = fileName.substr(0, fileName.length() - 4);
-        mFile->deleteFile(delfile.c_str());
-        mFile->renameFile(fileName.c_str(), delfile.c_str());
-
-        if(!restoreFileSystemPath.empty())
-            mFile->switchFileSystemTo(restoreFileSystemPath.c_str());
+    if (OgitorsUtils::SaveStreamOfs(outfile, exportfile)) {
+        return SCF_OK;
     }
 
-    return SCF_OK;
+    return SCF_ERRFILE;
 }
-//-----------------------------------------------------------------------------
