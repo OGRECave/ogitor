@@ -68,6 +68,8 @@ namespace Ogitors
         * @see SCENEFILERESULT
         */
         virtual int  Import(Ogre::String importfile = "");
+    private:
+        int  _writeFile(Ogre::String exportfile = "", const bool forceSave=true);
     };
 };
 
