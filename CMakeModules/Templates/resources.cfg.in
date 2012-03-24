@@ -1,0 +1,20 @@
+# Resource locations to be added to the 'boostrap' path
+[Bootstrap]
+Zip=Media/packs/OgreCore.zip
+Zip=Media/packs/SdkTrays.zip
+
+# Resource locations to be added to the default path
+[General]
+FileSystem=Media/particle
+
+[EditorResources]
+FileSystem=Media/EditorResources
+
+[Brushes]
+FileSystem=Media/brushes
+
+[Plants]
+FileSystem=Media/plants
+
+[TerrainTextures]
+FileSystem=Media/TerrainTextures

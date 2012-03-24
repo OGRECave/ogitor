@@ -1,0 +1,182 @@
+#ToolsRibbon {
+    background-color: #DADADA;
+    min-width: 100%;
+}
+
+QStatusBar{
+    border: 1px solid #C8C8C8;
+}
+
+QToolBar {
+	border : none;
+}
+
+QListWidget#logWidget{
+	color: white;
+    background: black;
+}
+
+QListWidget#listScriptOutput{
+	color: white;
+    background: black;
+}
+
+QLabel#descLabel{
+    background-color: #AFAFAF;
+}
+
+pane {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(232, 232, 232, 255), stop:1 rgba(245, 245, 245, 255));
+    border: 1px solid #B5B5B5;
+    border-radius: 5px;
+    padding: 1px;
+}
+
+Form{
+    background-color: #DADADA;
+    min-width: 100%;
+    left: 0px;
+    right: 0px;
+}
+
+tab-bar {
+    left: 5px;
+    right: 5px;
+    background-color: #DADADA;
+    min-width: 100%;
+}
+
+QTabBar::tab {
+    min-width: 18ex;
+    margin-left: 1px;
+    margin-right: 1px;
+    height: 11px;
+    border: 1px solid black;
+    padding: 2ex;
+}
+
+QTabBar::tab:top {
+    margin-top: 2px;
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #909090, stop:1 #B0B0B0);
+    color: #EEEEEE;
+    border-bottom: 0px solid #DADADA;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+QTabBar::tab:bottom {
+    margin-bottom: 2px;
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #909090, stop:1 #B0B0B0);
+    color: #EEEEEE;
+    border-top: 0px solid #DADADA;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+QTabBar::tab:top::selected {
+    border: 1px solid #4B4B4B;
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #FFFFFF, stop:1 #E0E0E0);
+    border-bottom: 1px solid #E0E0E0;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    color: #4B4B4B;
+}
+
+QTabBar::tab:bottom::selected {
+    border: 1px solid #4B4B4B;
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #FFFFFF, stop:1 #E0E0E0);
+    border-top: 1px solid #E0E0E0;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    color: #4B4B4B;
+}
+
+QTabBar::tab:top:hover {
+    border: 1px solid black;
+    background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.75, fx:0.5, fy:-0.5, stop:0 #AAAAAA, stop:0.5 #AAAAAA, stop:1 rgba(248, 177, 6, 168));
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    color: #EEEEEE;
+    border-bottom: 0px solid rgba(255, 197, 115, 168);
+}
+
+QTabBar::tab:bottom:hover {
+    border: 1px solid black;
+    background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.75, fx:0.5, fy:-0.5, stop:0 #AAAAAA, stop:0.5 #AAAAAA, stop:1 rgba(255, 197, 115, 168));
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    color: #EEEEEE;
+    border-top: 0px solid rgba(255, 197, 115, 168);
+}
+
+QTabBar::tab:top:selected:hover {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 255, 255), stop:0.1 rgba(244, 244, 244, 255), stop:1 rgba(239, 239, 239, 255));
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgba(197, 197, 197, 150);
+    border-bottom: 1px solid #FDC501;
+    color: #4B4B4B;
+}
+
+QTabBar::tab:bottom:selected:hover {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 255, 255), stop:0.1 rgba(244, 244, 244, 255), stop:1 rgba(239, 239, 239, 255));
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgba(197, 197, 197, 150);
+    border-top: 1px solid #FDC501;
+    color: #4B4B4B;
+}
+
+QTabBar::tab:first {
+    margin-left: 4px;
+}
+
+QTabBar::tab:last {
+    margin-right: 4px;
+}
+
+#renderwindowtoolbar {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #E0E0E0, stop: 0.5 #C3C3C3, stop: 1 #E0E0E0);
+}
+
+#editortab QTabBar::tab {
+    min-width: 120px;
+    font: bold 9px;
+    margin-left: 2px;
+    margin-right: 2px;
+    height: 14px;
+    border: 1px solid black;
+    padding: 2px;
+}
+
+QToolBox::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #E0E0E0, stop: 0.5 #C3C3C3, stop: 1 #E0E0E0);
+    border-radius: 5px;
+    font: bold;
+    color: black;
+}
+
+QToolBox::tab:selected { /* italicize selected tabs */
+    font: bold italic;
+    color: darkblue;
+}
+
+#terraintoolstoolbar {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #E0E0E0, stop: 0.5 #C3C3C3, stop: 1 #E0E0E0);
+    border: 0px;
+}
+
+#terraintoolstoolbox::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #E0E0E0, stop: 0.5 #C3C3C3, stop: 1 #E0E0E0);
+    border-radius: 5px;
+    color: black;
+}
+
+#terraintoolstoolbox::tab:selected { /* italicize selected tabs */
+    font: italic;
+    color: darkblue;
+}
