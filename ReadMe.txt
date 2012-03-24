@@ -9,11 +9,11 @@ Please download those files and extract them to "RunPath" folder in your SOURCE 
 
 
 Building Ogitor:
-See http://wiki.ogitor.org/Building+Ogitor
+https://bitbucket.org/jacmoe/ogitor/wiki/Building_Ogitor
 ------
 
 Ogitor Wiki:
-http://wiki.ogitor.org/
+https://bitbucket.org/jacmoe/ogitor/wiki/Home
 
 Ogitor home page:
 http://www.ogitor.org/
@@ -22,13 +22,10 @@ Forum:
 http://forum.ogitor.org/
 
 Browse the source here:
-http://hg.ogitor.org/
+https://bitbucket.org/jacmoe/ogitor/src
 
 Bugitor Issue Tracker is here:
-http://tracker.ogitor.org/
+http://tracker.ogitor.org/projects/ogitor
 
 Mercurial repository address:
-Unstable:
-http://hg.ogitor.org/development
-Stable:
-
+https://bitbucket.org/jacmoe/ogitor
