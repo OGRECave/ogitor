@@ -119,7 +119,7 @@ set(Ogitor_srcs
 	./src/PGInstanceEditor.cpp
 	./src/SceneManagerEditor.cpp
 	./src/Selection2D.cpp
-  ./src/StringId.cpp
+	./src/StringId.cpp
 	./src/ViewGrid.cpp
 	./src/ViewportEditor.cpp
 	./src/ViewportEditorEvents.cpp
@@ -128,6 +128,7 @@ set(Ogitor_srcs
 	./src/tinyxml.cpp
 	./src/tinyxmlerror.cpp
 	./src/tinyxmlparser.cpp
+	${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp
 )
 
 add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})

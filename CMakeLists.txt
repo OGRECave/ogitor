@@ -24,15 +24,15 @@ set(OGITOR_VERSION_STRING_PATCH "4")
 
 set(abi_version ${OGITOR_VERSION_STRING})
 
-if(UNIX AND NOT APPLE)
-    set(CMAKE_INSTALL_PREFIX "/usr")
-endif(UNIX AND NOT APPLE)
-
-if(NOT UNIX)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/RunPath")
-endif(NOT UNIX)
-
 option(OGITOR_DIST "Ogitor Installer Installation" FALSE)
+
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/RunPath")
+
+if(UNIX AND NOT APPLE)
+    if(OGITOR_DIST)
+      set(CMAKE_INSTALL_PREFIX "/usr")
+    endif(OGITOR_DIST)
+endif(UNIX AND NOT APPLE)
 
 option(OGITOR_MESHMAGICK_INTERFACE "Use MeshMagick widget" FALSE)
 
@@ -182,6 +182,9 @@ endif(UNIX)
 
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
+
+# Generate OgitorsGlobals.cpp
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals.cpp.in ${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp)
 
 add_subdirectory(Ogitor)
 

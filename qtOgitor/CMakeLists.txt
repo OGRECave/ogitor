@@ -269,14 +269,16 @@ endif(UNIX AND NOT APPLE)
 
 
 if(UNIX AND NOT APPLE)
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
-        DESTINATION ${PREFIX}
+    
+    install(
+      DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
+      DESTINATION ${PREFIX}
     )
 
-		if (${HAS_KDE})
-	    add_subdirectory(icons)
-	    kde4_update_iconcache()
-		endif()
+    if(HAS_KDE)
+      add_subdirectory(icons)
+      kde4_update_iconcache()
+    endif(HAS_KDE)
 
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
     INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
