@@ -134,11 +134,7 @@ ScriptViewWidget::ScriptViewWidget(QWidget *parent) : QWidget(parent)
 
     treeWidget->addTopLevelItem(projectCategory);
 
-#if defined(Q_WS_X11)
-    Ogre::String filefilter = OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Scripts/*.as");
-#else
-    Ogre::String filefilter = OgitorsUtils::QualifyPath("../Scripts/*.as");
-#endif
+    Ogre::String filefilter = OgitorsUtils::QualifyPath(Ogitors::Globals::SCRIPTS_PATH + "/*.as");
 
     QTreeWidgetItem* scriptitem = 0;
     Ogre::StringVector list;
