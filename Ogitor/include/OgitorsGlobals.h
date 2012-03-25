@@ -47,6 +47,7 @@ namespace Ogitors
         static const std::string INSTALL_PREFIX;
         static const std::string BIN_PATH;
         static const std::string RUN_PATH;
+        static const std::string RESOURCE_PATH;
         static const std::string LANGUAGE_PATH;
         static const std::string MEDIA_PATH;
         static const std::string PROJECTS_PATH;

@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #include "paths.h"
 #include <OgrePlatform.h>
+#include <OgitorsGlobals.h>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #include <Carbon/Carbon.h>
@@ -73,7 +74,7 @@ std::string resourcePath()
     return bundlePath() + "/Contents/Resources/" ;
 #endif
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    return std::string("/usr/share/qtOgitor/");
+    return Ogitors::Globals::RESOURCE_PATH + "/";
 #else
     return bundlePath() ;
 #endif
