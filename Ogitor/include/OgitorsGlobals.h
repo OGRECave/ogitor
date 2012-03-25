@@ -42,10 +42,16 @@ namespace Ogitors
 {
     class Globals
     {
-        static const std::string install_prefix;
-        static const std::string bin_path;
-        static const std::string ogitor_plugin_path;
-        static const std::string ogre_plugin_path;
-        static const std::string user_directory;
+        static const std::string OGITOR_VERSION;
+        static const std::string INSTALL_PREFIX;
+        static const std::string BIN_PATH;
+        static const std::string RUN_PATH;
+        static const std::string LANGUAGE_PATH;
+        static const std::string MEDIA_PATH;
+        static const std::string PROJECTS_PATH;
+        static const std::string SCRIPTS_PATH;
+        static const std::string OGITOR_PLUGIN_PATH;
+        static const std::string OGITOR_PLUGIN_ICON_PATH;
+        static const std::string OGRE_PLUGIN_PATH;
     };
 }

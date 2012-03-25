@@ -1,7 +1,13 @@
 #include "OgitorsGlobals.h"
 
-const std::string Ogitors::Globals::install_prefix = "@CMAKE_INSTALL_PREFIX@";
-const std::string Ogitors::Globals::bin_path = "bin_path";
-const std::string Ogitors::Globals::ogitor_plugin_path = "ogitor_plugin_path";
-const std::string Ogitors::Globals::ogre_plugin_path = "ogre_plugin_path";
-const std::string Ogitors::Globals::user_directory = "user_directory";
+const std::string Ogitors::Globals::OGITOR_VERSION = "@OGITOR_VERSION_STRING@";
+const std::string Ogitors::Globals::INSTALL_PREFIX = "@CMAKE_INSTALL_PREFIX@";
+const std::string Ogitors::Globals::BIN_PATH = "@OGITOR_BIN_PATH@";
+const std::string Ogitors::Globals::RUN_PATH = "@OGITOR_RUN_PATH@";
+const std::string Ogitors::Globals::LANGUAGE_PATH = "@OGITOR_LANGUAGE_PATH@";
+const std::string Ogitors::Globals::MEDIA_PATH = "@OGITOR_MEDIA_PATH@";
+const std::string Ogitors::Globals::PROJECTS_PATH = "@OGITOR_PROJECTS_PATH@";
+const std::string Ogitors::Globals::SCRIPTS_PATH = "@OGITOR_SCRIPTS_PATH@";
+const std::string Ogitors::Globals::OGITOR_PLUGIN_PATH = "@OGITOR_PLUGIN_PATH@";
+const std::string Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH = "@OGITOR_PLUGIN_ICON_PATH@";
+const std::string Ogitors::Globals::OGRE_PLUGIN_PATH = "@OGRE_PLUGIN_PATH@";
