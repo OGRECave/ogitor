@@ -519,15 +519,15 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("../Plugins/debug/*Script_d.dll",ScriptPluginList);
+    mSystem->GetFileList("/debug/*Script_d.dll",ScriptPluginList);
 #else
     mSystem->GetFileList("../Plugins/*Script.dll",ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/debug/*Script_d.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so",ScriptPluginList);
 #else
-    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/*Script.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so",ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -566,9 +566,9 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/debug/*_d.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so",PluginList);
 #else
-    mSystem->GetFileList("/usr/share/qtOgitor/Plugins/*.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so",PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG

@@ -4,6 +4,7 @@ const std::string Ogitors::Globals::OGITOR_VERSION = "@OGITOR_VERSION_STRING@";
 const std::string Ogitors::Globals::INSTALL_PREFIX = "@CMAKE_INSTALL_PREFIX@";
 const std::string Ogitors::Globals::BIN_PATH = "@OGITOR_BIN_PATH@";
 const std::string Ogitors::Globals::RUN_PATH = "@OGITOR_RUN_PATH@";
+const std::string Ogitors::Globals::RESOURCE_PATH = "@OGITOR_RESOURCE_PATH@";
 const std::string Ogitors::Globals::LANGUAGE_PATH = "@OGITOR_LANGUAGE_PATH@";
 const std::string Ogitors::Globals::MEDIA_PATH = "@OGITOR_MEDIA_PATH@";
 const std::string Ogitors::Globals::PROJECTS_PATH = "@OGITOR_PROJECTS_PATH@";
