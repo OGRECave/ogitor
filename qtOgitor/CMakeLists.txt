@@ -269,31 +269,33 @@ else(NOT QT4_FOUND)
 
     if(UNIX AND NOT APPLE)
     
-        install(
-            DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
-            DESTINATION ${PREFIX}
-        )
+        if(OGITOR_DIST)
+            install(
+                DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
+                DESTINATION ${PREFIX}
+            )
 
-        if(HAS_KDE)
-            add_subdirectory(icons)
-            kde4_update_iconcache()
-        endif(HAS_KDE)
+            if(HAS_KDE)
+                add_subdirectory(icons)
+                kde4_update_iconcache()
+            endif(HAS_KDE)
 
-        INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-        INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
-            PATTERN     "*.qm"
-            PATTERN     "*.ts" EXCLUDE
-            PATTERN     "*.pro" EXCLUDE
-            PATTERN     "*.exe" EXCLUDE
-            PATTERN     "*.bat" EXCLUDE
-        )
-        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
-            PATTERN     "qt_*.qm"
-            PATTERN     "ogitor_*.qm" EXCLUDE
-        )
+            INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+            INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+            INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+                PATTERN     "*.qm"
+                PATTERN     "*.ts" EXCLUDE
+                PATTERN     "*.pro" EXCLUDE
+                PATTERN     "*.exe" EXCLUDE
+                PATTERN     "*.bat" EXCLUDE
+            )
+            INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+                PATTERN     "qt_*.qm"
+                PATTERN     "ogitor_*.qm" EXCLUDE
+            )
+        endif(OGITOR_DIST)
     else(UNIX AND NOT APPLE)
         # ie Windows
         install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages

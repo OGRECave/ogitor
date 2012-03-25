@@ -81,16 +81,18 @@ else(NOT QT4_FOUND)
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
 
-IF(UNIX AND NOT APPLE)
+    IF(UNIX AND NOT APPLE)
 
-set_target_properties( GenericTextEditor PROPERTIES OUTPUT_NAME "GenericTextEditor_Ogitor" VERSION
-${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+        set_target_properties( GenericTextEditor PROPERTIES OUTPUT_NAME "GenericTextEditor_Ogitor" VERSION
+        ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-install(TARGETS GenericTextEditor
-    LIBRARY DESTINATION lib
-    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        if(OGITOR_DIST)
+            install(TARGETS GenericTextEditor
+                LIBRARY DESTINATION lib
+                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        endif(OGITOR_DIST)
 
-ENDIF(UNIX AND NOT APPLE)
+    ENDIF(UNIX AND NOT APPLE)
 
 endif(NOT QT4_FOUND)
 
