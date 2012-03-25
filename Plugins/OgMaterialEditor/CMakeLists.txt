@@ -75,8 +75,11 @@ else(NOT QT4_FOUND)
 	add_library(OgMaterialEditor SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
-#	set_target_properties(OgMaterialEditor PROPERTIES	INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
-	set_target_properties(OgMaterialEditor PROPERTIES VERSION ${OgMaterialEditor_VERSION} SOVERSION ${OgMaterialEditor_VERSION_MAJOR})
+    if(NOT OGITOR_DIST)
+        set_target_properties(OgMaterialEditor PROPERTIES	INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+    endif(NOT OGITOR_DIST)
+
+    set_target_properties(OgMaterialEditor PROPERTIES VERSION ${OgMaterialEditor_VERSION} SOVERSION ${OgMaterialEditor_VERSION_MAJOR})
 	set_target_properties(OgMaterialEditor PROPERTIES	COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgMaterialEditor PROPERTIES SOLUTION_FOLDER Plugins)
 

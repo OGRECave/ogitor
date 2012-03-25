@@ -67,8 +67,11 @@ else(NOT QT4_FOUND)
 	add_library(OgAngelDialogManager SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
-#	set_target_properties(OgAngelDialogManager PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
-	set_target_properties(OgAngelDialogManager PROPERTIES VERSION ${OgAngelDialogManager_VERSION} SOVERSION ${OgAngelDialogManager_VERSION_MAJOR})
+    if(NOT OGITOR_DIST)
+        set_target_properties(OgAngelDialogManager PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+    endif(NOT OGITOR_DIST)
+
+    set_target_properties(OgAngelDialogManager PROPERTIES VERSION ${OgAngelDialogManager_VERSION} SOVERSION ${OgAngelDialogManager_VERSION_MAJOR})
 	set_target_properties(OgAngelDialogManager PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgAngelDialogManager PROPERTIES SOLUTION_FOLDER Plugins)
 

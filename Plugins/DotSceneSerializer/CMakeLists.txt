@@ -32,7 +32,10 @@ add_library(DotSceneSerializer SHARED ${HEADER_FILES} ${SOURCE_FILES})
 #target_link_libraries(OgreMain Ogitor)
 set(LIBRARY_OUTPUT_PATH ../lib)
 
-#set_target_properties(DotSceneSerializer PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+if(NOT OGITOR_DIST)
+    set_target_properties(DotSceneSerializer PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+endif(NOT OGITOR_DIST)
+
 set_target_properties(DotSceneSerializer PROPERTIES VERSION ${DotSceneSerializer_VERSION} SOVERSION ${DotSceneSerializer_VERSION_MAJOR})
 set_target_properties(DotSceneSerializer PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(DotSceneSerializer PROPERTIES SOLUTION_FOLDER Plugins)
