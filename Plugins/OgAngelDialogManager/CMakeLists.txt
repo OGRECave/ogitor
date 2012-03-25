@@ -98,7 +98,7 @@ else(NOT QT4_FOUND)
 IF(UNIX AND NOT APPLE)
     if(OGITOR_DIST)
         install(TARGETS OgAngelDialogManager
-            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     endif(OGITOR_DIST)
 ENDIF(UNIX AND NOT APPLE)

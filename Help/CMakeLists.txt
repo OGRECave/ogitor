@@ -41,7 +41,7 @@ if(UNIX AND NOT APPLE)
         install(FILES
             collection_ogitor.qhc
             ogitor.qch
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Help)
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor/Help)
     endif(OGITOR_DIST)
 endif(UNIX AND NOT APPLE)
 
