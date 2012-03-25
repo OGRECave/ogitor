@@ -313,15 +313,15 @@ if(WIN32)
         DESTINATION bin
         CONFIGURATIONS Debug)
 
-IF(OGITOR_DIST)
-    install(FILES redist/dxwebsetup.exe
-        DESTINATION redist
-        CONFIGURATIONS Release)
-    install(FILES redist/msvcr100.dll
-        redist/msvcp100.dll
-        DESTINATION bin
-        CONFIGURATIONS Release)
-ENDIF(OGITOR_DIST)
+    IF(OGITOR_DIST)
+        install(FILES redist/dxwebsetup.exe
+            DESTINATION redist
+            CONFIGURATIONS Release)
+        install(FILES redist/msvcr100.dll
+            redist/msvcp100.dll
+            DESTINATION bin
+            CONFIGURATIONS Release)
+    ENDIF(OGITOR_DIST)
 
 endif(WIN32)
 

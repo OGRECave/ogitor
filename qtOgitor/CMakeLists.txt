@@ -5,11 +5,11 @@ find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 if(UNIX AND NOT APPLE)
     if(EXISTS /usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
         include(/usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
-	  set("HAS_KDE", true)
+        set(HAS_KDE TRUE)
     endif()
     if(EXISTS /usr/share/apps/cmake/modules/KDE4Macros.cmake)
-      include(/usr/share/apps/cmake/modules/KDE4Macros.cmake)
-      set("HAS_KDE", true)
+        include(/usr/share/apps/cmake/modules/KDE4Macros.cmake)
+        set(HAS_KDE TRUE)
     endif()
 endif(UNIX AND NOT APPLE)
 
@@ -192,30 +192,30 @@ else(NOT QT4_FOUND)
             ${RESOURCE_SRCS}
             ${qtOgitor_res}
         )
-      add_dependencies(qtOgitor OgCaelum)
-      add_dependencies(qtOgitor OgHydrax)
-      add_dependencies(qtOgitor OgSkyx)
-      add_dependencies(qtOgitor OgModularZone)
-      add_dependencies(qtOgitor DotSceneSerializer)
-      add_dependencies(qtOgitor OFS)
-      add_dependencies(qtOgitor GenericTextEditor)
-      add_dependencies(qtOgitor GenericImageEditor)
-      add_dependencies(qtOgitor OgAngelScript)
-      include(BundleUtilities)
-      get_target_property(qtOgitorLocation qtOgitor LOCATION)
-      get_dotapp_dir(${qtOgitorLocation} qtOgitorLocationAppdir)
-      set(MakeBundle
-	cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_Terrain_LIBRARY_DBG} ${OGRE_Paging_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Components && 
-	cp ${OGRE_RenderSystem_GL_LIBRARY_DBG} ${OGRE_Plugin_OctreeSceneManager_LIBRARY_DBG} ${OGRE_Plugin_ParticleFX_LIBRARY_DBG} ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
-	cp -r /Library/Frameworks/OGRE.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
-	cp -r ../lib/${CMAKE_CFG_INTDIR}/Ogitor.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
-	cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
-	cp -r ../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
-	cp -r ../RunPath/Plugins/Icons ${qtOgitorLocationAppdir}/Contents/Plugins && 
-	cp ../Mac/plugins.cfg ../Mac/resources.cfg ${qtOgitorLocationAppdir}/Contents/Resources
-      )
-      ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND mkdir -p ${qtOgitorLocationAppdir}/Contents/Resources && mkdir -p ${qtOgitorLocationAppdir}/Contents/Components && mkdir -p ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && mkdir -p ${qtOgitorLocationAppdir}/Contents/Frameworks)
-      ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})
+        add_dependencies(qtOgitor OgCaelum)
+        add_dependencies(qtOgitor OgHydrax)
+        add_dependencies(qtOgitor OgSkyx)
+        add_dependencies(qtOgitor OgModularZone)
+        add_dependencies(qtOgitor DotSceneSerializer)
+        add_dependencies(qtOgitor OFS)
+        add_dependencies(qtOgitor GenericTextEditor)
+        add_dependencies(qtOgitor GenericImageEditor)
+        add_dependencies(qtOgitor OgAngelScript)
+        include(BundleUtilities)
+        get_target_property(qtOgitorLocation qtOgitor LOCATION)
+        get_dotapp_dir(${qtOgitorLocation} qtOgitorLocationAppdir)
+        set(MakeBundle
+            cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_Terrain_LIBRARY_DBG} ${OGRE_Paging_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Components && 
+            cp ${OGRE_RenderSystem_GL_LIBRARY_DBG} ${OGRE_Plugin_OctreeSceneManager_LIBRARY_DBG} ${OGRE_Plugin_ParticleFX_LIBRARY_DBG} ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
+            cp -r /Library/Frameworks/OGRE.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
+            cp -r ../lib/${CMAKE_CFG_INTDIR}/Ogitor.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
+            cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
+            cp -r ../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
+            cp -r ../RunPath/Plugins/Icons ${qtOgitorLocationAppdir}/Contents/Plugins && 
+            cp ../Mac/plugins.cfg ../Mac/resources.cfg ${qtOgitorLocationAppdir}/Contents/Resources
+        )
+        ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND mkdir -p ${qtOgitorLocationAppdir}/Contents/Resources && mkdir -p ${qtOgitorLocationAppdir}/Contents/Components && mkdir -p ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && mkdir -p ${qtOgitorLocationAppdir}/Contents/Frameworks)
+        ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})
     endif(NOT APPLE)
 
     if(WIN32)
@@ -261,50 +261,49 @@ else(NOT QT4_FOUND)
             COMMAND cp -r ${OGITORFILE} ../RunPath/bin/${TARGET})
     endif(UNIX AND NOT APPLE)
 
-if(UNIX AND NOT APPLE)
+    if(UNIX AND NOT APPLE)
         install(TARGETS qtOgitor
-            RUNTIME DESTINATION bin
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-endif(UNIX AND NOT APPLE)
+                RUNTIME DESTINATION bin
+                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    endif(UNIX AND NOT APPLE)
 
-
-if(UNIX AND NOT APPLE)
+    if(UNIX AND NOT APPLE)
     
-    install(
-      DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
-      DESTINATION ${PREFIX}
-    )
+        install(
+            DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
+            DESTINATION ${PREFIX}
+        )
 
-    if(HAS_KDE)
-      add_subdirectory(icons)
-      kde4_update_iconcache()
-    endif(HAS_KDE)
+        if(HAS_KDE)
+            add_subdirectory(icons)
+            kde4_update_iconcache()
+        endif(HAS_KDE)
 
-    INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-    INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-    INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
-        PATTERN     "*.qm"
-        PATTERN     "*.ts" EXCLUDE
-        PATTERN     "*.pro" EXCLUDE
-        PATTERN     "*.exe" EXCLUDE
-        PATTERN     "*.bat" EXCLUDE
-    )
-    INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
-        PATTERN     "qt_*.qm"
-        PATTERN     "ogitor_*.qm" EXCLUDE
-    )
-else(UNIX AND NOT APPLE)
-    # ie Windows
-    install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
-        DESTINATION ${PREFIX}
-        PATTERN "translate.pro" EXCLUDE
-        PATTERN "*.ts" EXCLUDE
-        PATTERN "*.exe" EXCLUDE
-        PATTERN "*.bat" EXCLUDE
-    )
-endif(UNIX AND NOT APPLE)
+        INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+        INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+            PATTERN     "*.qm"
+            PATTERN     "*.ts" EXCLUDE
+            PATTERN     "*.pro" EXCLUDE
+            PATTERN     "*.exe" EXCLUDE
+            PATTERN     "*.bat" EXCLUDE
+        )
+        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+            PATTERN     "qt_*.qm"
+            PATTERN     "ogitor_*.qm" EXCLUDE
+        )
+    else(UNIX AND NOT APPLE)
+        # ie Windows
+        install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
+            DESTINATION ${PREFIX}
+            PATTERN "translate.pro" EXCLUDE
+            PATTERN "*.ts" EXCLUDE
+            PATTERN "*.exe" EXCLUDE
+            PATTERN "*.bat" EXCLUDE
+        )
+    endif(UNIX AND NOT APPLE)
 
     if(WIN32)
         set(QT_DLL_DIR ${QT_BINARY_DIR})
