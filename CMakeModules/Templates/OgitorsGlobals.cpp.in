@@ -1,0 +1,7 @@
+#include "OgitorsGlobals.h"
+
+const std::string Ogitors::Globals::install_prefix = "@CMAKE_INSTALL_PREFIX@";
+const std::string Ogitors::Globals::bin_path = "bin_path";
+const std::string Ogitors::Globals::ogitor_plugin_path = "ogitor_plugin_path";
+const std::string Ogitors::Globals::ogre_plugin_path = "ogre_plugin_path";
+const std::string Ogitors::Globals::user_directory = "user_directory";
