@@ -8,6 +8,5 @@ Plugin = RenderSystem_GL@DBG_POSTFIX@
 Plugin = Plugin_ParticleFX@DBG_POSTFIX@
 Plugin = Plugin_CgProgramManager@DBG_POSTFIX@
 Plugin = Plugin_OctreeSceneManager@DBG_POSTFIX@
-Plugin = libOgreOfsPlugin
 #Plugin = libCaelum_Ogitor
 #Plugin = libHydrax_Ogitor

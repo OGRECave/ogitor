@@ -55,5 +55,6 @@ namespace Ogitors
         static const std::string OGITOR_PLUGIN_PATH;
         static const std::string OGITOR_PLUGIN_ICON_PATH;
         static const std::string OGRE_PLUGIN_PATH;
+        static const std::string LIBOGREOFSPLUGIN_PATH;
     };
 }
