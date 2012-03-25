@@ -156,7 +156,7 @@ bool OgitorAssistant::startOgitorAssistant()
         QStringList args;
 #if defined(Q_WS_X11)
         args << QLatin1String("-collectionFile")
-        << QLatin1String("/usr/share/qtOgitor")
+        << QLatin1String(std::string(Ogitors::Globals::RESOURCE_PATH).c_str())
         + QLatin1String("/Help/collection_ogitor.qhc")
         << QLatin1String("-enableRemoteControl");
 #else

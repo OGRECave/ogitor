@@ -35,7 +35,7 @@ endif(WIN32)
 
 if(UNIX)
 	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
 		PATTERN "languages" EXCLUDE
@@ -51,7 +51,7 @@ if(UNIX)
             # Sample app only installed locally ?
             #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
             #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
         )
     else(OGITOR_DIST)
         install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg

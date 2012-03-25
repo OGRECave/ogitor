@@ -285,7 +285,7 @@ else(NOT QT4_FOUND)
         INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
         INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
         INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
             PATTERN     "*.qm"
             PATTERN     "*.ts" EXCLUDE
             PATTERN     "*.pro" EXCLUDE
@@ -293,7 +293,7 @@ else(NOT QT4_FOUND)
             PATTERN     "*.bat" EXCLUDE
         )
         INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
             PATTERN     "qt_*.qm"
             PATTERN     "ogitor_*.qm" EXCLUDE
         )
