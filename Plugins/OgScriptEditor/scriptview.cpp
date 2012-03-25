@@ -120,11 +120,7 @@ ScriptViewWidget::ScriptViewWidget(QWidget *parent) : QWidget(parent)
     boxlayout->addWidget(treeWidget);
 
     generalCategory = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("General Scripts")));
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    QString iconpath(OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Plugins/Icons/project.svg").c_str());
-#else
-    QString iconpath(OgitorsUtils::QualifyPath("../Plugins/Icons/project.svg").c_str());
-#endif
+    QString iconpath(std::string(Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/project.svg").c_str());
     generalCategory->setIcon(0, QIcon(iconpath));
     QFont fnt = generalCategory->font(0);
     fnt.setBold(true);

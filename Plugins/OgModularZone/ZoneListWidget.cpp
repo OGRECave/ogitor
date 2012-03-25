@@ -88,7 +88,7 @@ ZoneListWidget::ZoneListWidget(QWidget* parent):QWidget(parent)
     EventManager::getSingletonPtr()->connectEvent(EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(ZoneListWidget, onSceneLoadStateChange));
 
     /*this->setWindowTitle(QString::fromUtf8("Zones"));
-    this->setWindowIconText("../Plugins/Icons/zone.svg");*/
+    this->setWindowIconText(Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/zone.svg");*/
 }
 //----------------------------------------------------------------------------------------
 ZoneListWidget::~ZoneListWidget(void)
@@ -141,12 +141,7 @@ void ZoneListWidget::addZone(int key)
     ZoneInfo* zone = factory->getZoneTemplate(key);
     if(zone)
     {
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-        QIcon icon("/usr/share/qtOgitor/Plugins/Icons/zone.svg");
-#else
-        QIcon icon("../Plugins/Icons/zone.svg");
-#endif
+        QIcon icon(std::string(Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/zone.svg").c_str());
         QListWidgetItem *item = new QListWidgetItem(icon,zone->mName.c_str() , listWidget);
         item->setData(Qt::UserRole,QVariant(key));//key to ZoneTemplatesMap
         item->setToolTip(zone->mShortDesc.c_str());// a short description of the zone

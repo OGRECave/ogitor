@@ -12,11 +12,7 @@ PortalFactory::PortalFactory(OgitorsView *view) : CNodeEditorFactory(view)
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = false; //at the moment, we can't new add portals in the editor...
     mRequirePlacement = true;
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    mIcon = "/usr/share/qtOgitor/Plugins/Icons/portal.svg";//"Icons/zone.svg";
-#else
-    mIcon = "../Plugins/Icons/portal.svg";//"Icons/zone.svg";
-#endif
+    mIcon = Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/portal.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
 
 

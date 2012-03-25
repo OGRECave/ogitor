@@ -370,11 +370,8 @@ void MaterialViewWidget::prepareView()
     QTreeWidgetItem* passitem = 0;
 
     rootitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Project Materials")));
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    QString iconpath("/usr/share/qtOgitor/Plugins/Icons/project.svg");
-#else
-    QString iconpath(OgitorsUtils::QualifyPath("../Plugins/Icons/project.svg").c_str());
-#endif
+
+    QString iconpath(std::string(Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/project.svg").c_str());
     rootitem->setIcon(0, QIcon(iconpath));
     QFont fnt = rootitem->font(0);
     fnt.setBold(true);

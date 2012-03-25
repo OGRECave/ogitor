@@ -52,11 +52,7 @@ ModularZoneToolbar::ModularZoneToolbar(QWidget *parent):QWidget(parent)
 
     QAction* mActDesignZone = new QAction(QObject::tr("Convert to Zone"), this);
     mActDesignZone->setStatusTip(QObject::tr("Convert entity to zone for editing"));
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    mActDesignZone->setIcon( QIcon( "/usr/share/qtOgitor/Plugins/Icons/tozone.svg"));//why do MY icons never show up?
-#else
-    mActDesignZone->setIcon( QIcon( "../Plugins/Icons/tozone.svg"));//why do MY icons never show up?
-#endif
+    mActDesignZone->setIcon( QIcon( std::string(Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/tozone.svg").c_str()));//why do MY icons never show up?
     mActDesignZone->setCheckable(false);
 
     mZoneSelectionToolbar = new QToolBar(QObject::tr("Modular Zone"));
