@@ -54,8 +54,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     // load additional plugins
-    //const Ogre::String& pluginPathDepends = "../../Dependencies/lib/";
-    //mOgreRoot->loadPlugin(pluginPathDepends + "libCaelum.so");
+    mOgreRoot->loadPlugin(Ogitors::Globals::LIBOGREOFSPLUGIN_PATH + "/libOgreOfsPlugin.so");
 #endif
 
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
