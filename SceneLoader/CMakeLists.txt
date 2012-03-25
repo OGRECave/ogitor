@@ -90,6 +90,12 @@ else(NOT OIS_FOUND)
 			RUNTIME DESTINATION bin
 			CONFIGURATIONS Release)
 	endif(WIN32)
+	
+	if(UNIX AND NOT OGITOR_DIST)
+        install(TARGETS SampleLoadApp
+            RUNTIME DESTINATION bin
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    endif(UNIX AND NOT OGITOR_DIST)
 
 endif(NOT OIS_FOUND)
 

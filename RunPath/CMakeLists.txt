@@ -41,21 +41,23 @@ if(UNIX)
 		PATTERN "languages" EXCLUDE
         PATTERN "Projects" EXCLUDE
 		PATTERN "bin" EXCLUDE
+		PATTERN ".xml" EXCLUDE
 		PATTERN "Plugins/icon_backup" EXCLUDE
 	)
 
     if(OGITOR_DIST)
         install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
             ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
-            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
-            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
+            # Sample app only installed locally ?
+            #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+            #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
         )
     else(OGITOR_DIST)
         install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
             ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
             ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
-            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
+            #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
             DESTINATION bin
         )
     endif(OGITOR_DIST)
