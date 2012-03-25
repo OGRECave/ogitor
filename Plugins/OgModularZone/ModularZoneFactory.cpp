@@ -37,11 +37,7 @@ ModularZoneFactory::ModularZoneFactory(OgitorsView *view) : CNodeEditorFactory(v
     mEditorType = ETYPE_NODE;
     mAddToObjectList = false;//use the dragndrop widget
     mRequirePlacement = true;
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    mIcon = "/usr/share/qtOgitor/Plugins/Icons/zone.svg";//"Icons/zone.svg";
-#else
-    mIcon = "../Plugins/Icons/zone.svg";//"Icons/zone.svg";
-#endif
+    mIcon = Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/zone.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_DROP| CAN_UNDO | CAN_ACCEPTCOPY;
 
     AddPropertyDefinition("zonetemplate","Zone::Description File","XML file that defines this zone",PROP_INT, true, false);

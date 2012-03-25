@@ -77,6 +77,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
         for (i = settings->begin(); i != settings->end(); ++i)
         {
             typeName = i->first;
+            // Resource locations are using absolute paths now
             archName = /*resourcePath() +*/ i->second;
             Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
         }
@@ -283,10 +284,10 @@ int main(int argc, char *argv[])
 
     if(languageFile != "ogitor_en.qm")
     {
-        QString lang = QString(resourcePath().c_str()) + "languages/qt_" + languageFile;
+        QString lang = QString(Ogitors::Globals::LANGUAGE_PATH.c_str()) + QString("/qt_") + languageFile;
         lang.remove("ogitor_");
 
-        QString lang2 = QString(resourcePath().c_str()) + "languages/" + languageFile;
+        QString lang2 = QString(Ogitors::Globals::LANGUAGE_PATH.c_str()) + QString("/") + languageFile;
 
         if(QFile::exists(lang) && QFile::exists(lang2))
         {
@@ -305,13 +306,13 @@ int main(int argc, char *argv[])
                 a.installTranslator(&qtTranslator);
             }
             // Otherwise: load our own Qt translation file.
-            else if(qtTranslator.load(QString(resourcePath().c_str()) + "languages/qt_" + QLocale::system().name()))
+            else if(qtTranslator.load(QString(Ogitors::Globals::LANGUAGE_PATH.c_str()) + QString("/qt_") + QLocale::system().name()))
             {
                 a.installTranslator(&qtTranslator);
             }
 
             // Install qtOgitor translator
-            if(ogitorTranslator.load(QString(resourcePath().c_str()) + "languages/ogitor_" + QLocale::system().name()))
+            if(ogitorTranslator.load(QString(Ogitors::Globals::LANGUAGE_PATH.c_str()) + QString("/ogitor_") + QLocale::system().name()))
             {
                 a.installTranslator(&ogitorTranslator);
             }

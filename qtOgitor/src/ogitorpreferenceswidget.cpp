@@ -72,7 +72,7 @@ OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, Q
     styleSheetList->setCurrentIndex(0);
 #endif
 
-    QDir myDir("../languages");
+    QDir myDir(QString(Ogitors::Globals::LANGUAGE_PATH.c_str()));
     QStringList list = myDir.entryList(QStringList("ogitor_*.qm")); // filter only translation files
     
     /** Add System Default Option Manually */
