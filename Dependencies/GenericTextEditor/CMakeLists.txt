@@ -89,11 +89,9 @@ else(NOT QT4_FOUND)
         set_target_properties( GenericTextEditor PROPERTIES OUTPUT_NAME "GenericTextEditor_Ogitor" VERSION
         ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-        if(OGITOR_DIST)
-            install(TARGETS GenericTextEditor
-                LIBRARY DESTINATION lib
-                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        endif(OGITOR_DIST)
+        install(TARGETS GenericTextEditor
+            LIBRARY DESTINATION lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
     ENDIF(UNIX AND NOT APPLE)
 

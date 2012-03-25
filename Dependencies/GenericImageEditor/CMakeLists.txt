@@ -91,11 +91,9 @@ else(NOT QT4_FOUND)
         set_target_properties( GenericImageEditor PROPERTIES OUTPUT_NAME "GenericImageEditor_Ogitor" VERSION
         ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-        if(OGITOR_DIST)
-            install(TARGETS GenericImageEditor
-                LIBRARY DESTINATION lib
-                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        endif(OGITOR_DIST)
+        install(TARGETS GenericImageEditor
+            LIBRARY DESTINATION lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
     ENDIF(UNIX AND NOT APPLE)
 
