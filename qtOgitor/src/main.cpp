@@ -38,6 +38,7 @@
 #include "BaseEditor.h"
 #include "ViewportEditor.h"
 #include "OgitorsRoot.h"
+#include "OgitorsGlobals.h"
 
 extern bool    ViewKeyboard[1024];
 extern QString ConvertToQString(Ogre::UTFString& value);
