@@ -77,7 +77,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
         for (i = settings->begin(); i != settings->end(); ++i)
         {
             typeName = i->first;
-            archName = resourcePath() + i->second;
+            archName = /*resourcePath() +*/ i->second;
             Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
         }
     }
