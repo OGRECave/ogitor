@@ -169,9 +169,9 @@ ELSE(NOT QT4_FOUND)
     ENDIF(WIN32)
 
     IF(WIN32)
-    install(TARGETS QtSolutions_PropertyBrowser
-        RUNTIME DESTINATION bin
-        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        install(TARGETS QtSolutions_PropertyBrowser
+            RUNTIME DESTINATION bin
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     ENDIF(WIN32)
 
     IF(UNIX AND NOT APPLE)

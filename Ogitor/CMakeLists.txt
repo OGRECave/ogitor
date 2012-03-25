@@ -175,14 +175,14 @@ if(WIN32)
 	install(TARGETS Ogitor RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
-if(UNIX AND OGITOR_DIST)
+if(UNIX)
     install(TARGETS Ogitor
         LIBRARY DESTINATION lib
         CONFIGURATIONS RelWithDebInfo Release)
 #    install(FILES
 #    ${Ogitor_hdrs}
 #    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/OGITOR)
-endif()
+endif(UNIX)
 
 
 # vim: set sw=2 ts=2 noet:

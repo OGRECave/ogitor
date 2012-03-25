@@ -49,10 +49,8 @@ IF(UNIX AND NOT APPLE)
     set_target_properties( OFS PROPERTIES OUTPUT_NAME "OFS" VERSION
     ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-    if(OGITOR_DIST)
-        install(TARGETS OFS
-            LIBRARY DESTINATION lib
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-    endif(OGITOR_DIST)
+    install(TARGETS OFS
+        LIBRARY DESTINATION lib
+        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
 ENDIF(UNIX AND NOT APPLE)
