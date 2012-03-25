@@ -172,21 +172,12 @@ set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 #set_target_properties(INSTALL PROPERTIES SOLUTION_FOLDER CMake)
 #set_target_properties(PACKAGE PROPERTIES SOLUTION_FOLDER CMake)
 
-# Fix the plugins configuration file for Linux
-if(UNIX)
-    set(DBG_POSTFIX "")
-#    if(OGRE_LIBRARY_DBG)
-#        set(DBG_POSTFIX "_d")
-#    endif()
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
-endif(UNIX)
-
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 
 # configure global paths for OgitorsGlobals
 if(UNIX)
+    set(DBG_POSTFIX "")
     if(OGITOR_DIST)
         # Figure out how to do it!
     else(OGITOR_DIST)
@@ -203,6 +194,8 @@ if(UNIX)
         set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path")
         set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "libOgreOfsPlugin path")
     endif(OGITOR_DIST)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 else(UNIX)
     # We are on Windows
     set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path")
