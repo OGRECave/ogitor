@@ -37,6 +37,7 @@
 #pragma once
 
 #include "OgitorsExports.h"
+#include "OgitorsGlobals.h"
 
 namespace Ogitors
 {
