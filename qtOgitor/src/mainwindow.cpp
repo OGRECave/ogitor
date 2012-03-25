@@ -532,7 +532,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::retranslateUi()
 {
     QString appTitle = "qtOgitor ";
-    appTitle += Ogitors::OGITOR_VERSION;
+    appTitle += Ogitors::Globals::OGITOR_VERSION;
     setWindowTitle(appTitle);
     explorerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Explorer", 0, QApplication::UnicodeUTF8));
     layerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Groups", 0, QApplication::UnicodeUTF8));
@@ -1513,7 +1513,7 @@ void MainWindow::onSceneModifiedChange(Ogitors::IEvent* evt)
         {
             QString appTitle;
             appTitle = "qtOgitor ";
-            appTitle += Ogitors::OGITOR_VERSION;
+            appTitle += Ogitors::Globals::OGITOR_VERSION;
             if(state)
                 appTitle += QString(" - (*)");
             else

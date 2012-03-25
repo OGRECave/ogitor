@@ -576,7 +576,7 @@ void MainWindow::fpsValueChanged ( int value )
 //------------------------------------------------------------------------------
 void MainWindow::showAbout()
 {
-    aboutdialog dialog(this, QString(OGITOR_VERSION));
+    aboutdialog dialog(this, QString(Globals::OGITOR_VERSION));
     if(dialog.exec() == QDialog::Accepted)
         return;
 }

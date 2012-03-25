@@ -55,7 +55,7 @@ aboutdialog::aboutdialog(QWidget *parent, const QString version_string, Qt::WFla
     projectBrowser->setSource(QUrl("qrc:/about/project.html"));
     QString text = projectBrowser->toHtml();
     // Replace version placeholder with actual current version number
-    text.replace("%OGITOR_VERSION%", Ogitors::OGITOR_VERSION);
+    text.replace("%OGITOR_VERSION%", Ogitors::Globals::OGITOR_VERSION);
     projectBrowser->setHtml(text);
     
     peopleBrowser->setSource(QUrl("qrc:/about/people.html"));
