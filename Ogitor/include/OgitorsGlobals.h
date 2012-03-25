@@ -42,6 +42,7 @@ namespace Ogitors
 {
     class Globals
     {
+    public:
         static const std::string OGITOR_VERSION;
         static const std::string INSTALL_PREFIX;
         static const std::string BIN_PATH;
