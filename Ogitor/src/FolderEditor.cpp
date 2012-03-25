@@ -117,7 +117,7 @@ CFolderEditorFactory::CFolderEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mEditorType = ETYPE_FOLDER;
     mAddToObjectList = true;
     mRequirePlacement = false;
-    mIcon = "Icons/folder.svg";
+    mIcon = "folder.svg";
     mCapabilities = CAN_DELETE | CAN_DROP | CAN_UNDO;
 
     //OgitorsPropertyDef *definition;

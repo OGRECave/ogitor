@@ -356,7 +356,7 @@ CEditableMeshEditorFactory::CEditableMeshEditorFactory(OgitorsView *view) : CNod
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/entity.svg";
+    mIcon = "entity.svg";
     mCapabilities = CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG;
 }
 //-----------------------------------------------------------------------------------------

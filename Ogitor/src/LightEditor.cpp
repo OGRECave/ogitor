@@ -393,7 +393,7 @@ CLightEditorFactory::CLightEditorFactory(OgitorsView *view) : CBaseEditorFactory
     mEditorType = ETYPE_LIGHT;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/light.svg";
+    mIcon = "light.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
 
     mLightTypes.clear();

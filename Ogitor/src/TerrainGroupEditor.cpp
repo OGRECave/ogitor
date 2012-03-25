@@ -794,7 +794,7 @@ CTerrainGroupEditorFactory::CTerrainGroupEditorFactory(OgitorsView *view) : CBas
     mTypeName = "Terrain Group Object";
     mEditorType = ETYPE_TERRAIN_MANAGER;
     mAddToObjectList = true;
-    mIcon = "Icons/pagedterrainmanager.svg";
+    mIcon = "pagedterrainmanager.svg";
     mCapabilities = CAN_DELETE | CAN_UNDO;
 
     mMinBatchSizes.clear();

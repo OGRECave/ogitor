@@ -1443,7 +1443,7 @@ CTerrainPageEditorFactory::CTerrainPageEditorFactory(OgitorsView *view) : CBaseE
 {
     mTypeName = "Terrain Page Object";
     mEditorType = ETYPE_MOVABLE;
-    mIcon = "Icons/pagedterrain.svg";
+    mIcon = "pagedterrain.svg";
     mCapabilities = CAN_PAGE | CAN_DELETE | CAN_UNDO;
     mDefaultWorldSection = SECT_TERRAIN;
 

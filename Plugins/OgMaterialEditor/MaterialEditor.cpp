@@ -313,7 +313,7 @@ CMaterialEditorFactory::CMaterialEditorFactory(OgitorsView *view) : CBaseEditorF
     mEditorType = ETYPE_GENERALPURPOSE;
     mAddToObjectList = false;
     mRequirePlacement = true;
-    mIcon = "Icons/material.svg";
+    mIcon = "material.svg";
     mCapabilities = CAN_UNDO;
 
     AddPropertyDefinition("material_path", "Material Path", "The path to the material file", Ogitors::PROP_STRING);
