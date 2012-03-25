@@ -38,9 +38,16 @@
 
 #include <string>
 
+#include <OgitorsExports.h>
+
+#ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable:4251)   // needs to have dll-interface to be used by clients..
+#endif
+
 namespace Ogitors
 {
-    class Globals
+    class OgitorExport Globals
     {
     public:
         static const std::string OGITOR_VERSION;
@@ -58,3 +65,7 @@ namespace Ogitors
         static const std::string LIBOGREOFSPLUGIN_PATH;
     };
 }
+// On MSVC, restore warnings state
+#ifdef _MSC_VER
+    #pragma warning(pop)
+#endif

@@ -39,6 +39,7 @@ set(Ogitor_hdrs
 	./include/OgitorsPrerequisites.h
 	./include/OgitorsProperty.h
 	./include/OgitorsRoot.h
+	./include/OgitorsGlobals.h
 	./include/OgitorsScriptConsole.h
 	./include/OgitorsScriptInterpreter.h
 	./include/OgitorsSingleton.h
