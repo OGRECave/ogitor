@@ -30,7 +30,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/RunPath")
 
 if(UNIX AND NOT APPLE)
     if(OGITOR_DIST)
-      set(CMAKE_INSTALL_PREFIX "/usr")
+    set(CMAKE_INSTALL_PREFIX "/usr")
     endif(OGITOR_DIST)
 endif(UNIX AND NOT APPLE)
 
@@ -44,41 +44,41 @@ set(OGITOR_QT_PREPROCESSOR "")
 # Find Boost
 # Prefer static linking in all cases
 if (NOT OGRE_BUILD_PLATFORM_IPHONE)
-	if (WIN32 OR APPLE)
-		set(Boost_USE_STATIC_LIBS TRUE)
-	else ()
-		# Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
-		set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
-	endif ()
-	set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0")
-	# Components that need linking (NB does not include header-only components like bind)
-	set(OGRE_BOOST_COMPONENTS thread date_time regex)
-	find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-	if (NOT Boost_FOUND)
-		# Try again with the other type of libs
-		set(Boost_USE_STATIC_LIBS NOT ${Boost_USE_STATIC_LIBS})
-		find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-	endif()
-	find_package(Boost QUIET)
+    if (WIN32 OR APPLE)
+        set(Boost_USE_STATIC_LIBS TRUE)
+    else ()
+        # Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
+        set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
+    endif ()
+    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0")
+    # Components that need linking (NB does not include header-only components like bind)
+    set(OGRE_BOOST_COMPONENTS thread date_time regex)
+    find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
+    if (NOT Boost_FOUND)
+        # Try again with the other type of libs
+        set(Boost_USE_STATIC_LIBS NOT ${Boost_USE_STATIC_LIBS})
+        find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
+    endif()
+    find_package(Boost QUIET)
 endif(NOT OGRE_BUILD_PLATFORM_IPHONE)
 
 # Somehow, relative paths doesn't work on Linux when installing files..
 if(UNIX)
-	set(PREFIX ${CMAKE_INSTALL_PREFIX})
+    set(PREFIX ${CMAKE_INSTALL_PREFIX})
 else()
-	set(PREFIX "./")
+    set(PREFIX "./")
 endif()
 
 set(OGITOR_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
-	# CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
-	# differentiation between debug and release builds.
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
+    # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
+    # differentiation between debug and release builds.
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif ()
 
 if(WIN32)
-  set(CMAKE_DEBUG_POSTFIX "_d")
+set(CMAKE_DEBUG_POSTFIX "_d")
 endif(WIN32)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
@@ -101,31 +101,31 @@ endif(UNIX)
 
 
 if(APPLE)
-	find_package(CG REQUIRED)
+    find_package(CG REQUIRED)
 endif(APPLE)
 
 if((NOT "${OGRE_VERSION_NAME}" STREQUAL "Byatis") AND (NOT "${OGRE_VERSION_NAME}" STREQUAL "Ghadamon"))
-	message(SEND_ERROR "You need Ogre 1.8 Byatis or later to build this.")
+    message(SEND_ERROR "You need Ogre 1.8 Byatis or later to build this.")
 endif()
 
 if(UNIX)
-	get_filename_component(OGRE_PLUGIN_DIR_LINUX ${OGRE_Plugin_OctreeSceneManager_LIBRARY_REL} PATH)
-	set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
+    get_filename_component(OGRE_PLUGIN_DIR_LINUX ${OGRE_Plugin_OctreeSceneManager_LIBRARY_REL} PATH)
+    set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
 endif(UNIX)
 
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("void*" OGITOR_PTR_SIZE BUILTIN_TYPES_ONLY)
 if (OGITOR_PTR_SIZE EQUAL 8)
-  set(OGITOR_PLATFORM_X64 TRUE)
+set(OGITOR_PLATFORM_X64 TRUE)
 else ()
-  set(OGITOR_PLATFORM_X64 FALSE)
+set(OGITOR_PLATFORM_X64 FALSE)
 endif ()
 
 if(UNIX)
-  # Fix x64 issues on Linux
-  if(OGITOR_PLATFORM_X64 AND NOT APPLE)
+# Fix x64 issues on Linux
+if(OGITOR_PLATFORM_X64 AND NOT APPLE)
     add_definitions(-fPIC)
-  endif()
+endif()
 endif(UNIX)
 
 include_directories(${OGRE_INCLUDE_DIRS})
@@ -176,7 +176,7 @@ if(UNIX)
 #    if(OGRE_LIBRARY_DBG)
 #        set(DBG_POSTFIX "_d")
 #    endif()
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 endif(UNIX)
 
@@ -200,7 +200,7 @@ add_subdirectory(Dependencies/OFS)
 add_subdirectory(Dependencies/GenericTextEditor)
 add_subdirectory(Dependencies/GenericImageEditor)
 IF(OGITOR_MESHMAGICK_INTERFACE)
-	add_subdirectory(Dependencies/MeshMagick)
+    add_subdirectory(Dependencies/MeshMagick)
 ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 
 
@@ -230,52 +230,52 @@ add_subdirectory(RunPath)
 #add_subdirectory(Help)
 
 add_custom_target(lupdate
-	COMMAND ${PROJECT_SOURCE_DIR}/gen-qt-projectfile ${PROJECT_SOURCE_DIR} > ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
-	COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
-	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
+    COMMAND ${PROJECT_SOURCE_DIR}/gen-qt-projectfile ${PROJECT_SOURCE_DIR} > ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
+    COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
 )
 
 
 if(WIN32)
-	install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
-		${OGRE_PLUGIN_DIR_REL}/RenderSystem_Direct3D9.dll
-		${OGRE_PLUGIN_DIR_REL}/RenderSystem_GL.dll
-		${OGRE_PLUGIN_DIR_REL}/Plugin_OctreeSceneManager.dll
-		${OGRE_PLUGIN_DIR_REL}/cg.dll
-		${OGRE_PLUGIN_DIR_REL}/Plugin_CgProgramManager.dll
-		${OGRE_PLUGIN_DIR_REL}/Plugin_ParticleFX.dll
-		${OGRE_PLUGIN_DIR_REL}/OgreTerrain.dll
-		${OGRE_PLUGIN_DIR_REL}/OgrePaging.dll
-		DESTINATION bin
-		CONFIGURATIONS Release)
+    install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
+        ${OGRE_PLUGIN_DIR_REL}/RenderSystem_Direct3D9.dll
+        ${OGRE_PLUGIN_DIR_REL}/RenderSystem_GL.dll
+        ${OGRE_PLUGIN_DIR_REL}/Plugin_OctreeSceneManager.dll
+        ${OGRE_PLUGIN_DIR_REL}/cg.dll
+        ${OGRE_PLUGIN_DIR_REL}/Plugin_CgProgramManager.dll
+        ${OGRE_PLUGIN_DIR_REL}/Plugin_ParticleFX.dll
+        ${OGRE_PLUGIN_DIR_REL}/OgreTerrain.dll
+        ${OGRE_PLUGIN_DIR_REL}/OgrePaging.dll
+        DESTINATION bin
+        CONFIGURATIONS Release)
 
-	install(FILES ${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.dll
-		${OGRE_PLUGIN_DIR_DBG}/RenderSystem_Direct3D9_d.dll
-		${OGRE_PLUGIN_DIR_DBG}/RenderSystem_GL_d.dll
-		${OGRE_PLUGIN_DIR_DBG}/Plugin_OctreeSceneManager_d.dll
-		${OGRE_PLUGIN_DIR_DBG}/cg.dll
-		${OGRE_PLUGIN_DIR_DBG}/Plugin_CgProgramManager_d.dll
-		${OGRE_PLUGIN_DIR_DBG}/Plugin_ParticleFX_d.dll
-		${OGRE_PLUGIN_DIR_DBG}/OgreTerrain_d.dll
-		${OGRE_PLUGIN_DIR_DBG}/OgrePaging_d.dll
-		#${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/RenderSystem_Direct3D9_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/RenderSystem_GL_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/Plugin_OctreeSceneManager_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/Plugin_CgProgramManager_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/Plugin_BSPSceneManager_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/Plugin_ParticleFX_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/OgreTerrain_d.pdb
-		#${OGRE_PLUGIN_DIR_DBG}/OgrePaging_d.pdb
-		DESTINATION bin
-		CONFIGURATIONS Debug)
+    install(FILES ${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.dll
+        ${OGRE_PLUGIN_DIR_DBG}/RenderSystem_Direct3D9_d.dll
+        ${OGRE_PLUGIN_DIR_DBG}/RenderSystem_GL_d.dll
+        ${OGRE_PLUGIN_DIR_DBG}/Plugin_OctreeSceneManager_d.dll
+        ${OGRE_PLUGIN_DIR_DBG}/cg.dll
+        ${OGRE_PLUGIN_DIR_DBG}/Plugin_CgProgramManager_d.dll
+        ${OGRE_PLUGIN_DIR_DBG}/Plugin_ParticleFX_d.dll
+        ${OGRE_PLUGIN_DIR_DBG}/OgreTerrain_d.dll
+        ${OGRE_PLUGIN_DIR_DBG}/OgrePaging_d.dll
+        #${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/RenderSystem_Direct3D9_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/RenderSystem_GL_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/Plugin_OctreeSceneManager_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/Plugin_CgProgramManager_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/Plugin_BSPSceneManager_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/Plugin_ParticleFX_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/OgreTerrain_d.pdb
+        #${OGRE_PLUGIN_DIR_DBG}/OgrePaging_d.pdb
+        DESTINATION bin
+        CONFIGURATIONS Debug)
 
 IF(OGITOR_DIST)
     install(FILES redist/dxwebsetup.exe
         DESTINATION redist
         CONFIGURATIONS Release)
     install(FILES redist/msvcr100.dll
-		redist/msvcp100.dll
+        redist/msvcp100.dll
         DESTINATION bin
         CONFIGURATIONS Release)
 ENDIF(OGITOR_DIST)
@@ -294,68 +294,68 @@ add_custom_target(uninstall
 # no package support for Linux or Mac, yet.
 if(WIN32 AND NOT UNIX)
 
-	#include (InstallRequiredSystemLibraries)
+    #include (InstallRequiredSystemLibraries)
 
-	set(CPACK_INSTALL_CMAKE_PROJECTS "${OGITOR_WORK_DIR};Ogitor;ALL;/")
-	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Ogre Editing Framework")
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "Ogitor_${CPACK_PACKAGE_VERSION}")
-	set(CPACK_PACKAGE_NAME "Ogitor_${CPACK_PACKAGE_VERSION}")
-	set(CPACK_PACKAGE_VENDOR "The Ogitor Team")
-	set(CPACK_PACKAGE_VERSION ${OGITOR_VERSION_STRING})
-	set(CPACK_PACKAGE_VERSION_MAJOR ${OGITOR_VERSION_STRING_MAJOR})
-	set(CPACK_PACKAGE_VERSION_MINOR ${OGITOR_VERSION_STRING_MINOR})
-	set(CPACK_PACKAGE_VERSION_PATCH ${OGITOR_VERSION_STRING_PATCH})
+    set(CPACK_INSTALL_CMAKE_PROJECTS "${OGITOR_WORK_DIR};Ogitor;ALL;/")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Ogre Editing Framework")
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "Ogitor_${CPACK_PACKAGE_VERSION}")
+    set(CPACK_PACKAGE_NAME "Ogitor_${CPACK_PACKAGE_VERSION}")
+    set(CPACK_PACKAGE_VENDOR "The Ogitor Team")
+    set(CPACK_PACKAGE_VERSION ${OGITOR_VERSION_STRING})
+    set(CPACK_PACKAGE_VERSION_MAJOR ${OGITOR_VERSION_STRING_MAJOR})
+    set(CPACK_PACKAGE_VERSION_MINOR ${OGITOR_VERSION_STRING_MINOR})
+    set(CPACK_PACKAGE_VERSION_PATCH ${OGITOR_VERSION_STRING_PATCH})
 
-	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-	set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\Resources\\\\OgitorInstall.bmp")
-	set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\qtOgitor.exe")
-	set(CPACK_PACKAGE_EXECUTABLES "qtOgitor" "qtOgitor")
-	set(CPACK_NSIS_CREATE_ICONS_EXTRA "CreateShortCut \\\"$DESKTOP\\\\qtOgitor.lnk\\\" \\\"$INSTDIR\\\\bin\\\\qtOgitor.exe\\\"")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\Resources\\\\OgitorInstall.bmp")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\qtOgitor.exe")
+    set(CPACK_PACKAGE_EXECUTABLES "qtOgitor" "qtOgitor")
+    set(CPACK_NSIS_CREATE_ICONS_EXTRA "CreateShortCut \\\"$DESKTOP\\\\qtOgitor.lnk\\\" \\\"$INSTDIR\\\\bin\\\\qtOgitor.exe\\\"")
 
-	# Use custom version of NSIS.InstallOptions.ini
-	set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/packaging" ${CMAKE_MODULE_PATH})
+    # Use custom version of NSIS.InstallOptions.ini
+    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/packaging" ${CMAKE_MODULE_PATH})
 
-	# File types association:
-	set(CPACK_NSIS_DEFINES "!include ${PROJECT_SOURCE_DIR}/CMakeModules\\\\packaging\\\\FileAssociation.nsh")
+    # File types association:
+    set(CPACK_NSIS_DEFINES "!include ${PROJECT_SOURCE_DIR}/CMakeModules\\\\packaging\\\\FileAssociation.nsh")
 
-	getenv_path(USERPROFILE)
+    getenv_path(USERPROFILE)
 
-	set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-	ExecWait '$SYSDIR\\\\cmd.exe /Q /C xcopy \\\"$INSTDIR\\\\Projects\\\\SampleDotScene\\\" \\\"$PROFILE\\\\OgitorProjects\\\\SampleDotScene\\\\\\\" /E /Y'
-	ExecWait '$SYSDIR\\\\cmd.exe /Q /C xcopy \\\"$INSTDIR\\\\Media\\\" \\\"$PROFILE\\\\OgitorProjects\\\\Media\\\\\\\" /E /Y'
-	CreateDirectory \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-	CopyFiles \\\"$INSTDIR\\\\bin\\\\SampleLoadApp.exe\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-	CopyFiles \\\"$INSTDIR\\\\bin\\\\SampleAppConfig_dist.xml\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\\SampleAppConfig.xml\\\"
-		ExecWait '$SYSDIR\\\\cmd.exe /Q /C xcopy \\\"$INSTDIR\\\\SampleApp_Source\\\" \\\"$PROFILE\\\\OgitorProjects\\\\SampleApp_Source\\\\\\\" /E /Y'
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\Ogre*.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\Plugin*.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\RenderSystem*.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\cg.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\OIS.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\Hydrax.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\msvcr100.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\msvcp100.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\Caelum.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\plugins.cfg\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		CopyFiles \\\"$INSTDIR\\\\bin\\\\resources.cfg\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
-		ExecWait  \\\"$INSTDIR\\\\redist\\\\dxwebsetup.exe /Q\\\"
-		WriteRegStr HKCU \\\"Environment\\\" \\\"OGITOR_HOME\\\" $INSTDIR
-	")
+    set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    ExecWait '$SYSDIR\\\\cmd.exe /Q /C xcopy \\\"$INSTDIR\\\\Projects\\\\SampleDotScene\\\" \\\"$PROFILE\\\\OgitorProjects\\\\SampleDotScene\\\\\\\" /E /Y'
+    ExecWait '$SYSDIR\\\\cmd.exe /Q /C xcopy \\\"$INSTDIR\\\\Media\\\" \\\"$PROFILE\\\\OgitorProjects\\\\Media\\\\\\\" /E /Y'
+    CreateDirectory \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+    CopyFiles \\\"$INSTDIR\\\\bin\\\\SampleLoadApp.exe\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+    CopyFiles \\\"$INSTDIR\\\\bin\\\\SampleAppConfig_dist.xml\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\\SampleAppConfig.xml\\\"
+        ExecWait '$SYSDIR\\\\cmd.exe /Q /C xcopy \\\"$INSTDIR\\\\SampleApp_Source\\\" \\\"$PROFILE\\\\OgitorProjects\\\\SampleApp_Source\\\\\\\" /E /Y'
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\Ogre*.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\Plugin*.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\RenderSystem*.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\cg.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\OIS.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\Hydrax.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\msvcr100.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\msvcp100.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\Caelum.dll\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\plugins.cfg\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        CopyFiles \\\"$INSTDIR\\\\bin\\\\resources.cfg\\\" \\\"$PROFILE\\\\OgitorProjects\\\\bin\\\"
+        ExecWait  \\\"$INSTDIR\\\\redist\\\\dxwebsetup.exe /Q\\\"
+        WriteRegStr HKCU \\\"Environment\\\" \\\"OGITOR_HOME\\\" $INSTDIR
+    ")
 
-	set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS} "
-	\\\${registerExtension} \\\"Ogitor Scene File\\\" \\\".ogscene\\\" \\\"\\\$INSTDIR\\\\bin\\\\qtOgitor.exe\\\"
-	")
+    set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS} "
+    \\\${registerExtension} \\\"Ogitor Scene File\\\" \\\".ogscene\\\" \\\"\\\$INSTDIR\\\\bin\\\\qtOgitor.exe\\\"
+    ")
 
-	set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS} 'WriteRegStr HKCU \\\"Environment\\\" \\\"OGITOR_HOME\\\" $INSTDIR\\\\bin\\\"' )
+    set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS} 'WriteRegStr HKCU \\\"Environment\\\" \\\"OGITOR_HOME\\\" $INSTDIR\\\\bin\\\"' )
 
-	set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-	\\\${unregisterExtension} \\\".ogscene\\\" \\\"Ogitor Scene File\\\"
-	DeleteRegKey HKCU \\\"Software\\\\Ogitor_${CPACK_PACKAGE_VERSION}\\\"
-	DeleteRegKey HKCU \\\"Environment\\\\OGITOR_HOME\\\"
-	Delete \\\"$DESKTOP\\\\qtOgitor.lnk\\\"
-	")
+    set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+    \\\${unregisterExtension} \\\".ogscene\\\" \\\"Ogitor Scene File\\\"
+    DeleteRegKey HKCU \\\"Software\\\\Ogitor_${CPACK_PACKAGE_VERSION}\\\"
+    DeleteRegKey HKCU \\\"Environment\\\\OGITOR_HOME\\\"
+    Delete \\\"$DESKTOP\\\\qtOgitor.lnk\\\"
+    ")
 
-	include(CPack)
+    include(CPack)
 
 #add_custom_target(lupdate
 #   COMMAND ${PROJECT_SOURCE_DIR}/gen-qt-projectfile ${PROJECT_SOURCE_DIR} > ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
