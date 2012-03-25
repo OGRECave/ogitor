@@ -612,7 +612,7 @@ void OgreWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 
         QString appTitle;
         appTitle = "qtOgitor ";
-        appTitle += Ogitors::Globals::OGITOR_VERSION;
+        appTitle += Ogitors::Globals::OGITOR_VERSION.c_str();
 
         if(state == LS_LOADED)
         {

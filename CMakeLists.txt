@@ -190,28 +190,41 @@ if(UNIX)
     if(OGITOR_DIST)
         # Figure out how to do it!
     else(OGITOR_DIST)
-        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
-        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
-        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages")
-        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media")
-        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects")
-        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts")
-        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins")
-        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons")
-        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}")
+        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path")
+        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path")
+        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages" CACHE PATH "Ogitor languages path")
+        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media" CACHE PATH "Ogitor media path")
+        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path")
+        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts" CACHE PATH "Ogitor scripts path")
+        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path")
+        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons" CACHE PATH "Ogitor plugins icon path")
+        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path")
     endif(OGITOR_DIST)
 else(UNIX)
     # We are on Windows
-    set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
-    set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
-    set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages")
-    set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media")
-    set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects")
-    set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts")
-    set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins")
-    set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons")
-    set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin")
+    set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path")
+    set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path")
+    set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages" CACHE PATH "Ogitor languages path")
+    set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media" CACHE PATH "Ogitor media path")
+    set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path")
+    set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts" CACHE PATH "Ogitor scripts path")
+    set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path")
+    set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons" CACHE PATH "Ogitor plugins icon path")
+    set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogre plugins path")
 endif(UNIX)
+
+# hide advanced options
+mark_as_advanced(
+    OGITOR_BIN_PATH
+    OGITOR_RUN_PATH
+    OGITOR_LANGUAGE_PATH
+    OGITOR_MEDIA_PATH
+    OGITOR_PROJECTS_PATH
+    OGITOR_SCRIPTS_PATH
+    OGITOR_PLUGIN_PATH
+    OGITOR_PLUGIN_ICON_PATH
+    OGITOR_OGRE_PLUGIN_PATH
+)
 
 # Generate OgitorsGlobals.cpp
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals.cpp.in ${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp)

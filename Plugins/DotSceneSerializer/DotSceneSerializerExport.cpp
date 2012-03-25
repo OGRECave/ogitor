@@ -165,7 +165,7 @@ int CDotSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     // export basic info
     TiXmlElement *pRoot = pXMLDoc->RootElement();
     pRoot->SetAttribute("formatVersion", "1.0.0");
-    pRoot->SetAttribute("generator", Ogre::String(Ogre::String("Ogitor SceneBuilder ") + Ogre::String(OGITOR_VERSION)).c_str());
+    pRoot->SetAttribute("generator", Ogre::String(Ogre::String("Ogitor SceneBuilder ") + Ogre::String(Globals::OGITOR_VERSION)).c_str());
 
     // export resource locations
     TiXmlElement *pResourceLocations = pRoot->InsertEndChild(TiXmlElement("resourceLocations"))->ToElement();
