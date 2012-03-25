@@ -129,10 +129,13 @@ set(OGITOR_PLATFORM_X64 FALSE)
 endif ()
 
 if(UNIX)
-# Fix x64 issues on Linux
-if(OGITOR_PLATFORM_X64 AND NOT APPLE)
-    add_definitions(-fPIC)
-endif()
+  # Fix x64 issues on Linux
+  if(OGITOR_PLATFORM_X64 AND NOT APPLE)
+      add_definitions(-fPIC)
+      set(LIB_SUFFIX 64)
+  else(OGITOR_PLATFORM_X64 AND NOT APPLE)
+      set(LIB_SUFFIX "")
+  endif(OGITOR_PLATFORM_X64 AND NOT APPLE)
 endif(UNIX)
 
 include_directories(${OGRE_INCLUDE_DIRS})
