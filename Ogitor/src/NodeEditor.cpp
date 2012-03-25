@@ -433,7 +433,7 @@ CNodeEditorFactory::CNodeEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     mEditorType = ETYPE_NODE;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/node.svg";
+    mIcon = "node.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_ROTATE | CAN_SCALE | CAN_FOCUS | CAN_DELETE | CAN_DRAG | CAN_DROP | CAN_UNDO | CAN_ACCEPTCOPY | CAN_ACCEPTPASTE;
 
     OgitorsPropertyDef *definition;

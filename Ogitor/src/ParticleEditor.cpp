@@ -193,7 +193,7 @@ CParticleEditorFactory::CParticleEditorFactory(OgitorsView *view) : CNodeEditorF
     mEditorType = ETYPE_PARTICLE;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/particle.svg";
+    mIcon = "particle.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
 
     OgitorsPropertyDef *definition;

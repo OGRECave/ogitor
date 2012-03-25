@@ -354,7 +354,7 @@ CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     mTypeName = "Skyx Object";
     mEditorType = ETYPE_SKY_MANAGER;
     mAddToObjectList = true;
-    mIcon = "Icons/caelum.svg";
+    mIcon = "caelum.svg";
     mCapabilities = CAN_DELETE;
 
     AddPropertyDefinition("timemultiplier","Time Mult.","",PROP_REAL);

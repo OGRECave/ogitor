@@ -331,7 +331,7 @@ CPlaneEditorFactory::CPlaneEditorFactory(OgitorsView *view) : CNodeEditorFactory
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/plane.svg";
+    mIcon = "plane.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_USEMATERIAL | CAN_ACCEPTCOPY;
 
     AddPropertyDefinition("normal","Normal","The normal of the object.",PROP_VECTOR3);

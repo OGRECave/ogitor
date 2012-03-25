@@ -155,7 +155,7 @@ CMarkerEditorFactory::CMarkerEditorFactory(OgitorsView *view) : CNodeEditorFacto
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/marker.svg";
+    mIcon = "marker.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
 
     AddPropertyDefinition("colour", "Colour", "The colour of the object.",PROP_COLOUR);

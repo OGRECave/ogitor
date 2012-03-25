@@ -246,7 +246,7 @@ CPGInstanceEditorFactory::CPGInstanceEditorFactory(OgitorsView *view) : CBaseEdi
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = false;
     mRequirePlacement = true;
-    mIcon = "Icons/pginstance.svg";
+    mIcon = "pginstance.svg";
     mCapabilities = CAN_FOCUS | CAN_DELETE | CAN_UNDO | CAN_MOVE | CAN_SCALE | CAN_ROTATEY;
 
     AddPropertyDefinition("position","Position","The position of the object.",PROP_VECTOR3);

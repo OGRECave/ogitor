@@ -159,7 +159,7 @@ CTechniqueEditorFactory::CTechniqueEditorFactory(OgitorsView *view) : CBaseEdito
     mEditorType = ETYPE_GENERALPURPOSE;
     mAddToObjectList = false;
     mRequirePlacement = true;
-    mIcon = "Icons/technique.svg";
+    mIcon = "technique.svg";
     mCapabilities = CAN_UNDO;
 }
 //-----------------------------------------------------------------------------------------

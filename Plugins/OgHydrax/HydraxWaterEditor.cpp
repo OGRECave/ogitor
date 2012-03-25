@@ -1075,7 +1075,7 @@ CHydraxEditorFactory::CHydraxEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mTypeName = "Hydrax Object";
     mEditorType = ETYPE_WATER_MANAGER;
     mAddToObjectList = true;
-    mIcon = "Icons/hydrax.svg";
+    mIcon = "hydrax.svg";
     mCapabilities = CAN_DELETE;
 
     mShaderModes.clear();

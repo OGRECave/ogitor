@@ -583,7 +583,7 @@ CCameraEditorFactory::CCameraEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mEditorType = ETYPE_CAMERA;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/camera.svg";
+    mIcon = "camera.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
 
     mCameraPolygonModes.clear();

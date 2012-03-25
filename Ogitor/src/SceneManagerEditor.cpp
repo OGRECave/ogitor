@@ -603,7 +603,7 @@ CSceneManagerEditorFactory::CSceneManagerEditorFactory(OgitorsView *view) : CBas
 {
     mTypeName = "OctreeSceneManager";
     mEditorType = ETYPE_SCENEMANAGER;
-    mIcon = "Icons/tsm.svg";
+    mIcon = "tsm.svg";
     mCapabilities = CAN_DROP | CAN_UNDO | CAN_ACCEPTPASTE;
 
     mFogModes.clear();

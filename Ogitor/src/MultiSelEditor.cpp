@@ -608,7 +608,7 @@ CMultiSelEditorFactory::CMultiSelEditorFactory(OgitorsView *view) : CBaseEditorF
 {
     mTypeName = "Multi Selection";
     mEditorType = ETYPE_MULTISEL;
-    mIcon = "Icons/multisel.svg";
+    mIcon = "multisel.svg";
     mCapabilities = CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_UNDO  | CAN_FOCUS | CAN_DELETE;
 
     AddPropertyDefinition("position", "", "The position of the object.",PROP_VECTOR3, false, false);

@@ -439,7 +439,7 @@ CBillboardSetEditorFactory::CBillboardSetEditorFactory(OgitorsView *view) : CNod
     mEditorType = ETYPE_BILLBOARDSET;
     mAddToObjectList = true;
     mRequirePlacement = true;
-    mIcon = "Icons/billboardset.svg";
+    mIcon = "billboardset.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_USEMATERIAL | CAN_ACCEPTCOPY;
 
     OgitorsPropertyDef *definition;

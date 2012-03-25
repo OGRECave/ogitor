@@ -178,20 +178,11 @@ void QtOgitorSystem::initTreeIcons()
 
             if(filenm != QString(""))
             {
-#if defined(Q_WS_X11)
-                filenm = Ogitors::OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Plugins/" + filenm.toStdString()).c_str();
-#else
-                filenm = Ogitors::OgitorsUtils::QualifyPath("../Plugins/" + filenm.toStdString()).c_str();
-#endif
+                filenm = std::string( Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/" + filenm.toStdString()).c_str();
                 mIconList[it->second->mTypeID] = filenm;
             }
             else
-#if defined(Q_WS_X11)
-                mIconList[it->second->mTypeID] = QString(Ogitors::OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Plugins/Icons/project.svg").c_str());
-#else
-                mIconList[it->second->mTypeID] = QString(Ogitors::OgitorsUtils::QualifyPath("../Plugins/Icons/project.svg").c_str());
-#endif
-
+                mIconList[it->second->mTypeID] = QString( std::string(Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/project.svg").c_str());
         }
         it++;
     }

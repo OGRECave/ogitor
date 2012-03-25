@@ -835,7 +835,7 @@ CViewportEditorFactory::CViewportEditorFactory(OgitorsView *view) : CBaseEditorF
 {
     mTypeName = "Viewport Object";
     mEditorType = ETYPE_VIEWPORT;
-    mIcon = "Icons/viewport.svg";
+    mIcon = "viewport.svg";
     mCapabilities = CAN_DELETE  | CAN_UNDO;
     mLastZOrder = 0;
 

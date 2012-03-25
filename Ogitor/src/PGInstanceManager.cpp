@@ -849,7 +849,7 @@ CPGInstanceManagerFactory::CPGInstanceManagerFactory(OgitorsView *view) : CBaseE
     mEditorType = ETYPE_CUSTOM_MANAGER;
     mAddToObjectList = true;
     mRequirePlacement = false;
-    mIcon = "Icons/pagedgeometry.svg";
+    mIcon = "pagedgeometry.svg";
     mCapabilities = CAN_UNDO | CAN_DELETE;
 
     OgitorsPropertyDef *definition = AddPropertyDefinition("model", "Model", "The model to be used.", PROP_STRING);

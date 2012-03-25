@@ -396,7 +396,7 @@ CEntityEditorFactory::CEntityEditorFactory(OgitorsView *view) : CNodeEditorFacto
     mEditorType = ETYPE_ENTITY;
     mAddToObjectList = false;
     mRequirePlacement = true;
-    mIcon = "Icons/entity.svg";
+    mIcon = "entity.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_USEMATERIAL | CAN_ACCEPTCOPY;
 
     OgitorsPropertyDef *definition = AddPropertyDefinition("meshfile","Mesh File","The mesh filename of the entity.",PROP_STRING, true, true);

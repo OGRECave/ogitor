@@ -559,7 +559,7 @@ CCaelumEditorFactory::CCaelumEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mTypeName = "Caelum Object";
     mEditorType = ETYPE_SKY_MANAGER;
     mAddToObjectList = true;
-    mIcon = "Icons/caelum.svg";
+    mIcon = "caelum.svg";
     mCapabilities = CAN_DELETE;
 
     mMonths.clear();
