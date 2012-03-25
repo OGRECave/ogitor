@@ -1484,11 +1484,7 @@ bool findScriptFile(QString &filename)
         return true;
 
     Ogre::String fileN = OgitorsUtils::ExtractFileName(filename.toStdString());
-#if defined(Q_WS_X11)
-    Ogre::String file = OgitorsUtils::QualifyPath("/usr/share/qtOgitor/Scripts/" + fileN);
-#else
-    Ogre::String file = OgitorsUtils::QualifyPath("../Scripts/" + fileN);
-#endif
+    Ogre::String file = OgitorsUtils::QualifyPath(Ogitors::Globals::SCRIPTS_PATH + "/" + fileN);
 
     if(QFile(file.c_str()).exists())
     {
