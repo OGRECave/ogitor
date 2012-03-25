@@ -53,7 +53,10 @@ set(LIBRARY_OUTPUT_PATH ../lib)
 add_dependencies(OgAngelScript Ogitor)
 add_dependencies(OgAngelScript Angelscript)
 
-#set_target_properties(OgAngelScript PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+if(NOT OGITOR_DIST)
+    set_target_properties(OgAngelScript PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+endif(NOT OGITOR_DIST)
+
 set_target_properties(OgAngelScript PROPERTIES VERSION ${OgAngelScript_VERSION} SOVERSION ${OgAngelScript_VERSION_MAJOR})
 set_target_properties(OgAngelScript PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(OgAngelScript PROPERTIES SOLUTION_FOLDER Plugins)

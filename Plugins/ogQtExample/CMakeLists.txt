@@ -57,7 +57,10 @@ else(NOT QT4_FOUND)
 	add_library(ogQtExample SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
-#	set_target_properties(ogQtExample PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+    if(NOT OGITOR_DIST)
+        set_target_properties(ogQtExample PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+    endif(NOT OGITOR_DIST)
+	
 	set_target_properties(ogQtExample PROPERTIES VERSION ${ogQtExample_VERSION} SOVERSION ${ogQtExample_VERSION_MAJOR})
 	set_target_properties(ogQtExample PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(ogQtExample PROPERTIES SOLUTION_FOLDER Plugins)
