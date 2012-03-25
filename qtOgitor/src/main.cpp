@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    a.setOrganizationName(QString("Ogitor ") + QString(Ogitors::OGITOR_VERSION));
+    a.setOrganizationName(QString("Ogitor ") + QString(Ogitors::Globals::OGITOR_VERSION));
     a.setApplicationName("qtOgitor");
 
     QSettings settings;

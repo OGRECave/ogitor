@@ -44,7 +44,6 @@ namespace Ogitors
 
 #define OTR(a) mSystem->Translate(a)
 
-    const char OGITOR_VERSION[]                 = "0.5.0d";
     const char PROJECT_RESOURCE_GROUP[]         = "ProjectResources";
     const char PROJECT_TEMP_RESOURCE_GROUP[]    = "ProjectTemp";
       
