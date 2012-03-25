@@ -101,9 +101,11 @@ else(NOT QT4_FOUND)
 	endif(WIN32)
 
     IF(UNIX AND NOT APPLE)
-        install(TARGETS OgMaterialEditor
-            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        if(OGITOR_DIST)
+            install(TARGETS OgMaterialEditor
+                LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        endif(OGITOR_DIST)
     ENDIF(UNIX AND NOT APPLE)
 
 endif(NOT QT4_FOUND)

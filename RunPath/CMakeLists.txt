@@ -44,12 +44,21 @@ if(UNIX)
 		PATTERN "Plugins/icon_backup" EXCLUDE
 	)
 
-	install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
-        ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
-        ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
-		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
-		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
-  )
+    if(OGITOR_DIST)
+        install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
+            ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
+            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor
+        )
+    else(OGITOR_DIST)
+        install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
+            ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
+            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
+            DESTINATION bin
+        )
+    endif(OGITOR_DIST)
 endif(UNIX)
 
 # vim: set sw=2 ts=2 noet:

@@ -46,11 +46,13 @@ endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
 
-set_target_properties( OFS PROPERTIES OUTPUT_NAME "OFS" VERSION
-${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+    set_target_properties( OFS PROPERTIES OUTPUT_NAME "OFS" VERSION
+    ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-install(TARGETS OFS
-    LIBRARY DESTINATION lib
-    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    if(OGITOR_DIST)
+        install(TARGETS OFS
+            LIBRARY DESTINATION lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)

@@ -77,9 +77,11 @@ if(WIN32)
 endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
-    install(TARGETS OgAngelScript
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
-        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    if(OGITOR_DIST)
+        install(TARGETS OgAngelScript
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/share/qtOgitor/Plugins
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    endif(OGITOR_DIST)
 ENDIF(UNIX AND NOT APPLE)
 
 # vim: set sw=2 ts=2 noet:

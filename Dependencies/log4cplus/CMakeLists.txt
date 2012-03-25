@@ -169,11 +169,13 @@ endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
 
-set_target_properties( log4cplus PROPERTIES OUTPUT_NAME "log4cplus_Ogitor" VERSION
-${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+    set_target_properties( log4cplus PROPERTIES OUTPUT_NAME "log4cplus_Ogitor" VERSION
+    ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-install(TARGETS log4cplus
-    LIBRARY DESTINATION lib
-    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    if(OGITOR_DIST)
+        install(TARGETS log4cplus
+            LIBRARY DESTINATION lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)

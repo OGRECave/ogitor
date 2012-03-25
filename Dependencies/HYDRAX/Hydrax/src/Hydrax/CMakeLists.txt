@@ -90,15 +90,17 @@ ENDIF(WIN32)
 
 IF(UNIX AND NOT APPLE)
 
-set_target_properties( Hydrax PROPERTIES OUTPUT_NAME "Hydrax_Ogitor" VERSION
-${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+    set_target_properties( Hydrax PROPERTIES OUTPUT_NAME "Hydrax_Ogitor" VERSION
+    ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-install(TARGETS Hydrax
-    LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
-    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    if(OGITOR_DIST)
+        install(TARGETS Hydrax
+            LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
-install(TARGETS Hydrax
-    LIBRARY DESTINATION lib
-    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        install(TARGETS Hydrax
+            LIBRARY DESTINATION lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)
