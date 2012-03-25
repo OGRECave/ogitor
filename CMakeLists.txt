@@ -190,6 +190,7 @@ if(UNIX)
     if(OGITOR_DIST)
         # Figure out how to do it!
     else(OGITOR_DIST)
+        # Doing local install
         set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path")
         set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path")
         set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path")
@@ -214,6 +215,7 @@ else(UNIX)
     set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path")
     set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons" CACHE PATH "Ogitor plugins icon path")
     set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogre plugins path")
+    set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "libOgreOfsPlugin path")
 endif(UNIX)
 
 # hide advanced options
@@ -227,6 +229,7 @@ mark_as_advanced(
     OGITOR_PLUGIN_PATH
     OGITOR_PLUGIN_ICON_PATH
     OGITOR_OGRE_PLUGIN_PATH
+    OGITOR_LIBOGREOFSPLUGIN_PATH
 )
 
 # Generate OgitorsGlobals.cpp

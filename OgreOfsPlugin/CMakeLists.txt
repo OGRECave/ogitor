@@ -1,3 +1,5 @@
+project(OgreOfsPlugin)
+
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/OFS/include")
 include_directories(include)
 
@@ -44,9 +46,16 @@ endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
 
+    set_target_properties( OgreOfsPlugin PROPERTIES OUTPUT_NAME "OgreOfsPlugin" VERSION
+    ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
+
     if(OGITOR_DIST)
         install(TARGETS OgreOfsPlugin
             LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    else(OGITOR_DIST)
+        install(TARGETS OgreOfsPlugin
+            LIBRARY DESTINATION lib
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     endif(OGITOR_DIST)
 
