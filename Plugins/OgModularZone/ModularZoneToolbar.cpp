@@ -43,11 +43,7 @@ ModularZoneToolbar::ModularZoneToolbar(QWidget *parent):QWidget(parent)
 
     QAction* mActAddProps = new QAction(QObject::tr("Add ParentZone Property"), this);
     mActAddProps->setStatusTip(QObject::tr("Add Zone Custom Properties to selected object"));
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    mActAddProps->setIcon( QIcon( "/usr/share/qtOgitor/Plugins/Icons/zoneprops.svg"));
-#else
-    mActAddProps->setIcon( QIcon( "../Plugins/Icons/zoneprops.svg"));
-#endif
+    mActAddProps->setIcon( QIcon( std::string(Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/zoneprops.svg").c_str() ));
     mActAddProps->setCheckable(false);
 
     QAction* mActDesignZone = new QAction(QObject::tr("Convert to Zone"), this);

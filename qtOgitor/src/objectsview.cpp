@@ -117,11 +117,7 @@ void ObjectsViewWidget::prepareView()
         if(it->second && it->second->mAddToObjectList)
         {
             if(it->second->mIcon != "")
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-            filename = "/usr/share/qtOgitor/Plugins/" + it->second->mIcon;
-#else
-            filename = "../Plugins/" + it->second->mIcon;
-#endif
+            filename = Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/" + it->second->mIcon;
 
             itemname = it->second->mTypeName;
 
