@@ -149,7 +149,6 @@ set(OGITOR_LIBPATH	"${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 
 # Dependencies
 set(DEPENDENCIES_INCLUDES
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/log4cplus/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax"
@@ -249,7 +248,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals
 add_subdirectory(Ogitor)
 
 # Setup Dependencies
-add_subdirectory(Dependencies/log4cplus)
 add_subdirectory(Dependencies/HYDRAX/Hydrax/src/Hydrax)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
