@@ -65,16 +65,16 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     actCommandDefrag->setStatusTip(tr("Defragment file"));
     actCommandDefrag->setIcon( QIcon( ":/icons/defrag.svg" ));
 
-    actCommandDelete = new QAction(tr("Delete"), this);
-    actCommandDelete->setStatusTip(tr("Delete Selected File/Folder"));
+    actCommandDelete = new QAction(tr("Remove"), this);
+    actCommandDelete->setStatusTip(tr("Remove a file/folder from your Ogitor project"));
     actCommandDelete->setIcon( QIcon( ":/icons/trash.svg"));
 
-    actCommandAddFolder = new QAction(tr("Add Folder"), this);
-    actCommandAddFolder->setStatusTip(tr("Add Folder"));
+    actCommandAddFolder = new QAction(tr("Import Folder"), this);
+    actCommandAddFolder->setStatusTip(tr("Import a folder into your Ogitor project"));
     actCommandAddFolder->setIcon( QIcon( ":/icons/import.svg"));
 
-    actCommandAddFile = new QAction(tr("Add File"), this);
-    actCommandAddFile->setStatusTip(tr("Add a single File"));
+    actCommandAddFile = new QAction(tr("Import File"), this);
+    actCommandAddFile->setStatusTip(tr("Import a single file into your Ogitor project"));
     actCommandAddFile->setIcon( QIcon( ":/icons/additional.svg"));
 
     actCommandMakeAsset = new QAction(tr("Make scene asset"), this);
