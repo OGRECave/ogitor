@@ -8,11 +8,11 @@
 
 if(WIN32)
     execute_process(
-        COMMAND  %QTDIR%/bin/qhelpgenerator ogitor.qhp -o ogitor.qch
+        COMMAND  qhelpgenerator ogitor.qhp -o ogitor.qch
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Help)
 
     execute_process(
-        COMMAND  %QTDIR%/bin/qcollectiongenerator collection_ogitor.qhcp -o collection_ogitor.qhc
+        COMMAND  qcollectiongenerator collection_ogitor.qhcp -o collection_ogitor.qhc
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Help)
 
     install(FILES
