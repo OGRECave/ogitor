@@ -18,6 +18,7 @@ qtOgitor/qtpropertybrowser-2.5/*.moc
 qtOfs/qtOfs
 qtOgitor/qtOgitor
 Dependencies/lua/lua
+RunPath/languages/*
 RunPath/bin/qtOfs
 RunPath/bin/qtOgitor
 SceneLoader/SampleLoadApp
