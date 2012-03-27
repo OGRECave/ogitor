@@ -5,33 +5,33 @@ cmake_policy(SET CMP0003 NEW)
 project(OgPythonqt)
 
 set(HEADER_FILES
-	PythonqtInterpreter.h
-	Bindings.h
-	Bindings_Base.h
-	Bindings_Enum.h
-	Bindings_MultiSelection.h
-	Bindings_Ogre.h
-	Bindings_Property.h
-	Bindings_Root.h
-	Bindings_System.h
-	Bindings_UTF.h
-	Bindings_Utils.h
-	Bindings_Viewport.h
+    PythonqtInterpreter.h
+    Bindings.h
+    Bindings_Base.h
+    Bindings_Enum.h
+    Bindings_MultiSelection.h
+    Bindings_Ogre.h
+    Bindings_Property.h
+    Bindings_Root.h
+    Bindings_System.h
+    Bindings_UTF.h
+    Bindings_Utils.h
+    Bindings_Viewport.h
         ScriptStringExtensions.h
-	scripthelper.h
-	stdvector.h
+    scripthelper.h
+    stdvector.h
 )
 
 set(SOURCE_FILES
-	PythonqtInterpreter.cpp
-	Bindings.cpp
-	Bindings_Base.cpp
-	Bindings_MultiSelection.cpp
-	Bindings_Ogre.cpp
-	Bindings_Property.cpp
-	Bindings_Viewport.cpp
+    PythonqtInterpreter.cpp
+    Bindings.cpp
+    Bindings_Base.cpp
+    Bindings_MultiSelection.cpp
+    Bindings_Ogre.cpp
+    Bindings_Property.cpp
+    Bindings_Viewport.cpp
         ScriptStringExtensions.cpp
-	scripthelper.cpp
+    scripthelper.cpp
 )
 
 set(OgPythonqt_VERSION 0)
@@ -62,21 +62,21 @@ set_target_properties(OgPythonqt PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(OgPythonqt PROPERTIES SOLUTION_FOLDER Plugins)
 
 if(UNIX AND NOT APPLE)
-	add_custom_command(TARGET OgPythonqt PRE_BUILD
-		COMMAND mkdir -p ../../RunPath/Plugins)
-	add_custom_command(TARGET OgPythonqt POST_BUILD
-		COMMAND cp -r ../lib/libOgPythonqt.* ../../RunPath/Plugins/)
+    add_custom_command(TARGET OgPythonqt PRE_BUILD
+        COMMAND mkdir -p ../../RunPath/Plugins)
+    add_custom_command(TARGET OgPythonqt POST_BUILD
+        COMMAND cp -r ../lib/libOgPythonqt.* ../../RunPath/Plugins/)
 endif(UNIX AND NOT APPLE)
 
 if(WIN32)
-	add_custom_command(TARGET OgPythonqt PRE_BUILD
-		COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
-	add_custom_command(TARGET OgPythonqt POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins & if exist ..\\..\\RunPath\\Plugins\\OgPythonqt_d.dll move ..\\..\\RunPath\\Plugins\\OgPythonqt_d.dll ..\\..\\RunPath\\Plugins\\debug)
+    add_custom_command(TARGET OgPythonqt PRE_BUILD
+        COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
+    add_custom_command(TARGET OgPythonqt POST_BUILD
+        COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins & if exist ..\\..\\RunPath\\Plugins\\OgPythonqt_d.dll move ..\\..\\RunPath\\Plugins\\OgPythonqt_d.dll ..\\..\\RunPath\\Plugins\\debug)
 
-	install(TARGETS OgPythonqt
-		RUNTIME DESTINATION Plugins
-		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+    install(TARGETS OgPythonqt
+        RUNTIME DESTINATION Plugins
+        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
