@@ -65,7 +65,7 @@ namespace Ogitors
         //Create a new instance of the interpreter
         virtual PythonqtInterpreter* createNewInstance() { return OGRE_NEW PythonqtInterpreter(); }
         //Return engine specific handle
-        virtual void * getHandle() { return NULL; }
+        virtual void * getHandle() { return mMainContext; }
         // build a string
         virtual Ogre::StringVector buildString(std::string &section, std::string &arg);
         // execute a string as script
