@@ -104,10 +104,6 @@ namespace Ogitors
         static void yield();
         // Get active update object
         static CBaseEditor *getUpdateObject();
-        // Get active module
-        static asIScriptModule *getActiveModule();
-        // Get active context
-        static asIScriptContext *getActiveContext();
         // Get time since last update
         static float getTimeSinceLastUpdate();
 
@@ -122,6 +118,10 @@ namespace Ogitors
         // Callback for Angelscript to provide output.
         void MessageCallback(const asSMessageInfo *msg);
 
+        // Get active module
+        static asIScriptModule *getActiveModule();
+        // Get active context
+        static asIScriptContext *getActiveContext();
     };
 }
 
