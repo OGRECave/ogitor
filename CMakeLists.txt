@@ -179,11 +179,6 @@ set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
 set(MAC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mac")
 set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 
-#set_target_properties(ALL_BUILD PROPERTIES SOLUTION_FOLDER CMake)
-#set_target_properties(ZERO_CHECK PROPERTIES SOLUTION_FOLDER CMake)
-#set_target_properties(INSTALL PROPERTIES SOLUTION_FOLDER CMake)
-#set_target_properties(PACKAGE PROPERTIES SOLUTION_FOLDER CMake)
-
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 
@@ -303,7 +298,7 @@ add_custom_target(lupdate
     COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
 )
-
+set_target_properties(lupdate PROPERTIES FOLDER CMake) 
 
 if(WIN32)
     install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
@@ -359,6 +354,9 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+set_target_properties(uninstall PROPERTIES FOLDER CMake) 
+
 
 # no package support for Linux or Mac, yet.
 if(WIN32 AND NOT UNIX)

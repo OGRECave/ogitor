@@ -37,7 +37,6 @@ endif(NOT OGITOR_DIST)
 
 set_target_properties(OgHydrax PROPERTIES VERSION ${OgHydrax_VERSION} SOVERSION ${OgHydrax_VERSION_MAJOR})
 set_target_properties(OgHydrax PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-set_target_properties(OgHydrax PROPERTIES SOLUTION_FOLDER Plugins)
 set_target_properties(OgHydrax PROPERTIES FOLDER Plugins) 
 
 if(UNIX AND NOT APPLE)

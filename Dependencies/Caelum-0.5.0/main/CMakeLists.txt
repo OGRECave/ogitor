@@ -75,7 +75,6 @@ set(LIBRARY_OUTPUT_PATH  ../../lib)
 
 set_target_properties(Caelum PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(Caelum PROPERTIES VERSION ${Caelum_VERSION} SOVERSION ${Caelum_VERSION_MAJOR})
-set_target_properties(Caelum PROPERTIES SOLUTION_FOLDER Dependencies)
 set_target_properties(Caelum PROPERTIES COMPILE_DEFINITIONS CAELUM_LIB)
 
 set_target_properties(Caelum PROPERTIES FOLDER Dependencies) 

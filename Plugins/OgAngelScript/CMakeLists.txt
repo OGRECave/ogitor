@@ -59,7 +59,6 @@ endif(NOT OGITOR_DIST)
 
 set_target_properties(OgAngelScript PROPERTIES VERSION ${OgAngelScript_VERSION} SOVERSION ${OgAngelScript_VERSION_MAJOR})
 set_target_properties(OgAngelScript PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-set_target_properties(OgAngelScript PROPERTIES SOLUTION_FOLDER Plugins)
 set_target_properties(OgAngelScript PROPERTIES FOLDER Plugins) 
 
 if(UNIX AND NOT APPLE)

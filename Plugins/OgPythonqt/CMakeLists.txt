@@ -59,7 +59,7 @@ endif(NOT OGITOR_DIST)
 
 set_target_properties(OgPythonqt PROPERTIES VERSION ${OgPythonqt_VERSION} SOVERSION ${OgPythonqt_VERSION_MAJOR})
 set_target_properties(OgPythonqt PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-set_target_properties(OgPythonqt PROPERTIES SOLUTION_FOLDER Plugins)
+set_target_properties(OgPythonqt PROPERTIES FOLDER Plugins) 
 
 if(UNIX AND NOT APPLE)
     add_custom_command(TARGET OgPythonqt PRE_BUILD
