@@ -38,7 +38,6 @@ endif(NOT OGITOR_DIST)
 
 set_target_properties(DotSceneSerializer PROPERTIES VERSION ${DotSceneSerializer_VERSION} SOVERSION ${DotSceneSerializer_VERSION_MAJOR})
 set_target_properties(DotSceneSerializer PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-set_target_properties(DotSceneSerializer PROPERTIES SOLUTION_FOLDER Plugins)
 set_target_properties(DotSceneSerializer PROPERTIES FOLDER Plugins) 
 
 if(UNIX AND NOT APPLE)

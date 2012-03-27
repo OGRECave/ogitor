@@ -35,7 +35,6 @@ if(NOT OGITOR_DIST)
     set_target_properties(OgCaelum PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 endif(NOT OGITOR_DIST)
 
-set_target_properties(OgCaelum PROPERTIES SOLUTION_FOLDER Plugins)
 set_target_properties(OgCaelum PROPERTIES VERSION ${OgCaelum_VERSION} SOVERSION ${OgCaelum_VERSION_MAJOR})
 set_target_properties(OgCaelum PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(OgCaelum PROPERTIES FOLDER Plugins) 

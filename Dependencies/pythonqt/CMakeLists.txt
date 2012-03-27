@@ -195,8 +195,6 @@ qt4_add_resources(gen_qrc_sources ${qrc_sources})
 
 # Ogitor options
 
-set_target_properties(PythonQt PROPERTIES FOLDER Dependencies) 
-
 set(LIBRARY_OUTPUT_PATH  ../lib)
 
 #-----------------------------------------------------------------------------
@@ -213,6 +211,8 @@ add_library(PythonQt SHARED
             ${gen_qrc_sources}
   )
 set_target_properties(PythonQt PROPERTIES DEFINE_SYMBOL PYTHONQT_EXPORTS)
+
+set_target_properties(PythonQt PROPERTIES FOLDER Dependencies) 
 
 #
 # That should solve linkage error on Mac when the project is used in a superbuild setup
