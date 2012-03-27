@@ -6,32 +6,10 @@ project(OgPythonqt)
 
 set(HEADER_FILES
     PythonqtInterpreter.h
-    Bindings.h
-    Bindings_Base.h
-    Bindings_Enum.h
-    Bindings_MultiSelection.h
-    Bindings_Ogre.h
-    Bindings_Property.h
-    Bindings_Root.h
-    Bindings_System.h
-    Bindings_UTF.h
-    Bindings_Utils.h
-    Bindings_Viewport.h
-        ScriptStringExtensions.h
-    scripthelper.h
-    stdvector.h
 )
 
 set(SOURCE_FILES
     PythonqtInterpreter.cpp
-    Bindings.cpp
-    Bindings_Base.cpp
-    Bindings_MultiSelection.cpp
-    Bindings_Ogre.cpp
-    Bindings_Property.cpp
-    Bindings_Viewport.cpp
-        ScriptStringExtensions.cpp
-    scripthelper.cpp
 )
 
 set(OgPythonqt_VERSION 0)

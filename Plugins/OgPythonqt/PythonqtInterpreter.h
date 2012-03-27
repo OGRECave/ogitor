@@ -44,90 +44,46 @@
 #endif
 
 #include <string>
-#include <angelscript.h>
-#include <scriptbuilder.h>
-#include "scripthelper.h"
-#include "debugger.h"
 
 namespace Ogitors
 {
-    #define LI_MESSAGE "PythonQt Interpreter. Version 0.5. 2010"
-
-    struct ContextDef
-    {
-        asIScriptModule*  module;
-        int               funcID;
-        asIScriptContext* context;
-        float             sleep;
-        float             delay;
-    };
-
-    typedef Ogre::map<unsigned int, ContextDef>::type ObjectContextMap;
-
     class PluginExport PythonqtInterpreter: public OgitorsScriptInterpreter
     {
     public:
+
         PythonqtInterpreter();
         virtual ~PythonqtInterpreter();
 
         // return Interpreter Type String
-        const std::string getTypeString() { return "AngelScript"; };
+        virtual const std::string getTypeString() { return "PythonQt"; }
         // return Interpreter Init Message
-        const std::string getInitMessage();
+        virtual const std::string getInitMessage();
         //Initialization
-        void Init() {};
-        //Script Specific Engine Handle
-        void *getHandle() { return mEngine; };
+		virtual void Init() {};
         //Create a new instance of the interpreter
-        OgitorsScriptInterpreter* createNewInstance() { return OGRE_NEW PythonqtInterpreter(); };
+        virtual PythonqtInterpreter* createNewInstance() { return OGRE_NEW PythonqtInterpreter(); }
+        //Return engine specific handle
+        virtual void * getHandle() { return NULL; }
         // build a string
-        Ogre::StringVector buildString(std::string &section, std::string &arg);
+        virtual Ogre::StringVector buildString(std::string &section, std::string &arg);
         // execute a string as script
-        Ogre::StringVector execString(std::string &section, std::string &arg);
+        virtual Ogre::StringVector execString(std::string &section, std::string &arg);
         // execute a script from file
-        Ogre::StringVector runScript(std::string &section, std::string &file);
+        virtual Ogre::StringVector runScript(std::string &section, std::string &file);
         // add function
-        Ogre::StringVector addFunction(std::string &section, std::string &arg);
+        virtual Ogre::StringVector addFunction(std::string &section, std::string &arg);
         // list functions
-        Ogre::StringVector listFunctions(std::string &section);
+        virtual Ogre::StringVector listFunctions(std::string &section);
         // compile a module from a script file
-        Ogre::StringVector compileModule(std::string &section, std::string &file);
+        virtual Ogre::StringVector compileModule(std::string &section, std::string &file);
         // compile a module from memory
-        Ogre::StringVector compileModule(std::string &section, const char *source);
+        virtual Ogre::StringVector compileModule(std::string &section, const char *source);
         // run a previously compiled update function
-        Ogre::StringVector runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time);
+        virtual Ogre::StringVector runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time);
         // release resources associated with handle
-        void releaseHandle(unsigned int handle);
-        // Causes active context to sleep for a period
-        static void sleep(unsigned int miliseconds);
-        // Suspends active context
-        static void yield();
-        // Get active update object
-        static CBaseEditor *getUpdateObject();
-        // Get active module
-        static asIScriptModule *getActiveModule();
-        // Get active context
-        static asIScriptContext *getActiveContext();
-        // Get time since last update
-        static float getTimeSinceLastUpdate();
-
-    private:
-        asIScriptEngine*  mEngine;
-        CScriptBuilder*   mBuilder;
-        unsigned int      mObjectHandleCounter;
-        ObjectContextMap  mObjectContexts;
-        static ContextDef*   mActiveContext;
-        static CBaseEditor*  mActiveObject;
-
-        // Callback for Angelscript to provide output.
-        void MessageCallback(const asSMessageInfo *msg);
-
+        virtual void releaseHandle(unsigned int handle);
     };
 }
-
-extern void ExceptionCallback(asIScriptContext *ctx, void *param);
-extern void PrintVariables(asIScriptContext *ctx, int stackLevel);
-extern void LineCallback(asIScriptContext *ctx, void *param);
 
 extern "C" bool PluginExport dllStartPlugin(void *identifier, Ogre::String& name);
 
