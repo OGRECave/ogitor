@@ -184,6 +184,10 @@ set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 
+if(UNIX)
+    file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/share/ogitor/Help)
+endif(UNIX)
+
 # configure global paths for OgitorsGlobals
 if(UNIX)
     set(DBG_POSTFIX "")
@@ -289,7 +293,7 @@ add_subdirectory(SceneLoader)
 
 add_subdirectory(RunPath)
 
-#add_subdirectory(Help)
+add_subdirectory(Help)
 
 add_custom_target(lupdate
     COMMAND ${PROJECT_SOURCE_DIR}/gen-qt-projectfile ${PROJECT_SOURCE_DIR} > ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
