@@ -156,7 +156,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua/src"
+    #"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/autowrapper"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptbuilder"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptstdstring"
@@ -254,7 +254,8 @@ add_subdirectory(Dependencies/HYDRAX/Hydrax/src/Hydrax)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
-add_subdirectory(Dependencies/lua)
+add_subdirectory(Dependencies/pythonqt)
+#add_subdirectory(Dependencies/lua)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
 add_subdirectory(Dependencies/GenericTextEditor)
@@ -272,6 +273,7 @@ add_subdirectory(Plugins/DotSceneSerializer)
 add_subdirectory(Plugins/OgModularZone)
 add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
+add_subdirectory(Plugins/OgPythonqt)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 
