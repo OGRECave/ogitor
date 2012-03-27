@@ -316,11 +316,9 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
         return SCF_ERRFILE;
     }
 
-    ogRoot->SetSceneModified(false);
-
     if (SaveAs)
     {
-        mFile->deleteFile(pOpt->ProjectName.c_str());
+        mFile->deleteFile((pOpt->ProjectName+".ogscene").c_str());
         pOpt->ProjectName = fileName;
     }
 
