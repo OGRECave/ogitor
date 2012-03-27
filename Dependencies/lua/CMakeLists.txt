@@ -66,6 +66,7 @@ ADD_LIBRARY(lua_library_static STATIC ${PUBLIC_HEADERS} ${LUA_STANDARD_LIBRARY} 
 
 SET_TARGET_PROPERTIES(lua_library_static PROPERTIES OUTPUT_NAME "lua")
 SET_TARGET_PROPERTIES(lua_library_static PROPERTIES COMPILE_FLAGS "${LUA_C_FLAGS}")
+set_target_properties(lua_library_static PROPERTIES FOLDER Dependencies) 
 
 IF(UNIX)
 	SET_TARGET_PROPERTIES(lua_library_static PROPERTIES

@@ -85,6 +85,7 @@ else(NOT QT4_FOUND)
     set_target_properties(OgModularZone PROPERTIES VERSION ${OgModularZone_VERSION} SOVERSION ${OgModularZone_VERSION_MAJOR})
 	set_target_properties(OgModularZone PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgModularZone PROPERTIES SOLUTION_FOLDER Plugins)
+    set_target_properties(OgModularZone PROPERTIES FOLDER Plugins) 
 
 	if(UNIX AND NOT APPLE)
 		add_custom_command(TARGET OgModularZone PRE_BUILD

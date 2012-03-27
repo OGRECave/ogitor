@@ -78,6 +78,8 @@ set_target_properties(Caelum PROPERTIES VERSION ${Caelum_VERSION} SOVERSION ${Ca
 set_target_properties(Caelum PROPERTIES SOLUTION_FOLDER Dependencies)
 set_target_properties(Caelum PROPERTIES COMPILE_DEFINITIONS CAELUM_LIB)
 
+set_target_properties(Caelum PROPERTIES FOLDER Dependencies) 
+
 if(WIN32)
 	add_custom_command(TARGET Caelum POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\..\\RunPath\\bin)
