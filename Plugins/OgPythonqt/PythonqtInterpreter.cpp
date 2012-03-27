@@ -32,7 +32,7 @@
 
 #include "Ogitors.h"
 #include "OgitorsScriptInterpreter.h"
-#include "AngelScriptInterpreter.h"
+#include "PythonqtInterpreter.h"
 #include "Bindings.h"
 
 #include "debugger.h"
@@ -42,28 +42,28 @@
 using namespace Ogitors;
 using namespace Ogre;
 
-ContextDef*       AngelScriptInterpreter::mActiveContext = 0;
-CBaseEditor*      AngelScriptInterpreter::mActiveObject = 0;
+ContextDef*       PythonqtInterpreter::mActiveContext = 0;
+CBaseEditor*      PythonqtInterpreter::mActiveObject = 0;
 
 static void getUpdateObjectGeneric(asIScriptGeneric *gen)
 {
-    gen->SetReturnObject(AngelScriptInterpreter::getUpdateObject());
+    gen->SetReturnObject(PythonqtInterpreter::getUpdateObject());
 }
 //----------------------------------------------------------------------------
 static void getTimeSinceLastFrameGeneric(asIScriptGeneric *gen)
 {
-    gen->SetReturnFloat(AngelScriptInterpreter::getTimeSinceLastFrame());
+    gen->SetReturnFloat(PythonqtInterpreter::getTimeSinceLastFrame());
 }
 //----------------------------------------------------------------------------
 static void getTimeSinceLastUpdateGeneric(asIScriptGeneric *gen)
 {
-    gen->SetReturnFloat(AngelScriptInterpreter::getTimeSinceLastUpdate());
+    gen->SetReturnFloat(PythonqtInterpreter::getTimeSinceLastUpdate());
 }
 //----------------------------------------------------------------------------
-AngelScriptInterpreter::AngelScriptInterpreter() : OgitorsScriptInterpreter()
+PythonqtInterpreter::PythonqtInterpreter() : OgitorsScriptInterpreter()
 {
     mEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
-    mEngine->SetMessageCallback(asMETHOD(AngelScriptInterpreter,MessageCallback), this, asCALL_THISCALL);
+    mEngine->SetMessageCallback(asMETHOD(PythonqtInterpreter,MessageCallback), this, asCALL_THISCALL);
     mBuilder = new CScriptBuilder();
 
     mObjectHandleCounter = 0;
@@ -72,14 +72,14 @@ AngelScriptInterpreter::AngelScriptInterpreter() : OgitorsScriptInterpreter()
     prepareScriptBindings(mOgitorsRoot, mEngine);
 
     int r;
-    r = mEngine->RegisterGlobalFunction("void yield()", asFUNCTION(AngelScriptInterpreter::yield), asCALL_CDECL);assert(r >= 0);
-    r = mEngine->RegisterGlobalFunction("void sleep(uint)", asFUNCTION(AngelScriptInterpreter::sleep), asCALL_CDECL);assert(r >= 0);
+    r = mEngine->RegisterGlobalFunction("void yield()", asFUNCTION(PythonqtInterpreter::yield), asCALL_CDECL);assert(r >= 0);
+    r = mEngine->RegisterGlobalFunction("void sleep(uint)", asFUNCTION(PythonqtInterpreter::sleep), asCALL_CDECL);assert(r >= 0);
     r = mEngine->RegisterGlobalFunction("float getTimeSinceLastUpdate()", asFUNCTION(getTimeSinceLastUpdateGeneric), asCALL_GENERIC);assert(r >= 0);
     r = mEngine->RegisterGlobalFunction("float getTimeSinceLastFrame()", asFUNCTION(getTimeSinceLastFrameGeneric), asCALL_GENERIC);assert(r >= 0);
     r = mEngine->RegisterGlobalFunction("BaseEditor@ getUpdateObject()", asFUNCTION(getUpdateObjectGeneric), asCALL_GENERIC);assert(r >= 0);
 }
 //----------------------------------------------------------------------------
-AngelScriptInterpreter::~AngelScriptInterpreter()
+PythonqtInterpreter::~PythonqtInterpreter()
 {
     ObjectContextMap::iterator it = mObjectContexts.begin();
     while(it != mObjectContexts.end())
@@ -97,20 +97,20 @@ AngelScriptInterpreter::~AngelScriptInterpreter()
     mEngine->Release();
 }
 //----------------------------------------------------------------------------
-const std::string AngelScriptInterpreter::getInitMessage()
+const std::string PythonqtInterpreter::getInitMessage()
 {
     std::string version_string(asGetLibraryVersion());
 
     return std::string(LI_MESSAGE) + ". Using Angelscript version " + version_string;
 }
 //----------------------------------------------------------------------------
-void AngelScriptInterpreter::yield()
+void PythonqtInterpreter::yield()
 {
     if(mActiveContext)
         mActiveContext->context->Suspend();
 }
 //----------------------------------------------------------------------------
-void AngelScriptInterpreter::sleep(unsigned int miliseconds)
+void PythonqtInterpreter::sleep(unsigned int miliseconds)
 {
     if(mActiveContext)
     {
@@ -119,12 +119,12 @@ void AngelScriptInterpreter::sleep(unsigned int miliseconds)
     }
 }
 //----------------------------------------------------------------------------
-CBaseEditor *AngelScriptInterpreter::getUpdateObject()
+CBaseEditor *PythonqtInterpreter::getUpdateObject()
 {
     return mActiveObject;
 }
 //----------------------------------------------------------------------------
-asIScriptModule *AngelScriptInterpreter::getActiveModule()
+asIScriptModule *PythonqtInterpreter::getActiveModule()
 {
     if(mActiveContext)
         return mActiveContext->module;
@@ -132,7 +132,7 @@ asIScriptModule *AngelScriptInterpreter::getActiveModule()
         return 0;
 }
 //----------------------------------------------------------------------------
-asIScriptContext *AngelScriptInterpreter::getActiveContext()
+asIScriptContext *PythonqtInterpreter::getActiveContext()
 {
     if(mActiveContext)
         return mActiveContext->context;
@@ -140,14 +140,14 @@ asIScriptContext *AngelScriptInterpreter::getActiveContext()
         return 0;
 }
 //----------------------------------------------------------------------------
-float AngelScriptInterpreter::getTimeSinceLastUpdate()
+float PythonqtInterpreter::getTimeSinceLastUpdate()
 {
     if(mActiveContext)
         return mActiveContext->delay;
     else
         return 0.0f;
 }//----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::buildString(std::string &section, std::string &arg)
+Ogre::StringVector PythonqtInterpreter::buildString(std::string &section, std::string &arg)
 {
     Ogre::StringVector ret;
 
@@ -165,7 +165,7 @@ Ogre::StringVector AngelScriptInterpreter::buildString(std::string &section, std
     return ret;
 }
 //----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::string &file)
+Ogre::StringVector PythonqtInterpreter::runScript(std::string &section, std::string &file)
 {
     Ogre::StringVector ret;
 
@@ -294,7 +294,7 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
     return ret;
 }
 //----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, std::string &file)
+Ogre::StringVector PythonqtInterpreter::compileModule(std::string &section, std::string &file)
 {
     Ogre::StringVector ret;
 
@@ -377,7 +377,7 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, s
     return ret;
 }
 //----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, const char *source)
+Ogre::StringVector PythonqtInterpreter::compileModule(std::string &section, const char *source)
 {
     Ogre::StringVector ret;
 
@@ -424,7 +424,7 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, c
     return ret;
 }
 //----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time)
+Ogre::StringVector PythonqtInterpreter::runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time)
 {
     Ogre::StringVector ret;
     ContextDef *def;
@@ -523,7 +523,7 @@ Ogre::StringVector AngelScriptInterpreter::runUpdateFunction(std::string &sectio
     return ret;
 }
 //----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::addFunction(std::string &section, std::string &arg)
+Ogre::StringVector PythonqtInterpreter::addFunction(std::string &section, std::string &arg)
 {
     Ogre::StringVector ret;
 
@@ -556,7 +556,7 @@ Ogre::StringVector AngelScriptInterpreter::addFunction(std::string &section, std
     return ret;
 }
 //----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::listFunctions(std::string &section)
+Ogre::StringVector PythonqtInterpreter::listFunctions(std::string &section)
 {
     Ogre::StringVector ret;
 
@@ -590,7 +590,7 @@ Ogre::StringVector AngelScriptInterpreter::listFunctions(std::string &section)
     return ret;
 }
 //----------------------------------------------------------------------------
-Ogre::StringVector AngelScriptInterpreter::execString(std::string &section, std::string &arg)
+Ogre::StringVector PythonqtInterpreter::execString(std::string &section, std::string &arg)
 {
     Ogre::StringVector ret;
 
@@ -614,7 +614,7 @@ Ogre::StringVector AngelScriptInterpreter::execString(std::string &section, std:
     return ret;
 }
 //----------------------------------------------------------------------------
-void AngelScriptInterpreter::releaseHandle(unsigned int handle)
+void PythonqtInterpreter::releaseHandle(unsigned int handle)
 {
     ObjectContextMap::iterator it = mObjectContexts.find(handle);
 
@@ -629,7 +629,7 @@ void AngelScriptInterpreter::releaseHandle(unsigned int handle)
 static OutputData data;
 
 //----------------------------------------------------------------------------
-void AngelScriptInterpreter::MessageCallback(const asSMessageInfo *msg)
+void PythonqtInterpreter::MessageCallback(const asSMessageInfo *msg)
 {
     OGRE_LOCK_AUTO_MUTEX
 
@@ -735,12 +735,12 @@ void ExceptionCallback(asIScriptContext *ctx, void *param)
 }
 //----------------------------------------------------------------------------
 
-static AngelScriptInterpreter *interpreter = 0;
+static PythonqtInterpreter *interpreter = 0;
 
 //----------------------------------------------------------------------------
 bool dllStartPlugin(void *identifier, Ogre::String& name)
 {
-    interpreter = OGRE_NEW AngelScriptInterpreter();
+    interpreter = OGRE_NEW PythonqtInterpreter();
     name = "AngelScript Interpreter Plugin";
     OgitorsRoot::getSingletonPtr()->RegisterScriptInterpreter(identifier, interpreter);
     return true;
