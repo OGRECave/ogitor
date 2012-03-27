@@ -223,9 +223,10 @@ set_target_properties(PythonQt  PROPERTIES
   )
 
 target_link_libraries(PythonQt
-              ${PYTHON_LIBRARY}
-              ${QT_LIBRARIES}
-  )
+				${PYTHON_LIBRARY}
+				${PYTHON_DEBUG_LIBRARY}
+				${QT_LIBRARIES}
+	)
 
 #-----------------------------------------------------------------------------
 if(WIN32)

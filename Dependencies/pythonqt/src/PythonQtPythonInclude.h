@@ -41,15 +41,15 @@
 // If PYTHONQT_USE_RELEASE_PYTHON_FALLBACK is enabled, try to link
 // release Python DLL if it is available by undefining _DEBUG while
 // including Python.h
-#if defined(PYTHONQT_USE_RELEASE_PYTHON_FALLBACK) && defined(_DEBUG)
-#undef _DEBUG
-#if defined(_MSC_VER) && _MSC_VER >= 1400
-#define _CRT_NOFORCE_MANIFEST 1
-#endif
+//#if defined(PYTHONQT_USE_RELEASE_PYTHON_FALLBACK) && defined(_DEBUG)
+//#undef _DEBUG
+//#if defined(_MSC_VER) && _MSC_VER >= 1400
+//#define _CRT_NOFORCE_MANIFEST 1
+//#endif
+//#include <Python.h>
+//#define _DEBUG
+//#else
 #include <Python.h>
-#define _DEBUG
-#else
-#include <Python.h>
-#endif
+//#endif
 
 #endif
