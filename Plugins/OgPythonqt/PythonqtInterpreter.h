@@ -30,8 +30,8 @@
 /// THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef ANGEL_SCRIPT_INTERPRETER_H
-#define ANGEL_SCRIPT_INTERPRETER_H
+#ifndef PYTHONQT_INTERPRETER_H
+#define PYTHONQT_INTERPRETER_H
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
    #ifdef PLUGIN_EXPORT
@@ -51,7 +51,7 @@
 
 namespace Ogitors
 {
-    #define LI_MESSAGE "Angelscript Interpreter. Version 0.5. 2010"
+    #define LI_MESSAGE "PythonQt Interpreter. Version 0.5. 2010"
 
     struct ContextDef
     {
@@ -64,11 +64,11 @@ namespace Ogitors
 
     typedef Ogre::map<unsigned int, ContextDef>::type ObjectContextMap;
 
-    class PluginExport AngelScriptInterpreter: public OgitorsScriptInterpreter
+    class PluginExport PythonqtInterpreter: public OgitorsScriptInterpreter
     {
     public:
-        AngelScriptInterpreter();
-        virtual ~AngelScriptInterpreter();
+        PythonqtInterpreter();
+        virtual ~PythonqtInterpreter();
 
         // return Interpreter Type String
         const std::string getTypeString() { return "AngelScript"; };
@@ -79,7 +79,7 @@ namespace Ogitors
         //Script Specific Engine Handle
         void *getHandle() { return mEngine; };
         //Create a new instance of the interpreter
-        OgitorsScriptInterpreter* createNewInstance() { return OGRE_NEW AngelScriptInterpreter(); };
+        OgitorsScriptInterpreter* createNewInstance() { return OGRE_NEW PythonqtInterpreter(); };
         // build a string
         Ogre::StringVector buildString(std::string &section, std::string &arg);
         // execute a string as script

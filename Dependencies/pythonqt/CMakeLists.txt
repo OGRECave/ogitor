@@ -193,6 +193,20 @@ qt4_wrap_cpp(gen_moc_sources ${moc_sources})
 qt4_wrap_ui(gen_ui_sources ${ui_sources})
 qt4_add_resources(gen_qrc_sources ${qrc_sources})
 
+# Ogitor options
+
+set(LIBRARY_OUTPUT_PATH  ../lib)
+
+if(WIN32)
+	add_custom_command(TARGET PythonQt PRE_BUILD
+		COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
+	add_custom_command(TARGET PythonQt POST_BUILD
+		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
+
+	install(TARGETS PythonQt RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+endif(WIN32)
+
+
 #-----------------------------------------------------------------------------
 # Build the library
 
