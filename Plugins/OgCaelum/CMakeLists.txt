@@ -38,6 +38,7 @@ endif(NOT OGITOR_DIST)
 set_target_properties(OgCaelum PROPERTIES SOLUTION_FOLDER Plugins)
 set_target_properties(OgCaelum PROPERTIES VERSION ${OgCaelum_VERSION} SOVERSION ${OgCaelum_VERSION_MAJOR})
 set_target_properties(OgCaelum PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
+set_target_properties(OgCaelum PROPERTIES FOLDER Plugins) 
 
 if(UNIX AND NOT APPLE)
 	add_custom_command(TARGET OgCaelum PRE_BUILD

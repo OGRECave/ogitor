@@ -15,6 +15,9 @@ cmake_policy(SET CMP0003 NEW)
 # statements.
 cmake_policy(SET CMP0005 NEW)
 
+# Turn on solution folders
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 project(Ogitor)
 
 set(OGITOR_VERSION_STRING "0.5.4")

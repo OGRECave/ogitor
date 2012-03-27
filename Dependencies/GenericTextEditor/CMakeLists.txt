@@ -66,6 +66,8 @@ else(NOT QT4_FOUND)
     set_target_properties(GenericTextEditor PROPERTIES VERSION ${GenericTextEditor_VERSION} SOVERSION ${GenericTextEditor_VERSION_MAJOR})
     set_target_properties(GenericTextEditor PROPERTIES COMPILE_DEFINITIONS GENERICTEXTEDITOR_EXPORT)
 
+    set_target_properties(GenericTextEditor PROPERTIES FOLDER Dependencies) 
+
     if(UNIX AND NOT APPLE)
         add_custom_command(TARGET GenericTextEditor PRE_BUILD
             COMMAND mkdir -p ../../RunPath/bin)

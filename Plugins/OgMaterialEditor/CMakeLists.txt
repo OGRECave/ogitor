@@ -82,6 +82,7 @@ else(NOT QT4_FOUND)
     set_target_properties(OgMaterialEditor PROPERTIES VERSION ${OgMaterialEditor_VERSION} SOVERSION ${OgMaterialEditor_VERSION_MAJOR})
 	set_target_properties(OgMaterialEditor PROPERTIES	COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgMaterialEditor PROPERTIES SOLUTION_FOLDER Plugins)
+    set_target_properties(OgMaterialEditor PROPERTIES FOLDER Plugins) 
 
 	if(UNIX AND NOT APPLE)
 		add_custom_command(TARGET OgMaterialEditor PRE_BUILD

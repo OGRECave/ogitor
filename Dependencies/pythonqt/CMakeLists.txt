@@ -195,17 +195,9 @@ qt4_add_resources(gen_qrc_sources ${qrc_sources})
 
 # Ogitor options
 
+set_target_properties(PythonQt PROPERTIES FOLDER Dependencies) 
+
 set(LIBRARY_OUTPUT_PATH  ../lib)
-
-if(WIN32)
-	add_custom_command(TARGET PythonQt PRE_BUILD
-		COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
-	add_custom_command(TARGET PythonQt POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
-
-	install(TARGETS PythonQt RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-endif(WIN32)
-
 
 #-----------------------------------------------------------------------------
 # Build the library
@@ -236,10 +228,17 @@ target_link_libraries(PythonQt
   )
 
 #-----------------------------------------------------------------------------
-# Install library (on windows, put the dll in 'bin' and the archive in 'lib')
+if(WIN32)
+	add_custom_command(TARGET PythonQt PRE_BUILD
+		COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
+	add_custom_command(TARGET PythonQt POST_BUILD
+		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
 
-install(TARGETS PythonQt
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib)
-install(FILES ${headers} DESTINATION include/PythonQt)
+	install(TARGETS PythonQt RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+else(WIN32)
+    install(TARGETS PythonQt
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
+    #install(FILES ${headers} DESTINATION include/PythonQt)
+endif(WIN32)

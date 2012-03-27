@@ -79,6 +79,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 set_target_properties(Hydrax PROPERTIES SOLUTION_FOLDER Dependencies)
+set_target_properties(Hydrax PROPERTIES FOLDER Dependencies) 
 
 target_link_libraries(Hydrax  ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
