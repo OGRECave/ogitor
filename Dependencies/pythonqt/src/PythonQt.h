@@ -48,13 +48,13 @@
 #include "PythonQtSlot.h"
 #include "PythonQtObjectPtr.h"
 #include "PythonQtStdIn.h"
-#include <QObject>
-#include <QVariant>
-#include <QList>
-#include <QHash>
-#include <QByteArray>
-#include <QStringList>
-#include <QtDebug>
+#include <QtCore/QObject>
+#include <QtCore/QVariant>
+#include <QtCore/QList>
+#include <QtCore/QHash>
+#include <QtCore/QByteArray>
+#include <QtCore/QStringList>
+#include <QtCore/QtDebug>
 #include <iostream>
 
 

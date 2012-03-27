@@ -45,6 +45,8 @@
 
 #include <string>
 
+#include "PythonQt.h"
+
 namespace Ogitors
 {
     class PluginExport PythonqtInterpreter: public OgitorsScriptInterpreter
@@ -82,6 +84,9 @@ namespace Ogitors
         virtual Ogre::StringVector runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time);
         // release resources associated with handle
         virtual void releaseHandle(unsigned int handle);
+        
+    private:
+        PythonQtObjectPtr mMainContext;
     };
 }
 
