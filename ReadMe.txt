@@ -11,7 +11,8 @@ http://www.ogitor.org/media.zip
 http://www.ogitor.org/projects.zip
 
 Please download those files and extract them to "RunPath" folder in your SOURCE path before building and installing Ogitor.
-
+Do not extract the files into the build directory, even though it might make sense.
+The install target will copy the files over.
 
 Building Ogitor:
 https://bitbucket.org/jacmoe/ogitor/wiki/Building_Ogitor
