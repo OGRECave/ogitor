@@ -107,6 +107,11 @@ namespace Ogitors
         // Get time since last update
         static float getTimeSinceLastUpdate();
 
+        // Get active module
+        static asIScriptModule *getActiveModule();
+        // Get active context
+        static asIScriptContext *getActiveContext();
+
     private:
         asIScriptEngine*  mEngine;
         CScriptBuilder*   mBuilder;
@@ -117,11 +122,6 @@ namespace Ogitors
 
         // Callback for Angelscript to provide output.
         void MessageCallback(const asSMessageInfo *msg);
-
-        // Get active module
-        static asIScriptModule *getActiveModule();
-        // Get active context
-        static asIScriptContext *getActiveContext();
     };
 }
 
