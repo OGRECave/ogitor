@@ -45,8 +45,8 @@
 #include "PythonQtPythonInclude.h"
 
 #include "PythonQtSystem.h"
-#include <QVariant>
-#include <QVariantList>
+#include <QtCore/QVariant>
+#include <QtCore/QVariantList>
 
 //! a smart pointer that stores a PyObject pointer and that handles reference counting automatically
 class PYTHONQT_EXPORT PythonQtObjectPtr

@@ -39,6 +39,8 @@ using namespace Ogre;
 
 PythonqtInterpreter::PythonqtInterpreter() : OgitorsScriptInterpreter()
 {
+    PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
+    mMainContext = PythonQt::self()->getMainModule();
 }
 //----------------------------------------------------------------------------
 PythonqtInterpreter::~PythonqtInterpreter()

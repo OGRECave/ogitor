@@ -50,7 +50,7 @@
 #include "methodobject.h"
 #include "compile.h"
 #include "eval.h"
-#include <QString>
+#include <QtCore/QString>
 
 class PythonQtClassInfo;
 
