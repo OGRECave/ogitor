@@ -234,7 +234,7 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
             pvalue.val = Ogre::Any(params["normal"]);
             creationparams["layer0::normalheight"] = pvalue;
             pvalue.propType = PROP_REAL;
-            pvalue.val = Ogre::Any((Ogre::Real)100.0f);
+            pvalue.val = Ogre::Any((Ogre::Real)10.0f);
             creationparams["layer0::worldsize"] = pvalue;
 
             CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this,"Terrain Page Object", creationparams, true, true);
