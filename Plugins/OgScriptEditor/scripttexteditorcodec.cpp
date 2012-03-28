@@ -176,6 +176,7 @@ void ScriptTextEditorCodec::onRun()
 //-----------------------------------------------------------------------------------------
 ITextEditorCodec* ScriptTextEditorCodecFactory::create(GenericTextEditorDocument* genTexEdDoc, QString docName)
 {
-    return new ScriptTextEditorCodec(genTexEdDoc, docName, ":/icons/script.svg");
+    //TODO: fetch the icon from the type of the document
+    return new ScriptTextEditorCodec(genTexEdDoc, docName, ":/icons/Python-logo-notext.svg");
 }
 //-----------------------------------------------------------------------------------------

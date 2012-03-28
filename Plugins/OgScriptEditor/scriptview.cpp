@@ -146,7 +146,7 @@ ScriptViewWidget::ScriptViewWidget(QWidget *parent) : QWidget(parent)
         Ogre::String scriptname = OgitorsUtils::ExtractFileName(list[i]);
         scriptitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(scriptname.c_str())));
         scriptitem->setWhatsThis(0, QString(filename.c_str()));
-        scriptitem->setIcon(0, QIcon(":/icons/script2.svg"));
+        scriptitem->setIcon(0, QIcon(":/icons/Python-logo-notext.svg"));
         generalCategory->addChild(scriptitem);
     }
 
@@ -179,7 +179,7 @@ void ScriptViewWidget::prepareView()
         longname += (*scripts)[i].mKey;
         scriptitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(shortname.c_str())));
         scriptitem->setWhatsThis(0, QString(longname.c_str()));
-        scriptitem->setIcon(0, QIcon(":/icons/script.svg"));
+        scriptitem->setIcon(0, QIcon(":/icons/Python-logo-notext.svg"));
         projectCategory->addChild(scriptitem);
     }
 }
