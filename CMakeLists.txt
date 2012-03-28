@@ -302,16 +302,6 @@ add_subdirectory(RunPath)
 
 add_subdirectory(Help)
 
-add_custom_target(lupdate
-    COMMAND ${PROJECT_SOURCE_DIR}/gen-qt-projectfile ${PROJECT_SOURCE_DIR} > ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
-    if(UNIX)
-        COMMAND rm ${PROJECT_SOURCE_DIR}/qtOgitor/languages/*.qm
-    endif(UNIX)
-    COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
-)
-set_target_properties(lupdate PROPERTIES FOLDER CMake) 
-
 if(WIN32)
     install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
         ${OGRE_PLUGIN_DIR_REL}/RenderSystem_Direct3D9.dll
