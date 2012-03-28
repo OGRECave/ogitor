@@ -35,24 +35,7 @@ project(PythonQt)
 
 find_package(PythonLibs REQUIRED)
 include_directories("${PYTHON_INCLUDE_DIR}")
-
-#-----------------------------------------------------------------------------
-# VTK
-
-option(PythonQt_USE_VTK "Automatically wrap/unwrap VTK based object" OFF)
-set(VTK_LIBRARIES)
-if(PythonQt_USE_VTK)
-  find_package(VTK REQUIRED)
-  include(${VTK_USE_FILE})
-  add_definitions(-DPYTHONQT_USE_VTK)
-  if(${VTK_VERSION_MAJOR}.${VTK_VERSION_MINOR} VERSION_GREATER 5.6)
-    set(VTK_LIBRARIES vtkPythonCore)
-  else()
-    set(VTK_LIBRARIES vtkCommonPythonD)
-  endif()
-else()
-  remove_definitions(-DPYTHONQT_USE_VTK)
-endif()
+add_definitions(-DPYTHONQT_USE_RELEASE_PYTHON_FALLBACK)
 
 #-----------------------------------------------------------------------------
 # Build options
@@ -153,7 +136,7 @@ set(headers
     src/PythonQtStdOut.h
     src/PythonQtSystem.h
     src/PythonQtVariants.h
-    src/dPython.h
+    src/PythonQtPythonInclude.h
     generated_cpp/PythonQt_QtBindings.h
 )
 
@@ -239,7 +222,6 @@ set_target_properties(PythonQt  PROPERTIES
 target_link_libraries(PythonQt
               ${PYTHON_LIBRARY}
               ${QT_LIBRARIES}
-              ${VTK_LIBRARIES}
   )
 
 set(LIBRARY_OUTPUT_PATH  ../lib)

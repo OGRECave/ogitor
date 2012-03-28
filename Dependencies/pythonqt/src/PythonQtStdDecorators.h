@@ -42,8 +42,10 @@
 */
 //----------------------------------------------------------------------------------
 
+#include "PythonQtPythonInclude.h"
+
 #include "PythonQtSystem.h"
-#include <dPython.h>
+
 #include <QObject>
 #include <QVariantList>
 #include <QTextDocument>
@@ -62,11 +64,6 @@ public slots:
   bool disconnect(QObject* sender, const QByteArray& signal, PyObject* callable);
   bool disconnect(QObject* sender, const QByteArray& signal, QObject* receiver, const QByteArray& slot);
 
-#undef emit
-  void emit(QObject* sender, const QByteArray& signal, PyObject* arg1 = NULL,PyObject* arg2 = NULL,
-            PyObject* arg3 = NULL,PyObject* arg4 = NULL,PyObject* arg5 = NULL,PyObject* arg6 = NULL,PyObject* arg7 = NULL);
-#define emit
-  
   QObject* parent(QObject* o);
   void setParent(QObject* o, QObject* parent);
 
@@ -74,7 +71,7 @@ public slots:
   QObject* findChild(QObject* parent, PyObject* type, const QString& name = QString());
   QList<QObject*> findChildren(QObject* parent, PyObject* type, const QString& name= QString());
   QList<QObject*> findChildren(QObject* parent, PyObject* type, const QRegExp& regExp);
-  
+
   bool setProperty(QObject* o, const char* name, const QVariant& value);
   QVariant property(QObject* o, const char* name);
 
@@ -98,7 +95,7 @@ public slots:
   void static_Qt_qsrand(uint a) { qsrand(a); }
 
   QString tr(QObject* obj, const QByteArray& text, const QByteArray& ambig = QByteArray(), int n = -1);
-  
+
   QByteArray static_Qt_SIGNAL(const QByteArray& s) { return QByteArray("2") + s; }
   QByteArray static_Qt_SLOT(const QByteArray& s) { return QByteArray("1") + s; }
 

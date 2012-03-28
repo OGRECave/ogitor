@@ -54,11 +54,6 @@
 #include <pydebug.h>
 #include <vector>
 
-#ifdef PYTHONQT_USE_VTK
-# include <vtkPythonUtil.h>
-# include <vtkObject.h>
-#endif
-
 PythonQt* PythonQt::_self = NULL;
 int       PythonQt::_uniqueModuleCount = 0;
 
@@ -86,7 +81,7 @@ void PythonQt::init(int flags, const QByteArray& pythonQtModuleName)
 
     PythonQt_init_QtCoreBuiltin(NULL);
     PythonQt_init_QtGuiBuiltin(NULL);
-  
+
     PythonQtRegisterToolClassesTemplateConverter(QByteArray);
     PythonQtRegisterToolClassesTemplateConverter(QDate);
     PythonQtRegisterToolClassesTemplateConverter(QTime);
@@ -165,7 +160,7 @@ PythonQt::PythonQt(int flags, const QByteArray& pythonQtModuleName)
     }
     Py_Initialize();
   }
-  
+
   // add our own python object types for qt object slots
   if (PyType_Ready(&PythonQtSlotFunction_Type) < 0) {
     std::cerr << "could not initialize PythonQtSlotFunction_Type" << ", in " << __FILE__ << ":" << __LINE__ << std::endl;
@@ -227,11 +222,11 @@ PythonQtPrivate::~PythonQtPrivate() {
   PythonQtMethodInfo::cleanupCachedMethodInfos();
 }
 
-void PythonQt::setRedirectStdInCallBack(PythonQtInputChangedCB* callback, void * callbackData)
+void PythonQt::setRedirectStdInCallback(PythonQtInputChangedCB* callback, void * callbackData)
 {
   if (!callback)
     {
-    std::cerr << "PythonQt::setRedirectStdInCallBack - callback parameter is NULL !" << std::endl;
+    std::cerr << "PythonQt::setRedirectStdInCallback - callback parameter is NULL !" << std::endl;
     return;
     }
 
@@ -253,7 +248,7 @@ void PythonQt::setRedirectStdInCallBack(PythonQtInputChangedCB* callback, void *
   PyRun_SimpleString("sys.pythonqt_stdin = sys.stdin");
 }
 
-void PythonQt::setRedirectStdInCallBackEnabled(bool enabled)
+void PythonQt::setRedirectStdInCallbackEnabled(bool enabled)
 {
   if (enabled)
     {
@@ -299,6 +294,14 @@ void PythonQtPrivate::registerClass(const QMetaObject* metaobject, const char* p
         PythonQtClassInfo* parentInfo = lookupClassInfoAndCreateIfNotPresent(m->superClass()->className());
         info->addParentClass(PythonQtClassInfo::ParentClassInfo(parentInfo));
       }
+    } else if (first && module) {
+      // There is a wrapper already, but if we got a module, we want to place the wrapper into that module as well,
+      // since it might have been placed into "private" earlier on.
+      // If the wrapper was already added to module before, it is just readded, which does no harm.
+      PyObject* classWrapper = info->pythonQtClassWrapper();
+      // AddObject steals a reference, so we need to INCREF
+      Py_INCREF(classWrapper);
+      PyModule_AddObject(module, info->className(), classWrapper);
     }
     if (first) {
       first = false;
@@ -388,6 +391,15 @@ PyObject* PythonQtPrivate::wrapPtr(void* ptr, const QByteArray& name)
       return (PyObject*)wrap;
     }
 
+    // not a known QObject, try to wrap via foreign wrapper factories 
+    PyObject* foreignWrapper = NULL;
+    for (int i=0; i<_foreignWrapperFactories.size(); i++) {
+      foreignWrapper = _foreignWrapperFactories.at(i)->wrap(name, ptr);
+      if (foreignWrapper) {
+        return foreignWrapper;
+      }
+    }
+
     // not a known QObject, so try our wrapper factory:
     QObject* wrapper = NULL;
     for (int i=0; i<_cppWrapperFactories.size(); i++) {
@@ -411,17 +423,7 @@ PyObject* PythonQtPrivate::wrapPtr(void* ptr, const QByteArray& name)
       // if we a have a QObject wrapper and the metaobjects do not match, set the metaobject again!
       info->setMetaObject(wrapper->metaObject());
     }
-#ifdef PYTHONQT_USE_VTK
-    if (name.startsWith("vtk"))
-      {
-      vtkObject * _vtkObj = reinterpret_cast<vtkObject*>(ptr);
-#if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION <= 6) || VTK_MAJOR_VERSION < 5
-      return vtkPythonGetObjectFromPointer(_vtkObj);
-#else
-      return vtkPythonUtil::GetObjectFromPointer(_vtkObj);
-#endif
-      }
-#endif
+
     wrap = createNewPythonQtInstanceWrapper(wrapper, info, ptr);
     //          mlabDebugConst("MLABPython","new c++ wrapper added " << wrap->_wrappedPtr << " " << wrap->_obj->className() << " " << wrap->classInfo()->wrappedClassName().latin1());
   } else {
@@ -970,6 +972,11 @@ void PythonQt::addWrapperFactory(PythonQtCppWrapperFactory* factory)
   _p->_cppWrapperFactories.append(factory);
 }
 
+void PythonQt::addWrapperFactory( PythonQtForeignWrapperFactory* factory )
+{
+  _p->_foreignWrapperFactories.append(factory);
+}
+
 //---------------------------------------------------------------------------------------------------
 PythonQtPrivate::PythonQtPrivate()
 {
@@ -978,7 +985,7 @@ PythonQtPrivate::PythonQtPrivate()
   _noLongerWrappedCB = NULL;
   _wrappedCB = NULL;
   _currentClassInfoForClassWrapperCreation = NULL;
-  _ErrorOccured = false;
+  _profilingCB = NULL;
 }
 
 void PythonQtPrivate::setupSharedLibrarySuffixes()
@@ -988,6 +995,14 @@ void PythonQtPrivate::setupSharedLibrarySuffixes()
   imp.setNewRef(PyImport_ImportModule("imp"));
   int cExtensionCode = imp.getVariable("C_EXTENSION").toInt();
   QVariant result = imp.call("get_suffixes");
+#ifdef __linux
+  #ifdef _DEBUG
+  // First look for shared libraries with the '_d' suffix in debug mode on Linux.
+  // This is a workaround, because python does not append the '_d' suffix on Linux
+  // and would always load the release library otherwise.
+  _sharedLibrarySuffixes << "_d.so";
+  #endif
+#endif
   foreach (QVariant entry, result.toList()) {
     QVariantList suffixEntry = entry.toList();
     if (suffixEntry.count()==3) {
@@ -1089,13 +1104,7 @@ bool PythonQt::handleError()
     PyErr_Clear();
     flag = true;
   }
-  PythonQt::priv()->_ErrorOccured = flag;
   return flag;
-}
-
-bool PythonQt::errorOccured()const
-{
-  return PythonQt::priv()->_ErrorOccured;
 }
 
 void PythonQt::addSysPath(const QString& path)
@@ -1120,21 +1129,19 @@ void PythonQt::setModuleImportPath(PyObject* module, const QStringList& paths)
 
 void PythonQt::stdOutRedirectCB(const QString& str)
 {
-  if (!PythonQt::self())
-    {
+  if (!PythonQt::self()) {
     std::cout << str.toLatin1().data() << std::endl;
     return;
-    }
+  }
   emit PythonQt::self()->pythonStdOut(str);
 }
 
 void PythonQt::stdErrRedirectCB(const QString& str)
 {
-  if (!PythonQt::self())
-    {
+  if (!PythonQt::self()) {
     std::cerr << str.toLatin1().data() << std::endl;
     return;
-    }
+  }
   emit PythonQt::self()->pythonStdErr(str);
 }
 
@@ -1148,6 +1155,10 @@ void PythonQt::setQObjectNoLongerWrappedCallback(PythonQtQObjectNoLongerWrappedC
   _p->_noLongerWrappedCB = cb;
 }
 
+void PythonQt::setProfilingCallback(ProfilingCB* cb)
+{
+  _p->_profilingCB = cb;
+}
 
 
 static PyMethodDef PythonQtMethods[] = {
@@ -1162,7 +1173,7 @@ void PythonQt::initPythonQtModule(bool redirectStdOut, const QByteArray& pythonQ
   }
   _p->_pythonQtModule = Py_InitModule(name.constData(), PythonQtMethods);
   _p->_pythonQtModuleName = name;
-  
+
   if (redirectStdOut) {
     PythonQtObjectPtr sys;
     PythonQtObjectPtr out;
@@ -1276,6 +1287,23 @@ PyObject* PythonQt::helpCalled(PythonQtClassInfo* info)
   }
 }
 
+void PythonQt::clearNotFoundCachedMembers()
+{
+  foreach(PythonQtClassInfo* info, _p->_knownClassInfos) {
+    info->clearNotFoundCachedMembers();
+  }
+}
+
+void PythonQt::removeWrapperFactory( PythonQtCppWrapperFactory* factory )
+{
+  _p->_cppWrapperFactories.removeAll(factory);
+}
+
+void PythonQt::removeWrapperFactory( PythonQtForeignWrapperFactory* factory )
+{
+  _p->_foreignWrapperFactories.removeAll(factory);
+}
+
 void PythonQtPrivate::removeWrapperPointer(void* obj)
 {
   _wrappedObjects.remove(obj);
@@ -1309,4 +1337,16 @@ PythonQtObjectPtr PythonQtPrivate::createModule(const QString& name, PyObject* p
     PythonQt::self()->handleError();
   }
   return result;
+}
+
+void* PythonQtPrivate::unwrapForeignWrapper( const QByteArray& classname, PyObject* obj )
+{
+  void* foreignObject = NULL;
+  for (int i=0; i<_foreignWrapperFactories.size(); i++) {
+    foreignObject = _foreignWrapperFactories.at(i)->unwrap(classname, obj);
+    if (foreignObject) {
+      return foreignObject;
+    }
+  }
+  return NULL;
 }
