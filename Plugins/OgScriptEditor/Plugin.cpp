@@ -42,7 +42,7 @@ using namespace Ogitors;
 //----------------------------------------------------------------------------
 bool dllStartPlugin(void *identifier, Ogre::String& name)
 {
-    name = "AngelScript Editor Plugin";
+    name = "Script Editor Plugin";
 	
     mScriptViewWidget = new ScriptViewWidget();
 
@@ -55,7 +55,7 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
     dockWidgetData.mParent = DOCK_RESOURCES;
 
     ScriptTextEditorCodecFactory* scriptCodecFactory = new ScriptTextEditorCodecFactory();
-    GenericTextEditor::getSingletonPtr()->registerCodecFactory("as", scriptCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory(OgitorsRoot::getSingletonPtr()->GetScriptInterpreter()->getScriptExtension(), scriptCodecFactory);
 
     OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, dockWidgetData);
     
@@ -64,7 +64,7 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 //----------------------------------------------------------------------------
 bool dllGetPluginName(Ogre::String& name)
 {
-    name = "AngelScript Editor Plugin";
+    name = "Script Editor Plugin";
     return true;
 }
 //----------------------------------------------------------------------------
