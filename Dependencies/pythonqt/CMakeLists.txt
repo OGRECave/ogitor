@@ -204,6 +204,7 @@ include_directories(
   )
   
 add_library(PythonQt SHARED
+            ${headers}
             ${sources}
             ${gen_moc_sources}
             ${gen_ui_sources}
