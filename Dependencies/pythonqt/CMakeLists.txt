@@ -242,5 +242,4 @@ else(WIN32)
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib)
-    #install(FILES ${headers} DESTINATION include/PythonQt)
 endif(WIN32)
