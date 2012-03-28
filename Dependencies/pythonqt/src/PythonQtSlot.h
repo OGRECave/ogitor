@@ -42,7 +42,8 @@
 */
 //----------------------------------------------------------------------------------
 
-#include "dPython.h"
+#include "PythonQtPythonInclude.h"
+
 #include "PythonQtSystem.h"
 #include "structmember.h"
 
