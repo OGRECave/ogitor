@@ -23,7 +23,13 @@ else(NOT QT4_FOUND)
     set(OgPythonqtScript_VERSION_MAJOR 1)
 
     include_directories(include)
-    include_directories(${DEPENDENCIES_INCLUDES})
+
+	# Extra Qt include directories for our braindead VC10. :)
+	include_directories($ENV{QTDIR}/include)
+	include_directories(${QT_QTCORE_INCLUDE_DIR})
+	include_directories(${QT_QTGUI_INCLUDE_DIR})
+
+	include_directories(${DEPENDENCIES_INCLUDES})
     include_directories(${OGITOR_INCLUDES})
     include_directories(${PYTHON_INCLUDE_DIR})
     message(STATUS "${OGITOR_INCLUDES}")

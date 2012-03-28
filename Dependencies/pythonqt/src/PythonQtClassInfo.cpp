@@ -159,7 +159,7 @@ PythonQtSlotInfo* PythonQtClassInfo::recursiveFindDecoratorSlotsFromDecoratorPro
 
 PythonQtSlotInfo* PythonQtClassInfo::findDecoratorSlotsFromDecoratorProvider(const char* memberName, PythonQtSlotInfo* tail, bool &found, QHash<QByteArray, PythonQtMemberInfo>& memberCache, int upcastingOffset) {
   QObject* decoratorProvider = decorator();
-  int memberNameLen = static_cast<int>(strlen(memberName));
+  int memberNameLen = strlen(memberName);
   if (decoratorProvider) {
     //qDebug()<< "looking " << decoratorProvider->metaObject()->className() << " " << memberName << " " << upcastingOffset;
     const QMetaObject* meta = decoratorProvider->metaObject();
@@ -212,7 +212,7 @@ PythonQtSlotInfo* PythonQtClassInfo::findDecoratorSlotsFromDecoratorProvider(con
 bool PythonQtClassInfo::lookForMethodAndCache(const char* memberName)
 {
   bool found = false;
-  int memberNameLen =  static_cast<int>(strlen(memberName));
+  int memberNameLen = strlen(memberName);
   PythonQtSlotInfo* tail = NULL;
   if (_meta) {
     int numMethods = _meta->methodCount();
@@ -730,7 +730,7 @@ bool PythonQtClassInfo::hasOwnerMethodButNoOwner(void* object)
   }
 }
 
-void* PythonQtClassInfo::recursiveCastDownIfPossible(void* ptr, const char** resultClassName)
+void* PythonQtClassInfo::recursiveCastDownIfPossible(void* ptr, char** resultClassName)
 {
   if (!_polymorphicHandlers.isEmpty()) {
     foreach(PythonQtPolymorphicHandlerCB* cb, _polymorphicHandlers) {
@@ -753,7 +753,7 @@ void* PythonQtClassInfo::recursiveCastDownIfPossible(void* ptr, const char** res
 
 void* PythonQtClassInfo::castDownIfPossible(void* ptr, PythonQtClassInfo** resultClassInfo)
 {
-  const char* className;
+  char* className;
   // this would do downcasting recursively...
   // void* resultPtr = recursiveCastDownIfPossible(ptr, &className);
 
@@ -847,22 +847,3 @@ PyObject* PythonQtClassInfo::findEnumWrapper(const char* name) {
   return NULL;
 }
 
-void PythonQtClassInfo::setDecoratorProvider( PythonQtQObjectCreatorFunctionCB* cb )
-{
-  _decoratorProviderCB = cb;
-  _decoratorProvider = NULL;
-  _enumsCreated = false;
-}
-
-void PythonQtClassInfo::clearNotFoundCachedMembers()
-{
-  // remove all not found entries, since a new decorator means new slots,
-  // which might have been cached as "NotFound" already.
-  QMutableHashIterator<QByteArray, PythonQtMemberInfo> it(_cachedMembers);
-  while (it.hasNext()) {
-    it.next();
-    if (it.value()._type == PythonQtMemberInfo::NotFound) {
-      it.remove();
-    }
-  }
-}

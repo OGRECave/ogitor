@@ -3,32 +3,32 @@
 #include "com_trolltech_qt_core1.h"
 #include "com_trolltech_qt_core2.h"
 
-static void* polymorphichandler_QEvent(const void *ptr, const char **class_name)
+static void* polymorphichandler_QEvent(const void *ptr, char **class_name)
 {
     Q_ASSERT(ptr != 0);
     QEvent *object = (QEvent *)ptr;
     if (object->type() == QEvent::None) {
-        *class_name = "QEvent";
+        *class_name = const_cast<char*>("QEvent");
         return (QEvent*)object;
     }
     if (object->type() == QEvent::ChildAdded || object->type() == QEvent::ChildPolished || object->type() == QEvent::ChildRemoved) {
-        *class_name = "QChildEvent";
+        *class_name = const_cast<char*>("QChildEvent");
         return (QChildEvent*)object;
     }
     if (object->type() == QEvent::StateMachineWrapped) {
-        *class_name = "QStateMachine_WrappedEvent";
+        *class_name = const_cast<char*>("QStateMachine_WrappedEvent");
         return (QStateMachine::WrappedEvent*)object;
     }
     if (object->type() == QEvent::StateMachineSignal) {
-        *class_name = "QStateMachine_SignalEvent";
+        *class_name = const_cast<char*>("QStateMachine_SignalEvent");
         return (QStateMachine::SignalEvent*)object;
     }
     if (object->type() == QEvent::Timer) {
-        *class_name = "QTimerEvent";
+        *class_name = const_cast<char*>("QTimerEvent");
         return (QTimerEvent*)object;
     }
     if (object->type() == QEvent::DynamicPropertyChange) {
-        *class_name = "QDynamicPropertyChangeEvent";
+        *class_name = const_cast<char*>("QDynamicPropertyChangeEvent");
         return (QDynamicPropertyChangeEvent*)object;
     }
     return NULL;

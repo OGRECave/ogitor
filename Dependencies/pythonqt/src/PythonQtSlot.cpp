@@ -47,16 +47,13 @@
 #include "PythonQtConversion.h"
 #include <iostream>
 
-#include <exception>
-#include <stdexcept>
-
 #define PYTHONQT_MAX_ARGS 32
 
 
 bool PythonQtCallSlot(PythonQtClassInfo* classInfo, QObject* objectToCall, PyObject* args, bool strict, PythonQtSlotInfo* info, void* firstArgument, PyObject** pythonReturnValue, void** directReturnValuePointer)
 {
   static unsigned int recursiveEntry = 0;
-
+  
   if (directReturnValuePointer) {
     *directReturnValuePointer = NULL;
   }
@@ -68,19 +65,19 @@ bool PythonQtCallSlot(PythonQtClassInfo* classInfo, QObject* objectToCall, PyObj
   PythonQtConv::global_valueStorage.getPos(globalValueStoragePos);
   PythonQtConv::global_ptrStorage.getPos(globalPtrStoragePos);
   PythonQtConv::global_variantStorage.getPos(globalVariantStoragePos);
-
+  
   recursiveEntry++;
-
+  
   // the arguments that are passed to qt_metacall
   void* argList[PYTHONQT_MAX_ARGS];
   PyObject* result = NULL;
   int argc = info->parameterCount();
   const QList<PythonQtSlotInfo::ParameterInfo>& params = info->parameters();
-
+  
   const PythonQtSlotInfo::ParameterInfo& returnValueParam = params.at(0);
   // set return argument to NULL
   argList[0] = NULL;
-
+  
   bool ok = true;
   bool skipFirst = false;
   if (info->isInstanceDecorator()) {
@@ -117,7 +114,7 @@ bool PythonQtCallSlot(PythonQtClassInfo* classInfo, QObject* objectToCall, PyObj
       }
     }
   }
-
+  
   if (ok) {
     // parameters are ok, now create the qt return value which is assigned to by metacall
     if (returnValueParam.typeId != QMetaType::Void) {
@@ -136,8 +133,8 @@ bool PythonQtCallSlot(PythonQtClassInfo* classInfo, QObject* objectToCall, PyObj
             if (result) {
               argList[0] = ((PythonQtInstanceWrapper*)result)->_wrappedPtr;
             }
-            Py_DECREF(emptyTuple);
-          }
+            Py_DECREF(emptyTuple);            
+          } 
         }
       } else {
         // we can use our pointer directly!
@@ -145,76 +142,32 @@ bool PythonQtCallSlot(PythonQtClassInfo* classInfo, QObject* objectToCall, PyObj
       }
     }
 
-
-    PythonQt::ProfilingCB* profilingCB = PythonQt::priv()->profilingCB();
-    if (profilingCB) {
-      const char* className = NULL;
-      if (info->decorator()) {
-        className = info->decorator()->metaObject()->className();
-      } else {
-        className = objectToCall->metaObject()->className();
-      }
-
-      profilingCB(PythonQt::Enter, className, info->metaMethod()->signature());
-    }
-
     // invoke the slot via metacall
-    bool hadException = false;
-    try {
-      (info->decorator()?info->decorator():objectToCall)->qt_metacall(QMetaObject::InvokeMetaMethod, info->slotIndex(), argList);
-    } catch (std::bad_alloc & e) {
-      hadException = true;
-      QByteArray what("std::bad_alloc: ");
-      what += e.what();
-      PyErr_SetString(PyExc_MemoryError, what.constData());
-    } catch (std::runtime_error & e) {
-      hadException = true;
-      QByteArray what("std::runtime_error: ");
-      what += e.what();
-      PyErr_SetString(PyExc_RuntimeError, what.constData());
-    } catch (std::logic_error & e) {
-      hadException = true;
-      QByteArray what("std::logic_error: ");
-      what += e.what();
-      PyErr_SetString(PyExc_RuntimeError, what.constData());
-    } catch (std::exception& e) {
-      hadException = true;
-      QByteArray what("std::exception: ");
-      what += e.what();
-      PyErr_SetString(PyExc_StandardError, what.constData());
-    }
-  
-    if (profilingCB) {
-      profilingCB(PythonQt::Leave, NULL, NULL);
-    }
+    (info->decorator()?info->decorator():objectToCall)->qt_metacall(QMetaObject::InvokeMetaMethod, info->slotIndex(), argList);
 
     // handle the return value (which in most cases still needs to be converted to a Python object)
-    if (!hadException) {
-      if (argList[0] || returnValueParam.typeId == QMetaType::Void) {
-        if (directReturnValuePointer) {
-          result = NULL;
-        } else {
-          // the resulting object maybe present already, because we created it above at 1)...
-          if (!result) {
-            result = PythonQtConv::ConvertQtValueToPython(returnValueParam, argList[0]);
-          }
-        }
-      } else {
-        QString e = QString("Called ") + info->fullSignature() + ", return type '" + returnValueParam.name + "' is ignored because it is unknown to PythonQt. Probably you should register it using qRegisterMetaType() or add a default constructor decorator to the class.";
-        PyErr_SetString(PyExc_ValueError, e.toLatin1().data());
+    if (argList[0] || returnValueParam.typeId == QMetaType::Void) {
+      if (directReturnValuePointer) {
         result = NULL;
+      } else {
+        // the resulting object maybe present already, because we created it above at 1)...
+        if (!result) {
+          result = PythonQtConv::ConvertQtValueToPython(returnValueParam, argList[0]);
+        }
       }
     } else {
+      QString e = QString("Called ") + info->fullSignature() + ", return type '" + returnValueParam.name + "' is ignored because it is unknown to PythonQt. Probably you should register it using qRegisterMetaType() or add a default constructor decorator to the class.";
+      PyErr_SetString(PyExc_ValueError, e.toLatin1().data());
       result = NULL;
     }
   }
   recursiveEntry--;
-
+  
   // reset the parameter storage position to the stored pos to "pop" the parameter stack
   PythonQtConv::global_valueStorage.setPos(globalValueStoragePos);
   PythonQtConv::global_ptrStorage.setPos(globalPtrStoragePos);
   PythonQtConv::global_variantStorage.setPos(globalVariantStoragePos);
-
+  
   *pythonReturnValue = result;
   // NOTE: it is important to only return here, otherwise the stack will not be popped!!!
   return result || (directReturnValuePointer && *directReturnValuePointer);
@@ -333,7 +286,7 @@ PyObject *PythonQtSlotFunction_CallImpl(PythonQtClassInfo* classInfo, QObject* o
       PyErr_SetString(PyExc_ValueError, e.toLatin1().data());
     }
   }
-
+  
   return r;
 }
 

@@ -35,7 +35,24 @@ project(PythonQt)
 
 find_package(PythonLibs REQUIRED)
 include_directories("${PYTHON_INCLUDE_DIR}")
-add_definitions(-DPYTHONQT_USE_RELEASE_PYTHON_FALLBACK)
+
+#-----------------------------------------------------------------------------
+# VTK
+
+option(PythonQt_USE_VTK "Automatically wrap/unwrap VTK based object" OFF)
+set(VTK_LIBRARIES)
+if(PythonQt_USE_VTK)
+  find_package(VTK REQUIRED)
+  include(${VTK_USE_FILE})
+  add_definitions(-DPYTHONQT_USE_VTK)
+  if(${VTK_VERSION_MAJOR}.${VTK_VERSION_MINOR} VERSION_GREATER 5.6)
+    set(VTK_LIBRARIES vtkPythonCore)
+  else()
+    set(VTK_LIBRARIES vtkCommonPythonD)
+  endif()
+else()
+  remove_definitions(-DPYTHONQT_USE_VTK)
+endif()
 
 #-----------------------------------------------------------------------------
 # Build options
@@ -133,7 +150,7 @@ set(headers
     src/PythonQtStdOut.h
     src/PythonQtSystem.h
     src/PythonQtVariants.h
-    src/PythonQtPythonInclude.h
+    src/dPython.h
     generated_cpp/PythonQt_QtBindings.h
 )
 
@@ -193,10 +210,6 @@ qt4_wrap_cpp(gen_moc_sources ${moc_sources})
 qt4_wrap_ui(gen_ui_sources ${ui_sources})
 qt4_add_resources(gen_qrc_sources ${qrc_sources})
 
-# Ogitor options
-
-set(LIBRARY_OUTPUT_PATH  ../lib)
-
 #-----------------------------------------------------------------------------
 # Build the library
 
@@ -212,8 +225,6 @@ add_library(PythonQt SHARED
   )
 set_target_properties(PythonQt PROPERTIES DEFINE_SYMBOL PYTHONQT_EXPORTS)
 
-set_target_properties(PythonQt PROPERTIES FOLDER Dependencies) 
-
 #
 # That should solve linkage error on Mac when the project is used in a superbuild setup
 # See http://blog.onesadcookie.com/2008/01/installname-magic.html
@@ -223,12 +234,15 @@ set_target_properties(PythonQt  PROPERTIES
   )
 
 target_link_libraries(PythonQt
-				${PYTHON_LIBRARY}
-				${PYTHON_DEBUG_LIBRARY}
-				${QT_LIBRARIES}
-	)
+              ${PYTHON_LIBRARY}
+              ${QT_LIBRARIES}
+              ${VTK_LIBRARIES}
+  )
 
+set(LIBRARY_OUTPUT_PATH  ../lib)
 #-----------------------------------------------------------------------------
+# Install library (on windows, put the dll in 'bin' and the archive in 'lib')
+
 if(WIN32)
 	add_custom_command(TARGET PythonQt PRE_BUILD
 		COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)

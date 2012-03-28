@@ -1455,7 +1455,7 @@
   <interface-type name="QLayoutItem"/>
   <interface-type name="QPaintDevice"/>
 
-  <interface-type name="QGraphicsItem" delete-in-main-thread="yes" polymorphic-base="yes">
+  <interface-type name="QGraphicsItem" delete-in-main-thread="yes">
     <modify-function signature="setCursorForItemOnly(QCursor)" remove="all"/>
 
     <modify-function signature="setMatrix(QMatrix, bool)" remove="all"/>
@@ -1837,7 +1837,7 @@
     </modify-function>
   </object-type>
 
-  <object-type name="QGraphicsEllipseItem" delete-in-main-thread="yes" polymorphic-id-expression="%1-&gt;type() == QGraphicsEllipseItem::Type" />
+  <object-type name="QGraphicsEllipseItem" delete-in-main-thread="yes"/>
   <object-type name="QGraphicsItemAnimation">
     <modify-function signature="setItem(QGraphicsItem*)">
         <modify-argument index="1">
@@ -1854,30 +1854,29 @@
         <include file-name="QPair" location="global"/>
     </extra-includes>
   </object-type>
-  <object-type name="QGraphicsItemGroup" delete-in-main-thread="yes"
-  polymorphic-id-expression="%1-&gt;type() == QGraphicsItemGroup::Type">
+  <object-type name="QGraphicsItemGroup" delete-in-main-thread="yes">
       <modify-function signature="matrix()const" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="resetMatrix()" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="sceneMatrix()const" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="setMatrix(QMatrix, bool)" remove="all"/> <!--### Obsolete in 4.3-->
   </object-type>
-  <object-type name="QGraphicsLineItem" delete-in-main-thread="yes" polymorphic-id-expression="%1-&gt;type() == QGraphicsLineItem::Type">
+  <object-type name="QGraphicsLineItem" delete-in-main-thread="yes">
       <modify-function signature="matrix()const" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="resetMatrix()" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="sceneMatrix()const" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="setMatrix(QMatrix, bool)" remove="all"/> <!--### Obsolete in 4.3-->
   </object-type>
-  <object-type name="QGraphicsPathItem" delete-in-main-thread="yes" polymorphic-id-expression="%1-&gt;type() == QGraphicsPathItem::Type"/>
+  <object-type name="QGraphicsPathItem" delete-in-main-thread="yes"/>
 
-  <object-type name="QGraphicsPixmapItem" delete-in-main-thread="yes" polymorphic-id-expression="%1-&gt;type() == QGraphicsPixmapItem::Type">
+  <object-type name="QGraphicsPixmapItem" delete-in-main-thread="yes">
       <modify-function signature="matrix()const" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="resetMatrix()" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="sceneMatrix()const" remove="all"/> <!--### Obsolete in 4.3-->
       <modify-function signature="setMatrix(QMatrix, bool)" remove="all"/> <!--### Obsolete in 4.3-->
   </object-type>
-  <object-type name="QGraphicsPolygonItem" delete-in-main-thread="yes" polymorphic-id-expression="%1-&gt;type() == QGraphicsPolygonItem::Type"/>
-  <object-type name="QGraphicsRectItem" delete-in-main-thread="yes" polymorphic-id-expression="%1-&gt;type() == QGraphicsRectItem::Type"/>
-  <object-type name="QGraphicsSimpleTextItem" delete-in-main-thread="yes" polymorphic-id-expression="%1-&gt;type() == QGraphicsSimpleTextItem::Type"/>
+  <object-type name="QGraphicsPolygonItem" delete-in-main-thread="yes"/>
+  <object-type name="QGraphicsRectItem" delete-in-main-thread="yes"/>
+  <object-type name="QGraphicsSimpleTextItem" delete-in-main-thread="yes"/>
   <object-type name="QHBoxLayout"/>
   <object-type name="QHeaderView">
     <modify-function signature="initStyleOption(QStyleOptionHeader*)const">
@@ -3519,7 +3518,7 @@
     <modify-function signature="operator&lt;(QListWidgetItem)const" remove="all"/>
   </object-type>
 
-  <object-type name="QGraphicsTextItem" polymorphic-id-expression="%1-&gt;type() == QGraphicsTextItem::Type"> <!-- a QObject so main-thread delete redundant -->
+  <object-type name="QGraphicsTextItem"> <!-- a QObject so main-thread delete redundant -->
     <extra-includes>
       <include file-name="QTextCursor" location="global"/>
     </extra-includes>
@@ -5428,9 +5427,7 @@
     </modify-function>
   </object-type>
   <object-type name="QGraphicsProxyWidget"/> <!-- a QObject so main-thread delete redundant -->
-  <object-type name="QGraphicsWidget"
-    polymorphic-id-expression="%1-&gt;isWidget()">
-    <!-- a QObject so main-thread delete redundant -->
+  <object-type name="QGraphicsWidget">  <!-- a QObject so main-thread delete redundant -->
     <!-- Duplicate function to QObject::children() to override accidental shadowing which is not present in Jambi -->
     <modify-function signature="children()const" remove="all"/>
     <modify-function signature="setLayout(QGraphicsLayout*)">
@@ -5569,9 +5566,6 @@
     <!-- Duplicate function to QObject::children() to override accidental shadowing which is not present in Jambi -->
     <modify-function signature="children()const" remove="all"/>
   </object-type>
-  <object-type name="QGraphicsBlurEffect"/>
-  <object-type name="QGraphicsColorizeEffect"/>
-  <object-type name="QGraphicsDropShadowEffect"/>
   <object-type name="QGraphicsOpacityEffect"/>
   <object-type name="QGraphicsPixelizeEffect"/>
   <object-type name="QGraphicsRotation"/>

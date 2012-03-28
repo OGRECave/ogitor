@@ -45,9 +45,14 @@
 #include <QTime>
 #include <QDate>
 
+#ifdef PYTHONQT_USE_VTK
+# include <vtkPythonUtil.h>
+# include <vtkObject.h>
+#endif
+
 PythonQtValueStorage<qint64, 128>  PythonQtConv::global_valueStorage;
 PythonQtValueStorage<void*, 128>   PythonQtConv::global_ptrStorage;
-PythonQtValueStorageWithCleanup<QVariant, 128> PythonQtConv::global_variantStorage;
+PythonQtValueStorage<QVariant, 32> PythonQtConv::global_variantStorage;
 
 QHash<int, PythonQtConvertMetaTypeToPythonCB*> PythonQtConv::_metaTypeToPythonConverters;
 QHash<int, PythonQtConvertPythonToMetaTypeCB*> PythonQtConv::_pythonToMetaTypeConverters;
@@ -386,22 +391,31 @@ void* PythonQtConv::ConvertPythonToQt(const PythonQtMethodInfo::ParameterInfo& i
      } else if (info.name == "PyObject") {
        // handle low level PyObject directly
        PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_ptrStorage, void*, obj, ptr);
-     } else if (obj == Py_None) {
+     }
+#ifdef PYTHONQT_USE_VTK
+     else if (info.name.startsWith("vtk")) {
+#if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION <= 6) || VTK_MAJOR_VERSION < 5
+       vtkObjectBase * vtkObj = vtkPythonGetPointerFromObject(obj, info.name.data());
+#else
+       vtkObjectBase * vtkObj = vtkPythonUtil::GetPointerFromObject(obj, info.name.data());
+#endif
+       if (vtkObj) {
+         PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_ptrStorage, void*, vtkObj, ptr);
+       }
+     }
+#endif
+     else if (obj == Py_None) {
        // None is treated as a NULL ptr
        PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_ptrStorage, void*, NULL, ptr);
-     } else {
-       void* foreignWrapper = PythonQt::priv()->unwrapForeignWrapper(info.name, obj);
-       if (foreignWrapper) {
-         PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_ptrStorage, void*, foreignWrapper, ptr);
-       } else {
-         // if we are not strict, we try if we are passed a 0 integer
-         if (!strict) {
-           bool ok;
-           int value = PyObjGetInt(obj, true, ok);
-           if (ok && value==0) {
-             // TODOXXX is this wise? or should it be expected from the programmer to use None?
-             PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_ptrStorage, void*, NULL, ptr);
-           }
+     }
+     else {
+       // if we are not strict, we try if we are passed a 0 integer
+       if (!strict) {
+         bool ok;
+         int value = PyObjGetInt(obj, true, ok);
+         if (ok && value==0) {
+           // TODOXXX is this wise? or should it be expected from the programmer to use None?
+           PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_ptrStorage, void*, NULL, ptr);
          }
        }
      }
@@ -678,11 +692,15 @@ QString PythonQtConv::PyObjGetString(PyObject* val, bool strict, bool& ok) {
   if (val->ob_type == &PyString_Type) {
     r = QString(PyString_AS_STRING(val));
   } else if (PyUnicode_Check(val)) {
+//#ifdef WIN32
+//    r = QString::fromUtf16(PyUnicode_AS_UNICODE(val));
+//#else
     PyObject *ptmp = PyUnicode_AsUTF8String(val);
     if(ptmp) {
       r = QString::fromUtf8(PyString_AS_STRING(ptmp));
       Py_DECREF(ptmp);
     }
+//#endif
   } else if (!strict) {
     // EXTRA: could also use _Unicode, but why should we?
     PyObject* str =  PyObject_Str(val);
@@ -978,7 +996,8 @@ QVariant PythonQtConv::PyObjToQVariant(PyObject* val, int type)
     {
       if (PyMapping_Check(val)) {
         QMap<QString,QVariant> map;
-        PyObject* items = PyMapping_Items(val);
+        // PyObject* items = PyMapping_Items(val);
+        PyObject* items = PyObject_CallMethod(val, const_cast<char*>("items"), NULL);
         if (items) {
           int count = PyList_Size(items);
           PyObject* value;
@@ -1039,7 +1058,12 @@ PyObject* PythonQtConv::QStringToPyObject(const QString& str)
   if (str.isNull()) {
     return PyString_FromString("");
   } else {
+//#ifdef WIN32
+    //    return PyString_FromString(str.toLatin1().data());
+//    return PyUnicode_FromUnicode(str.utf16(), str.length());
+//#else
     return PyUnicode_DecodeUTF16((const char*)str.utf16(), str.length()*2, NULL, NULL);
+//#endif
   }
 }
 

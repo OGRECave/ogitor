@@ -42,8 +42,7 @@
 */
 //----------------------------------------------------------------------------------
 
-#include "PythonQtPythonInclude.h"
-
+#include <dPython.h>
 #include "PythonQtSystem.h"
 #include "PythonQtObjectPtr.h"
 
@@ -51,7 +50,7 @@ class PythonQtMethodInfo;
 class PythonQtClassInfo;
 
 //! stores information about a signal target
-/*! copy construction and assignment works fine with the C++ standard behavior and are thus not implemented
+/*! copy construction and assignment works fine with the C++ standard behaviour and are thus not implemented
 */
 class PYTHONQT_EXPORT PythonQtSignalTarget {
 public:
@@ -85,7 +84,7 @@ public:
   void call(void **arguments) const;
 
   //! check if it is the same signal target
-  bool isSame(int signalId, PyObject* callable) const;
+  bool isSame(int signalId, PyObject* callable) const { return callable==_callable && signalId==_signalId; }
 
   //! call the given callable with arguments described by PythonQtMethodInfo, returns a new reference as result value (or NULL)
   static PyObject* call(PyObject* callable, const PythonQtMethodInfo* methodInfo, void **arguments, bool skipFirstArgumentOfMethodInfo = false);

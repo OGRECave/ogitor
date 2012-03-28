@@ -35,7 +35,6 @@
 #include "PythonqtInterpreter.h"
 
 using namespace Ogitors;
-using namespace Ogre;
 
 PythonqtInterpreter::PythonqtInterpreter() : OgitorsScriptInterpreter()
 {
