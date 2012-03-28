@@ -283,9 +283,6 @@ else(NOT QT4_FOUND)
         endif(OGITOR_DIST)
         
         INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-        if(UNIX)
-            INSTALL(CODE "EXECUTE_PROCESS(COMMAND rm -f ${CMAKE_SOURCE_DIR}/qtOgitor/languages/*.qm)")
-        endif(UNIX)
         INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
         INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
@@ -300,6 +297,7 @@ else(NOT QT4_FOUND)
             PATTERN     "qt_*.qm"
             PATTERN     "ogitor_*.qm" EXCLUDE
         )
+        INSTALL(CODE "EXECUTE_PROCESS(COMMAND rm -f ${CMAKE_SOURCE_DIR}/qtOgitor/languages/*.qm)")
     else(UNIX AND NOT APPLE)
         # ie Windows
         install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
