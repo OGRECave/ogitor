@@ -1622,6 +1622,7 @@ bool OgitorsRoot::AfterLoadScene()
 //-----------------------------------------------------------------------------------------
 bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
 {
+    SetRunState(RS_STOPPED);
     COFSSceneSerializer *defaultserializer = OGRE_NEW COFSSceneSerializer();
 
     if(defaultserializer->Export(SaveAs, exportfile) == SCF_OK)
@@ -1630,18 +1631,21 @@ bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
 
         if (SaveAs)
         {
-            /* Since the ogscene name changes when the filename changes
-            refresh the tree view and update the titlebar name */
+            /* Since we're saving as a new project, refresh the menu
+            controls because we change the names of certain items
+            for example the ogscene file name to match the OFS file  */
+            SetEditorTool(TOOL_SELECT);
+            setLoadState(LS_UNLOADED);
             mSystem->ClearTreeItems();
             FillTreeView();
-            PrepareProjectResources();
-            ReloadUserResources();
+            setLoadState(LS_LOADED);
         }
 
         SetSceneModified(false);        
+        SetRunState(RS_RUNNING);
         return true;
     }
-
+    SetRunState(RS_RUNNING);
     OGRE_DELETE defaultserializer;
     return false;
 }
