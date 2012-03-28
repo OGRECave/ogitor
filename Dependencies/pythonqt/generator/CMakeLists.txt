@@ -177,9 +177,6 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 
-#-----------------------------------------------------------------------------
-# Install library (on windows, put the dll in 'bin' and the archive in 'lib')
-
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
