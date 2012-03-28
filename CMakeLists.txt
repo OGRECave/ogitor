@@ -236,6 +236,7 @@ endif(UNIX)
 mark_as_advanced(
     OGITOR_BIN_PATH
     OGITOR_RUN_PATH
+    OGITOR_RESOURCE_PATH
     OGITOR_LANGUAGE_PATH
     OGITOR_MEDIA_PATH
     OGITOR_PROJECTS_PATH
@@ -245,6 +246,14 @@ mark_as_advanced(
     OGITOR_OGRE_PLUGIN_PATH
     OGITOR_LIBOGREOFSPLUGIN_PATH
 )
+
+# Error out if Source_Dir/RunPath/Media and Source_Dir/RunPath/Projects isn't present on the users system
+if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
+  message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media.\nMake sure that you've downloaded 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
+endif(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
+if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects)
+  message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects.\nMake sure that you've downloaded 'projects.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Projects'.")
+endif(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects)
 
 # Generate OgitorsGlobals.cpp
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals.cpp.in ${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp)
