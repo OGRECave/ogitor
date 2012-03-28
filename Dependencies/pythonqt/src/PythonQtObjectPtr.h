@@ -42,11 +42,10 @@
 */
 //----------------------------------------------------------------------------------
 
-#include "PythonQtPythonInclude.h"
-
+#include <dPython.h>
 #include "PythonQtSystem.h"
-#include <QtCore/QVariant>
-#include <QtCore/QVariantList>
+#include <QVariant>
+#include <QVariantList>
 
 //! a smart pointer that stores a PyObject pointer and that handles reference counting automatically
 class PYTHONQT_EXPORT PythonQtObjectPtr
@@ -54,23 +53,22 @@ class PYTHONQT_EXPORT PythonQtObjectPtr
 public:
   PythonQtObjectPtr():_object(NULL) {}
 
-  PythonQtObjectPtr(const PythonQtObjectPtr &p)
-  :_object(NULL) {
+  PythonQtObjectPtr(const PythonQtObjectPtr &p):_object(NULL) {
     setObject(p.object());
   }
 
-  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count.
+  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count. 
   PythonQtObjectPtr(const QVariant& variant):_object(NULL) {
-      fromVariant(variant);
+      fromVariant(variant); 
   }
-
-  PythonQtObjectPtr(PyObject* o);
   
+  PythonQtObjectPtr(PyObject* o);
+
   ~PythonQtObjectPtr();
   
-  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count.
+  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count.   
   bool fromVariant(const QVariant& variant);
-
+  
   PythonQtObjectPtr &operator=(const PythonQtObjectPtr &p) {
     setObject(p.object());
     return *this;
@@ -81,13 +79,13 @@ public:
     return *this;
   }
 
-
+  
   PythonQtObjectPtr &operator=(const QVariant& variant) {
       fromVariant(variant);
       return *this;
   }
 
-
+  
   bool operator==( const PythonQtObjectPtr &p ) const {
     return object() == p.object();
   }
@@ -114,7 +112,7 @@ public:
 
   //! sets the object and passes the ownership (stealing the reference, in Python slang)
   void setNewRef(PyObject* o);
-  
+
   PyObject* object() const {
     return _object;
   }
@@ -150,7 +148,7 @@ public:
 protected:
 
   void setObject(PyObject* o);
-  
+
 private:
   PyObject* _object;
 };
@@ -160,4 +158,3 @@ private:
 Q_DECLARE_METATYPE(PythonQtObjectPtr)
 
 #endif
-

@@ -42,7 +42,7 @@
 */
 //----------------------------------------------------------------------------------
 
-#include "PythonQtPythonInclude.h"
+#include <dPython.h>
 
 #include "PythonQtSystem.h"
 
@@ -50,7 +50,7 @@
 #include "methodobject.h"
 #include "compile.h"
 #include "eval.h"
-#include <QtCore/QString>
+#include <QString>
 
 class PythonQtClassInfo;
 

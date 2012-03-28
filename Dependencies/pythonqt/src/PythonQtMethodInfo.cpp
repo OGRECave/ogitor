@@ -192,6 +192,7 @@ int PythonQtMethodInfo::nameToType(const char* name)
     _parameterTypeDict.insert("qreal", QMetaType::Double);
     _parameterTypeDict.insert("QChar", QMetaType::QChar);
     _parameterTypeDict.insert("QByteArray", QMetaType::QByteArray);
+    _parameterTypeDict.insert("Q3CString", QMetaType::QByteArray);
     _parameterTypeDict.insert("QString", QMetaType::QString);
     _parameterTypeDict.insert("", QMetaType::Void);
     _parameterTypeDict.insert("void", QMetaType::Void);
@@ -202,6 +203,7 @@ int PythonQtMethodInfo::nameToType(const char* name)
     _parameterTypeDict.insert("qulonglong", QMetaType::ULongLong);
     _parameterTypeDict.insert("qint64", QMetaType::LongLong);
     _parameterTypeDict.insert("quint64", QMetaType::ULongLong);
+    _parameterTypeDict.insert("QIconSet", QMetaType::QIcon);
     _parameterTypeDict.insert("QVariantMap", QMetaType::QVariantMap);
     _parameterTypeDict.insert("QVariantList", QMetaType::QVariantList);
     _parameterTypeDict.insert("QMap<QString,QVariant>", QMetaType::QVariantMap);
@@ -214,14 +216,15 @@ int PythonQtMethodInfo::nameToType(const char* name)
     _parameterTypeDict.insert("QUrl", QMetaType::QUrl);
     _parameterTypeDict.insert("QLocale", QMetaType::QLocale);
     _parameterTypeDict.insert("QRect", QMetaType::QRect);
-    _parameterTypeDict.insert("QRectF", QMetaType::QRectF);
+    _parameterTypeDict.insert("QRectf", QMetaType::QRectF);
     _parameterTypeDict.insert("QSize", QMetaType::QSize);
-    _parameterTypeDict.insert("QSizeF", QMetaType::QSizeF);
+    _parameterTypeDict.insert("QSizef", QMetaType::QSizeF);
     _parameterTypeDict.insert("QLine", QMetaType::QLine);
-    _parameterTypeDict.insert("QLineF", QMetaType::QLineF);
+    _parameterTypeDict.insert("QLinef", QMetaType::QLineF);
     _parameterTypeDict.insert("QPoint", QMetaType::QPoint);
-    _parameterTypeDict.insert("QPointF", QMetaType::QPointF);
+    _parameterTypeDict.insert("QPointf", QMetaType::QPointF);
     _parameterTypeDict.insert("QRegExp", QMetaType::QRegExp);
+//    _parameterTypeDict.insert("QColorGroup", QMetaType::QColorGroup);
     _parameterTypeDict.insert("QFont", QMetaType::QFont);
     _parameterTypeDict.insert("QPixmap", QMetaType::QPixmap);
     _parameterTypeDict.insert("QBrush", QMetaType::QBrush);
@@ -229,7 +232,7 @@ int PythonQtMethodInfo::nameToType(const char* name)
     _parameterTypeDict.insert("QCursor", QMetaType::QCursor);
     _parameterTypeDict.insert("QPalette", QMetaType::QPalette);
     _parameterTypeDict.insert("QIcon", QMetaType::QIcon);
-    _parameterTypeDict.insert("QImage", QMetaType::QImage);
+    _parameterTypeDict.insert("QImage", QMetaType::QPolygon);
     _parameterTypeDict.insert("QRegion", QMetaType::QRegion);
     _parameterTypeDict.insert("QBitmap", QMetaType::QBitmap);
     _parameterTypeDict.insert("QSizePolicy", QMetaType::QSizePolicy);
@@ -288,14 +291,14 @@ QString PythonQtSlotInfo::fullSignature()
 
   if (_type == ClassDecorator) {
     if (sig.startsWith("new_")) {
-      sig = sig.mid(4);
+      sig = sig.mid(strlen("new_"));
       isConstructor = true;
     } else if (sig.startsWith("delete_")) {
-      sig = sig.mid(7);
+      sig = sig.mid(strlen("delete_"));
       isDestructor = true;
     } else if(sig.startsWith("static_")) {
       isStatic = true;
-      sig = sig.mid(7);
+      sig = sig.mid(strlen("static_"));
       int idx = sig.indexOf("_");
       if (idx>=0) {
         sig = sig.mid(idx+1);

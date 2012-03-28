@@ -114,7 +114,6 @@ PythonQtImport::ModuleInfo PythonQtImport::getModuleInfo(PythonQtImporter* self,
       info.fullPath = test;
       info.moduleName = subname;
       info.type = MI_SHAREDLIBRARY;
-      return info;
     }
   }
   return info;
@@ -264,7 +263,7 @@ PythonQtImporter_load_module(PyObject *obj, PyObject *args)
   } else {
     PythonQtObjectPtr imp;
     imp.setNewRef(PyImport_ImportModule("imp"));
-
+    
     // Create a PyList with the current path as its single element,
     // which is required for find_module (it won't accept a tuple...)
     PythonQtObjectPtr pathList;
@@ -277,21 +276,12 @@ PythonQtImporter_load_module(PyObject *obj, PyObject *args)
     args.append(QVariant::fromValue(pathList));
     QVariant result = imp.call("find_module", args);
     if (result.isValid()) {
-      // This will return a tuple with (file, pathname, description=(suffix,mode,type))
+      // This will return a tuple with (file, pathname, description)
       QVariantList list = result.toList();
       if (list.count()==3) {
         // We prepend the full module name (including package prefix)
         list.prepend(fullname);
-#ifdef __linux
-  #ifdef _DEBUG
-        // imp_find_module() does not respect the debug suffix '_d' on Linux,
-        // so it does not return the correct file path and we correct it now
-        // find_module opened a file to the release library, but that file handle is
-        // ignored on Linux and Windows, maybe on MacOS also.
-        list[2] = info.fullPath;
-  #endif
-#endif
-        // And call "load_module" with (fullname, file, pathname, description=(suffix,mode,type))
+        // And call "load_module" with (fullname, file, pathname, description)
         PythonQtObjectPtr module = imp.call("load_module", list);
         mod = module.object();
         if (mod) {
@@ -569,16 +559,12 @@ PythonQtImport::unmarshalCode(const QString& path, const QByteArray& data, time_
     return Py_None;
   }
 
-  if (mtime != 0) {
-    time_t timeDiff = getLong((unsigned char *)buf + 4) - mtime;
-    if (timeDiff<0) { timeDiff = -timeDiff; }
-    if (timeDiff > 1) {
-      if (Py_VerboseFlag)
-        PySys_WriteStderr("# %s has bad mtime\n",
-        path.toLatin1().constData());
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
+  if (mtime != 0 && !(getLong((unsigned char *)buf + 4) == mtime)) {
+    if (Py_VerboseFlag)
+      PySys_WriteStderr("# %s has bad mtime\n",
+            path.toLatin1().constData());
+    Py_INCREF(Py_None);
+    return Py_None;
   }
 
   code = PyMarshal_ReadObjectFromString(buf + 8, size - 8);
@@ -659,10 +645,7 @@ PythonQtImport::getMTimeOfSource(const QString& path)
   path2.truncate(path.length()-1);
 
   if (PythonQt::importInterface()->exists(path2)) {
-    QDateTime t = PythonQt::importInterface()->lastModifiedDate(path2);
-    if (t.isValid()) {
-      mtime = t.toTime_t();
-    }
+    mtime = PythonQt::importInterface()->lastModifiedDate(path2).toTime_t();
   }
 
   return mtime;
@@ -692,12 +675,7 @@ PythonQtImport::getModuleCode(PythonQtImporter *self, const char* fullname, QStr
       int ispackage = zso->type & IS_PACKAGE;
       int isbytecode = zso->type & IS_BYTECODE;
 
-      // if ignoreUpdatedPythonSourceFiles() returns true, then mtime stays 0
-      // and unmarshalCode() in getCodeFromData() will always read an existing *.pyc file,
-      // even if a newer *.py file exists. This is a release optimization where
-      // typically only *.pyc files are delivered without *.py files and reading file
-      // modification time is slow.
-      if (isbytecode && !PythonQt::importInterface()->ignoreUpdatedPythonSourceFiles()) {
+      if (isbytecode) {
         mtime = getMTimeOfSource(test);
       }
       code = getCodeFromData(test, isbytecode, ispackage, mtime);
@@ -735,14 +713,7 @@ PyObject* PythonQtImport::getCodeFromPyc(const QString& file)
   QString pyc = replaceExtension(file, pycStr);
   if (PythonQt::importInterface()->exists(pyc)) {
     time_t mtime = 0;
-    // if ignoreUpdatedPythonSourceFiles() returns true, then mtime stays 0
-    // and unmarshalCode() in getCodeFromData() will always read an existing *.pyc file,
-    // even if a newer *.py file exists. This is a release optimization where
-    // typically only *.pyc files are delivered without *.py files and reading file
-    // modification time is slow.
-    if (!PythonQt::importInterface()->ignoreUpdatedPythonSourceFiles()) {
-      mtime = getMTimeOfSource(pyc);
-    }
+    mtime = getMTimeOfSource(pyc);
     code = getCodeFromData(pyc, true, false, mtime);
     if (code != Py_None && code != NULL) {
       return code;

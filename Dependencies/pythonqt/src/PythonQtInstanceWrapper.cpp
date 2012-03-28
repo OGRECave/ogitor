@@ -288,21 +288,12 @@ static PyObject *PythonQtInstanceWrapper_classname(PythonQtInstanceWrapper* obj)
   return PyString_FromString(obj->ob_type->tp_name);
 }
 
-PyObject *PythonQtInstanceWrapper_inherits(PythonQtInstanceWrapper* obj, PyObject *args)
-{
-  char *name = NULL;
-  if (!PyArg_ParseTuple(args, "s:PythonQtInstanceWrapper.inherits",&name)) {
-    return NULL;
-  }
-  return PythonQtConv::GetPyBool(obj->classInfo()->inherits(name));
-}
-
 static PyObject *PythonQtInstanceWrapper_help(PythonQtInstanceWrapper* obj)
 {
   return PythonQt::self()->helpCalled(obj->classInfo());
 }
 
-PyObject *PythonQtInstanceWrapper_delete(PythonQtInstanceWrapper * self)
+static PyObject *PythonQtInstanceWrapper_delete(PythonQtInstanceWrapper * self)
 {
   PythonQtInstanceWrapper_deleteObject(self, true);
   Py_INCREF(Py_None);
@@ -313,9 +304,6 @@ PyObject *PythonQtInstanceWrapper_delete(PythonQtInstanceWrapper * self)
 static PyMethodDef PythonQtInstanceWrapper_methods[] = {
     {"className", (PyCFunction)PythonQtInstanceWrapper_classname, METH_NOARGS,
      "Return the classname of the object"
-    },
-    {"inherits", (PyCFunction)PythonQtInstanceWrapper_inherits, METH_VARARGS,
-    "Returns if the class inherits or is of given type name"
     },
     {"help", (PyCFunction)PythonQtInstanceWrapper_help, METH_NOARGS,
     "Shows the help of available methods for this class"
@@ -383,23 +371,7 @@ static PyObject *PythonQtInstanceWrapper_getattro(PyObject *obj,PyObject *name)
   case PythonQtMemberInfo::Property:
     if (wrapper->_obj) {
       if (member._property.userType() != QVariant::Invalid) {
-
-        PythonQt::ProfilingCB* profilingCB = PythonQt::priv()->profilingCB();
-        if (profilingCB) {
-          QString methodName = "getProperty(";
-          methodName += attributeName;
-          methodName += ")";
-          profilingCB(PythonQt::Enter, wrapper->_obj->metaObject()->className(), methodName.toLatin1());
-        }
-
-        PyObject* value = PythonQtConv::QVariantToPyObject(member._property.read(wrapper->_obj));
-
-        if (profilingCB) {
-          profilingCB(PythonQt::Leave, NULL, NULL);
-        }
-
-        return value;
-
+        return PythonQtConv::QVariantToPyObject(member._property.read(wrapper->_obj));
       } else {
         Py_INCREF(Py_None);
         return Py_None;
@@ -503,19 +475,7 @@ static int PythonQtInstanceWrapper_setattro(PyObject *obj,PyObject *name,PyObjec
       }
       bool success = false;
       if (v.isValid()) {
-        PythonQt::ProfilingCB* profilingCB = PythonQt::priv()->profilingCB();
-        if (profilingCB) {
-          QString methodName = "setProperty(";
-          methodName += attributeName;
-          methodName += ")";
-          profilingCB(PythonQt::Enter, wrapper->_obj->metaObject()->className(), methodName.toLatin1());
-        }
-
         success = prop.write(wrapper->_obj, v);
-
-        if (profilingCB) {
-          profilingCB(PythonQt::Leave, NULL, NULL);
-        }
       }
       if (success) {
         return 0;
@@ -645,17 +605,17 @@ static PyObject * PythonQtInstanceWrapper_repr(PyObject * obj)
     if (str.startsWith(typeName)) {
       return PyString_FromFormat("%s", str.toLatin1().constData());
     } else {
-      return PyString_FromFormat("%s (%s, at: %p)", typeName, str.toLatin1().constData(), wrapper->_wrappedPtr ? wrapper->_wrappedPtr : qobj);
+      return PyString_FromFormat("%s(%s, %p)", typeName, str.toLatin1().constData(), wrapper->_wrappedPtr);
     }
   }
   if (wrapper->_wrappedPtr) {
     if (wrapper->_obj) {
-      return PyString_FromFormat("%s (C++ object at: %p wrapped by %s at: %p)", typeName, wrapper->_wrappedPtr, wrapper->_obj->metaObject()->className(), qobj);
+      return PyString_FromFormat("%s (C++ Object %p wrapped by %s %p))", typeName, wrapper->_wrappedPtr, wrapper->_obj->metaObject()->className(), qobj);
     } else {
-      return PyString_FromFormat("%s (C++ object at: %p)", typeName, wrapper->_wrappedPtr);
+      return PyString_FromFormat("%s (C++ Object %p)", typeName, wrapper->_wrappedPtr);
     }
   } else {
-    return PyString_FromFormat("%s (%s at: %p)", typeName, wrapper->classInfo()->className(), qobj);
+    return PyString_FromFormat("%s (%s %p)", typeName, wrapper->classInfo()->className(), qobj);
   }
 }
 

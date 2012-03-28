@@ -43,9 +43,9 @@
 //----------------------------------------------------------------------------------
 
 
-#include "PythonQtPythonInclude.h"
+#include <dPython.h>
 #include "structmember.h"
-#include <QtCore/QString>
+#include <QString>
 
 //! declares the type of the stdout redirection class
 extern PyTypeObject PythonQtStdInRedirectType;

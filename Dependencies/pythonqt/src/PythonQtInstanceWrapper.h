@@ -42,10 +42,10 @@
 */
 //----------------------------------------------------------------------------------
 
-#include "PythonQtPythonInclude.h"
+#include <dPython.h>
 
 #include "PythonQtSystem.h"
-#include <QtCore/QPointer>
+#include <QPointer>
 
 #include "structmember.h"
 #include "methodobject.h"
@@ -90,12 +90,10 @@ typedef struct PythonQtInstanceWrapperStruct {
 
   //! stores if the object is a shell instance
   bool _isShellInstance;
-
+  
 } PythonQtInstanceWrapper;
 
 int PythonQtInstanceWrapper_init(PythonQtInstanceWrapper * self, PyObject * args, PyObject * kwds);
-
-PyObject *PythonQtInstanceWrapper_delete(PythonQtInstanceWrapper * self);
 
 #endif
 
