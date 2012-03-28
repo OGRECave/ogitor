@@ -74,6 +74,10 @@ namespace Ogitors
         const std::string getTypeString() { return "AngelScript"; };
         // return Interpreter Init Message
         const std::string getInitMessage();
+        // return Interpreter Script Icon
+        virtual const std::string getScriptIcon() { return ":/icons/angelscript.svg"; }
+        // return Interpreter Script Extension
+        virtual const std::string getScriptExtension() { return "as"; }
         //Initialization
         void Init() {};
         //Script Specific Engine Handle

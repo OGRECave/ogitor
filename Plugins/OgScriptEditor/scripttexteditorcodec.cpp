@@ -141,6 +141,7 @@ void ScriptTextEditorCodec::onKeyPressEvent(QKeyEvent *event)
 //-----------------------------------------------------------------------------------------
 void ScriptTextEditorCodec::onAddCompleter()
 {
+    //TODO: handle completion for different languages!
     mGenTexEdDoc->addCompleter(":/syntax_highlighting/script.txt");
 }
 //-----------------------------------------------------------------------------------------
@@ -176,7 +177,6 @@ void ScriptTextEditorCodec::onRun()
 //-----------------------------------------------------------------------------------------
 ITextEditorCodec* ScriptTextEditorCodecFactory::create(GenericTextEditorDocument* genTexEdDoc, QString docName)
 {
-    //TODO: fetch the icon from the type of the document
-    return new ScriptTextEditorCodec(genTexEdDoc, docName, ":/icons/Python-logo-notext.svg");
+    return new ScriptTextEditorCodec(genTexEdDoc, docName, OgitorsRoot::getSingletonPtr()->GetScriptInterpreter()->getScriptIcon());
 }
 //-----------------------------------------------------------------------------------------

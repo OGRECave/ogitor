@@ -60,6 +60,10 @@ namespace Ogitors
         virtual const std::string getTypeString() { return "PythonQt"; }
         // return Interpreter Init Message
         virtual const std::string getInitMessage();
+        // return Interpreter Script Icon
+        virtual const std::string getScriptIcon() { return ":/icons/Python-logo-notext.svg"; }
+        // return Interpreter Script Extension
+        virtual const std::string getScriptExtension() { return "*.py"; }
         //Initialization
 		virtual void Init() {};
         //Create a new instance of the interpreter
