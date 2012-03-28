@@ -57,9 +57,12 @@ endif()
 #-----------------------------------------------------------------------------
 # Build options
 
-foreach(qtlib core gui network opengl sql svg uitools webkit xml xmlpatterns)
+foreach(qtlib network opengl sql uitools webkit xml xmlpatterns)
   OPTION(PythonQt_Wrap_Qt${qtlib} "Make all of Qt${qtlib} available in python" OFF)
 endforeach()
+OPTION(PythonQt_Wrap_Qtcore "Make all of Qtcore available in python" ON)
+OPTION(PythonQt_Wrap_Qtgui "Make all of Qtgui available in python" ON)
+OPTION(PythonQt_Wrap_Qtsvg "Make all of Qtsvg available in python" ON)
 
 option(PythonQt_DEBUG "Enable/Disable PythonQt debug output" OFF)
 if(PythonQt_DEBUG)
