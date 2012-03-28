@@ -249,8 +249,6 @@ else(NOT QT4_FOUND)
     endif()
 
     if(WIN32)
-        add_custom_command(TARGET qtOgitor PRE_BUILD
-            COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
         add_custom_command(TARGET qtOgitor POST_BUILD
             COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
     endif(WIN32)
@@ -300,13 +298,22 @@ else(NOT QT4_FOUND)
         INSTALL(CODE "EXECUTE_PROCESS(COMMAND rm -f ${CMAKE_SOURCE_DIR}/qtOgitor/languages/*.qm)")
     else(UNIX AND NOT APPLE)
         # ie Windows
-        install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
-            DESTINATION ${PREFIX}
-            PATTERN "translate.pro" EXCLUDE
-            PATTERN "*.ts" EXCLUDE
-            PATTERN "*.exe" EXCLUDE
-            PATTERN "*.bat" EXCLUDE
+        INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_SOURCE_DIR}/gen-qt-projectfile.bat ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+        INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            PATTERN     "*.qm"
+            PATTERN     "*.ts" EXCLUDE
+            PATTERN     "*.pro" EXCLUDE
+            PATTERN     "*.exe" EXCLUDE
+            PATTERN     "*.bat" EXCLUDE
         )
+        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
+            DESTINATION ${CMAKE_INSTALL_PREFIX}
+            PATTERN     "qt_*.qm"
+            PATTERN     "ogitor_*.qm" EXCLUDE
+        )
+        #INSTALL(CODE "EXECUTE_PROCESS(COMMAND  ${CMAKE_SOURCE_DIR}/qtOgitor/languages/*.qm)")
     endif(UNIX AND NOT APPLE)
 
     if(WIN32)
