@@ -240,6 +240,8 @@ target_link_libraries(PythonQt
   )
 
 set(LIBRARY_OUTPUT_PATH  ../lib)
+set_target_properties(PythonQt PROPERTIES FOLDER Dependencies) 
+
 #-----------------------------------------------------------------------------
 # Install library (on windows, put the dll in 'bin' and the archive in 'lib')
 
