@@ -36,6 +36,7 @@
 #include "Plugin.h"
 #include "scripttexteditorcodec.hxx"
 #include "scriptview.hxx"
+#include "OgitorsScriptInterpreter.h"
 
 using namespace Ogitors;
 
@@ -55,7 +56,7 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
     dockWidgetData.mParent = DOCK_RESOURCES;
 
     ScriptTextEditorCodecFactory* scriptCodecFactory = new ScriptTextEditorCodecFactory();
-    GenericTextEditor::getSingletonPtr()->registerCodecFactory(OgitorsRoot::getSingletonPtr()->GetScriptInterpreter()->getScriptExtension(), scriptCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory(OgitorsRoot::getSingletonPtr()->GetScriptInterpreter()->getScriptExtension().c_str(), scriptCodecFactory);
 
     OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, dockWidgetData);
     
