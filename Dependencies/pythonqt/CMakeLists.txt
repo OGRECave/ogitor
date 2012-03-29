@@ -220,10 +220,18 @@ set_target_properties(PythonQt  PROPERTIES
   INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib"
   )
 
-target_link_libraries(PythonQt
-              ${PYTHON_LIBRARY}
-              ${QT_LIBRARIES}
-  )
+if(WIN32)
+	target_link_libraries(PythonQt
+				  ${PYTHON_LIBRARY}
+				  ${PYTHON_DEBUG_LIBRARY}
+				  ${QT_LIBRARIES}
+	  )
+else(WIN32)
+	target_link_libraries(PythonQt
+				  ${PYTHON_LIBRARY}
+				  ${QT_LIBRARIES}
+	  )
+endif(WIN32)
 
 set(LIBRARY_OUTPUT_PATH  ../lib)
 set_target_properties(PythonQt PROPERTIES FOLDER Dependencies) 
