@@ -38,8 +38,9 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QApplication>
 #include <QtCore/QObject>
-
+#include "OgitorsRoot.h"
 #include "OgitorsScriptConsole.h"
+#include "OgitorsScriptInterpreter.h"
 
 //-----------------------------------------------------------------------------------------
 
@@ -93,7 +94,7 @@ void ScriptTextEditorCodecToolBar::onRun()
 ScriptTextEditorCodec::ScriptTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon) : 
 ITextEditorCodec(genTexEdDoc, docName, documentIcon)
 {
-    int pos = docName.lastIndexOf(".as");
+    int pos = docName.lastIndexOf(std::string("." + Ogitors::OgitorsRoot::getSingletonPtr()->GetScriptInterpreter()->getScriptExtension()).c_str());
 
     if(pos != -1)
         mScriptName = docName.left(pos);
@@ -177,6 +178,6 @@ void ScriptTextEditorCodec::onRun()
 //-----------------------------------------------------------------------------------------
 ITextEditorCodec* ScriptTextEditorCodecFactory::create(GenericTextEditorDocument* genTexEdDoc, QString docName)
 {
-    return new ScriptTextEditorCodec(genTexEdDoc, docName, OgitorsRoot::getSingletonPtr()->GetScriptInterpreter()->getScriptIcon());
+    return new ScriptTextEditorCodec(genTexEdDoc, docName, Ogitors::OgitorsRoot::getSingletonPtr()->GetScriptInterpreter()->getScriptIcon().c_str());
 }
 //-----------------------------------------------------------------------------------------
