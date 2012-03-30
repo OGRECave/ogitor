@@ -171,12 +171,8 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
     if(!OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
         return;
 
-	if(!mMaterialEditor)
-		return;
-
-	Ogre::Material* material = static_cast<Ogre::Material*>(mMaterialEditor->getHandle());
-
-	try
+    Ogre::Material* material = static_cast<Ogre::Material*>(mMaterialEditor->getHandle());
+    try
     {
         std::string resourceGroup(Ogre::ResourceGroupManager::getSingletonPtr()->findGroupContainingResource(material->getOrigin()));
         Ogre::FileInfoListPtr fileInfoList(Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo(resourceGroup, material->getOrigin()));

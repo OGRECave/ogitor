@@ -52,7 +52,7 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     QTabBar* tabBar = findChildren<QTabBar*>().at(0);
     tabBar->setTabsClosable(true);
 
-    //connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     connect(tabBar, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
     connect(this,   SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
 
@@ -249,9 +249,9 @@ void GenericTextEditor::tabContentChange()
     mActSave->setEnabled(true);
 }
 //-----------------------------------------------------------------------------------------
-/*void GenericTextEditor::closeTab(int index)
+void GenericTextEditor::closeTab(int index)
 {
-	QMdiSubWindow *sub = subWindowList().at(index);
+    QMdiSubWindow *sub = subWindowList()[index];
     setActiveSubWindow(sub);
     GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(sub->widget());
     if(document->isTextModified())
@@ -283,13 +283,13 @@ void GenericTextEditor::tabContentChange()
     document->close();
 
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
-}*/
+}
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeEvent(QCloseEvent *event)
 {
-/*    QList<QMdiSubWindow*> list = subWindowList();
+    QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
-        closeTab(0);*/
+        closeTab(0);
 }
 //-----------------------------------------------------------------------------------------
 ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString extensionOrFileName)
@@ -352,8 +352,8 @@ void GenericTextEditor::tabChanged(int index)
 {
     QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
 
-    /*if(mLastDocument)
-	{
+    if(mLastDocument)
+    {
         disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
         disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
         disconnect(mActEditCopy, SIGNAL(triggered()), mLastDocument, SLOT(copy()));
@@ -365,7 +365,7 @@ void GenericTextEditor::tabChanged(int index)
         QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
         if(tb != 0)
             mw->removeToolBar(tb);
-    }*/
+    }
 
     // -1 means that the last tab was just closed and so there is no one left anymore to switch to
     if(index != -1)
@@ -769,24 +769,6 @@ void GenericTextEditorDocument::documentWasModified()
     // to ignore highlighting changes   
     if(document()->isModified())
         setTextModified(true);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::closeEvent(QCloseEvent *event)
-{
-    if(document()->isModified())
-    {	
-        int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        switch(result)
-        {
-        case QMessageBox::Yes:      save(); break;
-        case QMessageBox::No:       break;
-        case QMessageBox::Cancel:   return;
-        }
-    }
-
-    getCodec()->onClose();
-    releaseFile();
-    close();
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::releaseFile()

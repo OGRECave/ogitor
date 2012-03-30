@@ -113,6 +113,9 @@ protected:
 protected slots:
 	void	                        tabChanged(int index);
 
+private slots:
+    void                            closeTab(int index);
+
 private:
      static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;
      
@@ -171,7 +174,6 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     QString textUnderCursor() const;
     int  calculateIndentation(const QString& str);
-    void closeEvent(QCloseEvent *event);  
 
 protected slots:
     void updateLineNumberAreaWidth(int newBlockCount);

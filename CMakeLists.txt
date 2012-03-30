@@ -242,7 +242,6 @@ mark_as_advanced(
     OGITOR_PLUGIN_ICON_PATH
     OGITOR_OGRE_PLUGIN_PATH
     OGITOR_LIBOGREOFSPLUGIN_PATH
-    OGITOR_MESHMAGICK_INTERFACE
 )
 
 # Error out if Source_Dir/RunPath/Media and Source_Dir/RunPath/Projects isn't present on the users system
