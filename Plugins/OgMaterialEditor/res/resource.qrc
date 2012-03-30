@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/material.svg</file>
+        <file>syntax_highlightning/material.txt</file>
+    </qresource>
+</RCC>
