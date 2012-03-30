@@ -22,6 +22,8 @@ set(OGITOR_VERSION_STRING_MAJOR "0")
 set(OGITOR_VERSION_STRING_MINOR "5")
 set(OGITOR_VERSION_STRING_PATCH "4")
 
+message(STATUS "Building Ogitor version ${OGITOR_VERSION_STRING}")
+
 set(abi_version ${OGITOR_VERSION_STRING})
 
 # OGITOR_DIST (global install) is TRUE by default for Linux
@@ -30,6 +32,7 @@ if(UNIX AND NOT APPLE)
 else(UNIX AND NOT APPLE)
     option(OGITOR_DIST "Ogitor Installer Installation" FALSE)
 endif(UNIX AND NOT APPLE)
+message(STATUS "OGITOR_DIST is set to ${OGITOR_DIST}")
 
 # Handle install prefix
 if(WIN32)
@@ -88,6 +91,20 @@ endif ()
 if(WIN32)
 set(CMAKE_DEBUG_POSTFIX "_d")
 endif(WIN32)
+
+if(MSVC80 OR MSVC90 OR MSVC10)
+	# Option is to enable the /MP switch for Visual Studio 2005 or later
+	option(OGITOR_MSVC_ENABLE_MP
+		"Set to ON to build Ogitor with the /MP option (Visual Studio 2005 and above)." ON)
+	mark_as_advanced(OGITOR_MSVC_ENABLE_MP)
+	if(OGITOR_MSVC_ENABLE_MP)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	endif(OGITOR_MSVC_ENABLE_MP)
+	message(STATUS "Setting Visual Studio 2005+ option /MP to ${OGITOR_MSVC_ENABLE_MP}")
+	add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions(-DNOMINMAX)
+endif(MSVC80 OR MSVC90 OR MSVC10)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 
