@@ -867,6 +867,8 @@ void QtOgitorSystem::PresentPropertiesView(Ogitors::CBaseEditor *object)
         {
             mOgitorMainWindow->toolsDockWidget->setWidget(widget);
             mOgitorMainWindow->toolsDockWidget->raise();
+
+            return;
         }
         catch(...)
         {
@@ -877,6 +879,8 @@ void QtOgitorSystem::PresentPropertiesView(Ogitors::CBaseEditor *object)
     {
         mOgitorMainWindow->toolsDockWidget->setWidget(NULL);
     }
+
+    mOgitorMainWindow->propertiesDockWidget->raise();
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::HasTreeView()
