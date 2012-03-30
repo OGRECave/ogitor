@@ -7,8 +7,8 @@ IMPORTANT NOTE:
 The directories "RunPath/Media" and "RunPath/Projects" are now available as a seperate download. 
 To be able to build and run Ogitor, you will need the following files downloaded and extracted into "RunPath" folder:
 
-http://www.ogitor.org/media.zip
-http://www.ogitor.org/projects.zip
+https://bitbucket.org/jacmoe/ogitor/downloads/media.zip
+https://bitbucket.org/jacmoe/ogitor/downloads/projects.zip
 
 Please download those files and extract them to "RunPath" folder in your SOURCE path before building and installing Ogitor.
 Do not extract the files into the build directory, even though it might make sense.
