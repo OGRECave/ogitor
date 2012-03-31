@@ -1669,6 +1669,9 @@ bool OgitorsRoot::AfterLoadScene()
 //-----------------------------------------------------------------------------------------
 bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
 {
+    // clear the undo manager before stopping
+    mUndoManager->Clear();
+
     SetRunState(RS_STOPPED);
     COFSSceneSerializer *defaultserializer = OGRE_NEW COFSSceneSerializer();
 
@@ -1688,7 +1691,7 @@ bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
             setLoadState(LS_LOADED);
         }
 
-        SetSceneModified(false);        
+        SetSceneModified(false);
         SetRunState(RS_RUNNING);
         return true;
     }
