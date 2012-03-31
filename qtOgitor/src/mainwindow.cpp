@@ -1498,6 +1498,8 @@ void MainWindow::onSceneEditorToolChange(Ogitors::IEvent* evt)
         actSplat->setChecked(tool == TOOL_SPLAT);
         actSplatGrass->setChecked(tool == TOOL_SPLATGRASS);
         actPaint->setChecked(tool == TOOL_PAINT);
+
+        mTerrainToolsWidget->switchToolWidget(tool);
     }
 }
 //------------------------------------------------------------------------------------
