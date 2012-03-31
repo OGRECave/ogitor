@@ -188,7 +188,7 @@ mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSourc
     RegisterAllEditorObjects(pDisabledPluginPaths);
 
     OgitorsPropertyValueMap params;
-    unsigned int id = 2222222222;
+    unsigned int id = 2222222222u;
     params["object_id"] = OgitorsPropertyValue(PROP_UNSIGNED_INT, Ogre::Any(id));
     CBaseEditorFactory *factory = GetEditorObjectFactory("");
     mRootEditor = factory->CreateObject(0, params);
@@ -327,7 +327,7 @@ void OgitorsRoot::ClearEditors()
     }
 
     OgitorsPropertyValueMap params;
-    unsigned int id = 2222222222;
+    unsigned int id = 2222222222u;
     params["object_id"] = OgitorsPropertyValue(PROP_UNSIGNED_INT, Ogre::Any(id));
     CBaseEditorFactory *factory = GetEditorObjectFactory("");
     mRootEditor = factory->CreateObject(0, params);
