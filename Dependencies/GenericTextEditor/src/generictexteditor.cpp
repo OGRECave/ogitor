@@ -288,7 +288,7 @@ void GenericTextEditor::closeEvent(QCloseEvent *event)
 {
     QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
-        closeTab(0);
+        closeTab(i);
 }
 //-----------------------------------------------------------------------------------------
 ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString extensionOrFileName)
