@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 cmake_policy(SET CMP0003 NEW)
 
-project(OgPythonqtScript)
+project(OgPythonQtScript)
 
 set(QT_MIN_VERSION "4.5.0")
 find_package(Qt4 REQUIRED)
@@ -19,8 +19,8 @@ else(NOT QT4_FOUND)
         PythonqtInterpreter.cpp
     )
 
-    set(OgPythonqtScript_VERSION 0)
-    set(OgPythonqtScript_VERSION_MAJOR 1)
+    set(OgPythonQtScript_VERSION 0)
+    set(OgPythonQtScript_VERSION_MAJOR 1)
 
     include_directories(include)
 
@@ -39,41 +39,41 @@ else(NOT QT4_FOUND)
     link_directories(${DEPENDENCIES_LIBPATH})
 
     link_libraries( ${OGRE_LIBRARIES} Ogitor PythonQt)
-    add_library(OgPythonqtScript SHARED ${HEADER_FILES} ${SOURCE_FILES})
+    add_library(OgPythonQtScript SHARED ${HEADER_FILES} ${SOURCE_FILES})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
-    add_dependencies(OgPythonqtScript Ogitor)
-    add_dependencies(OgPythonqtScript PythonQt)
+    add_dependencies(OgPythonQtScript Ogitor)
+    add_dependencies(OgPythonQtScript PythonQt)
 
     if(NOT OGITOR_DIST)
-        set_target_properties(OgPythonqtScript PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
+        set_target_properties(OgPythonQtScript PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
     endif(NOT OGITOR_DIST)
 
-    set_target_properties(OgPythonqtScript PROPERTIES VERSION ${OgPythonqtScript_VERSION} SOVERSION ${OgPythonqtScript_VERSION_MAJOR})
-    set_target_properties(OgPythonqtScript PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-    set_target_properties(OgPythonqtScript PROPERTIES FOLDER Plugins) 
+    set_target_properties(OgPythonQtScript PROPERTIES VERSION ${OgPythonQtScript_VERSION} SOVERSION ${OgPythonQtScript_VERSION_MAJOR})
+    set_target_properties(OgPythonQtScript PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
+    set_target_properties(OgPythonQtScript PROPERTIES FOLDER Plugins) 
 
     if(UNIX AND NOT APPLE)
-        add_custom_command(TARGET OgPythonqtScript PRE_BUILD
+        add_custom_command(TARGET OgPythonQtScript PRE_BUILD
             COMMAND mkdir -p ../../RunPath/Plugins)
-        add_custom_command(TARGET OgPythonqtScript POST_BUILD
-            COMMAND cp -r ../lib/libOgPythonqtScript.* ../../RunPath/Plugins/)
+        add_custom_command(TARGET OgPythonQtScript POST_BUILD
+            COMMAND cp -r ../lib/libOgPythonQtScript.* ../../RunPath/Plugins/)
     endif(UNIX AND NOT APPLE)
 
     if(WIN32)
-        add_custom_command(TARGET OgPythonqtScript PRE_BUILD
+        add_custom_command(TARGET OgPythonQtScript PRE_BUILD
             COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
-        add_custom_command(TARGET OgPythonqtScript POST_BUILD
-            COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins & if exist ..\\..\\RunPath\\Plugins\\OgPythonqtScript_d.dll move ..\\..\\RunPath\\Plugins\\OgPythonqtScript_d.dll ..\\..\\RunPath\\Plugins\\debug)
+        add_custom_command(TARGET OgPythonQtScript POST_BUILD
+            COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins & if exist ..\\..\\RunPath\\Plugins\\OgPythonQtScript_d.dll move ..\\..\\RunPath\\Plugins\\OgPythonQtScript_d.dll ..\\..\\RunPath\\Plugins\\debug)
 
-        install(TARGETS OgPythonqtScript
+        install(TARGETS OgPythonQtScript
             RUNTIME DESTINATION Plugins
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     endif(WIN32)
 
     IF(UNIX AND NOT APPLE)
         if(OGITOR_DIST)
-            install(TARGETS OgPythonqtScript
+            install(TARGETS OgPythonQtScript
                 LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
                 CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
         endif(OGITOR_DIST)

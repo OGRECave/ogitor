@@ -519,7 +519,7 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("/debug/*Script_d.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/debug/*Script_d.dll",ScriptPluginList);
 #else
     mSystem->GetFileList("../Plugins/*Script.dll",ScriptPluginList);
 #endif

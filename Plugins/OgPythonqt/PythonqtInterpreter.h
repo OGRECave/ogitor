@@ -30,8 +30,8 @@
 /// THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PYTHONQT_INTERPRETER_H
-#define PYTHONQT_INTERPRETER_H
+#ifndef OGPYTHONQT_INTERPRETER_H
+#define OGPYTHONQT_INTERPRETER_H
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
    #ifdef PLUGIN_EXPORT
@@ -63,7 +63,7 @@ namespace Ogitors
         // return Interpreter Script Icon
         virtual const std::string getScriptIcon() { return ":/icons/Python-logo-notext.svg"; }
         // return Interpreter Script Extension
-        virtual const std::string getScriptExtension() { return "*.py"; }
+        virtual const std::string getScriptExtension() { return "as"; }
         //Initialization
 		virtual void Init() {};
         //Create a new instance of the interpreter
