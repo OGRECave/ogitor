@@ -58,22 +58,22 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
 
     mActSave = new QAction(tr("Save"), this);
     mActSave->setStatusTip(tr("Save"));
-    mActSave->setIcon( QIcon( ":/icons/filesave.svg" ));
+    mActSave->setIcon(QIcon(":/icons/filesave.svg" ));
     mActSave->setEnabled(false);
     
     mActEditCopy = new QAction(tr("Copy"), this);
     mActEditCopy->setStatusTip(tr("Copy Selected"));
-    mActEditCopy->setIcon( QIcon( ":/icons/editcopy.svg"));
+    mActEditCopy->setIcon(QIcon(":/icons/editcopy.svg"));
     mActEditCopy->setEnabled(false);
 
     mActEditCut = new QAction(tr("Cut"), this);
     mActEditCut->setStatusTip(tr("Cut Selected"));
-    mActEditCut->setIcon( QIcon( ":/icons/editcut.svg"));
+    mActEditCut->setIcon(QIcon(":/icons/editcut.svg"));
     mActEditCut->setEnabled(false);
 
     mActEditPaste = new QAction(tr("Paste"), this);
     mActEditPaste->setStatusTip(tr("Paste From Clipboard"));
-    mActEditPaste->setIcon( QIcon( ":/icons/editpaste.svg"));
+    mActEditPaste->setIcon(QIcon(":/icons/editpaste.svg"));
     mActEditPaste->setEnabled(false);
 
     mMainToolBar = new QToolBar();
@@ -155,11 +155,18 @@ bool GenericTextEditor::displayTextFromFile(QString filePath, QString optionalDa
         ITextEditorCodec* codec = codecFactory->create(document, filePath);
         document->setCodec(codec);
         document->displayTextFromFile(QFile(filePath).fileName(), filePath, optionalData);
-        QMdiSubWindow *window = addSubWindow(document);
-        window->setWindowIcon(QIcon(codec->getDocumentIcon()));
+
+        QMdiSubWindow* subWindow = new QMdiSubWindow;
+        subWindow->setWidget(document);
+        subWindow->setAttribute(Qt::WA_DeleteOnClose);
+        subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
+        addSubWindow(subWindow);
+
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName());   
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName()); 
+
+        QList<QMdiSubWindow*> list = subWindowList();
     }
     else
     {
@@ -197,11 +204,16 @@ bool GenericTextEditor::displayText(QString docName, QString text, QString exten
         ITextEditorCodec* codec = codecFactory->create(document, docName);
         document->setCodec(codec);
         document->displayText(docName, text, optionalData);
-        QMdiSubWindow *window = addSubWindow(document);
-        window->setWindowIcon(QIcon(codec->getDocumentIcon()));
+
+        QMdiSubWindow* subWindow = new QMdiSubWindow;
+        subWindow->setWidget(document);
+        subWindow->setAttribute(Qt::WA_DeleteOnClose);
+        subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
+        addSubWindow(subWindow);
+
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName);    
+        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName); 
     }
     else
     {
@@ -250,21 +262,7 @@ void GenericTextEditor::tabContentChange()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
 {
-    QMdiSubWindow *sub = subWindowList()[index];
-    setActiveSubWindow(sub);
-    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(sub->widget());
-    if(document->isTextModified())
-    {	
-        int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        switch(result)
-        {
-        case QMessageBox::Yes:      document->save(); break;
-        case QMessageBox::No:       break;
-        case QMessageBox::Cancel:   return;
-        }
-    }
-
-    if(mLastDocument == document)
+    if(mLastDocument)
     {
         disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
         disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
@@ -275,11 +273,6 @@ void GenericTextEditor::closeTab(int index)
         disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
         mLastDocument = 0;
     }
-
-    sub->close();
-    document->getCodec()->onClose();
-    document->releaseFile();
-    document->close();
 
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
 }
@@ -881,5 +874,23 @@ bool GenericTextEditorDocument::saveDefaultLogic()
     }
 
     return true;
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditorDocument::closeEvent(QCloseEvent* event)
+{
+    if(isTextModified())
+    {	
+        int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        switch(result)
+        {
+        case QMessageBox::Yes:      save(); break;
+        case QMessageBox::No:       break;
+        case QMessageBox::Cancel:   return;
+        }
+    }
+
+    getCodec()->onClose();
+    releaseFile();
+    close();
 }
 //-----------------------------------------------------------------------------------------

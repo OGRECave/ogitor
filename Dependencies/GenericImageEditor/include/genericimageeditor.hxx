@@ -140,6 +140,7 @@ public:
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void closeEvent(QCloseEvent* event);
 
 protected:
     IImageEditorCodec*  mCodec;

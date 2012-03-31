@@ -64,7 +64,7 @@ namespace Ogitors
 
     typedef Ogre::map<unsigned int, ContextDef>::type ObjectContextMap;
 
-    class PluginExport AngelScriptInterpreter: public OgitorsScriptInterpreter
+    class PluginExport AngelScriptInterpreter : public OgitorsScriptInterpreter
     {
     public:
         AngelScriptInterpreter();
