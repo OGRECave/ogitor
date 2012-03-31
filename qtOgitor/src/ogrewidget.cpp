@@ -256,7 +256,7 @@ void OgreWidget::paintEvent(QPaintEvent* evt)
         }
 
         if(mRenderStop)
-            msgstr = tr("Device Lost...");
+            msgstr = tr("Rendering stopped...");
 
         mOverlayWidget->setMessageString(msgstr);
 
