@@ -338,13 +338,9 @@ void SettingsDialog::onAccept()
         QFile file(filename.c_str());
         if(file.exists())
         {
-            int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Project file with that name already exists. Would you like to overwrite it?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-            switch(result)
-            {
-            case QMessageBox::Yes:      break;
-            case QMessageBox::No:       return;
-            case QMessageBox::Cancel:   return;
-            }
+            int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Project file with that name already exists. Would you like to overwrite it?", QMessageBox::Yes | QMessageBox::No);
+            if (result != QMessageBox::Yes)
+                return;
         }
 
         Ogre::String sProjectDir = OgitorsUtils::QualifyPath(QString(ProjectDir + QString("/") + ProjectName).toStdString());

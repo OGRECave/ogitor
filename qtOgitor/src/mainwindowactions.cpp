@@ -607,16 +607,6 @@ void MainWindow::newScene()
     Ogre::String filename = opt.ProjectDir + "/" + opt.ProjectName + ".ofs";
     filename = Ogitors::OgitorsUtils::QualifyPath(filename);
 
-    /* Try opening to the filesystem to see if it already exists */
-    if(mFile.mount(filename.c_str(), OFS::OFS_MOUNT_OPEN) == OFS::OFS_OK)
-    {
-        mFile.unmount();
-        if (system->DisplayMessageDialog(tr("Project already exists at this location. Do you want to overwrite it?").toStdString(), DLGTYPE_YESNO) == DLGRET_NO)
-        {
-            return;
-        }
-    }
-
     /* Prompt current scene to save */
     if(ogRoot->IsSceneLoaded())
         mOgreWidget->setSwitchingScene(true);
