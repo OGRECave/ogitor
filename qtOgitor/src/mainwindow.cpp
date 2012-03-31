@@ -242,11 +242,9 @@ MainWindow::MainWindow(QString args, QWidget *parent)
     createSceneRenderWindow();
 
     QMainWindow *mw = new QMainWindow(mEditorTab);
-
     mGenericTextEditor = new GenericTextEditor("GenericTextEditor", mw);
     mGenericTextEditor->setAllowDoubleDisplay(false);
     mEditorTab->addTab(mw, tr("Text Editor"));
-
     mw->setCentralWidget(mGenericTextEditor);
 
     mGenericImageEditor = new GenericImageEditor("GenericImageEditor", mEditorTab);

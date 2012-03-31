@@ -293,24 +293,21 @@ void OgitorsRoot::FillResourceGroup(Ogre::ResourceGroupManager *mngr, Ogre::Stri
     }
 }
 //-----------------------------------------------------------------------------------------
-void OgitorsRoot::WriteCameraPositions(std::ostream &outstream, bool addcurrent)
+void OgitorsRoot::WriteCameraPositions(std::ostream &outstream, const PROJECTOPTIONS *pOpt)
 {
     char savestr[500];
     int i;
     
-    if(mActiveViewport)
-        mProjectOptions.CameraSpeed = mActiveViewport->GetCameraSpeed();
-
-    sprintf_s(savestr,500,"  <CAMERASPEED value=\"%s\"></CAMERASPEED>\n", Ogre::StringConverter::toString(mProjectOptions.CameraSpeed).c_str());
+    sprintf_s(savestr,500,"  <CAMERASPEED value=\"%s\"></CAMERASPEED>\n", Ogre::StringConverter::toString(pOpt->CameraSpeed).c_str());
     outstream << savestr;
-    sprintf_s(savestr,500,"  <CAMERAPOSITIONS count=\"%d\">\n",mProjectOptions.CameraSaveCount);
+    sprintf_s(savestr,500,"  <CAMERAPOSITIONS count=\"%d\">\n", pOpt->CameraSaveCount);
     outstream << savestr;
-    for(i =0;i < mProjectOptions.CameraSaveCount;i++)
+    for(i =0;i < pOpt->CameraSaveCount;i++)
     {
-        sprintf_s(savestr,500,"    <OPTION id=\"%d\" position=\"%s\" orientation=\"%s\"></OPTION>\n",i,Ogre::StringConverter::toString(mProjectOptions.CameraPositions[i]).c_str(),Ogre::StringConverter::toString(mProjectOptions.CameraOrientations[i]).c_str());
+        sprintf_s(savestr,500,"    <OPTION id=\"%d\" position=\"%s\" orientation=\"%s\"></OPTION>\n",i,Ogre::StringConverter::toString(pOpt->CameraPositions[i]).c_str(),Ogre::StringConverter::toString(pOpt->CameraOrientations[i]).c_str());
         outstream << savestr;
     }
-    if(addcurrent)
+    if(!pOpt->IsNewProject)
     {
         Ogre::Vector3 vCamPos = GetViewport()->getCameraEditor()->getDerivedPosition();
         Ogre::Quaternion qCamOrient = GetViewport()->getCameraEditor()->getDerivedOrientation();
@@ -325,12 +322,10 @@ void OgitorsRoot::WriteCameraPositions(std::ostream &outstream, bool addcurrent)
     outstream << "  </CAMERAPOSITIONS>\n";
 }
 //-----------------------------------------------------------------------------------------
-void OgitorsRoot::WriteProjectOptions(std::ostream &outstream, bool newproject)
+void OgitorsRoot::WriteProjectOptions(std::ostream &outstream, const PROJECTOPTIONS *pOpt)
 {
     char buffer[5000];
     unsigned int i;
-
-    PROJECTOPTIONS *pOpt = GetProjectOptions();
 
     outstream << "  <PROJECT>\n";
     sprintf_s(buffer,5000,"    <SCENEMANAGER value=\"%s\"></SCENEMANAGER>\n",pOpt->SceneManagerName.c_str());
@@ -354,7 +349,7 @@ void OgitorsRoot::WriteProjectOptions(std::ostream &outstream, bool newproject)
     }
     outstream << "    </RESOURCEDIRECTORIES>\n";
 
-    WriteCameraPositions(outstream,!newproject);
+    WriteCameraPositions(outstream, pOpt);
 
     outstream << "    <LAYERS>\n";
     for(i = 0;i < 31;i++)

@@ -56,7 +56,7 @@ namespace Ogitors
     A class that is responsible for preparing, registering and executing scripts
     */
 
-    class OgitorExport OgitorsScriptInterpreter: public Ogre::GeneralAllocatedObject
+    class OgitorExport OgitorsScriptInterpreter : public Ogre::GeneralAllocatedObject
     {
     public:
 
@@ -111,7 +111,7 @@ namespace Ogitors
         static float        mTimeSinceLastFrame;
     };
 
-    class OgitorExport OgitorsDummyScriptInterpreter: public OgitorsScriptInterpreter
+    class OgitorExport OgitorsDummyScriptInterpreter : public OgitorsScriptInterpreter
     {
     public:
 
@@ -141,21 +141,21 @@ namespace Ogitors
         Ogre::StringVector buildString(std::string &section, std::string &arg) 
         { 
             Ogre::StringVector out;
-            out.push_back("Can not interprete : " + arg);
+            out.push_back("Cannot interpret : " + arg);
             return out;
         }
         // execute a string as script
         Ogre::StringVector execString(std::string &section, std::string &arg)
         {
             Ogre::StringVector out;
-            out.push_back("Can not interprete : " + arg);
+            out.push_back("Cannot interpret : " + arg);
             return out;
         }
         // execute a script from file
         Ogre::StringVector runScript(std::string &section, std::string &file)
         {
             Ogre::StringVector out;
-            out.push_back("Can not run : " + file);
+            out.push_back("Cannot run : " + file);
             return out;
         }
 
@@ -163,7 +163,7 @@ namespace Ogitors
         Ogre::StringVector addFunction(std::string &section, std::string &arg)
         {
             Ogre::StringVector out;
-            out.push_back("Can not add function : " + arg);
+            out.push_back("Cannot add function : " + arg);
             return out;
         }
 
@@ -179,7 +179,7 @@ namespace Ogitors
         Ogre::StringVector compileModule(std::string &section, std::string &file)
         {
             Ogre::StringVector out;
-            out.push_back("Can not compile : " + file);
+            out.push_back("Cannot compile : " + file);
             return out;
         }
 
@@ -187,7 +187,7 @@ namespace Ogitors
         Ogre::StringVector compileModule(std::string &section, const char *source)
         {
             Ogre::StringVector out;
-            out.push_back("Can not compile...");
+            out.push_back("Cannot compile...");
             return out;
         }
 
@@ -195,7 +195,7 @@ namespace Ogitors
         Ogre::StringVector runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time)
         {
             Ogre::StringVector out;
-            out.push_back("Can not run : " + section);
+            out.push_back("Cannot run : " + section);
             return out;
         }
 

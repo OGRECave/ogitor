@@ -333,6 +333,16 @@ void SettingsDialog::onAccept()
         if(!IsValidName(TerrainDir, qApp->translate("SettingsDialog", "Terrain Directory")))
             return;
 
+        Ogre::String filename = OgitorsUtils::QualifyPath(QString(ProjectDir + QString("/") + ProjectName).toStdString());
+
+        QFile file(filename.c_str());
+        if(file.exists())
+        {
+            int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Project file with that name already exists. Would you like to overwrite it?", QMessageBox::Yes | QMessageBox::No);
+            if (result != QMessageBox::Yes)
+                return;
+        }
+
         Ogre::String sProjectDir = OgitorsUtils::QualifyPath(QString(ProjectDir + QString("/") + ProjectName).toStdString());
 
         OgitorsSystem::getSingletonPtr()->MakeDirectory(sProjectDir);
