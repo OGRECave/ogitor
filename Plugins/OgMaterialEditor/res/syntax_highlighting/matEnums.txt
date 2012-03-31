@@ -64,14 +64,12 @@ off
 on	   
 once	   
 once_per_light	   
-once_per_light	   
-one	   
+once_per_light	     
 one	   
 one_minus_dest_alpha	   
 one_minus_dest_colour	   
 one_minus_src_alpha	   
-one_minus_src_colour	   
-out	   
+one_minus_src_colour	      
 per_light	   
 per_n_lights	   
 PF_A1R5G5B5	   
