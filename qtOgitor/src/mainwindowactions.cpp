@@ -639,7 +639,6 @@ void MainWindow::newScene()
         filename = Ogitors::OgitorsUtils::QualifyPath(filename);
 
         bool succeed = false;
-
         OFS::OfsPtr mFile;
 
         try
@@ -653,7 +652,9 @@ void MainWindow::newScene()
                 outfile << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
                 outfile << "<OGITORSCENE version=\"2\">\n";
                 ogRoot->WriteProjectOptions(outfile,true);
-                sprintf_s(buffer,5000,NewSceneDefinition,ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerConfigFile.c_str());
+                sprintf_s(buffer, 5000, NewSceneDefinition,ogRoot->GetProjectOptions()->SceneManagerName.c_str(),
+                          ogRoot->GetProjectOptions()->SceneManagerName.c_str(), 
+                          ogRoot->GetProjectOptions()->SceneManagerConfigFile.c_str());
                 outfile << buffer;
 
                 OFS::OFSHANDLE handle;
