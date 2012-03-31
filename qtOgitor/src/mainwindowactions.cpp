@@ -592,21 +592,13 @@ void MainWindow::newScene()
                                       "</OGITORSCENE>\n";
 
     Ogitors::OgitorsRoot *ogRoot = OgitorsRoot::getSingletonPtr();
-
-    if(ogRoot->IsSceneLoaded())
-        mOgreWidget->setSwitchingScene(true);
-
-    if(!(ogRoot->TerminateScene()))
-    {
-        mOgreWidget->setSwitchingScene(false);
-        return;
-    }
+    Ogitors::OgitorsSystem *system = OgitorsSystem::getSingletonPtr();
 
     Ogitors::PROJECTOPTIONS *pOpt = ogRoot->GetProjectOptions();
 
     pOpt->IsNewProject = true;
     pOpt->ProjectName = "";
-    pOpt->ProjectDir = Ogitors::OgitorsSystem::getSingletonPtr()->getProjectsDirectory();
+    pOpt->ProjectDir = system->getProjectsDirectory();
     pOpt->SceneManagerName = "OctreeSceneManager";
     pOpt->TerrainDirectory = "Terrain";
     pOpt->HydraxDirectory = "Hydrax";
@@ -632,52 +624,75 @@ void MainWindow::newScene()
 
     SettingsDialog dlg(QApplication::activeWindow(), pOpt);
 
-    if(dlg.exec() == QDialog::Accepted)
+    /* Bring up new scene dialog */
+    if(dlg.exec() != QDialog::Accepted)
+        return;
+
+    OFS::OfsPtr mFile;
+
+    Ogre::String filename = ogRoot->GetProjectOptions()->ProjectDir + "/" + ogRoot->GetProjectOptions()->ProjectName + ".ofs";
+    filename = Ogitors::OgitorsUtils::QualifyPath(filename);
+
+    /* Try opening to the filesystem to see if it already exists */
+    if(mFile.mount(filename.c_str(), OFS::OFS_MOUNT_OPEN) == OFS::OFS_OK)
     {
-        char buffer[5000];
-        Ogre::String filename = ogRoot->GetProjectOptions()->ProjectDir + "/" + ogRoot->GetProjectOptions()->ProjectName + ".ofs";
-        filename = Ogitors::OgitorsUtils::QualifyPath(filename);
-
-        bool succeed = false;
-
-        OFS::OfsPtr mFile;
-
-        try
+        mFile.unmount();
+        if (system->DisplayMessageDialog(tr("Project already exists at this location. Do you want to overwrite it?").toStdString(), DLGTYPE_YESNO) == DLGRET_NO)
         {
-            if(mFile.mount(filename.c_str(), OFS::OFS_MOUNT_CREATE) == OFS::OFS_OK)
-                succeed = true;
-
-            std::stringstream outfile;
-            if(succeed)
-            {
-                outfile << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-                outfile << "<OGITORSCENE version=\"2\">\n";
-                ogRoot->WriteProjectOptions(outfile,true);
-                sprintf_s(buffer,5000,NewSceneDefinition,ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerConfigFile.c_str());
-                outfile << buffer;
-
-                OFS::OFSHANDLE handle;
-                Ogre::String projfilename = "/";
-                projfilename += ogRoot->GetProjectOptions()->ProjectName + ".ogscene";
-
-                mFile->createFile(handle, projfilename.c_str(), outfile.tellp(), outfile.tellp(), outfile.str().c_str());
-                mFile->closeFile(handle);
-                mFile.unmount();
-            }
-        }
-        catch(...)
-        {
-            succeed = false;
-        }
-
-        if(!succeed)
-        {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog("The path is Read-Only. Ogitor can not work with Read-Only Project Paths!", DLGTYPE_OK);
             return;
         }
-
-        ogRoot->LoadScene(filename);
     }
+
+    /* Prompt current scene to save */
+    if(ogRoot->IsSceneLoaded())
+        mOgreWidget->setSwitchingScene(true);
+
+    /* Unload current scene */
+    if(!(ogRoot->TerminateScene()))
+    {
+        mOgreWidget->setSwitchingScene(false);
+        return;
+    }
+
+    /* create new project and load it */
+    char buffer[5000];
+    bool succeed = false;
+
+    try
+    {
+        if(mFile.mount(filename.c_str(), OFS::OFS_MOUNT_CREATE) == OFS::OFS_OK)
+            succeed = true;
+
+        std::stringstream outfile;
+        if(succeed)
+        {
+            outfile << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+            outfile << "<OGITORSCENE version=\"2\">\n";
+            ogRoot->WriteProjectOptions(outfile,true);
+            sprintf_s(buffer,5000,NewSceneDefinition,ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerConfigFile.c_str());
+            outfile << buffer;
+
+            OFS::OFSHANDLE handle;
+            Ogre::String projfilename = "/";
+            projfilename += ogRoot->GetProjectOptions()->ProjectName + ".ogscene";
+
+            mFile->createFile(handle, projfilename.c_str(), outfile.tellp(), outfile.tellp(), outfile.str().c_str());
+            mFile->closeFile(handle);
+            mFile.unmount();
+        }
+    }
+    catch(...)
+    {
+        succeed = false;
+    }
+
+    if(!succeed)
+    {
+        system->DisplayMessageDialog(tr("The path is Read-Only. Ogitor can not work with Read-Only Project Paths").toStdString(), DLGTYPE_OK);
+        return;
+    }
+
+    ogRoot->LoadScene(filename);
     updateRecentFiles();
 }
 //------------------------------------------------------------------------------
