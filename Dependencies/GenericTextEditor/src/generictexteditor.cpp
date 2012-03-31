@@ -76,7 +76,6 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     mActEditPaste->setIcon( QIcon( ":/icons/editpaste.svg"));
     mActEditPaste->setEnabled(false);
 
-
     mMainToolBar = new QToolBar();
     mMainToolBar->setObjectName("renderwindowtoolbar");
     mMainToolBar->setIconSize(QSize(20,20));
@@ -92,10 +91,10 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
 
     mLastDocument = 0;
 
-    connect(mActEditCut, SIGNAL(triggered()), this, SLOT(pasteAvailable()));
-    connect(mActEditCopy, SIGNAL(triggered()), this, SLOT(pasteAvailable()));
-    connect(mActSave, SIGNAL(triggered()), this, SLOT(onSave()));
-
+    connect(mActEditCut,                SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
+    connect(mActEditCopy,               SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
+    connect(mActSave,                   SIGNAL(triggered()),    this, SLOT(onSave()));
+    connect(QApplication::clipboard(),  SIGNAL(dataChanged()),  this, SLOT(onClipboardChanged()));
 
     // Register the standard generic text editor codec extensions
     GenericTextEditorCodecFactory* genCodecFactory = new GenericTextEditorCodecFactory();
@@ -454,6 +453,15 @@ void GenericTextEditor::onLoadStateChanged(Ogitors::IEvent* evt)
             closeAllSubWindows();
         }
     }
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::onClipboardChanged()
+{
+    const QClipboard* clipboard = QApplication::clipboard();
+    const QMimeData* mimeData = clipboard->mimeData();
+
+    if(mimeData->hasText())
+        emit pasteAvailable();
 }
 //-----------------------------------------------------------------------------------------
 GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
