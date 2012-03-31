@@ -185,6 +185,18 @@ void TerrainToolsWidget::updateTerrainOptions(ITerrainEditor *terrain)
     terrain->setEditMode(0);
 }
 //----------------------------------------------------------------------------------------
+void TerrainToolsWidget::switchToolWidget( const unsigned int tool )
+{
+    if (tool == TOOL_SMOOTH || tool == TOOL_DEFORM)
+        toolBox->setCurrentWidget(brushWidget);
+
+    if (tool == TOOL_SPLAT)
+        toolBox->setCurrentWidget(texturesWidget);
+
+    if (tool == TOOL_SPLATGRASS)
+        toolBox->setCurrentWidget(plantsWidget);
+}
+//----------------------------------------------------------------------------------------
 void TerrainToolsWidget::updateTools()
 {
     populateBrushes();

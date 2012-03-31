@@ -42,6 +42,7 @@ public:
 
     void updateTools();
     void updateTerrainOptions(Ogitors::ITerrainEditor *terrain);
+    void switchToolWidget( const unsigned int tool );
 
 public Q_SLOTS:
     void textureIndexChanged();
