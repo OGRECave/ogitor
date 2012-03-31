@@ -596,8 +596,6 @@ void MainWindow::newScene()
 
     Ogitors::PROJECTOPTIONS opt = ogRoot->CreateDefaultProjectOptions();
 
-//    Ogitors::PROJECTOPTIONS *pOpt = ogRoot->GetProjectOptions();
-
     SettingsDialog dlg(QApplication::activeWindow(), &opt);
 
     /* Bring up new scene dialog */

@@ -104,6 +104,7 @@ public slots:
     void                            tabContentChange();
     void                            pasteAvailable();
     void                            onSave();
+    void                            onClipboardChanged();
 
 protected:
     bool                            isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
@@ -123,7 +124,6 @@ private:
      
      QTabWidget* mParentTabWidget;
      bool        mAllowDoubleDisplay;
-
   
      QToolBar*   mMainToolBar;
      QAction*    mActSave;
