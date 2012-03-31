@@ -105,7 +105,8 @@ half4
 half4x1	   
 half4x2	   
 half4x3	   
-half4x4	   
+half4x4
+in	   
 int	
 int1   
 int1x1	   
@@ -126,7 +127,8 @@ int4
 int4x1	   
 int4x2	   
 int4x3	   
-int4x4	   
+int4x4
+out	   
 sampler	   
 sampler1D	   
 sampler2D	   
