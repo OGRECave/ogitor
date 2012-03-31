@@ -318,10 +318,10 @@ QStringListModel* GenericTextEditor::modelFromFile(const QString& filePath)
         return new QStringListModel();
 
     QStringList words;
-    while (!file.atEnd()) 
+    while(!file.atEnd()) 
     {
         QByteArray line = file.readLine();
-        if(!line.isEmpty())
+        if(!line.trimmed().isEmpty())
             words << line.trimmed();
     }
     QMap<QString, QString> strMap;
@@ -778,7 +778,12 @@ void GenericTextEditorDocument::releaseFile()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::addCompleter(const QString keywordListFilePath)
 {
-    mCompleter = new QCompleter(GenericTextEditor::getSingletonPtr()->modelFromFile(keywordListFilePath)->stringList(), this);
+    addCompleter(GenericTextEditor::getSingletonPtr()->modelFromFile(keywordListFilePath)->stringList());
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditorDocument::addCompleter(const QStringList stringList)
+{
+    mCompleter = new QCompleter(stringList, this);
     mCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     mCompleter->setCompletionMode(QCompleter::PopupCompletion);

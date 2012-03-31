@@ -62,8 +62,6 @@ protected:
 class MaterialTextEditorCodec : public ITextEditorCodec, Ogre::ScriptCompilerListener 
 {
 public:
-    static MaterialTextEditorCodecToolBar* mToolBar;
-
     MaterialTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
 
     QString         onBeforeDisplay(QString text);
@@ -81,11 +79,17 @@ public:
 
     static  QString getMaterialText(const Ogre::String& input, const Ogre::String& find);
 
+    static MaterialTextEditorCodecToolBar* mToolBar;
+    static QStringListModel*    mKeyHighlightList;
+    static QStringListModel*    mEnumHighlightList;
+    static QStringListModel*    mDataTypeHighlightList;
+    static QStringListModel*    mCombinedHighlightList;
+
 private:
     QStringList     findMaterialNames();
     void            reloadMaterials(QStringList materialList);
     
-    bool            mScriptError;
+    bool            mScriptError;    
 };
 
 //----------------------------------------------------------------------------------------

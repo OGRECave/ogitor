@@ -244,13 +244,13 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     mGenericTextEditor = new GenericTextEditor("GenericTextEditor", mw);
     mGenericTextEditor->setAllowDoubleDisplay(false);
-    mEditorTab->addTab(mw, tr("Generic Text Editor"));
+    mEditorTab->addTab(mw, tr("Text Editor"));
 
     mw->setCentralWidget(mGenericTextEditor);
 
     mGenericImageEditor = new GenericImageEditor("GenericImageEditor", mEditorTab);
     mGenericImageEditor->setAllowDoubleDisplay(false);
-    mEditorTab->addTab(mGenericImageEditor, tr("Image Editor"));
+    mEditorTab->addTab(mGenericImageEditor, tr("Image Viewer"));
 
     createCustomTabWindows();
 

@@ -31,11 +31,18 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #include "materialhighlighter.hxx"
 
-MaterialHighlighter::MaterialHighlighter(QStringListModel* keywords, QTextDocument *parent) : QSyntaxHighlighter(parent)
+MaterialHighlighter::MaterialHighlighter(QStringListModel* keywords, QStringListModel* enums, 
+                                         QStringListModel* dataTypes, QTextDocument *parent) : 
+                                         QSyntaxHighlighter(parent)
 {    
     HighlightingRule rule;
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
+    enumFormat.setForeground(Qt::darkMagenta);
+    dataTypeFormat.setForeground(Qt::darkCyan);
+    dataTypeFormat.setFontWeight(QFont::Bold);
+    stringFormat.setForeground(Qt::darkRed);
+    commentFormat.setForeground(Qt::darkGreen);
 
     foreach(QString pattern, keywords->stringList()) 
     {
@@ -45,18 +52,39 @@ MaterialHighlighter::MaterialHighlighter(QStringListModel* keywords, QTextDocume
         keywordRules.append(rule);
     }
 
+    foreach(QString pattern, enums->stringList()) 
+    {
+        pattern = "\\b" + pattern + "\\b";
+        rule.pattern = QRegExp(pattern);
+        rule.format = enumFormat;
+        enumRules.append(rule);
+    }
+
+    foreach(QString pattern, dataTypes->stringList()) 
+    {
+        pattern = "\\b" + pattern + "\\b";
+        rule.pattern = QRegExp(pattern);
+        rule.format = dataTypeFormat;
+        dataTypeRules.append(rule);
+    }
+
+    rule.pattern = QRegExp("\"([a-zA-Z0-9\\.\\-\\_]+)\\s*([a-zA-Z0-9-]*)\"");
+    rule.format = stringFormat;
+    formatRules.append(rule);
+
     commentStartExpression = QRegExp("/\\*");
     commentEndExpression = QRegExp("\\*/");
-    commentFormat.setForeground(Qt::darkGreen);
+
     rule.pattern = QRegExp("//[^\n]*");
     rule.format = commentFormat;
-    keywordRules.append(rule);
+    formatRules.append(rule);
 
-    rule.pattern = QRegExp("texture[^_]([a-zA-Z0-9\\.\\-\\_]+)\\s*([a-zA-Z0-9-]*)");
+    rule.pattern = QRegExp("texture[^_]([a-zA-Z0-9\\.\\-\\_]+)*([a-zA-Z0-9-]*)");
     textureFormat.setForeground(Qt::darkGray);
     textureFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline);
     rule.format = textureFormat;
     valueRules.append(rule);
+
     rule.pattern = QRegExp("ambient[^_]([0-9].+)$");
     textureFormat.setForeground(Qt::darkGray);
     textureFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline);
@@ -84,17 +112,27 @@ MaterialHighlighter::MaterialHighlighter(QStringListModel* keywords, QTextDocume
 //-----------------------------------------------------------------------------------------
 void MaterialHighlighter::highlightBlock(const QString &text)
 {
-    foreach(HighlightingRule rule, keywordRules) 
+    int index;
+    int length;
+
+    _highlightSimpleRegexList(text, keywordRules);
+    _highlightSimpleRegexList(text, enumRules);
+    _highlightSimpleRegexList(text, dataTypeRules);
+    _highlightSimpleRegexList(text, formatRules);
+    
+    foreach(HighlightingRule rule, valueRules) 
     {
+        index = 0;
         QRegExp expression(rule.pattern);
-        int index = text.indexOf(expression);
-        while(index >= 0) 
+
+        while((index = expression.indexIn(text, index)) != -1)
         {
-            int length = expression.matchedLength();
-            setFormat(index, length, rule.format);
-            index = text.indexOf(expression, index + length);
+            length = expression.matchedLength();
+            setFormat(index + length - expression.cap(1).length(), expression.cap(1).length(), rule.format);
+            index += length;
         }
     }
+
     setCurrentBlockState(0);
 
     int startIndex = 0;
@@ -117,16 +155,23 @@ void MaterialHighlighter::highlightBlock(const QString &text)
         setFormat(startIndex, commentLength, commentFormat);
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
     }
-
-    foreach(HighlightingRule rule, valueRules) 
+}
+//-----------------------------------------------------------------------------------------
+void MaterialHighlighter::_highlightSimpleRegexList(const QString text, const QVector<HighlightingRule> rules)
+{
+    int index;
+    int length;
+    
+    foreach(HighlightingRule rule, rules) 
     {
+        index = 0;
         QRegExp expression(rule.pattern);
-        int index = text.indexOf(expression);
-        while(index >= 0) 
+
+        while((index = expression.indexIn(text, index)) != -1)
         {
-            int length = expression.matchedLength();
-            setFormat(index+length-expression.cap(1).length(), expression.cap(1).length(), rule.format);
-            index = text.indexOf(expression, index + length);
+            length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index += length;
         }
     }
 }

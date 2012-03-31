@@ -55,7 +55,11 @@ enum ColorType
 };
 //-----------------------------------------------------------------------------------------
 
-MaterialTextEditorCodecToolBar* MaterialTextEditorCodec::mToolBar = 0;
+MaterialTextEditorCodecToolBar* MaterialTextEditorCodec::mToolBar   = 0;
+QStringListModel* MaterialTextEditorCodec::mKeyHighlightList        = 0;
+QStringListModel* MaterialTextEditorCodec::mEnumHighlightList       = 0;
+QStringListModel* MaterialTextEditorCodec::mDataTypeHighlightList   = 0;
+QStringListModel* MaterialTextEditorCodec::mCombinedHighlightList   = 0;
 
 //-----------------------------------------------------------------------------------------
 MaterialTextEditorCodecToolBar::MaterialTextEditorCodecToolBar(const QString& name) : QToolBar(name), mActRefresh(0)
@@ -303,7 +307,10 @@ QString MaterialTextEditorCodec::getMaterialText(const Ogre::String& input, cons
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::onAddHighlighter()
 {
-    new MaterialHighlighter(GenericTextEditor::getSingletonPtr()->modelFromFile(":/syntax_highlighting/material.txt"), mGenTexEdDoc->document());
+    new MaterialHighlighter(MaterialTextEditorCodec::mKeyHighlightList,
+                            MaterialTextEditorCodec::mEnumHighlightList,
+                            MaterialTextEditorCodec::mDataTypeHighlightList, 
+                            mGenTexEdDoc->document());
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const Ogre::String &file, int line, const Ogre::String &msg)
@@ -365,6 +372,9 @@ void MaterialTextEditorCodec::onRefresh()
 
     QStringList materialList = findMaterialNames();
 
+    Ogre::HighLevelGpuProgramManager::getSingletonPtr();
+    Ogre::ScriptCompilerManager::getSingletonPtr();
+
     // Check if we are dealing with actual loaded Ogre materials here. If we previously found out
     // that there is a script error proceed anyway.
     Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
@@ -382,7 +392,7 @@ void MaterialTextEditorCodec::onRefresh()
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::onAddCompleter()
 {
-    mGenTexEdDoc->addCompleter(":/syntax_highlightning/material.txt");
+    mGenTexEdDoc->addCompleter(MaterialTextEditorCodec::mCombinedHighlightList->stringList());
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::onAfterDisplay()
