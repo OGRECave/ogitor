@@ -108,14 +108,20 @@ bool GenericImageEditor::displayImageFromFile(QString filePath)
         IImageEditorCodec* codec = codecFactory->create(document, filePath);
         document->setCodec(codec);
         document->displayImageFromFile(QFile(filePath).fileName(), filePath);
-        QMdiSubWindow *window = addSubWindow(document);
-        window->setWindowIcon(QIcon(codec->getDocumentIcon()));
+
+        QMdiSubWindow* subWindow = new QMdiSubWindow;
+        subWindow->setWidget(document);
+        subWindow->setAttribute(Qt::WA_DeleteOnClose);
+        subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
+        addSubWindow(subWindow);
+
         document->showMaximized();
         QTabBar* tabBar = findChildren<QTabBar*>().at(0);
         tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName());
     }
     else
     {
+        document->getCodec()->onDisplayRequest();
         setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
         document->setFocus(Qt::ActiveWindowFocusReason);
     }
@@ -151,13 +157,6 @@ bool GenericImageEditor::isDocAlreadyShowing(QString docName, GenericImageEditor
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::closeTab(int index)
 {
-    QMdiSubWindow *sub = subWindowList()[index];
-    setActiveSubWindow(sub);
-    GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(sub->widget());
-    sub->close();
-    document->releaseFile();
-    document->close();
-
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
 }
 //-----------------------------------------------------------------------------------------
@@ -194,6 +193,14 @@ void GenericImageEditor::moveToForeground()
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::tabChanged(int index)
 {
+    // -1 means that the last tab was just closed and so there is no one left anymore to switch to
+    if(index != -1)
+    {
+        GenericImageEditorDocument* document;
+        QList<QMdiSubWindow*> list = subWindowList();
+        document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
+        document->getCodec()->onTabChange();
+    }
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::onLoadStateChanged(Ogitors::IEvent* evt)
@@ -274,6 +281,8 @@ void GenericImageEditorDocument::displayImage(QString docName, Ogre::DataStreamP
         tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
     setWindowTitle(tabTitle + QString("[*]"));
     setWindowModified(false);
+
+    mCodec->onAfterDisplay();
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditorDocument::contextMenuEvent(QContextMenuEvent *event)
@@ -292,6 +301,13 @@ void GenericImageEditorDocument::mousePressEvent(QMouseEvent *event)
 void GenericImageEditorDocument::releaseFile()
 {
     mFile.close();
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditorDocument::closeEvent(QCloseEvent* event)
+{
+    getCodec()->onClose();
+    releaseFile();
+    close();
 }
 /************************************************************************/
 ToolTipLabel::ToolTipLabel(GenericImageEditorDocument* genImgEdDoc, QWidget *parent) : QLabel(parent),
