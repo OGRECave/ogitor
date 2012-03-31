@@ -165,6 +165,7 @@ public:
 
 public slots:
     void save();
+    void closeEvent(QCloseEvent* event);
 
 protected:
     void resizeEvent(QResizeEvent *event);

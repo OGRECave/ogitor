@@ -32,6 +32,7 @@
 
 #include "OgitorsPrerequisites.h"
 #include "BaseEditor.h"
+#include "ViewportEditor.h"
 #include "BaseSerializer.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
@@ -336,8 +337,11 @@ int COFSSceneSerializer::_writeFile(Ogre::String exportfile, const bool forceSav
 
     outfile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     outfile << "<OGITORSCENE version=\"2\">\n";
-    
-    ogRoot->WriteProjectOptions(outfile, false);
+
+    PROJECTOPTIONS *pOpt = ogRoot->GetProjectOptions();
+    pOpt->CameraSpeed = ogRoot->GetViewport()->GetCameraSpeed();
+
+    ogRoot->WriteProjectOptions(outfile, pOpt);
 
     ObjectVector ObjectList;
     OgitorsPropertyValueMap theList;
