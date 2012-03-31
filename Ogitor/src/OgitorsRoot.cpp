@@ -1669,17 +1669,20 @@ bool OgitorsRoot::AfterLoadScene()
 //-----------------------------------------------------------------------------------------
 bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
 {
-    // clear the undo manager before stopping
-    mUndoManager->Clear();
+    bool scriptRunningBeforeSave = false;
+    if(GetRunState() == RS_RUNNING)
+    {
+        SetRunState(RS_STOPPED);
+        scriptRunningBeforeSave = true;
+    }
 
-    SetRunState(RS_STOPPED);
     COFSSceneSerializer *defaultserializer = OGRE_NEW COFSSceneSerializer();
 
     if(defaultserializer->Export(SaveAs, exportfile) == SCF_OK)
     {
         OGRE_DELETE defaultserializer;
 
-        if (SaveAs)
+        if(SaveAs)
         {
             /* Since we're saving as a new project, refresh the menu
             controls because we change the names of certain items
@@ -1692,10 +1695,15 @@ bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
         }
 
         SetSceneModified(false);
-        SetRunState(RS_RUNNING);
+
+        if(scriptRunningBeforeSave)
+            SetRunState(RS_RUNNING);
+
         return true;
     }
-    SetRunState(RS_RUNNING);
+    if(scriptRunningBeforeSave)
+        SetRunState(RS_RUNNING);
+
     OGRE_DELETE defaultserializer;
     return false;
 }
@@ -1978,12 +1986,7 @@ void OgitorsRoot::SetRunState(RunState state)
 
     if(state == RS_STOPPED)
     {
-        UndoCollection * coll = mUndoManager->EndCollection();
-        if(coll)
-        {
-            mUndoManager->AddUndo(coll);
-            mUndoManager->Undo();
-        }
+        UndoCollection* coll = mUndoManager->EndCollection();
 
         mUpdateScriptList.clear();
     }

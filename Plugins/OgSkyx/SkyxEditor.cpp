@@ -155,9 +155,9 @@ void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mInnerRadius       , "options::innerradius"       , Ogre::Real, 9.77501f, 0, SETTER(Ogre::Real, CSkyxEditor, _setOptionsInnerRadius));
     PROPERTY_PTR(mOuterRadius       , "options::outerradius"       , Ogre::Real, 10.2963f, 0, SETTER(Ogre::Real, CSkyxEditor, _setOptionsOuterRadius));
     PROPERTY_PTR(mSunIntensity      , "options::sunintensity"      , Ogre::Real, 30, 0, SETTER(Ogre::Real, CSkyxEditor, _setOptionsSunIntensity));
-    PROPERTY_PTR(mNoiseScale        , "vclouds::noisescale"         , Ogre::Real, 4.2f, 0, SETTER(Ogre::Real, CSkyxEditor, _setNoiseScale));
-    PROPERTY_PTR(mWindSpeed         , "vclouds::windspeed"          , Ogre::Real, 80, 0, SETTER(Ogre::Real, CSkyxEditor, _setWindSpeed));
-    PROPERTY_PTR(mWindDirection     , "vclouds::winddirection"      ,Ogre::Real, 0, 0, SETTER(Ogre::Real, CSkyxEditor, _setWindDirection));
+    PROPERTY_PTR(mNoiseScale        , "vclouds::noisescale"        , Ogre::Real, 4.2f, 0, SETTER(Ogre::Real, CSkyxEditor, _setNoiseScale));
+    PROPERTY_PTR(mWindSpeed         , "vclouds::windspeed"         , Ogre::Real, 80, 0, SETTER(Ogre::Real, CSkyxEditor, _setWindSpeed));
+    PROPERTY_PTR(mWindDirection     , "vclouds::winddirection"     , Ogre::Real, 0, 0, SETTER(Ogre::Real, CSkyxEditor, _setWindDirection));
 
     mProperties.initValueMap(params);
 }
