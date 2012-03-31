@@ -1320,6 +1320,53 @@ void OgitorsRoot::ClearProjectOptions()
     mProjectOptions.AutoBackupNumber = 0;
 }
 //-----------------------------------------------------------------------------------------
+PROJECTOPTIONS OgitorsRoot::CreateDefaultProjectOptions()
+{
+    Ogitors::PROJECTOPTIONS opt;
+    opt.IsNewProject = true;
+    opt.ProjectName = "";
+    opt.ProjectDir = mSystem->getProjectsDirectory();
+    opt.SceneManagerName = "OctreeSceneManager";
+    opt.TerrainDirectory = "Terrain";
+    opt.HydraxDirectory = "Hydrax";
+    opt.CaelumDirectory = "Caelum";
+    opt.PagedGeometryDirectory = "PagedGeometry";
+    opt.SceneManagerConfigFile = "";
+    opt.CameraSaveCount = 0;
+    opt.CameraSpeed = 1.0f;
+    opt.ResourceDirectories.clear();
+    opt.SelectionRectColour = Ogre::ColourValue(0.5f, 0, 1);
+    opt.SelectionBBColour = Ogre::ColourValue(1, 1, 1);
+    opt.HighlightBBColour = Ogre::ColourValue(0.91f, 0.19f, 0.19f);
+    opt.SelectHighlightBBColour = Ogre::ColourValue(0.19f, 0.91f, 0.19f);
+    opt.ObjectCount = 0;
+    for(unsigned int v = 0;v < 31;v++)
+    {
+        opt.LayerNames[v] = "Layer " + Ogre::StringConverter::toString(v);
+        opt.LayerVisible[v] = true;
+    }
+
+    opt.LayerCount = 1;
+    opt.SelectionRectColour = Ogre::ColourValue(0.5f, 0, 1);
+    opt.SelectionBBColour = Ogre::ColourValue(1, 1, 1);
+    opt.SelectHighlightBBColour = Ogre::ColourValue(0.19f, 0.91f, 0.19f);
+    opt.HighlightBBColour = Ogre::ColourValue(0.91f, 0.19f, 0.19f);
+    opt.GridColour = Ogre::ColourValue(0.7f, 0.7f, 0.7f);
+    opt.GridSpacing = 1.0f;
+    opt.SnapAngle = 5.0f;
+    opt.CameraSpeed = 1.0f;
+    opt.WalkAroundHeight = 2.0f;
+    opt.VolumeSelectionDepth = 20.0f;
+    opt.ObjectCount = 0;
+    opt.AutoBackupEnabled = false;
+    opt.AutoBackupPeriod = 30;
+    opt.AutoBackupPeriodType = 0;
+    opt.AutoBackupFolder = ".";
+    opt.AutoBackupNumber = 0;
+    
+    return opt;
+}
+//-----------------------------------------------------------------------------------------
 bool OgitorsRoot::OptionsReadCameraPositions(TiXmlElement *parent)
 {
     TiXmlElement* element = 0;

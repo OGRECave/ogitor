@@ -401,6 +401,11 @@ namespace Ogitors
         */
         PROJECTOPTIONS *GetProjectOptions() {return &mProjectOptions;}
         /**
+        * Creates a new object with all the default project options values
+        * @return default project options
+        */
+        PROJECTOPTIONS CreateDefaultProjectOptions();
+        /**
         * Fetches project file system
         * @return project file system
         */
@@ -531,13 +536,13 @@ namespace Ogitors
         * @param outstream output stream to write camera position(s) into
         * @param addcurrent if true, writes down current viewport' camera position(s)
         */
-        void            WriteCameraPositions(std::ostream &outstream, bool addcurrent);
+        void            WriteCameraPositions(std::ostream &outstream, const PROJECTOPTIONS *project);
         /**
         * Writes project options into specified output stream
         * @param outstream output stream to write project options into
-        * @param newproject used for sub-call to COgitorsRoot::WriteCameraPositions
+        * @param project options, might be either new project options or from the current scene
         */
-        void            WriteProjectOptions(std::ostream &outstream, bool newproject);
+        void            WriteProjectOptions(std::ostream &outstream, const PROJECTOPTIONS *project);
         /**
         * Attempts to pick X, Y or Z axis gizmo(s) presented when object is moved, scaled etc
         * @param ray ray cast from the mouse  

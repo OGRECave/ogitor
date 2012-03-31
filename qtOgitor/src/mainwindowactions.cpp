@@ -594,35 +594,11 @@ void MainWindow::newScene()
     Ogitors::OgitorsRoot *ogRoot = OgitorsRoot::getSingletonPtr();
     Ogitors::OgitorsSystem *system = OgitorsSystem::getSingletonPtr();
 
-    Ogitors::PROJECTOPTIONS *pOpt = ogRoot->GetProjectOptions();
+    Ogitors::PROJECTOPTIONS opt = ogRoot->CreateDefaultProjectOptions();
 
-    pOpt->IsNewProject = true;
-    pOpt->ProjectName = "";
-    pOpt->ProjectDir = system->getProjectsDirectory();
-    pOpt->SceneManagerName = "OctreeSceneManager";
-    pOpt->TerrainDirectory = "Terrain";
-    pOpt->HydraxDirectory = "Hydrax";
-    pOpt->CaelumDirectory = "Caelum";
-    pOpt->PagedGeometryDirectory = "PagedGeometry";
-    pOpt->SceneManagerConfigFile = "";
-    pOpt->CameraSaveCount = 0;
-    pOpt->CameraSpeed = 1.0f;
-    pOpt->ResourceDirectories.clear();
-    pOpt->SelectionRectColour = Ogre::ColourValue(0.5f, 0, 1);
-    pOpt->SelectionBBColour = Ogre::ColourValue(1, 1, 1);
-    pOpt->HighlightBBColour = Ogre::ColourValue(0.91f, 0.19f, 0.19f);
-    pOpt->SelectHighlightBBColour = Ogre::ColourValue(0.19f, 0.91f, 0.19f);
-    pOpt->ObjectCount = 0;
+//    Ogitors::PROJECTOPTIONS *pOpt = ogRoot->GetProjectOptions();
 
-    for(unsigned int v = 0;v < 31;v++)
-    {
-        pOpt->LayerNames[v] = "Layer " + Ogre::StringConverter::toString(v);
-        pOpt->LayerVisible[v] = true;
-    }
-
-    pOpt->LayerCount = 1;
-
-    SettingsDialog dlg(QApplication::activeWindow(), pOpt);
+    SettingsDialog dlg(QApplication::activeWindow(), &opt);
 
     /* Bring up new scene dialog */
     if(dlg.exec() != QDialog::Accepted)
@@ -630,7 +606,7 @@ void MainWindow::newScene()
 
     OFS::OfsPtr mFile;
 
-    Ogre::String filename = ogRoot->GetProjectOptions()->ProjectDir + "/" + ogRoot->GetProjectOptions()->ProjectName + ".ofs";
+    Ogre::String filename = opt.ProjectDir + "/" + opt.ProjectName + ".ofs";
     filename = Ogitors::OgitorsUtils::QualifyPath(filename);
 
     /* Try opening to the filesystem to see if it already exists */
@@ -668,13 +644,13 @@ void MainWindow::newScene()
         {
             outfile << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
             outfile << "<OGITORSCENE version=\"2\">\n";
-            ogRoot->WriteProjectOptions(outfile,true);
-            sprintf_s(buffer,5000,NewSceneDefinition,ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerName.c_str(),ogRoot->GetProjectOptions()->SceneManagerConfigFile.c_str());
+            ogRoot->WriteProjectOptions(outfile, &opt);
+            sprintf_s(buffer,5000,NewSceneDefinition,opt.SceneManagerName.c_str(),opt.SceneManagerName.c_str(),opt.SceneManagerConfigFile.c_str());
             outfile << buffer;
 
             OFS::OFSHANDLE handle;
             Ogre::String projfilename = "/";
-            projfilename += ogRoot->GetProjectOptions()->ProjectName + ".ogscene";
+            projfilename += opt.ProjectName + ".ogscene";
 
             mFile->createFile(handle, projfilename.c_str(), outfile.tellp(), outfile.tellp(), outfile.str().c_str());
             mFile->closeFile(handle);
