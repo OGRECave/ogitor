@@ -164,7 +164,7 @@ namespace Ogitors
         * @param donotuseempty if true layers wont be checked if empty
         * @return new layer ID
         */
-        int                          _createNewLayer(Ogre::String &texture, Ogre::String& normal, Ogre::Real worldSize = 100.0f, bool donotuseempty = false);
+        int                          _createNewLayer(Ogre::String &texture, Ogre::String& normal, Ogre::Real worldSize = 10.0f, bool donotuseempty = false);
         /**
         * Changes layer properties
         * @param layerID index of layer
