@@ -150,6 +150,7 @@ public:
     bool saveDefaultLogic();
     void releaseFile();
     void addCompleter(const QString keywordListFilePath);
+    void addCompleter(const QStringList stringList);
 
     inline QString getDocName(){return mDocName;}
     inline QString getFilePath(){return mFilePath;}
@@ -164,7 +165,6 @@ public:
 
 public slots:
     void save();
-
 
 protected:
     void resizeEvent(QResizeEvent *event);

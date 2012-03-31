@@ -45,18 +45,25 @@ class MaterialHighlighter : public QSyntaxHighlighter
     Q_OBJECT
 
 public:
-    MaterialHighlighter(QStringListModel* keywords, QTextDocument *parent = 0);
+    MaterialHighlighter(QStringListModel* keywords, QStringListModel* enums, QStringListModel* dataTypes, 
+                        QTextDocument *parent = 0);
 
-protected:
-    void highlightBlock(const QString &text);
-
-private:
     struct HighlightingRule
     {
         QRegExp pattern;
         QTextCharFormat format;
     };
+
+protected:
+    void highlightBlock(const QString &text);
+
+private:
+    void _highlightSimpleRegexList(const QString text, const QVector<HighlightingRule> rules);
+
     QVector<HighlightingRule> keywordRules;
+    QVector<HighlightingRule> enumRules;
+    QVector<HighlightingRule> dataTypeRules;
+    QVector<HighlightingRule> formatRules;
     QVector<HighlightingRule> valueRules;
 
     QRegExp commentStartExpression;
@@ -65,6 +72,9 @@ private:
     QTextCharFormat keywordFormat;
     QTextCharFormat commentFormat;
     QTextCharFormat textureFormat;
+    QTextCharFormat enumFormat;
+    QTextCharFormat dataTypeFormat;
+    QTextCharFormat stringFormat;
 };
 
 //-----------------------------------------------------------------------------------------

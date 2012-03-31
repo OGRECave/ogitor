@@ -64,6 +64,16 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 
     MaterialTextEditorCodec::mToolBar = new MaterialTextEditorCodecToolBar("Material Actions");
 
+    MaterialTextEditorCodec::mKeyHighlightList      = GenericTextEditor::modelFromFile(":/syntax_highlighting/matKeys.txt");
+    MaterialTextEditorCodec::mEnumHighlightList     = GenericTextEditor::modelFromFile(":/syntax_highlighting/matEnums.txt");
+    MaterialTextEditorCodec::mDataTypeHighlightList = GenericTextEditor::modelFromFile(":/syntax_highlighting/matDataTypes.txt");
+
+    QStringList list = MaterialTextEditorCodec::mKeyHighlightList->stringList();
+    list.append(MaterialTextEditorCodec::mEnumHighlightList->stringList());
+    list.append(MaterialTextEditorCodec::mDataTypeHighlightList->stringList());
+    MaterialTextEditorCodec::mCombinedHighlightList = new QStringListModel(list); 
+    MaterialTextEditorCodec::mCombinedHighlightList->sort(0);
+
     MaterialTextEditorCodecFactory* matCodecFactory = new MaterialTextEditorCodecFactory();
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("material",     matCodecFactory);
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("cg",           matCodecFactory);
