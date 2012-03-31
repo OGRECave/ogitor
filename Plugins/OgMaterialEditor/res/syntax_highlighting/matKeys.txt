@@ -10,6 +10,8 @@ atan
 atan2	   
 ceil	   
 clamp	   
+colour_op
+colour_op_ex
 compositor	   
 cos	   
 cosh	   
@@ -21,7 +23,8 @@ ddx
 ddy	   
 debug	   
 default_params   	   
-degrees	   
+degrees	
+delegate   
 depth_check	   
 depth_func	   
 depth_write	   
@@ -71,7 +74,8 @@ normalize
 param_named	   
 param_named_auto	   
 pass	   
-phong	    	   
+phong	 
+polygon_mode_overrideable   	   
 pow  	   
 profiles	   
 radians	   
@@ -84,7 +88,8 @@ round
 rsqrt	   	   
 saturate 	   
 scene_blend	   
-scheme	   
+scheme
+scroll_anim	   
 shadow	     
 sign	   
 sin 	   

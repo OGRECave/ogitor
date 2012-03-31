@@ -118,7 +118,6 @@ void MaterialHighlighter::highlightBlock(const QString &text)
     _highlightSimpleRegexList(text, keywordRules);
     _highlightSimpleRegexList(text, enumRules);
     _highlightSimpleRegexList(text, dataTypeRules);
-    _highlightSimpleRegexList(text, formatRules);
     
     foreach(HighlightingRule rule, valueRules) 
     {
@@ -155,6 +154,8 @@ void MaterialHighlighter::highlightBlock(const QString &text)
         setFormat(startIndex, commentLength, commentFormat);
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
     }
+
+    _highlightSimpleRegexList(text, formatRules);
 }
 //-----------------------------------------------------------------------------------------
 void MaterialHighlighter::_highlightSimpleRegexList(const QString text, const QVector<HighlightingRule> rules)
