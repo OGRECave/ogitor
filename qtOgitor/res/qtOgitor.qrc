@@ -9,6 +9,7 @@
         <file>about/project.html</file>
         <file>about/people.html</file>
         <file>about/license.html</file>
+        <file>icons/angelscript.svg</file>
         <file>icons/about.svg</file>
         <file>icons/additional.svg</file>
         <file>icons/add_layer.svg</file>
@@ -74,6 +75,7 @@
         <file>icons/pmpoints.svg</file>
         <file>icons/pmsolid.svg</file>
         <file>icons/pmwireframe.svg</file>
+        <file>icons/Python-logo-notext.svg</file>
         <file>icons/polymode.svg</file>
         <file>icons/preferences.svg</file>
         <file>icons/properties.svg</file>
