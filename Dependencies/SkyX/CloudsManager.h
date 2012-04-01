@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -36,7 +35,7 @@ namespace SkyX
 	class DllExport CloudLayer 
 	{
 	public:
-		/** Layer cloud options 
+		/** Cloud layer options 
 		 */
 		struct Options 
 		{
@@ -53,8 +52,6 @@ namespace SkyX
 			Ogre::Real DistanceAttenuation;
 			/// Detail attenuation
 			Ogre::Real DetailAttenuation;
-			/// Normal multiplier
-			Ogre::Real NormalMultiplier;
 			/// Cloud layer height volume(For volumetric effects on the gpu)
 			Ogre::Real HeightVolume;
 			/// Volumetric displacement(For volumetric effects on the gpu)
@@ -70,7 +67,6 @@ namespace SkyX
 				, TimeMultiplier(0.125f)
 				, DistanceAttenuation(0.05f)
 				, DetailAttenuation(1)
-				, NormalMultiplier(2)
 				, HeightVolume(0.25f)
 				, VolumetricDisplacement(0.01f)
 			{
@@ -92,7 +88,6 @@ namespace SkyX
 				, TimeMultiplier(_TimeMultiplier)
 				, DistanceAttenuation(0.05f)
 				, DetailAttenuation(1)
-				, NormalMultiplier(2)
 				, HeightVolume(0.25f)
 				, VolumetricDisplacement(0.01f)
 			{
@@ -105,7 +100,6 @@ namespace SkyX
 				@param _TimeMultiplier Time multiplier factor
 				@param _DistanceAttenuation Distance attenuation
 				@param _DetailAttenuation Detail attenuation
-				@param _NormalMultiplier Normal multiplier coeficient
 				@param _HeightVolume Height volume(For volumetric effects on the gpu)
 				@param _VolumetricDisplacement Volumetric displacement(For volumetric effects on the gpu)
 				
@@ -116,7 +110,6 @@ namespace SkyX
 					const Ogre::Real& _TimeMultiplier,
 					const Ogre::Real& _DistanceAttenuation,
 					const Ogre::Real& _DetailAttenuation,
-					const Ogre::Real& _NormalMultiplier,
 					const Ogre::Real& _HeightVolume,
 					const Ogre::Real& _VolumetricDisplacement)
 				: Height(_Height)
@@ -125,7 +118,6 @@ namespace SkyX
 				, TimeMultiplier(_TimeMultiplier)
 				, DistanceAttenuation(_DistanceAttenuation)
 				, DetailAttenuation(_DetailAttenuation)
-				, NormalMultiplier(_NormalMultiplier)
 				, HeightVolume(_HeightVolume)
 				, VolumetricDisplacement(_VolumetricDisplacement)
 			{
@@ -147,6 +139,15 @@ namespace SkyX
 		/** Destructor
 		 */
         ~CloudLayer();
+
+		/** Set options
+		    @param o New options
+		 */
+		inline void setOptions(const Options& o)
+		{
+			mOptions = o;
+			_updatePassParameters();
+		}
 
 		/** Get options
 		    @return Cloud layer options
@@ -232,6 +233,10 @@ namespace SkyX
 		 */
         ~CloudsManager();
 
+		/** Update cloud layers
+		 */
+		void update();
+
 		/** Add a cloud layer
 		    @param o Cloud layer options
 			@return Cloud layer
@@ -259,9 +264,13 @@ namespace SkyX
 		 */
 		void unregisterAll();
 
-		/** Update internall cloud layer parameters
+		/** Get cloud layers
+		    @return Cloud layers
 		 */
-		void _updateInternal();
+		inline const std::vector<CloudLayer*>& getCloudLayers() const
+		{
+			return mCloudLayers;
+		}
 
 	private:
 		/// Cloud layers std::vector

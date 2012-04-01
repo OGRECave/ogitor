@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -34,9 +33,9 @@ namespace SkyX
     class DllExport MeshManager 
 	{
 	public:
-		/** Vertex struct for position and tex coords data.
+		/** Vertex struct
 		 */
-		struct POS_UV_VERTEX
+		struct VERTEX
 		{
 			      // Position
 			float x, y, z,
@@ -67,8 +66,9 @@ namespace SkyX
 		void remove();
 
 		/** Update geometry
+		    @param cam Camera
 		 */
-		void _updateGeometry();
+		void updateGeometry(Ogre::Camera* cam);
 
 		/** Get mesh
             @return Mesh
@@ -93,32 +93,6 @@ namespace SkyX
         {
             return mEntity;
         }
-
-		/** Set skydome fading parameters
-		    @param SmoothSkydomeFading true for smooth fading, false for non-smooth fading
-			@param SkydomeFadingPercent Fading region (0 = none, 1 = Skydome radius, default = 0.05)
-		 */
-		inline void setSkydomeFadingParameters(const bool& SmoothSkydomeFading, const Ogre::Real& SkydomeFadingPercent = 0.05f)
-		{
-			mSmoothSkydomeFading = SmoothSkydomeFading;
-			mSkydomeFadingPercent = SkydomeFadingPercent;
-		}
-
-		/** Get smooth skydome fading
-		    @return true means smooth fading, false non-smooth fading
-		 */
-		inline const bool& getSmoothSkydomeFading() const
-		{
-			return mSmoothSkydomeFading;
-		}
-
-		/** Get skydome fading percent
-		    @return Fading region (0 = none, 1 = Skydome radius, default = 0.05)
-		 */
-		inline const Ogre::Real& getSkydomeFadingPercent() const
-		{
-			return mSkydomeFadingPercent;
-		}
 
         /** Get material name
             @return Material name
@@ -169,7 +143,7 @@ namespace SkyX
 		    @param Steps Sphere number of steps
 			@param Circles Spehere number of circes
 		 */
-		void _setGeometryParameters(const int& Steps, const int& Circles);
+		void setGeometryParameters(const int& Steps, const int& Circles);
 
 		/** Get number of steps
 		    @return Number of steps
@@ -187,10 +161,66 @@ namespace SkyX
 			return mCircles;
 		}
 
-		/** Get skydome radius
-		    @return Skydome radius
+		/** Set under-horizon rendering params
+		    @remarks In an ideal situation, you only must see the avobe horizon sky due to the fact that the terrain/water
+			         must be 'infinite' and the under-horizont sky part is hide.
+					 But, infinite terrain/water is not always implemented in games and 3d apps in general, so... in order to
+					 get a good-looking sky, SkyX provides an approach to render realistic under-horizont sky.
+			@param UnderHorizonCircles Number of circles of SkyX::MeshManager::mCircles reserved for the under-horizont geometry part,
+				   0 means not under-horizon rendering
+			@param UnderHorizonFading true/false to fade or not the under-horizon sky
+			@param UnderHorizonFadingExponent Exponent of the fading, pow(vertex_angle, exp), 1=linear
+			@param UnderHorizonFadingMultiplier Fading multiplier, opacity = saturate(pow(opacity,fading_exp)*fading_multiplier)
 		 */
-		const float getSkydomeRadius() const;
+		void setUnderHorizonParams(const int& UnderHorizonCircles = 15, const bool& UnderHorizonFading = true, const Ogre::Real& UnderHorizonFadingExponent = 1, const Ogre::Real& UnderHorizonFadingMultiplier = 2);
+
+		/** Get under-horizon circles
+		    @return Under-horizon circles
+		 */
+		inline const int& getUnderHorizonCircles() const
+		{
+			return mUnderHorizonCircles;
+		}
+
+		/** Get under-horizon fading
+		    @return Under-horizon fading
+		 */
+		inline const bool& getUnderHorizonFading() const
+		{
+			return mUnderHorizonFading;
+		}
+
+		/** Get under-horizon exponent fading
+		    @return under-horizon exponent fading
+	     */
+		inline const Ogre::Real& getUnderHorizonFadingExponent() const
+		{
+			return mUnderHorizonFadingExponent;
+		}
+
+		/** Get under-horizon fading multiplier
+		    @return Under-horizon fading multiplier
+		 */
+		inline const Ogre::Real& getUnderHorizonFadingMultiplier() const
+		{
+			return mUnderHorizonFadingMultiplier;
+		}
+
+		/** Set radius multiplier
+		    @param RadiusMultiplier Radius multiplier
+			@remarks Radius multiplier in [0,1] range
+			         Radius = CameraFarClipDistance * RadiusMultiplier
+		 */
+		inline void setRadiusMultiplier(const Ogre::Real& RadiusMultiplier)
+		{
+			mRadiusMultiplier = RadiusMultiplier;
+		}
+
+		/** Get skydome radius
+		    @param c Camera
+		    @return Skydome radius relative to the given camera
+		 */
+		const float getSkydomeRadius(Ogre::Camera* c) const;
 
 	private:
 		/** Create geometry
@@ -213,17 +243,24 @@ namespace SkyX
         Ogre::HardwareIndexBufferSharedPtr  mIndexBuffer;
 
 		/// Vertices
-		POS_UV_VERTEX* mVertices;
+		VERTEX* mVertices;
 
 		/// Circles
 		int mCircles;
 		/// Steps
 		int mSteps;
 
-		/// Smooth skydome fading
-		bool mSmoothSkydomeFading;
-		/// Skydome fading perfcent
-		Ogre::Real mSkydomeFadingPercent;
+		/// Under-horizon rendering
+		int mUnderHorizonCircles;
+		/// Under-horizon fading
+		bool mUnderHorizonFading;
+		/// Under-horizon exponent fading (1=linear fading)
+		Ogre::Real mUnderHorizonFadingExponent;
+		/// Under-horizon fading multiplier: opacity = saturate(pow(opacity,fading_exp)*fading_multiplier)
+		Ogre::Real mUnderHorizonFadingMultiplier;
+
+		/// Radius multiplier
+		Ogre::Real mRadiusMultiplier;
 
 		/// Ogre::SceneNode pointer
 		Ogre::SceneNode* mSceneNode;

@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -22,7 +21,7 @@ http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
 
-#include "Ellipsoid.h"
+#include "VClouds/Ellipsoid.h"
 
 namespace SkyX { namespace VClouds
 {
@@ -75,35 +74,34 @@ namespace SkyX { namespace VClouds
 		return Ogre::Vector3(density, 1-density, density);
 	}
 
-    void Ellipsoid::updateProbabilities(DataManager::Cell ***c, const int &nx, const int &ny, const int &nz)
+    void Ellipsoid::updateProbabilities(DataManager::Cell ***c, const int &nx, const int &ny, const int &nz, const bool& delayedResponse)
 	{
 		int u, v, w, uu, vv;
-	 // Ogre::Vector3 prob;
+
 		float length;
 
 		for (u = mX-mA; u < mX+mA; u++)
 		{
+			uu = (u<0) ? (u + nx) : u; if (u>=nx) { uu-= nx; }
+
 			for (v = mY-mB; v < mY+mB; v++)
 			{
+				vv = (v<0) ? (v + ny) : v; if (v>=ny) { vv-= ny; }
+
 				for (w = mZ-mC; w < mZ+mC; w++)
 				{
-				//	prob = getProbabilities(u, v, w);
-
-					length = _getLength(uu, vv, w);
-
-					// x/y Seamless!
-					uu = (u<0) ? (u + nx) : u; if (u>=nx) { uu-= nx; }
-					vv = (v<0) ? (v + ny) : v; if (v>=ny) { vv-= ny; }
-
-				//	c[uu][vv][w].phum = Ogre::Math::Clamp<Ogre::Real>(c[uu][vv][w].phum+prob.x, 0, 1);
-				//	c[uu][vv][w].pext = std::min<float>(prob.y, c[uu][vv][w].pext);
-				//	c[uu][vv][w].pact = Ogre::Math::Clamp<Ogre::Real>(c[uu][vv][w].pact+prob.z, 0, 1);
+					length = _getLength(u, v, w);
 
 					if (length < 1)
 					{
-						c[uu][vv][w].phum = 0.1f;
-						c[uu][vv][w].pext = 0.5f;
-						c[uu][vv][w].pact = 0.2f;
+						c[uu][vv][w].phum = 0.005f;
+						c[uu][vv][w].pext = 0.05f;
+						c[uu][vv][w].pact = 0.01f;
+
+						if (!delayedResponse)
+						{
+							c[uu][vv][w].cld = Ogre::Math::RangeRandom(0,1) > length ? true : false;
+						}
 					}
 				}
 			}

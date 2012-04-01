@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -104,13 +103,14 @@ namespace SkyX
 		}
 
 		// TODO
-		CloudLayerPass->createTextureUnitState("Cloud1.png")->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
-		CloudLayerPass->createTextureUnitState("c22n.png")->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
-		CloudLayerPass->createTextureUnitState("c22.png")->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
+		CloudLayerPass->createTextureUnitState("Clouds.png")->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
+		CloudLayerPass->createTextureUnitState("CloudsNormal.png")->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
+		CloudLayerPass->createTextureUnitState("CloudsTile.png")->setTextureAddressingMode(Ogre::TextureUnitState::TAM_WRAP);
 
 		mCloudLayerPass = CloudLayerPass;
 
 		_updatePassParameters();
+		_updateInternalPassParameters();
 	}
 
 	void CloudLayer::_unregister()
@@ -143,8 +143,6 @@ namespace SkyX
 			->setNamedConstant("uCloudLayerHeightVolume", mOptions.HeightVolume);
 		mCloudLayerPass->getFragmentProgramParameters()
 			->setNamedConstant("uCloudLayerVolumetricDisplacement", mOptions.VolumetricDisplacement);
-		mCloudLayerPass->getFragmentProgramParameters()
-			->setNamedConstant("uNormalMultiplier", mOptions.NormalMultiplier);
 		mCloudLayerPass->getFragmentProgramParameters()
 			->setNamedConstant("uDetailAttenuation", mOptions.DetailAttenuation);
 		mCloudLayerPass->getFragmentProgramParameters()
@@ -194,16 +192,16 @@ namespace SkyX
 			     Ogre::Math::Clamp<Ogre::Real>(AmbientColor.z*Mult, 0, 1)));
 		*/
 
-		Ogre::Vector3 SunDir = mSkyX->getAtmosphereManager()->getSunDirection();
-		if (SunDir.y > 0.15f)
-		{
-			SunDir = -SunDir;
-		}
+		//Ogre::Vector3 SunDir = mSkyX->getAtmosphereManager()->getSunDirection();
+		//if (SunDir.y > 0.15f)
+		//{
+		//	SunDir = -SunDir;
+		//}
 
-		mCloudLayerPass->getFragmentProgramParameters()
-			->setNamedConstant("uSunPosition", -SunDir*mSkyX->getMeshManager()->getSkydomeRadius());
+	//	mCloudLayerPass->getFragmentProgramParameters()
+	//		->setNamedConstant("uSunPosition", -SunDir*mSkyX->getMeshManager()->getSkydomeRadius());
 
-		float point = (-mSkyX->getAtmosphereManager()->getSunDirection().y + 1.0f) / 2.0f;
+		float point = (mSkyX->getController()->getSunDirection().y + 1.0f) / 2.0f;
 
 		mCloudLayerPass->getFragmentProgramParameters()
 			->setNamedConstant("uSunColor", mSunGradient.getColor(point));
@@ -269,6 +267,8 @@ namespace SkyX
             if((*CloudLayersIt) == cl)
             {
 				delete (*CloudLayersIt);
+				mCloudLayers.erase(CloudLayersIt);
+				return;
             }
 		}
 	}
@@ -312,7 +312,7 @@ namespace SkyX
 		}
 	}
 
-	void CloudsManager::_updateInternal()
+	void CloudsManager::update()
 	{
 		for(CloudLayersIt = mCloudLayers.begin(); CloudLayersIt != mCloudLayers.end(); CloudLayersIt++)
         {

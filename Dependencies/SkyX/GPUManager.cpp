@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -30,7 +29,9 @@ namespace SkyX
 {
 	GPUManager::GPUManager(SkyX *s)
 		: mSkyX(s)
+		, mGroundPasses(std::vector<Ogre::Pass*>())
 	{
+		_notifySkydomeMaterialChanged();
 	}
 
 	GPUManager::~GPUManager()
@@ -49,8 +50,7 @@ namespace SkyX
 			GroundPass->setFragmentProgram("SkyX_Ground_HDR_FP");
 		}
 
-		GroundPass->getVertexProgramParameters()->setNamedConstant("uSkydomeRadius", 
-			((AtmosphereRadius == 0) ? mSkyX->getMeshManager()->getSkydomeRadius() : AtmosphereRadius)*10);
+		GroundPass->getVertexProgramParameters()->setNamedConstant("uSkydomeRadius", AtmosphereRadius*10);
 
 		GroundPass->setLightingEnabled(false);
 		
@@ -93,15 +93,13 @@ namespace SkyX
 		{
 		    case GPUP_VERTEX:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 			}
 			break;
 
 			case GPUP_FRAGMENT:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 			}
 			break;
 		}
@@ -155,15 +153,13 @@ namespace SkyX
 		{
 		    case GPUP_VERTEX:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 			}
 			break;
 
 			case GPUP_FRAGMENT:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 			}
 			break;
 		}
@@ -217,15 +213,13 @@ namespace SkyX
 		{
 		    case GPUP_VERTEX:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 			}
 			break;
 
 			case GPUP_FRAGMENT:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 			}
 			break;
 		}
@@ -281,15 +275,13 @@ namespace SkyX
 		{
 		    case GPUP_VERTEX:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getVertexProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getVertexProgramParameters();
 			}
 			break;
 
 			case GPUP_FRAGMENT:
 			{
-				Parameters = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().
-					getByName(mSkyX->getMeshManager()->getMaterialName()))->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
+				Parameters = mSkydomeMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
 			}
 			break;
 		}

@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -25,8 +24,11 @@ http://www.gnu.org/copyleft/lesser.txt.
 #ifndef _SkyX_Prerequisites_H_
 #define _SkyX_Prerequisites_H_
 
+#pragma warning (disable:4244) // conversion from 'xxx' to 'yyy', possible loss of data
+#pragma warning (disable:4355) // 'this' : used in base member initializer list
+
 /// Include external headers
-#include <Ogre.h>
+#include <OGRE/Ogre.h>
 
 /// Define the dll export qualifier if compiling for Windows
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -44,7 +46,7 @@ http://www.gnu.org/copyleft/lesser.txt.
 
 /// SkyX defines
 #define SKYX_VERSION_MAJOR 0
-#define SKYX_VERSION_MINOR 1
+#define SKYX_VERSION_MINOR 3
 #define SKYX_VERSION_PATCH 0
 
 #define SKYX_RESOURCE_GROUP "SkyX"

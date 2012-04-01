@@ -13,7 +13,7 @@ set(SOURCE_FILES
 )
 
 set(OgSkyx_VERSION 0)
-set(OgSkyx_VERSION_MAJOR 1)
+set(OgSkyx_VERSION_MAJOR 3)
 
 include_directories(include)
 # Terrain Scene Manager
@@ -36,7 +36,7 @@ if(NOT OGITOR_DIST)
 endif(NOT OGITOR_DIST)
 
 set_target_properties(OgSkyx PROPERTIES VERSION ${OgSkyx_VERSION} SOVERSION ${OgSkyx_VERSION_MAJOR})
-set_target_properties(OgSkyx PROPERTIES	COMPILE_DEFINITIONS PLUGIN_EXPORT)
+set_target_properties(OgSkyx PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(OgSkyx PROPERTIES SOLUTION_FOLDER Plugins)
 
 if(UNIX AND NOT APPLE)

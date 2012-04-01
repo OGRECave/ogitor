@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -47,21 +46,25 @@ namespace SkyX
 		~VCloudsManager();
 
 		/** Create all resources
+		    @param radius Volumetric cloud field radius, -1 to use current VClouds::mGeometrySettings::Radius
 		 */
-		void create();
+		void create(const Ogre::Real& radius = -1);
 
 		/** Update
 		    @param timeSinceLastFrame Time since last frame
 		 */
 		void update(const Ogre::Real& timeSinceLastFrame);
 
+		/** Notify camera render, to be invoked per-camera and per-frame
+			@param c Rendering camera
+			@remarks The VClouds system needs the CAMERA time since last frame, so here we assume that all render targets
+			         are being updated one time per frame(in other words, all render targets are being updated at the same rate)
+         */
+        void notifyCameraRender(Ogre::Camera* c);
+
 		/** Remove all resources
 		 */
 		void remove();
-
-		/** Update wind speed config
-		 */
-		void _updateWindSpeedConfig();
 
 		/** Set ambient gradient
 		    @param AmbientGradient Ambient color gradient
@@ -163,6 +166,11 @@ namespace SkyX
 			return mCreated;
 		}
 
+		/** Update wind speed config
+		    @remarks Only for internal use
+		 */
+		void _updateWindSpeedConfig();
+
 	private:
 		/** Set light parameters
 		 */
@@ -183,8 +191,11 @@ namespace SkyX
 		/// Wind speed
 		Ogre::Real mWindSpeed;
 
-		/// Is moon manager created?
+		/// Is vclouds manager created?
 		bool mCreated;
+
+		/// Current time since last frame
+		Ogre::Real mCurrentTimeSinceLastFrame;
 
 		/// SkyX parent pointer
 		SkyX *mSkyX;

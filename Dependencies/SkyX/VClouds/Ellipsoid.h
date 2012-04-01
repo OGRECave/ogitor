@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -25,9 +24,9 @@ http://www.gnu.org/copyleft/lesser.txt.
 #ifndef _SkyX_VClouds_Ellipsoid_H_
 #define _SkyX_VClouds_Ellipsoid_H_
 
-#include "../Prerequisites.h"
+#include "Prerequisites.h"
 
-#include "DataManager.h"
+#include "VClouds/DataManager.h"
 
 namespace SkyX { namespace VClouds{
 
@@ -46,9 +45,9 @@ namespace SkyX { namespace VClouds{
 			@param nx X size
 			@param ny Y size
 			@param nz Z size
-			@param x x Coord
-			@param y y Coord
-			@param z z Coord 
+			@param x x Coord (position)
+			@param y y Coord (position)
+			@param z z Coord (position)
 			@param Density Cloud density
 		 */
 		Ellipsoid(const int& a, const int& b, const int& c, 
@@ -80,8 +79,9 @@ namespace SkyX { namespace VClouds{
 			@param nx X complexity
 			@param ny Y complexity
 			@param nz Z complexity
+			@param delayedResponse true to get a delayed response, updating only probabilities, false to also set clouds
 		 */
-		void updateProbabilities(DataManager::Cell ***c, const int &nx, const int &ny, const int &nz);
+		void updateProbabilities(DataManager::Cell ***c, const int &nx, const int &ny, const int &nz, const bool& delayedResponse = true);
 
 		/** Determines if the ellipsoid is out of the cells domain and needs to be removed
 		 */
@@ -95,10 +95,28 @@ namespace SkyX { namespace VClouds{
 			return Ogre::Vector3(mA, mB, mC);
 		}
 
+		/** Get position
+		    @return Position
+		 */
+		inline const Ogre::Vector3 getPosition() const
+		{
+			return Ogre::Vector3(mX, mY, mZ);
+		}
+
 		/** Set dimensions
 		    @param Dimensions New dimensions
 		 */
 		void setDimensions(const Ogre::Vector3& Dimensions);
+
+		/** Set position
+		    @param Position New position
+		 */
+		inline void setPosition(const Ogre::Vector3& Position)
+		{
+			mX = Position.x;
+			mY = Position.y;
+			mZ = Position.z;
+		}
 
 	private:
 		/** Get length

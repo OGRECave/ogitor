@@ -48,49 +48,71 @@
 namespace Ogitors
 {
 
-    class PluginExport CSkyxEditor: public CBaseEditor
+    class PluginExport CSkyxEditor : public CBaseEditor
     {
         friend class CSkyxEditorFactory;
     public:
 
-        virtual bool            setNameImpl(Ogre::String name) { return false; };
-        virtual void            showBoundingBox(bool bShow) {};
-        virtual bool            update(float timePassed);
-        void                    refresh();
+        virtual bool                setNameImpl(Ogre::String name){return false;};
+        virtual void                showBoundingBox(bool bShow){};
+        virtual bool                update(float timePassed);
+        void                        refresh();
 
         /** @copydoc CBaseEditor::load(bool) */
-        virtual bool            load(bool async = true);
+        virtual bool                load(bool async = true);
         /** @copydoc CBaseEditor::unLoad() */
-        virtual bool            unLoad();
+        virtual bool                unLoad();
         /// Processes a NameValuePairList and Sets Object's Properties according to it
-        virtual void            createProperties(OgitorsPropertyValueMap &params);
+        virtual void                createProperties(OgitorsPropertyValueMap &params);
         /// Called by Serializer to write custom files during an export
-        virtual void            onSave(bool forced = false);
+        virtual void                onSave(bool forced = false);
         /// Gets the Handle to encapsulated object
-        inline virtual void    *getHandle() {return static_cast<void*>(mHandle);};
-        virtual Ogre::SceneManager *getSceneManager();
+        inline virtual void*        getHandle(){return static_cast<void*>(mHandle);};
+        virtual Ogre::SceneManager* getSceneManager();
 
-        virtual TiXmlElement *exportDotScene(TiXmlElement *pParent);
+        virtual TiXmlElement*       exportDotScene(TiXmlElement *pParent);
 
     protected:
-        SkyX::SkyX                *mHandle;
+        SkyX::SkyX                      *mHandle;
+        SkyX::BasicController           *mBasicController;          
 
-        OgitorsProperty<Ogre::Real> *mTimeMultiplier;
-        OgitorsProperty<Ogre::Vector3> *mTime;
-        OgitorsProperty<Ogre::Vector2> *mEastPosition;
-        OgitorsProperty<Ogre::Vector3> *mWaveLength;
-        OgitorsProperty<Ogre::Real> *mRayleighMultiplier;
-        OgitorsProperty<Ogre::Real> *mMieMultiplier;
-        OgitorsProperty<Ogre::Real> *mExposure;
-        OgitorsProperty<Ogre::Real> *mInnerRadius;
-        OgitorsProperty<Ogre::Real> *mOuterRadius;
-        OgitorsProperty<int>        *mSampleCount;
-        OgitorsProperty<Ogre::Real> *mHeight;
-        OgitorsProperty<Ogre::Real> *mSunIntensity;
-        OgitorsProperty<Ogre::Real> *mG;
-        OgitorsProperty<Ogre::Real> *mWindSpeed;
-        OgitorsProperty<Ogre::Real> *mWindDirection;
-        OgitorsProperty<Ogre::Real> *mNoiseScale;
+        OgitorsProperty<Ogre::Real>     *mTimeMultiplier;
+
+        // SkyX Basic Controller parameters
+        OgitorsProperty<Ogre::Vector3>  *mTime;
+        OgitorsProperty<Ogre::Vector2>  *mEastPosition;
+        OgitorsProperty<Ogre::Real>     *mMoonPhase;
+
+        // SkyX Atmosphere parameters
+        OgitorsProperty<Ogre::Real>     *mInnerRadius;
+        OgitorsProperty<Ogre::Real>     *mOuterRadius;
+        OgitorsProperty<Ogre::Real>     *mHeightPosition;
+        OgitorsProperty<Ogre::Real>     *mRayleighMultiplier;
+        OgitorsProperty<Ogre::Real>     *mMieMultiplier;
+        OgitorsProperty<Ogre::Real>     *mSunIntensity;
+        OgitorsProperty<Ogre::Vector3>  *mWaveLength;
+        OgitorsProperty<Ogre::Real>     *mG;        
+        OgitorsProperty<Ogre::Real>     *mExposure;        
+        OgitorsProperty<int>            *mSampleCount; 
+        
+        OgitorsProperty<bool>           *mUseLayeredClouds;
+
+        // SkyX Volumetric Clouds parameters
+        OgitorsProperty<bool>           *mVCEnable;
+        OgitorsProperty<bool>           *mVCAutoUpdate;
+        OgitorsProperty<Ogre::Real>     *mVCWindSpeed;
+        OgitorsProperty<Ogre::Real>     *mVCWindDirection;
+        OgitorsProperty<Ogre::Real>     *mVCNoiseScale;
+        OgitorsProperty<Ogre::Vector3>  *mVCAmbientColor;
+        OgitorsProperty<Ogre::Vector4>  *mVCLightReponse;
+        OgitorsProperty<Ogre::Vector4>  *mVCAmbientFactors;
+        OgitorsProperty<Ogre::Vector2>  *mVCWeather;
+
+        // SkyX Volumetric Clouds Lightning parameters
+        OgitorsProperty<bool>           *mVCLightningEnable;
+        OgitorsProperty<Ogre::Real>     *mVCLightningAT;
+        OgitorsProperty<Ogre::Vector3>  *mVCLightningColor;
+        OgitorsProperty<Ogre::Real>     *mVCLightningTM;        
 
         CSkyxEditor(CBaseEditorFactory *factory);
         virtual ~CSkyxEditor();
@@ -111,18 +133,25 @@ namespace Ogitors
         bool _setOptionsSunIntensity(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setOptionsWaveLength(OgitorsPropertyBase* property, const Ogre::Vector3& value);
         bool _setOptionsG(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setOptionsMoonPhase(OgitorsPropertyBase* property, const Ogre::Real& value);
 
-        bool _setNoiseScale(OgitorsPropertyBase* property, const Ogre::Real& value);
-        bool _setWindSpeed(OgitorsPropertyBase* property, const Ogre::Real& value);
-        bool _setWindDirection(OgitorsPropertyBase* property, const Ogre::Real& value);
-
+        bool _setVCEnable(OgitorsPropertyBase* property, const bool& value);
+        bool _setVCAutoUpdate(OgitorsPropertyBase* property, const bool& value);
+        bool _setVCWindSpeed(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setVCWindDirection(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setVCNoiseScale(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setVCAmbientColor(OgitorsPropertyBase* property, const Ogre::Vector3& value);
+        bool _setVCLightResponse(OgitorsPropertyBase* property, const Ogre::Vector4& value);
+        bool _setVCAmbientFactors(OgitorsPropertyBase* property, const Ogre::Vector4& value);
+        bool _setVCWeather(OgitorsPropertyBase* property, const Ogre::Vector2& value);
     };
 
-    class PluginExport CSkyxEditorFactory: public CBaseEditorFactory
+    class PluginExport CSkyxEditorFactory : public CBaseEditorFactory
     {
     public:
         CSkyxEditorFactory(OgitorsView *view = 0);
         virtual ~CSkyxEditorFactory() {};
+
         /** @copydoc CBaseEditorFactory::duplicate(OgitorsView *view) */
         virtual CBaseEditorFactory* duplicate(OgitorsView *view);
         virtual CBaseEditor *CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params);

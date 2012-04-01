@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguï¿½n Gonzï¿½lez <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -25,9 +24,9 @@ http://www.gnu.org/copyleft/lesser.txt.
 #ifndef _SkyX_VClouds_DataManager_H_
 #define _SkyX_VClouds_DataManager_H_
 
-#include "../Prerequisites.h"
+#include "Prerequisites.h"
 
-#include "FastFakeRandom.h"
+#include "VClouds/FastFakeRandom.h"
 
 namespace SkyX { namespace VClouds{
 
@@ -126,11 +125,9 @@ namespace SkyX { namespace VClouds{
 			@param Humidity Humidity, in other words: the percentage of clouds in [0,1] range.
 			@param AverageCloudsSize Average clouds size, for example: if previous wheater clouds size parameter was very different from new one(i.e: more little)
 			       only the old biggest clouds are going to be keept and the little ones are going to be replaced
-		    @param NumberOfForcedUpdates Number of times the data simulation are going to be re-calculated for the next frame.
-			       This parameters is useful if you want to avoid a delayed response or, in other words, 0 means that you're going to get a smooth transition
-				   between old and news wheater parameters(delayed response) and a positive number(2 might be sufficient) is going to change the clouds for the next frame
+		    @param delayedResponse false to change wheather conditions over several updates, true to change it at the moment
 		 */
-		void setWheater(const float& Humidity, const float& AverageCloudsSize, const int& NumberOfForcedUpdates = 0);
+		void setWheater(const float& Humidity, const float& AverageCloudsSize, const bool& delayedResponse = true);
 
 		/** Add ellipsoid: clouds are modelled as ellipsoids in our simulation approach, so.. different kind of clouds 
 		    can be modelled with ellipsoids compositions.
@@ -169,20 +166,23 @@ namespace SkyX { namespace VClouds{
 		void _delete3DCellArray(Cell ***c, const int& nx, const int& ny);
 
 		/** Copy 3d cells arrays data
-			@param or Origin
+			@param src Source
 			@param dest Dest
 			@param nx X size
 			@param ny Y size
 			@param nz Z size
 		*/
-		void _copy3DCellArraysData(Cell ***_or, Cell ***dest, const int& nx, const int& ny, const int& nz);
+		void _copy3DCellArraysData(Cell ***src, Cell ***dest, const int& nx, const int& ny, const int& nz);
 
 		/** Perform celullar automata simulation
 		    @param nx X size
 			@param ny Y size
 			@param nz Z size
+			@param step Calculation step. Valid steps are 0,1,2,3.
+			@param xStart x start cell (included)
+			@param xEnd x end cell (not included, until xEnd-1)
 		 */
-		void _performCalculations(const int& nx, const int& ny, const int& nz);
+		void _performCalculations(const int& nx, const int& ny, const int& nz, const int& step, const int& xStart, const int& xEnd);
 
 		/** Update volumetric texture data
 		    @param c Cells data
@@ -202,8 +202,9 @@ namespace SkyX { namespace VClouds{
 			@param y y Coord
 			@param z z Coord 
 			@param r Radius
+			@param sgtrength Strength
 		 */	
-		const float _getDensityAt(Cell ***c, const int& nx, const int& ny, const int& nz, const int& x, const int& y, const int& z, const int& r) const;
+		const float _getDensityAt(Cell ***c, const int& nx, const int& ny, const int& nz, const int& x, const int& y, const int& z, const int& r, const float& strength) const;
 
 		/** Get discrete density at a point
 		    @param c Cells data
@@ -229,17 +230,18 @@ namespace SkyX { namespace VClouds{
 			@param nx X size
 			@param ny Y size
 			@param nz Z size
+			@param clearData Clear data?
 		 */
-		void _clearProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz);
+		void _clearProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz, const bool& clearData);
 
 		/** Update probabilities based from the Ellipsoid vector
 		    @param c Cells data
 			@param nx X size
 			@param ny Y size
 			@param nz Z size
-			@param ClearProbabilities Clear probabilities?
+			@param delayedResponse false to change wheather conditions over several updates, true to change it at the moment
 		 */
-		void _updateProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz, const bool& ClearProbabilities = true);
+		void _updateProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz, const bool& delayedResponse);
 
 		/** Get light absorcion factor at a point
 			@param c Cells data
@@ -270,6 +272,8 @@ namespace SkyX { namespace VClouds{
 		float mCurrentTransition;
 		/// Update time
 		float mUpdateTime;
+		/// Current calculation state
+		int mStep, mXStart, mXEnd;
 
 		/// Complexities
 		int mNx, mNy, mNz;

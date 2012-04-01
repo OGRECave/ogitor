@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguï¿½n Gonzï¿½lez <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -22,10 +21,10 @@ http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
 
-#include "DataManager.h"
+#include "VClouds/DataManager.h"
 
-#include "VClouds.h"
-#include "Ellipsoid.h"
+#include "VClouds/VClouds.h"
+#include "VClouds/Ellipsoid.h"
 
 namespace SkyX { namespace VClouds
 {
@@ -37,6 +36,7 @@ namespace SkyX { namespace VClouds
 		, mNx(0), mNy(0), mNz(0)
 		, mCurrentTransition(0)
 		, mUpdateTime(10.0f)
+		, mStep(0), mXStart(0), mXEnd(0)
 		, mMaxNumberOfClouds(250)
 		, mVolTexToUpdate(true)
 		, mCreated(false)
@@ -81,26 +81,76 @@ namespace SkyX { namespace VClouds
 		{
 			mCurrentTransition += timeSinceLastFrame;
 
-			if (mCurrentTransition > mUpdateTime)
+			mXEnd = static_cast<int>((mCurrentTransition / mUpdateTime)*4*mNx);
+			if (mXEnd > 4*mNx)
 			{
-				_performCalculations(mNx, mNy, mNz);
+				mXEnd = 4*mNx;
+			}
+
+			if (mXEnd/mNx != mXStart/mNx)
+			{
+				for (int k = mStep; k <= mXEnd/mNx; k++)
+				{
+					_performCalculations(mNx, mNy, mNz, k, mXStart%mNx, (mXEnd/mNx != k) ? mNx : mXEnd%mNx);
+					mXStart = 0;
+				}
+			}
+			else
+			{
+				if (mXStart != mXEnd)
+				{
+					_performCalculations(mNx, mNy, mNz, mXEnd/mNx, mXStart%mNx, mXEnd%mNx);
+				}
+			}
+
+			mStep = mXEnd/mNx;
+			mXStart = mXEnd;
+			
+			if (mCurrentTransition >= mUpdateTime)
+			{
 				_updateVolTextureData(mCellsCurrent, VOL_TEX0, mNx, mNy, mNz);
 
 				mCurrentTransition = mUpdateTime;
 				mVolTexToUpdate = !mVolTexToUpdate;
+				mStep = mXStart = mXEnd = 0;
 			}
 		}
 		else
 		{
 			mCurrentTransition -= timeSinceLastFrame;
 
-			if (mCurrentTransition < 0)
+			mXEnd = static_cast<int>(((mUpdateTime-mCurrentTransition) / mUpdateTime)*4*mNx);
+			if (mXEnd < 0)
 			{
-				_performCalculations(mNx, mNy, mNz);
+				mXEnd = 0;
+			}
+
+			if (mXEnd/mNx != mXStart/mNx)
+			{
+				for (int k = mStep; k <= mXEnd/mNx; k++)
+				{
+					_performCalculations(mNx, mNy, mNz, k, mXStart%mNx, (mXEnd/mNx != k) ? mNx : mXEnd%mNx);
+					mXStart = 0;
+				}
+			}
+			else
+			{
+				if (mXStart != mXEnd)
+				{
+					_performCalculations(mNx, mNy, mNz, mXEnd/mNx, mXStart%mNx, mXEnd%mNx);
+				}
+			}
+
+			mStep = mXEnd/mNx;
+			mXStart = mXEnd;
+
+			if (mCurrentTransition <= 0)
+			{
 				_updateVolTextureData(mCellsCurrent, VOL_TEX1, mNx, mNy, mNz);
 
 				mCurrentTransition = 0;
 				mVolTexToUpdate = !mVolTexToUpdate;
+				mStep = mXStart = mXEnd = 0;
 			}
 		}
 	}
@@ -120,41 +170,40 @@ namespace SkyX { namespace VClouds
 			_createVolTexture(static_cast<VolTextureId>(k), nx, ny, nz);
 		}
 
-	/*	setWheater(1, 1);
-
-		_performCalculations(nx, ny, nz);
 		_updateVolTextureData(mCellsCurrent, VOL_TEX0, mNx, mNy, mNz);
-
-		_performCalculations(nx, ny, nz);
-		_updateVolTextureData(mCellsCurrent, VOL_TEX1, mNx, mNy, mNz); */
+		_updateVolTextureData(mCellsCurrent, VOL_TEX1, mNx, mNy, mNz);
 
 		mCreated = true;
 	}
 
 	void DataManager::forceToUpdateData()
 	{
+		// Finish current update process
+		_performCalculations(mNx, mNy, mNz, mStep, mXStart%mNx, mNx);
+		for (int k = mStep+1; k < 4; k++)
+		{
+			_performCalculations(mNx, mNy, mNz, k, 0, mNx);
+		}
+		mStep = mXStart = mXEnd = 0;
+
 		if (mVolTexToUpdate)
 		{
-			_performCalculations(mNx, mNy, mNz);
 			_updateVolTextureData(mCellsCurrent, VOL_TEX0, mNx, mNy, mNz);
-
 			mCurrentTransition = mUpdateTime;
-			mVolTexToUpdate = !mVolTexToUpdate;
 		}
 		else
 		{
-			_performCalculations(mNx, mNy, mNz);
 			_updateVolTextureData(mCellsCurrent, VOL_TEX1, mNx, mNy, mNz);
-
 			mCurrentTransition = 0;
-			mVolTexToUpdate = !mVolTexToUpdate;
 		}
+
+		mVolTexToUpdate = !mVolTexToUpdate;
 	}
 
 	void DataManager::_initData(const int& nx, const int& ny, const int& nz)
 	{
 		mCellsCurrent = _create3DCellArray(nx, ny, nz);
-		mCellsTmp     = _create3DCellArray(nx, ny, nz);
+		mCellsTmp     = _create3DCellArray(nx, ny, nz, false);
 	}
 
 	DataManager::Cell *** DataManager::_create3DCellArray(const int& nx, const int& ny, const int& nz, const bool& init)
@@ -182,7 +231,7 @@ namespace SkyX { namespace VClouds
 		{
 			for (v = 0; v < ny; v++)
 			{
-				for (w = 0; w < nz; w++)
+				for (w = 1; w < nz; w++)
 				{
 					c[u][v][w].act = false;
 					c[u][v][w].cld = false;
@@ -193,7 +242,7 @@ namespace SkyX { namespace VClouds
 					c[u][v][w].phum = 0;
 
 					c[u][v][w].dens = 0.0f;
-					c[u][v][w].light = 0.0f;
+					c[u][v][w].light = 1.0f;
 				}
 			}
 		}
@@ -218,7 +267,7 @@ namespace SkyX { namespace VClouds
 		delete [] c;
 	}
 
-	void DataManager::_copy3DCellArraysData(Cell ***_or, Cell ***dest, const int& nx, const int& ny, const int& nz)
+	void DataManager::_copy3DCellArraysData(Cell ***src, Cell ***dest, const int& nx, const int& ny, const int& nz)
 	{
 		int u, v, w;
 
@@ -228,32 +277,33 @@ namespace SkyX { namespace VClouds
 			{
 				for (w = 0; w < nz; w++)
 				{
-					dest[u][v][w].act = _or[u][v][w].act;
-					dest[u][v][w].cld = _or[u][v][w].cld;
-					dest[u][v][w].hum = _or[u][v][w].hum;
+					dest[u][v][w].act = src[u][v][w].act;
+					dest[u][v][w].cld = src[u][v][w].cld;
+					dest[u][v][w].hum = src[u][v][w].hum;
 
-					dest[u][v][w].pact = _or[u][v][w].pact;
-					dest[u][v][w].pext = _or[u][v][w].pext;
-					dest[u][v][w].phum = _or[u][v][w].phum;
+					dest[u][v][w].pact = src[u][v][w].pact;
+					dest[u][v][w].pext = src[u][v][w].pext;
+					dest[u][v][w].phum = src[u][v][w].phum;
 
-					dest[u][v][w].dens = _or[u][v][w].dens;
-					dest[u][v][w].light = _or[u][v][w].light;
+					dest[u][v][w].dens = src[u][v][w].dens;
+					dest[u][v][w].light = src[u][v][w].light;
 				}
 			}
 		}
 	}
 
-	void DataManager::setWheater(const float& Humidity, const float& AverageCloudsSize, const int& NumberOfForcedUpdates)
+	void DataManager::setWheater(const float& Humidity, const float& AverageCloudsSize, const bool& delayedResponse)
 	{
 		int numberofclouds = static_cast<int>(Humidity * mMaxNumberOfClouds);
 		Ogre::Vector3 maxcloudsize = AverageCloudsSize*Ogre::Vector3(mNx/14, mNy/14, static_cast<int>(static_cast<float>(mNz)/2.75));
 
 		// Update old clouds with new parameters
-		Ogre::Vector3 currentdimensions;
+		Ogre::Vector3 currentdimensions, currentPosition;
 		std::vector<Ellipsoid*>::const_iterator mEllipsoidsIt;
 
 		for(mEllipsoidsIt = mEllipsoids.begin(); mEllipsoidsIt != mEllipsoids.end(); mEllipsoidsIt++)
 		{
+			// Update size
 			currentdimensions = (*mEllipsoidsIt)->getDimensions();
 
 			if (currentdimensions.x / maxcloudsize.x < 0.5 || currentdimensions.x / maxcloudsize.x > 2)
@@ -264,10 +314,16 @@ namespace SkyX { namespace VClouds
 			{
 				currentdimensions.y = maxcloudsize.y + Ogre::Math::RangeRandom(-0.2,0.2)*maxcloudsize.y;
 			}
-			if (currentdimensions.z / maxcloudsize.z < 0.5 || currentdimensions.x / maxcloudsize.z > 2)
+			if (currentdimensions.z / maxcloudsize.z < 0.5 || currentdimensions.z / maxcloudsize.z > 2)
 			{
-				currentdimensions.z = maxcloudsize.z + Ogre::Math::RangeRandom(-0.2,0.2)*maxcloudsize.z;
+				currentdimensions.z = maxcloudsize.z + Ogre::Math::RangeRandom(-0.2,0.15)*maxcloudsize.z;
 			}
+
+			(*mEllipsoidsIt)->setDimensions(currentdimensions);
+
+			// Update position
+			currentPosition = (*mEllipsoidsIt)->getPosition();
+			(*mEllipsoidsIt)->setPosition(Ogre::Vector3(currentPosition.x,currentPosition.y,static_cast<int>(Ogre::Math::RangeRandom(currentdimensions.z+2,mNz-currentdimensions.z-2))));
 		}
 
 		// Remove some clouds if needed
@@ -280,15 +336,22 @@ namespace SkyX { namespace VClouds
 		Ogre::Vector3 newclouddimensions;
 		while (static_cast<unsigned int>(numberofclouds) > mEllipsoids.size())
 		{
-			newclouddimensions = maxcloudsize*Ogre::Vector3(Ogre::Math::RangeRandom(0.5, 2), Ogre::Math::RangeRandom(0.5, 2), Ogre::Math::RangeRandom(0.8, 1.2));
+			newclouddimensions = maxcloudsize*Ogre::Vector3(Ogre::Math::RangeRandom(0.5, 2), Ogre::Math::RangeRandom(0.5, 2), Ogre::Math::RangeRandom(0.75, 1));
 			addEllipsoid(new Ellipsoid(newclouddimensions.x,  newclouddimensions.y,  newclouddimensions.z, mNx, mNy, mNz, (int)Ogre::Math::RangeRandom(0, mNx), (int)Ogre::Math::RangeRandom(0, mNy), static_cast<int>(Ogre::Math::RangeRandom(newclouddimensions.z+2,mNz-newclouddimensions.z-2)), Ogre::Math::RangeRandom(1,5.0f)), false);
 		}
 
-		_updateProbabilities(mCellsCurrent, mNx, mNy, mNz);
+		_updateProbabilities(mCellsCurrent, mNx, mNy, mNz, delayedResponse);
 
-		for (int k = 0; k < NumberOfForcedUpdates; k++)
+		if (!delayedResponse)
 		{
-			forceToUpdateData();
+			for (int k = 0; k < 4; k++)
+			{
+				_performCalculations(mNx, mNy, mNz, k, 0, mNx);
+			}
+			mStep = mXStart = mXEnd = 0;
+
+			_updateVolTextureData(mCellsCurrent, VOL_TEX0, mNx, mNy, mNz);
+			_updateVolTextureData(mCellsCurrent, VOL_TEX1, mNx, mNy, mNz);
 		}
 	}
 
@@ -302,7 +365,7 @@ namespace SkyX { namespace VClouds
 		}
 	}
 
-	void DataManager::_clearProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz)
+	void DataManager::_clearProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz, const bool& clearData)
 	{
 		int u, v, w;
 
@@ -315,23 +378,30 @@ namespace SkyX { namespace VClouds
 					c[u][v][w].pact = 0;
 					c[u][v][w].pext = 1;
 					c[u][v][w].phum = 0;
+
+					if (clearData)
+					{
+						c[u][v][w].act = false;
+						c[u][v][w].cld = false;
+						c[u][v][w].hum = false;
+
+						c[u][v][w].dens = 0;
+						c[u][v][w].light = 0;
+					}
 				}
 			}
 		}
 	}
 
-	void DataManager::_updateProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz, const bool& ClearProbabilities)
+	void DataManager::_updateProbabilities(Cell*** c, const int& nx, const int& ny, const int& nz, const bool& delayedResponse)
 	{
-		if (ClearProbabilities)
-		{
-			_clearProbabilities(c,nx,ny,nz);
-		}
+		_clearProbabilities(c,nx,ny,nz,!delayedResponse);
 
 		std::vector<Ellipsoid*>::const_iterator mEllipsoidsIt;
 
 		for(mEllipsoidsIt = mEllipsoids.begin(); mEllipsoidsIt != mEllipsoids.end(); mEllipsoidsIt++)
 		{
-			(*mEllipsoidsIt)->updateProbabilities(c,nx,ny,nz);
+			(*mEllipsoidsIt)->updateProbabilities(c,nx,ny,nz,delayedResponse);
 		}
 	}
 
@@ -366,74 +436,83 @@ namespace SkyX { namespace VClouds
 		return Ogre::Math::Clamp<Ogre::Real>(factor,0,1);
 	}
 
-	void DataManager::_performCalculations(const int& nx, const int& ny, const int& nz)
+	void DataManager::_performCalculations(const int& nx, const int& ny, const int& nz, const int& step, const int& xStart, const int& xEnd)
 	{
-		// First step
-
 		int u, v, w;
 
-		for (u = 0; u < nx; u++)
+		switch (step)
 		{
-			for (v = 0; v < ny; v++)
+			case 0:
 			{
-				for (w = 0; w < nz; w++)
+				for (u = xStart; u < xEnd; u++)
 				{
-					// ti+1                       ti
-					mCellsCurrent[u][v][w].hum =  mCellsTmp[u][v][w].hum && !mCellsTmp[u][v][w].act;
-					mCellsCurrent[u][v][w].cld =  mCellsTmp[u][v][w].cld ||  mCellsTmp[u][v][w].act;
-					mCellsCurrent[u][v][w].act = !mCellsTmp[u][v][w].act &&  mCellsTmp[u][v][w].hum && _fact(mCellsTmp, nx, ny, nz, u,v,w);
+					for (v = 0; v < ny; v++)
+					{
+						for (w = 0; w < nz; w++)
+						{
+							// ti+1                       ti
+							mCellsCurrent[u][v][w].hum = mCellsCurrent[u][v][w].hum || (mFFRandom->get() < mCellsCurrent[u][v][w].phum);
+							mCellsCurrent[u][v][w].cld = mCellsCurrent[u][v][w].cld && (mFFRandom->get() > mCellsCurrent[u][v][w].pext);
+							mCellsCurrent[u][v][w].act = mCellsCurrent[u][v][w].act || (mFFRandom->get() < mCellsCurrent[u][v][w].pact);
+
+							// Copy act in the temporal buffer, for _fact(...)
+							mCellsTmp[u][v][w].act = mCellsCurrent[u][v][w].act;
+						}
+					}
 				}
 			}
-		}
-
-		// Second step
-
-		_copy3DCellArraysData(mCellsCurrent, mCellsTmp, nx, ny, nz);
-
-		for (u = 0; u < nx; u++)
-		{
-			for (v = 0; v < ny; v++)
+			break;
+			case 1:
 			{
-				for (w = 0; w < nz; w++)
+				for (u = xStart; u < xEnd; u++)
 				{
-					// ti+1                       ti
-					mCellsCurrent[u][v][w].hum = mCellsTmp[u][v][w].hum || (mFFRandom->get() < mCellsTmp[u][v][w].phum);
-					mCellsCurrent[u][v][w].cld = mCellsTmp[u][v][w].cld && (mFFRandom->get() > mCellsTmp[u][v][w].pext);
-					mCellsCurrent[u][v][w].act = mCellsTmp[u][v][w].act || (mFFRandom->get() < mCellsTmp[u][v][w].pact);
+					for (v = 0; v < ny; v++)
+					{
+						for (w = 0; w < nz; w++)
+						{
+							// ti+1                       ti
+							mCellsCurrent[u][v][w].hum =  mCellsCurrent[u][v][w].hum && !mCellsCurrent[u][v][w].act;
+							mCellsCurrent[u][v][w].cld =  mCellsCurrent[u][v][w].cld ||  mCellsCurrent[u][v][w].act;
+							mCellsCurrent[u][v][w].act = !mCellsCurrent[u][v][w].act &&  mCellsCurrent[u][v][w].hum && _fact(mCellsTmp, nx, ny, nz, u,v,w);
+						}
+					}
 				}
 			}
-		}
-
-		// Final steps
-
-		// Continous density
-		for (u = 0; u < nx; u++)
-		{
-			for (v = 0; v < ny; v++)
+			break;
+			case 2:
 			{
-				for (w = 0; w < nz; w++)
+				// Continous density
+				for (u = xStart; u < xEnd; u++)
 				{
-					mCellsCurrent[u][v][w].dens = _getDensityAt(mCellsCurrent, nx, ny, nz, u,v,w, 1);
-					//mCellsCurrent[u][v][w].dens = _getDensityAt(mCellsCurrent,u,v,w);
+					for (v = 0; v < ny; v++)
+					{
+						for (w = 0; w < nz; w++)
+						{
+						   mCellsCurrent[u][v][w].dens = _getDensityAt(mCellsCurrent, nx, ny, nz, u,v,w, 1/*TODOOOO!!!*/, 1.15f);
+						  // mCellsCurrent[u][v][w].dens = _getDensityAt(mCellsCurrent,u,v,w);
+						}
+					}
 				}
 			}
-		}
-		
-		// Light scattering
-		Ogre::Vector3 SunDir = Ogre::Vector3(mVClouds->getSunDirection().x, mVClouds->getSunDirection().z, mVClouds->getSunDirection().y);
-
-		for (u = 0; u < nx; u++)
-		{
-			for (v = 0; v < ny; v++)
+			break;
+			case 3:
 			{
-				for (w = 0; w < nz; w++)
+				// Light scattering
+				Ogre::Vector3 SunDir = Ogre::Vector3(mVClouds->getSunDirection().x, mVClouds->getSunDirection().z, mVClouds->getSunDirection().y);
+
+				for (u = xStart; u < xEnd; u++)
 				{
-					mCellsCurrent[u][v][w].light = _getLightAbsorcionAt(mCellsCurrent, mNx, mNy, mNz, u,v,w, SunDir, 0.15f);
+					for (v = 0; v < ny; v++)
+					{
+						for (w = 0; w < nz; w++)
+						{
+							mCellsCurrent[u][v][w].light = _getLightAbsorcionAt(mCellsCurrent, nx, ny, nz, u,v,w, SunDir, 0.15f/*TODO!!!!*/);
+						}
+					}
 				}
 			}
+			break;
 		}
-
-		_copy3DCellArraysData(mCellsCurrent, mCellsTmp, nx, ny, nz);
 	}
 
 	const bool DataManager::_fact(Cell ***c, const int& nx, const int& ny, const int& nz, const int& x, const int& y, const int& z) const
@@ -460,7 +539,7 @@ namespace SkyX { namespace VClouds
 		return i1m || j1m || k1m  || i1r || j1r || k1r || i2r || i2m || j2r || j2m || k2r;
 	}
 
-	const float DataManager::_getDensityAt(Cell ***c, const int& nx, const int& ny, const int& nz, const int& x, const int& y, const int& z, const int& r) const
+	const float DataManager::_getDensityAt(Cell ***c, const int& nx, const int& ny, const int& nz, const int& x, const int& y, const int& z, const int& r, const float& strength) const
 	{		
 		int zr = ((z-r)<0) ? 0 : z-r,
 			zm = ((z+r)>=nz) ? nz : z+r,
@@ -483,7 +562,7 @@ namespace SkyX { namespace VClouds
 			}
 		}
 
-		return ((float)clouds)/div;
+		return Ogre::Math::Clamp<float>(strength*((float)clouds)/div, 0, 1);
 	}
 
 	const float DataManager::_getDensityAt(Cell ***c, const int& x, const int& y, const int& z) const
@@ -507,6 +586,10 @@ namespace SkyX { namespace VClouds
 			Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds"))
 			->getTechnique(0)->getPass(0)->getTextureUnitState(static_cast<int>(TexId))
 				->setTextureName("_SkyX_VolCloudsData"+Ogre::StringConverter::toString(TexId), Ogre::TEX_TYPE_3D);
+		static_cast<Ogre::MaterialPtr>(
+			Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds_Lightning"))
+			->getTechnique(0)->getPass(0)->getTextureUnitState(static_cast<int>(TexId))
+				->setTextureName("_SkyX_VolCloudsData"+Ogre::StringConverter::toString(TexId), Ogre::TEX_TYPE_3D);
 	}
 
 	void DataManager::_updateVolTextureData(Cell ***c, const VolTextureId& TexId, const int& nx, const int& ny, const int& nz)
@@ -516,7 +599,7 @@ namespace SkyX { namespace VClouds
 		buffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
 		const Ogre::PixelBox &pb = buffer->getCurrentLock();
 
-		Ogre::uint16 *pbptr = static_cast<Ogre::uint16*>(pb.data);
+		Ogre::uint32 *pbptr = static_cast<Ogre::uint32*>(pb.data);
 		size_t x, y, z;
 
 		for (z=pb.front; z<pb.back; z++) 
@@ -524,8 +607,8 @@ namespace SkyX { namespace VClouds
             for (y=pb.top; y<pb.bottom; y++)
             {
                 for (x=pb.left; x<pb.right; x++)
-                {
-					Ogre::PixelUtil::packColour(c[x][y][z].dens, c[x][y][z].light, 0, 0, Ogre::PF_BYTE_RGB, &pbptr[x]);
+				{
+					Ogre::PixelUtil::packColour(c[x][y][z].dens/* TODO!!!! */, c[x][y][z].light, 0, 0, pb.format, &pbptr[x]);
                 } 
                 pbptr += pb.rowPitch;
             }

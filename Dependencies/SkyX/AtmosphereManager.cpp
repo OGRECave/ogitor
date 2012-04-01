@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -43,24 +42,6 @@ namespace SkyX
 	void AtmosphereManager::_update(const Options& NewOptions, const bool& ForceToUpdateAll)
 	{
 		GPUManager *mGPUManager = mSkyX->getGPUManager();
-
-		if (NewOptions.Time != mOptions.Time || 
-			NewOptions.EastPosition != mOptions.EastPosition ||
-			ForceToUpdateAll)
-		{
-			mOptions.Time = NewOptions.Time;
-			mOptions.EastPosition = NewOptions.EastPosition;
-
-			if (mSkyX->isStarfieldEnabled())
-			{
-				mGPUManager->setGpuProgramParameter(GPUManager::GPUP_FRAGMENT, "uTime", mSkyX->_getTimeOffset()*0.5f, false);
-			}
-
-			mGPUManager->setGpuProgramParameter(GPUManager::GPUP_VERTEX, "uLightDir", -getSunDirection());
-			mGPUManager->setGpuProgramParameter(GPUManager::GPUP_FRAGMENT, "uLightDir", -getSunDirection(), false);
-
-			mSkyX->getMoonManager()->update();
-		}
 
 		if (NewOptions.InnerRadius != mOptions.InnerRadius || 
 			NewOptions.OuterRadius != mOptions.OuterRadius ||
@@ -153,18 +134,18 @@ namespace SkyX
 			mGPUManager->setGpuProgramParameter(GPUManager::GPUP_FRAGMENT, "uExposure", mOptions.Exposure);
 		}
 
-		mSkyX->getCloudsManager()->_updateInternal();
+		mSkyX->getCloudsManager()->update();
 	}
 
 	const float AtmosphereManager::_scale(const float& cos, const float& uScaleDepth) const
 	{
-		float x = 1.0 - cos;
+		float x = 1 - cos;
 		return uScaleDepth * Ogre::Math::Exp(-0.00287 + x*(0.459 + x*(3.83 + x*(-6.80 + x*5.25))));
 	}
 
 	const Ogre::Vector3 AtmosphereManager::getColorAt(const Ogre::Vector3& Direction) const
 	{
-		if (Direction.y<0)
+		if (Direction.y < 0)
 		{
 			return Ogre::Vector3(0,0,0);
 		}
@@ -180,7 +161,7 @@ namespace SkyX
 
 		// --- Start vertex program simulation ---
 		Ogre::Vector3
-			uLightDir = -getSunDirection(),
+			uLightDir = mSkyX->getController()->getSunDirection(),
 			v3Pos = Direction,
 			uCameraPos = Ogre::Vector3(0, mOptions.InnerRadius + (mOptions.OuterRadius-mOptions.InnerRadius)*mOptions.HeightPosition, 0),
 			uInvWaveLength = Ogre::Vector3(
@@ -271,94 +252,5 @@ namespace SkyX
 
 		// Output color
 		return oColor;
-	}
-
-	const Ogre::Vector3 AtmosphereManager::getSunDirection() const
-	{
-		// 24h day: 
-		// 0______A(Sunrise)_______B(Sunset)______24
-		//                     
-
-		float y,
-			X = mOptions.Time.x,
-			A = mOptions.Time.y,
-			B = mOptions.Time.z,
-			AB  = A+24-B,
-			AB_ = B-A,
-			XB  = X+24-B;
-
-		if (X<A || X>B)
-		{
-			if (X<A)
-			{
-                y = -XB / AB;
-			}
-			else
-			{
-				y = -(X-B) / AB;
-			}
-            
-			if (y > -0.5f)
-			{
-				y *= 2;
-			}
-			else
-			{
-				y = -(1 + y)*2;
-			}
-		}
-		else
-		{
-			y = (X-A)/(B-A);
-
-			if (y < 0.5f)
-			{
-				y *= 2;
-			}
-			else
-			{
-				y = (1 - y)*2;
-			}
-		}
-
-		Ogre::Vector2 East = mOptions.EastPosition.normalisedCopy();
-
-		if (X > A && X < B)
-		{
-			if (X > (A + AB_/2))
-			{
-				East = -East;
-			}
-		}
-		else
-		{
-			if (X<A)
-			{
-				if (XB < (24-AB_)/2)
-				{
-					East = -East;
-				}
-			}
-			else
-			{
-				if ((X-B) < (24-AB_)/2)
-				{
-					East = -East;
-				}
-			}
-		}
-
-		float ydeg = (Ogre::Math::PI/2)*y,
-		      sn = Ogre::Math::Sin(ydeg),
-		      cs = Ogre::Math::Cos(ydeg);
-
-		Ogre::Vector3 SPos = Ogre::Vector3(East.x*cs, sn, East.y*cs);
-
-		return -SPos;
-	}
-
-	const Ogre::Vector3 AtmosphereManager::getSunPosition() const
-	{
-		return mSkyX->getCamera()->getDerivedPosition() - getSunDirection()*mSkyX->getMeshManager()->getSkydomeRadius();
 	}
 }

@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -25,7 +24,7 @@ http://www.gnu.org/copyleft/lesser.txt.
 #ifndef _SkyX_VClouds_GeometryBlock_H_
 #define _SkyX_VClouds_GeometryBlock_H_
 
-#include "../Prerequisites.h"
+#include "Prerequisites.h"
 
 namespace SkyX { namespace VClouds{
 
@@ -57,11 +56,15 @@ namespace SkyX { namespace VClouds{
 			@param Na Number of slices in A zone
 			@param Nb Number of slices in B zone
 			@param Nc Number of slices in C zone
+			@param A A radius
+			@param B B radius
+			@param C C radius
 		 */
 		GeometryBlock(VClouds *vc,
 			const float& Height, const Ogre::Radian& Alpha, const Ogre::Radian& Beta, 
 			const float& Radius, const Ogre::Radian& Phi, const int& Na, 
-			const int& Nb, const int& Nc, const int& Position);
+			const int& Nb, const int& Nc, const int& A, 
+			const int& B, const int& C, const int& Position);
 
 		/** Destructor
 		 */
@@ -75,10 +78,11 @@ namespace SkyX { namespace VClouds{
 		 */
 		void remove();
 
-		/** Call every frame
-		    @param offset Amount of world units moved
+		/** Update geometry
+		    @param c Camera
+		    @param displacement Current offset in world units per zone
          */
-        void update(const Ogre::Real& offset);
+		void updateGeometry(Ogre::Camera* c, const Ogre::Vector3& displacement);
 
 		/** Has been create() already called?
 		    @return true if created() have been already called, false if not
@@ -144,8 +148,9 @@ namespace SkyX { namespace VClouds{
 
 	private:
 		/** Build axis aligned box
+		    @param fd Falling distance (Positive values for falling geometry, negative for reverse falling geometry)
 		 */
-		const Ogre::AxisAlignedBox _buildAABox() const;
+		const Ogre::AxisAlignedBox _buildAABox(const float& fd) const;
 
 		/** Calculate data size
 		 */
@@ -233,6 +238,11 @@ namespace SkyX { namespace VClouds{
 
 		/// VClouds pointer
 		VClouds *mVClouds;
+		/// Current rendering camera
+		Ogre::Camera* mCamera;
+
+		/// Last falling distance
+		float mLastFallingDistance;
 	};
 
 
