@@ -669,7 +669,7 @@ CBaseEditor *CCaelumEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPro
   if(params.find("init") != params.end())
   {
       mFile->createDirectory(value.c_str());   
-      Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/CAELUM/";
+      Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/Caelum/";
       OgitorsUtils::CopyDirOfs(copydir, value + "/");
 
       params.erase(params.find("init"));

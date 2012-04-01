@@ -543,7 +543,7 @@ CBaseEditor *CSkyxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPrope
   if(params.find("init") != params.end())
   {
       mFile->createDirectory(value.c_str());   
-      Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/SKYX/";
+      Ogre::String copydir = OgitorsUtils::GetEditorResourcesPath() + "/SkyX/";
       OgitorsUtils::CopyDirOfs(copydir, value + "/");
 
       params.erase(params.find("init"));
