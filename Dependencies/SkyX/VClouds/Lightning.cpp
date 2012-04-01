@@ -110,7 +110,7 @@ namespace SkyX { namespace VClouds
 			bb->setColour(Ogre::ColourValue(1,bounds.y,bounds.y));
 			bb->mDirection = -(mSegments.at(k).a-mSegments.at(k).b).normalisedCopy();
 		
-			width *= 1-(1.0f/(mRecursivity*mRecursivity))*(1.0f/mSegments.size());
+            width *= 1-(1.0f/(mRecursivity*mRecursivity+1.0f))*(1.0f/mSegments.size());
 		}
 
 		mBillboardSet->_updateBounds();

@@ -90,11 +90,6 @@ void CSkyxEditor::_restoreState()
     mBasicController->setEastDirection(mEastPosition->get());
     mBasicController->setMoonPhase(mMoonPhase->get());
 
-    if(!mHandle->getCloudsManager()->getCloudLayers().empty())
-    {
-        mHandle->getCloudsManager()->removeAll();
-    }
-
     if(mVCEnable->get() == true)
         if (!mHandle->getVCloudsManager()->isCreated())
             mHandle->getVCloudsManager()->create(mHandle->getMeshManager()->getSkydomeRadius(mOgitorsRoot->GetViewport()->getCameraEditor()->getCamera()));
@@ -106,7 +101,8 @@ void CSkyxEditor::_restoreState()
     mHandle->getVCloudsManager()->getVClouds()->setWindSpeed(mVCWindSpeed->get());
     mHandle->getVCloudsManager()->getVClouds()->setWindDirection(Ogre::Degree(mVCWindDirection->get()));
     mHandle->getVCloudsManager()->getVClouds()->setNoiseScale(mVCNoiseScale->get());
-    mHandle->getVCloudsManager()->getVClouds()->setAmbientColor(mVCAmbientColor->get());
+    Ogre::ColourValue colour = mVCAmbientColor->get();
+    mHandle->getVCloudsManager()->getVClouds()->setAmbientColor(Ogre::Vector3(colour.r,colour.g, colour.b));
     mHandle->getVCloudsManager()->getVClouds()->setLightResponse(mVCLightReponse->get());
     mHandle->getVCloudsManager()->getVClouds()->setAmbientFactors(mVCAmbientFactors->get());
     mHandle->getVCloudsManager()->getVClouds()->setWheater(mVCWeather->get().x, mVCWeather->get().y, false);
@@ -130,6 +126,8 @@ bool CSkyxEditor::load(bool async)
     mBasicController = new SkyX::BasicController(true);
     mHandle = new SkyX::SkyX(mOgitorsRoot->GetSceneManager(), mBasicController);
 	mHandle->create();
+
+    mHandle->getVCloudsManager()->getVClouds()->registerCamera(mOgitorsRoot->GetViewport()->getCameraEditor()->getCamera());
 
     mHandle->getVCloudsManager()->getVClouds()->setDistanceFallingParams(Ogre::Vector2(2,-1));
 
@@ -162,35 +160,46 @@ bool CSkyxEditor::unLoad()
 //-----------------------------------------------------------------------------------------
 void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
 {
-    PROPERTY_PTR(mTimeMultiplier    , "options::timemultiplier"     , Ogre::Real,    0.08f,                                 0, SETTER(Ogre::Real,          CSkyxEditor, _setTimeMultiplier));
-    PROPERTY_PTR(mSampleCount       , "options::samplecount"        , int,           4,                                     0, SETTER(int,                 CSkyxEditor, _setOptionsSampleCount));
-    PROPERTY_PTR(mHeightPosition    , "options::height"             , Ogre::Real,    0.01f,                                 0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsHeight));
-    PROPERTY_PTR(mTime              , "options::time"               , Ogre::Vector3, Ogre::Vector3(8.80f, 7.50f, 20.50f),   0, SETTER(Ogre::Vector3,       CSkyxEditor, _setOptionsTime));
-    PROPERTY_PTR(mEastPosition      , "options::eastposition"       , Ogre::Vector2, Ogre::Vector2(0, 1),                   0, SETTER(Ogre::Vector2,       CSkyxEditor, _setOptionsEastPosition));
-    PROPERTY_PTR(mWaveLength        , "options::wavelength"         , Ogre::Vector3, Ogre::Vector3(0.57f, 0.54f, 0.44f),    0, SETTER(Ogre::Vector3,       CSkyxEditor, _setOptionsWaveLength));
-    PROPERTY_PTR(mExposure          , "options::exposure"           , Ogre::Real,    3.0f,                                  0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsExposure));
-    PROPERTY_PTR(mG                 , "options::g"                  , Ogre::Real,    -0.991f,                               0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsG));
-    PROPERTY_PTR(mRayleighMultiplier, "options::rayleighmultiplier" , Ogre::Real,    0.0022f,                               0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsRayleighMultiplier));
-    PROPERTY_PTR(mMieMultiplier     , "options::miemultiplier"      , Ogre::Real,    0.000675f,                             0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsMieMultiplier));
-    PROPERTY_PTR(mInnerRadius       , "options::innerradius"        , Ogre::Real,    9.77501f,                              0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsInnerRadius));
-    PROPERTY_PTR(mOuterRadius       , "options::outerradius"        , Ogre::Real,    10.2963f,                              0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsOuterRadius));
-    PROPERTY_PTR(mSunIntensity      , "options::sunintensity"       , Ogre::Real,    30,                                    0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsSunIntensity));
-    PROPERTY_PTR(mMoonPhase         , "options::moonphase"          , Ogre::Real,    0,                                     0, SETTER(Ogre::Real,          CSkyxEditor, _setOptionsMoonPhase));
-
-    PROPERTY_PTR(mVCEnable          , "vclouds::enable"             , bool,          true,                                  0, SETTER(bool,                CSkyxEditor, _setVCEnable));
-    PROPERTY_PTR(mVCAutoUpdate      , "vclouds::autoupdate"         , bool,          false,                                 0, SETTER(bool,                CSkyxEditor, _setVCAutoUpdate));
-    PROPERTY_PTR(mVCWindSpeed       , "vclouds::windspeed"          , Ogre::Real,    300,                                   0, SETTER(Ogre::Real,          CSkyxEditor, _setVCWindSpeed));
-    PROPERTY_PTR(mVCWindDirection   , "vclouds::winddirection"      , Ogre::Real,    0,                                     0, SETTER(Ogre::Real,          CSkyxEditor, _setVCWindDirection));
-    PROPERTY_PTR(mVCNoiseScale      , "vclouds::noisescale"         , Ogre::Real,    4.2f,                                  0, SETTER(Ogre::Real,          CSkyxEditor, _setVCNoiseScale));
-    PROPERTY_PTR(mVCAmbientColor    , "vclouds::ambientcolor"       , Ogre::Vector3, Ogre::Vector3(0.6f, 0.6f, 0.7f),       0, SETTER(Ogre::Vector3,       CSkyxEditor, _setVCAmbientColor));
-    PROPERTY_PTR(mVCLightReponse    , "vclouds::lightresponse"      , Ogre::Vector4, Ogre::Vector4(0.3f, 0.2f, 0.9f, 0.1f), 0, SETTER(Ogre::Vector4,       CSkyxEditor, _setVCLightResponse));
-    PROPERTY_PTR(mVCAmbientFactors  , "vclouds::ambientfactors"     , Ogre::Vector4, Ogre::Vector4(0.4f, 0.7f, 0.0f, 0.0f), 0, SETTER(Ogre::Vector4,       CSkyxEditor, _setVCAmbientFactors));
-    PROPERTY_PTR(mVCWeather         , "vclouds::weather"            , Ogre::Vector2, Ogre::Vector2(0.8f, 0.1f),             0, SETTER(Ogre::Vector2,       CSkyxEditor, _setVCWeather));
+    PROPERTY_PTR(mTimeMultiplier        , "options::timemultiplier"     , Ogre::Real,           0.08f,                                  0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsTimeMultiplier));
     
+    // SkyX Basic Controller parameters
+    PROPERTY_PTR(mTime                  , "options::time"               , Ogre::Vector3,        Ogre::Vector3(8.80f, 7.50f, 20.50f),    0, SETTER(Ogre::Vector3,        CSkyxEditor, _setOptionsTime));
+    PROPERTY_PTR(mEastPosition          , "options::eastposition"       , Ogre::Vector2,        Ogre::Vector2(0, 1),                    0, SETTER(Ogre::Vector2,        CSkyxEditor, _setOptionsEastPosition));
+    PROPERTY_PTR(mMoonPhase             , "options::moonphase"          , Ogre::Real,           0,                                      0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsMoonPhase));
+
+    // SkyX Atmosphere parameters
+    PROPERTY_PTR(mInnerRadius           , "options::innerradius"        , Ogre::Real,           9.77501f,                               0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsInnerRadius));
+    PROPERTY_PTR(mOuterRadius           , "options::outerradius"        , Ogre::Real,           10.2963f,                               0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsOuterRadius));
+    PROPERTY_PTR(mHeightPosition        , "options::height"             , Ogre::Real,           0.1f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsHeight));
+    PROPERTY_PTR(mRayleighMultiplier    , "options::rayleighmultiplier" , Ogre::Real,           0.0022f,                                0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsRayleighMultiplier));
+    PROPERTY_PTR(mMieMultiplier         , "options::miemultiplier"      , Ogre::Real,           0.000675f,                              0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsMieMultiplier));
+    PROPERTY_PTR(mSunIntensity          , "options::sunintensity"       , Ogre::Real,           30,                                     0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsSunIntensity));
+    PROPERTY_PTR(mWaveLength            , "options::wavelength"         , Ogre::Vector3,        Ogre::Vector3(0.57f, 0.54f, 0.44f),     0, SETTER(Ogre::Vector3,        CSkyxEditor, _setOptionsWaveLength));
+    PROPERTY_PTR(mG                     , "options::g"                  , Ogre::Real,           -0.991f,                                0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsG));
+    PROPERTY_PTR(mExposure              , "options::exposure"           , Ogre::Real,           3.0f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsExposure));
+    PROPERTY_PTR(mSampleCount           , "options::samplecount"        , int,                  4,                                      0, SETTER(int,                  CSkyxEditor, _setOptionsSampleCount));
+
+    // SkyX Volumetric Clouds parameters
+    PROPERTY_PTR(mVCEnable              , "vclouds::enable"             , bool,                 true,                                   0, SETTER(bool,                 CSkyxEditor, _setVCEnable));
+    PROPERTY_PTR(mVCAutoUpdate          , "vclouds::autoupdate"         , bool,                 false,                                  0, SETTER(bool,                 CSkyxEditor, _setVCAutoUpdate));
+    PROPERTY_PTR(mVCWindSpeed           , "vclouds::windspeed"          , Ogre::Real,           80,                                     0, SETTER(Ogre::Real,           CSkyxEditor, _setVCWindSpeed));
+    PROPERTY_PTR(mVCWindDirection       , "vclouds::winddirection"      , Ogre::Real,           0,                                      0, SETTER(Ogre::Real,           CSkyxEditor, _setVCWindDirection));
+    PROPERTY_PTR(mVCNoiseScale          , "vclouds::noisescale"         , Ogre::Real,           4.2f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setVCNoiseScale));
+    PROPERTY_PTR(mVCAmbientColor        , "vclouds::ambientcolor"       , Ogre::ColourValue,    Ogre::ColourValue(0.6f, 0.6f, 0.7f),    0, SETTER(Ogre::ColourValue,    CSkyxEditor, _setVCAmbientColor));
+    PROPERTY_PTR(mVCLightReponse        , "vclouds::lightresponse"      , Ogre::Vector4,        Ogre::Vector4(0.3f, 0.2f, 0.9f, 0.1f),  0, SETTER(Ogre::Vector4,        CSkyxEditor, _setVCLightResponse));
+    PROPERTY_PTR(mVCAmbientFactors      , "vclouds::ambientfactors"     , Ogre::Vector4,        Ogre::Vector4(0.4f, 0.7f, 0.0f, 0.0f),  0, SETTER(Ogre::Vector4,        CSkyxEditor, _setVCAmbientFactors));
+    PROPERTY_PTR(mVCWeather             , "vclouds::weather"            , Ogre::Vector2,        Ogre::Vector2(0.8f, 0.5f),              0, SETTER(Ogre::Vector2,        CSkyxEditor, _setVCWeather));
+    
+    // SkyX Volumetric Clouds Lightning parameters
+    PROPERTY_PTR(mVCLightningEnable     , "vclightning::enable"         , bool,                 false,                                  0, SETTER(bool,                 CSkyxEditor, _setVCLightningEnable));
+    PROPERTY_PTR(mVCLightningAT         , "vclightning::at"             , Ogre::Real,           0.5f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setVCLightningAT));
+    PROPERTY_PTR(mVCLightningColor      , "vclightning::color"          , Ogre::ColourValue,    Ogre::ColourValue(0.9f, 1.0f, 1.0f),    0, SETTER(Ogre::ColourValue,    CSkyxEditor, _setVCLightningColor));
+    PROPERTY_PTR(mVCLightningTM         , "vclightning::tm"             , Ogre::Real,           2.0f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setVCLightningTM));
+
     mProperties.initValueMap(params);
 }
 //-----------------------------------------------------------------------------------------
-bool CSkyxEditor::_setTimeMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value)
+bool CSkyxEditor::_setOptionsTimeMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value)
 {
     mHandle->setTimeMultiplier(value);
     return true;
@@ -361,41 +370,56 @@ bool CSkyxEditor::_setVCNoiseScale(OgitorsPropertyBase* property, const Ogre::Re
     return true;
 }
 //-----------------------------------------------------------------------------------------
-bool Ogitors::CSkyxEditor::_setVCAmbientColor(OgitorsPropertyBase* property, const Ogre::Vector3& value)
+bool Ogitors::CSkyxEditor::_setVCAmbientColor(OgitorsPropertyBase* property, const Ogre::ColourValue& value)
 {
-    mHandle->getVCloudsManager()->getVClouds()->setAmbientColor(Ogre::Vector3(
-        Ogre::Math::Clamp<Ogre::Real>(value.x, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.y, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.z, 0, 1)));
+    Ogre::ColourValue colour = mVCAmbientColor->get();
+    mHandle->getVCloudsManager()->getVClouds()->setAmbientColor(Ogre::Vector3(colour.r,colour.g, colour.b));
     return true;
 }
 //----------------------------------------------------------------------------
 bool Ogitors::CSkyxEditor::_setVCLightResponse(OgitorsPropertyBase* property, const Ogre::Vector4& value)
 {
-    mHandle->getVCloudsManager()->getVClouds()->setLightResponse(Ogre::Vector4(
-        Ogre::Math::Clamp<Ogre::Real>(value.x, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.y, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.z, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.w, 0, 1)));
+    mHandle->getVCloudsManager()->getVClouds()->setLightResponse(value);
     return true;
 }
 //----------------------------------------------------------------------------
 bool Ogitors::CSkyxEditor::_setVCAmbientFactors(OgitorsPropertyBase* property, const Ogre::Vector4& value)
 {
-    mHandle->getVCloudsManager()->getVClouds()->setAmbientFactors(Ogre::Vector4(
-        Ogre::Math::Clamp<Ogre::Real>(value.x, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.y, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.z, 0, 1),
-        Ogre::Math::Clamp<Ogre::Real>(value.w, 0, 1)));
+    mHandle->getVCloudsManager()->getVClouds()->setAmbientFactors(value);
     return true;
 }
-//----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 bool Ogitors::CSkyxEditor::_setVCWeather(OgitorsPropertyBase* property, const Ogre::Vector2& value)
 {   
-    mHandle->getVCloudsManager()->getVClouds()->setWheater(Ogre::Math::Clamp<Ogre::Real>(value.x, 0, 1), 
-                                                           Ogre::Math::Clamp<Ogre::Real>(value.y, 0, 1), false);
+    mHandle->getVCloudsManager()->getVClouds()->setWheater(value.x, value.y, false);
     return true;
 }
+//-------------------------------------------------------------------------
+bool Ogitors::CSkyxEditor::_setVCLightningEnable(OgitorsPropertyBase* property, const bool& value)
+{
+    mHandle->getVCloudsManager()->getVClouds()->getLightningManager()->setEnabled(value);
+    return true;
+}
+//-------------------------------------------------------------------------
+bool Ogitors::CSkyxEditor::_setVCLightningAT(OgitorsPropertyBase* property, const Ogre::Real& value)
+{
+    mHandle->getVCloudsManager()->getVClouds()->getLightningManager()->setAverageLightningApparitionTime(value);
+    return true;
+}
+//-------------------------------------------------------------------------
+bool Ogitors::CSkyxEditor::_setVCLightningColor(OgitorsPropertyBase* property, const Ogre::ColourValue& value)
+{
+    Ogre::ColourValue colour = mVCAmbientColor->get();    
+    mHandle->getVCloudsManager()->getVClouds()->getLightningManager()->setLightningColor(Ogre::Vector3(colour.r,colour.g, colour.b));
+    return true;
+}
+//-------------------------------------------------------------------------
+bool Ogitors::CSkyxEditor::_setVCLightningTM(OgitorsPropertyBase* property, const Ogre::Real& value)
+{
+    mHandle->getVCloudsManager()->getVClouds()->getLightningManager()->setLightningTimeMultiplier(value);
+    return true;
+}
+
 //-----------------------------------------------------------------------------------------
 TiXmlElement *CSkyxEditor::exportDotScene(TiXmlElement *pParent)
 {
@@ -445,38 +469,52 @@ CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     mIcon = "caelum.svg";
     mCapabilities = CAN_DELETE;
 
-    AddPropertyDefinition("options::timemultiplier","Time Mult.","",PROP_REAL);
-    AddPropertyDefinition("options::rayleighmultiplier","Options::Rayleigh Mult.","",PROP_REAL);
-    AddPropertyDefinition("options::miemultiplier","Options::Mie Mult.","",PROP_REAL);
-    AddPropertyDefinition("options::samplecount","Options::Sample Count","",PROP_INT);
-    AddPropertyDefinition("options::height","Options::Height","",PROP_REAL);
-    AddPropertyDefinition("options::exposure","Options::Exposure","",PROP_REAL);
-    AddPropertyDefinition("options::innerradius","Options::Inner Radius","",PROP_REAL);
-    AddPropertyDefinition("options::outerradius","Options::Outer Radius","",PROP_REAL);
+    OgitorsPropertyDef * definition = 0;
 
-    OgitorsPropertyDef * definition = AddPropertyDefinition("options::time","Options::Time","",PROP_VECTOR3);
+    AddPropertyDefinition("options::timemultiplier",                    "Options::Time Mult.",          "", PROP_REAL);
+    definition = AddPropertyDefinition("options::rayleighmultiplier",   "Options::Rayleigh Mult.",      "", PROP_REAL);
+    definition->setStepSize(Ogre::Any(0.0001f));
+    definition = AddPropertyDefinition("options::miemultiplier",        "Options::Mie Mult.",           "", PROP_REAL);
+    definition->setStepSize(Ogre::Any(0.000001f));
+    AddPropertyDefinition("options::samplecount",                       "Options::Sample Count",        "", PROP_INT);
+    definition = AddPropertyDefinition("options::height",               "Options::Height",              "0=InnerRadius, 1=OuterRadius", PROP_REAL);
+    definition->setRange(Ogre::Any(0.0f), Ogre::Any(1.0f), Ogre::Any(0.05f));
+    AddPropertyDefinition("options::exposure",                          "Options::Exposure",            "", PROP_REAL);
+    definition = AddPropertyDefinition("options::innerradius",          "Options::Inner Radius",        "", PROP_REAL);
+    definition->setStepSize(Ogre::Any(0.00001f));
+    definition = AddPropertyDefinition("options::outerradius",          "Options::Outer Radius",        "", PROP_REAL);
+    definition->setStepSize(Ogre::Any(0.0001f));
+    definition = AddPropertyDefinition("options::time",                 "Options::Time",                "", PROP_VECTOR3);
     definition->setFieldNames("Current", "Sun Rise", "Sun Set");
-    AddPropertyDefinition("options::eastposition","Options::East Position","",PROP_VECTOR2);
-    AddPropertyDefinition("options::sunintensity","Options::Sun Intensity","",PROP_REAL);
-    definition = AddPropertyDefinition("options::wavelength","Options::Wave Length","",PROP_VECTOR3);
+    AddPropertyDefinition("options::eastposition",                      "Options::East Position",       "", PROP_VECTOR2);
+    AddPropertyDefinition("options::sunintensity",                      "Options::Sun Intensity",       "", PROP_REAL);
+    definition = AddPropertyDefinition("options::wavelength",           "Options::Wave Length",         "", PROP_VECTOR3);
     definition->setFieldNames("R Mult.", "G Mult.", "B Mult.");
-    AddPropertyDefinition("options::g","Options::G","",PROP_REAL);
-    AddPropertyDefinition("options::moonphase","Options::Moon Phase","",PROP_REAL);
+    AddPropertyDefinition("options::g",                                 "Options::G",                   "", PROP_REAL);
+    definition = AddPropertyDefinition("options::moonphase",            "Options::Moon Phase",          "", PROP_REAL);
+    definition->setRange(Ogre::Any(-1.0f), Ogre::Any(1.0f));
 
-    AddPropertyDefinition("vclouds::enable",            "Volumetric Clouds::Enable",          "", PROP_BOOL);
-    AddPropertyDefinition("vclouds::autoupdate",        "Volumetric Clouds::Auto Update",     "", PROP_BOOL);
-    AddPropertyDefinition("vclouds::noisescale",        "Volumetric Clouds::Noise Scale",     "", PROP_REAL);
-    AddPropertyDefinition("vclouds::windspeed",         "Volumetric Clouds::Wind Speed",      "", PROP_REAL);
-    AddPropertyDefinition("vclouds::winddirection",     "Volumetric Clouds::Wind Direction",  "", PROP_REAL);
-    AddPropertyDefinition("vclouds::noisescale",        "Volumetric Clouds::Noise Scale",     "", PROP_REAL);
-    definition = AddPropertyDefinition("vclouds::ambientcolor",      "Volumetric Clouds::Ambient Color",   "", PROP_VECTOR3);
-    definition->setFieldNames("R", "G", "B");
-    definition = AddPropertyDefinition("vclouds::lightresponse",     "Volumetric Clouds::Light Response",  "", PROP_VECTOR4);
+    // SkyX Volumetric Clouds
+    AddPropertyDefinition("vclouds::enable",                            "Volumetric Clouds::Enable",            "", PROP_BOOL);
+    AddPropertyDefinition("vclouds::autoupdate",                        "Volumetric Clouds::Auto Update",       "", PROP_BOOL);
+    AddPropertyDefinition("vclouds::noisescale",                        "Volumetric Clouds::Noise Scale",       "", PROP_REAL);
+    AddPropertyDefinition("vclouds::windspeed",                         "Volumetric Clouds::Wind Speed",        "", PROP_REAL);
+    AddPropertyDefinition("vclouds::winddirection",                     "Volumetric Clouds::Wind Direction",    "", PROP_REAL);
+    AddPropertyDefinition("vclouds::noisescale",                        "Volumetric Clouds::Noise Scale",       "", PROP_REAL);
+    definition = AddPropertyDefinition("vclouds::ambientcolor",         "Volumetric Clouds::Ambient Color",     "", PROP_COLOUR);
+    definition = AddPropertyDefinition("vclouds::lightresponse",        "Volumetric Clouds::Light Response",    "", PROP_VECTOR4);
     definition->setFieldNames("Sun light power", "Sun beta multiplier", "Ambient color multiplier", "Distance attenuation");
-    definition = AddPropertyDefinition("vclouds::ambientfactors",    "Volumetric Clouds::Ambient Factors", "", PROP_VECTOR4);
+    definition = AddPropertyDefinition("vclouds::ambientfactors",       "Volumetric Clouds::Ambient Factors",   "", PROP_VECTOR4);
     definition->setFieldNames("Constant", "Linear", "Quadratic", "Cubic");    
-    definition = AddPropertyDefinition("vclouds::weather",           "Volumetric Clouds::Weather",         "", PROP_VECTOR2);
+    definition = AddPropertyDefinition("vclouds::weather",              "Volumetric Clouds::Weather",           "", PROP_VECTOR2);
     definition->setFieldNames("Humidity", "Average Cloud Size");
+    definition->setRange(Ogre::Any(Ogre::Vector2(0, 0)), Ogre::Any(Ogre::Vector2(1, 1)), Ogre::Any(Ogre::Vector2(0.05, 0.05)));
+    
+    // SkyX Volumetric Clouds Lightning
+    AddPropertyDefinition("vclightning::enable",                        "Lightning::Enable",                    "", PROP_BOOL);
+    AddPropertyDefinition("vclightning::at",                            "Lightning::Avg. Aparition Time",       "in seconds", PROP_REAL);
+    AddPropertyDefinition("vclightning::color",                         "Lightning::Color",                     "", PROP_COLOUR);
+    AddPropertyDefinition("vclightning::tm",                            "Lightning::Time Multiplier",           "", PROP_REAL);
 
     OgitorsPropertyDefMap::iterator it = mPropertyDefs.find("name");
     it->second.setAccess(true, false);
