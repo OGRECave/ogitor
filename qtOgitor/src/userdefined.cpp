@@ -259,43 +259,43 @@ void UserDefinedDialog::listSelectionChanged()
             case PROP_VECTOR2:
                 prop = stringManager->addProperty(tr("Field Name X"));
                 prop->setWhatsThis("2");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(0).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(0).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 prop = stringManager->addProperty(tr("Field Name Y"));
                 prop->setWhatsThis("3");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(1).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(1).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 break;
             case PROP_VECTOR3:
                 prop = stringManager->addProperty(tr("Field Name X"));
                 prop->setWhatsThis("2");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(0).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(0).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 prop = stringManager->addProperty(tr("Field Name Y"));
                 prop->setWhatsThis("3");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(1).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(1).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 prop = stringManager->addProperty(tr("Field Name Z"));
                 prop->setWhatsThis("4");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(2).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(2).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 break;
             case PROP_VECTOR4:
                 prop = stringManager->addProperty(tr("Field Name X"));
                 prop->setWhatsThis("2");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(0).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(0).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 prop = stringManager->addProperty(tr("Field Name Y"));
                 prop->setWhatsThis("3");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(1).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(1).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 prop = stringManager->addProperty(tr("Field Name Z"));
                 prop->setWhatsThis("4");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(2).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(2).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 prop = stringManager->addProperty(tr("Field Name W"));
                 prop->setWhatsThis("5");
-                stringManager->setValue(prop, QString(vec[row]->getDefinition()->fieldName(3).c_str()));
+                stringManager->setValue(prop, QString(vec[row]->getDefinition()->getFieldName(3).c_str()));
                 mPropertiesWidget->addProperty(prop);
                 break;
             case PROP_STRING:

@@ -32,12 +32,14 @@
 #ifndef COMPLEXPROPERTIES_HXX
 #define COMPLEXPROPERTIES_HXX
 
+//-------------------------------------------------------------------------
 
 #include <QtVariantPropertyManager>
 #include "qteditorfactory.h"
 #include "qttreepropertybrowser.h"
 #include <Ogre.h>
 
+//-------------------------------------------------------------------------
 
 class QuaternionManager : public QtVariantPropertyManager
 {
@@ -54,26 +56,36 @@ public:
 
 public Q_SLOTS:
     virtual void setValue(QtProperty *property, const QVariant &val);
+    virtual void setMinimum(QtProperty *property, const QVariant &val);
+    virtual void setMaximum(QtProperty *property, const QVariant &val);
+    virtual void setStepSize(QtProperty *property, const QVariant &val);
+
 protected:
     virtual void initializeProperty(QtProperty *property);
     virtual void uninitializeProperty(QtProperty *property);
+
 private Q_SLOTS:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
+
 private:
-    struct Data {
+    struct Data 
+    {
         QVariant value;
         QtVariantProperty *w;
         QtVariantProperty *x;
         QtVariantProperty *y;
         QtVariantProperty *z;
     };
+
     QMap<const QtProperty *, Data> propertyToData;
     QMap<const QtProperty *, QtProperty *> wToProperty;
     QMap<const QtProperty *, QtProperty *> xToProperty;
     QMap<const QtProperty *, QtProperty *> yToProperty;
     QMap<const QtProperty *, QtProperty *> zToProperty;
 };
+
+//-------------------------------------------------------------------------
 
 class Vector4Manager : public QtVariantPropertyManager
 {
@@ -92,26 +104,36 @@ public:
 
 public Q_SLOTS:
     virtual void setValue(QtProperty *property, const QVariant &val);
+    virtual void setMinimum(QtProperty *property, const QVariant &val);
+    virtual void setMaximum(QtProperty *property, const QVariant &val);
+    virtual void setStepSize(QtProperty *property, const QVariant &val);
+
 protected:
     virtual void initializeProperty(QtProperty *property);
     virtual void uninitializeProperty(QtProperty *property);
+
 private Q_SLOTS:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
+
 private:
-    struct Data {
+    struct Data
+    {
         QVariant value;
         QtVariantProperty *w;
         QtVariantProperty *x;
         QtVariantProperty *y;
         QtVariantProperty *z;
     };
+
     QMap<const QtProperty *, Data> propertyToData;
     QMap<const QtProperty *, QtProperty *> wToProperty;
     QMap<const QtProperty *, QtProperty *> xToProperty;
     QMap<const QtProperty *, QtProperty *> yToProperty;
     QMap<const QtProperty *, QtProperty *> zToProperty;
 };
+
+//-------------------------------------------------------------------------
 
 class Vector3Manager : public QtVariantPropertyManager
 {
@@ -130,24 +152,34 @@ public:
 
 public Q_SLOTS:
     virtual void setValue(QtProperty *property, const QVariant &val);
+    virtual void setMinimum(QtProperty *property, const QVariant &val);
+    virtual void setMaximum(QtProperty *property, const QVariant &val);
+    virtual void setStepSize(QtProperty *property, const QVariant &val);
+
 protected:
     virtual void initializeProperty(QtProperty *property);
     virtual void uninitializeProperty(QtProperty *property);
+
 private Q_SLOTS:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
+
 private:
-    struct Data {
+    struct Data 
+    {
         QVariant value;
         QtVariantProperty *x;
         QtVariantProperty *y;
         QtVariantProperty *z;
     };
+
     QMap<const QtProperty *, Data> propertyToData;
     QMap<const QtProperty *, QtProperty *> xToProperty;
     QMap<const QtProperty *, QtProperty *> yToProperty;
     QMap<const QtProperty *, QtProperty *> zToProperty;
 };
+
+//-------------------------------------------------------------------------
 
 class Vector2Manager : public QtVariantPropertyManager
 {
@@ -166,22 +198,34 @@ public:
 
 public Q_SLOTS:
     virtual void setValue(QtProperty *property, const QVariant &val);
+    virtual void setMinimum(QtProperty *property, const QVariant &val);
+    virtual void setMaximum(QtProperty *property, const QVariant &val);
+    virtual void setStepSize(QtProperty *property, const QVariant &val);
+
 protected:
     virtual void initializeProperty(QtProperty *property);
     virtual void uninitializeProperty(QtProperty *property);
+
 private Q_SLOTS:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);
+
 private:
-    struct Data {
+    struct Data 
+    {
         QVariant value;
         QtVariantProperty *x;
         QtVariantProperty *y;
     };
+
     QMap<const QtProperty *, Data> propertyToData;
     QMap<const QtProperty *, QtProperty *> xToProperty;
     QMap<const QtProperty *, QtProperty *> yToProperty;
 };
 
+//-------------------------------------------------------------------------
+
 #endif // COMPLEXPROPERTIES_HXX
+
+//-------------------------------------------------------------------------
 
