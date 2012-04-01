@@ -34,6 +34,7 @@
 #include "OgitorsScriptInterpreter.h"
 #include "PythonqtInterpreter.h"
 
+#include "PythonQt_QtBindings.h"
 
 using namespace Ogitors;
 
@@ -87,10 +88,7 @@ void PythonQtOutput::flushStdOut()
 PythonqtInterpreter::PythonqtInterpreter() : OgitorsScriptInterpreter()
 {
     PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
-    //PythonQt_init_QtCore(0);
-    //PythonQt_init_QtGui(0);
-    //PythonQt_init_QtSvg(0);
-    
+    PythonQt_init_QtBindings();
     mPythonQtOutput = new PythonQtOutput();
     
     mMainContext = PythonQt::self()->getMainModule();
