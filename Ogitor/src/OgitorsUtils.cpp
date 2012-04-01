@@ -976,20 +976,20 @@ Ogre::String OgitorsUtils::GetCustomPropertySaveString(OgitorsCustomPropertySet 
         {
         case PROP_VECTOR2:
             {
-                if(def->fieldName(0) != "X" || def->fieldName(1) != "Y")
-                    buffer += " fields=\"" + def->fieldName(0) + ";" + def->fieldName(1) + "\"";
+                if(def->getFieldName(0) != "X" || def->getFieldName(1) != "Y")
+                    buffer += " fields=\"" + def->getFieldName(0) + ";" + def->getFieldName(1) + "\"";
                 break;
             }
         case PROP_VECTOR3:
             {
-                if(def->fieldName(0) != "X" || def->fieldName(1) != "Y" || def->fieldName(2) != "Z")
-                    buffer += " fields=\"" + def->fieldName(0) + ";" + def->fieldName(1) + ";" + def->fieldName(2) + "\"";
+                if(def->getFieldName(0) != "X" || def->getFieldName(1) != "Y" || def->getFieldName(2) != "Z")
+                    buffer += " fields=\"" + def->getFieldName(0) + ";" + def->getFieldName(1) + ";" + def->getFieldName(2) + "\"";
                 break;
             }
         case PROP_VECTOR4:
             {
-                if(def->fieldName(0) != "X" || def->fieldName(1) != "Y" || def->fieldName(2) != "Z" || def->fieldName(0) != "W")
-                    buffer += " fields=\"" + def->fieldName(0) + ";" + def->fieldName(1) + ";" + def->fieldName(2) + ";" + def->fieldName(3) + "\"";
+                if(def->getFieldName(0) != "X" || def->getFieldName(1) != "Y" || def->getFieldName(2) != "Z" || def->getFieldName(0) != "W")
+                    buffer += " fields=\"" + def->getFieldName(0) + ";" + def->getFieldName(1) + ";" + def->getFieldName(2) + ";" + def->getFieldName(3) + "\"";
                 break;
             }
         }

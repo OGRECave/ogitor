@@ -157,6 +157,69 @@ void QuaternionManager::setValue(QtProperty *property, const QVariant &val)
     QtVariantPropertyManager::setValue(property, val);
 }
 //----------------------------------------------------------------------------------------
+void QuaternionManager::setMinimum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("minimum", p.x());
+        if (d.y)
+            d.y->setAttribute("minimum", p.y());
+        if (d.z)
+            d.z->setAttribute("minimum", p.width());
+        if (d.w)
+            d.w->setAttribute("minimum", p.height());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void QuaternionManager::setMaximum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("maximum", p.x());
+        if (d.y)
+            d.y->setAttribute("maximum", p.y());
+        if (d.z)
+            d.z->setAttribute("minimum", p.width());
+        if (d.w)
+            d.w->setAttribute("minimum", p.height());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void QuaternionManager::setStepSize(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("singleStep", p.x());
+        if (d.y)
+            d.y->setAttribute("singleStep", p.y());
+        if (d.z)
+            d.z->setAttribute("singleStep", p.width());
+        if (d.w)
+            d.w->setAttribute("singleStep", p.height());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
 void QuaternionManager::initializeProperty(QtProperty *property)
 {
     if (propertyType(property) == QVariant::RectF) {
@@ -322,14 +385,75 @@ void Vector4Manager::setValue(QtProperty *property, const QVariant &val)
             d.z->setValue(p.width());
         if (d.w)
             d.w->setValue(p.height());
-        if (d.x)
-            d.x->setValue(p.x());
         propertyToData[property] = d;
         emit propertyChanged(property);
         emit valueChanged(property, p);
         return;
     }
     QtVariantPropertyManager::setValue(property, val);
+}
+//----------------------------------------------------------------------------------------
+void Vector4Manager::setMinimum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("minimum", p.x());
+        if (d.y)
+            d.y->setAttribute("minimum", p.y());
+        if (d.z)
+            d.z->setAttribute("minimum", p.width());
+        if (d.w)
+            d.w->setAttribute("minimum", p.height());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void Vector4Manager::setMaximum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("maximum", p.x());
+        if (d.y)
+            d.y->setAttribute("maximum", p.y());
+        if (d.z)
+            d.z->setAttribute("minimum", p.width());
+        if (d.w)
+            d.w->setAttribute("minimum", p.height());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void Vector4Manager::setStepSize(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("singleStep", p.x());
+        if (d.y)
+            d.y->setAttribute("singleStep", p.y());
+        if (d.z)
+            d.z->setAttribute("singleStep", p.width());
+        if (d.w)
+            d.w->setAttribute("singleStep", p.height());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
 }
 //----------------------------------------------------------------------------------------
 void Vector4Manager::setPropertyNames(QtProperty *property, QString fx, QString fy, QString fz, QString fw)
@@ -504,6 +628,63 @@ void Vector3Manager::setValue(QtProperty *property, const QVariant &val)
     QtVariantPropertyManager::setValue(property, val);
 }
 //----------------------------------------------------------------------------------------
+void Vector3Manager::setMinimum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("minimum", p.x());
+        if (d.y)
+            d.y->setAttribute("minimum", p.y());
+        if (d.z)
+            d.z->setAttribute("minimum", p.width());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void Vector3Manager::setMaximum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("maximum", p.x());
+        if (d.y)
+            d.y->setAttribute("maximum", p.y());
+        if (d.z)
+            d.z->setAttribute("minimum", p.width());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void Vector3Manager::setStepSize(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::RectF)
+            return;
+        QRectF p = qVariantValue<QRectF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("singleStep", p.x());
+        if (d.y)
+            d.y->setAttribute("singleStep", p.y());
+        if (d.z)
+            d.z->setAttribute("singleStep", p.width());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
 void Vector3Manager::setPropertyNames(QtProperty *property, QString fx, QString fy, QString fz)
 {
     if (propertyToData.contains(property)) {
@@ -653,6 +834,57 @@ void Vector2Manager::setValue(QtProperty *property, const QVariant &val)
         return;
     }
     QtVariantPropertyManager::setValue(property, val);
+}
+//----------------------------------------------------------------------------------------
+void Vector2Manager::setMinimum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::PointF)
+            return;
+        QPointF p = qVariantValue<QPointF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("minimum", p.x());
+        if (d.y)
+            d.y->setAttribute("minimum", p.y());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void Vector2Manager::setMaximum(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::PointF)
+            return;
+        QPointF p = qVariantValue<QPointF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("maximum", p.x());
+        if (d.y)
+            d.y->setAttribute("maximum", p.y());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
+}
+//----------------------------------------------------------------------------------------
+void Vector2Manager::setStepSize(QtProperty *property, const QVariant &val)
+{
+    if (propertyToData.contains(property)) {
+        if (val.type() != QVariant::PointF)
+            return;
+        QPointF p = qVariantValue<QPointF>(val);
+        Data d = propertyToData[property];
+        if (d.x)
+            d.x->setAttribute("singleStep", p.x());
+        if (d.y)
+            d.y->setAttribute("singleStep", p.y());
+        propertyToData[property] = d;
+        emit propertyChanged(property);
+        return;
+    }
 }
 //----------------------------------------------------------------------------------------
 void Vector2Manager::setPropertyNames(QtProperty *property, QString fx, QString fy)

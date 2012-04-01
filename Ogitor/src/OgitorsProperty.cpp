@@ -568,7 +568,7 @@ namespace Ogitors
                 }
             }
 
-            clonedef->setFieldNames(def->fieldName(0), def->fieldName(1), def->fieldName(2), def->fieldName(3));
+            clonedef->setFieldNames(def->getFieldName(0), def->getFieldName(1), def->getFieldName(2), def->getFieldName(3));
         }
     }
     //---------------------------------------------------------------------
@@ -688,7 +688,7 @@ namespace Ogitors
 
         PropertyOptionsVector *options = const_cast<PropertyOptionsVector*>(defi->second.getOptions());
         defi2->second.setOptions(options);
-        defi2->second.setFieldNames(defi->second.fieldName(0), defi->second.fieldName(1), defi->second.fieldName(2), defi->second.fieldName(3));
+        defi2->second.setFieldNames(defi->second.getFieldName(0), defi->second.getFieldName(1), defi->second.getFieldName(2), defi->second.getFieldName(3));
         defi2->second.setAutoOptionType(defi->second.getAutoOptionType());
 
         mDefinitions.erase(defi);

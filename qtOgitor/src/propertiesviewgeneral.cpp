@@ -272,15 +272,15 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
     const OgitorsPropertyDef *propDef = property->getDefinition();
     QtProperty *newProp = 0;
 
-    Ogre::Vector2 val2;
-    Ogre::Vector3 val3;
-    Ogre::Vector4 val4;
-    Ogre::Quaternion valQ;
-    Ogre::ColourValue valc;
-
-    QPointF vpf;
-    QRectF  vrf;
-    QColor col;
+    Ogre::Any           any;
+    Ogre::Vector2       val2;
+    Ogre::Vector3       val3;
+    Ogre::Vector4       val4;
+    Ogre::Quaternion    valQ;
+    Ogre::ColourValue   valc;
+    QPointF             vpf;
+    QRectF              vrf;
+    QColor              col;
 
     const PropertyOptionsVector *options = propDef->getOptions();
 
@@ -308,85 +308,203 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
         QString fieldX, fieldY, fieldZ, fieldW;
         switch(propDef->getType())
         {
+        case PROP_BOOL:
+            newProp = boolManager->addProperty(name);
+            boolManager->setValue(newProp, static_cast<OgitorsProperty<bool>*>(property)->get());
+            break;   
+        
         case PROP_SHORT:
             newProp = intManager->addProperty(name);
+            if(!(any = propDef->getMinValue()).isEmpty())
+                intManager->setMinimum(newProp, Ogre::any_cast<short>(any));
+            if(!(any = propDef->getMaxValue()).isEmpty())
+                intManager->setMaximum(newProp, Ogre::any_cast<short>(any));
+            if(!(any = propDef->getStepSize()).isEmpty())
+                intManager->setSingleStep(newProp, Ogre::any_cast<short>(any));
             intManager->setValue(newProp, static_cast<OgitorsProperty<short>*>(property)->get());
             break;
         case PROP_UNSIGNED_SHORT:
             newProp = intManager->addProperty(name);
+            if(!(any = propDef->getMinValue()).isEmpty())
+                intManager->setMinimum(newProp, Ogre::any_cast<unsigned short>(any));
+            if(!(any = propDef->getMaxValue()).isEmpty())
+                intManager->setMaximum(newProp, Ogre::any_cast<unsigned short>(any));
+            if(!(any = propDef->getStepSize()).isEmpty())
+                intManager->setSingleStep(newProp, Ogre::any_cast<unsigned short>(any));
             intManager->setValue(newProp, static_cast<OgitorsProperty<unsigned short>*>(property)->get());
             break;
         case PROP_INT:
             newProp = intManager->addProperty(name);
+            if(!(any = propDef->getMinValue()).isEmpty())
+                intManager->setMinimum(newProp, Ogre::any_cast<int>(any));
+            if(!(any = propDef->getMaxValue()).isEmpty())
+                intManager->setMaximum(newProp, Ogre::any_cast<int>(any));
+            if(!(any = propDef->getStepSize()).isEmpty())
+                intManager->setSingleStep(newProp, Ogre::any_cast<int>(any));
             intManager->setValue(newProp, static_cast<OgitorsProperty<int>*>(property)->get());
             break;
         case PROP_UNSIGNED_INT:
             newProp = intManager->addProperty(name);
+            if(!(any = propDef->getMinValue()).isEmpty())
+                intManager->setMinimum(newProp, Ogre::any_cast<unsigned int>(any));
+            if(!(any = propDef->getMaxValue()).isEmpty())
+                intManager->setMaximum(newProp, Ogre::any_cast<unsigned int>(any));
+            if(!(any = propDef->getStepSize()).isEmpty())
+                intManager->setSingleStep(newProp, Ogre::any_cast<unsigned int>(any));
             intManager->setValue(newProp, static_cast<OgitorsProperty<unsigned int>*>(property)->get());
             break;
         case PROP_LONG:
             newProp = intManager->addProperty(name);
+            if(!(any = propDef->getMinValue()).isEmpty())
+                intManager->setMinimum(newProp, Ogre::any_cast<long>(any));
+            if(!(any = propDef->getMaxValue()).isEmpty())
+                intManager->setMaximum(newProp, Ogre::any_cast<long>(any));
+            if(!(any = propDef->getStepSize()).isEmpty())
+                intManager->setSingleStep(newProp, Ogre::any_cast<long>(any));
             intManager->setValue(newProp, static_cast<OgitorsProperty<long>*>(property)->get());
             break;
         case PROP_UNSIGNED_LONG:
             newProp = intManager->addProperty(name);
+            if(!(any = propDef->getMinValue()).isEmpty())
+                intManager->setMinimum(newProp, Ogre::any_cast<unsigned long>(any));
+            if(!(any = propDef->getMaxValue()).isEmpty())
+                intManager->setMaximum(newProp, Ogre::any_cast<unsigned long>(any));
+            if(!(any = propDef->getStepSize()).isEmpty())
+                intManager->setSingleStep(newProp, Ogre::any_cast<unsigned long>(any));
             intManager->setValue(newProp, static_cast<OgitorsProperty<unsigned long>*>(property)->get());
             break;
 
         case PROP_REAL:
             newProp = doubleManager->addProperty(name);
+            if(!(any = propDef->getMinValue()).isEmpty()) 
+                doubleManager->setMinimum(newProp, Ogre::any_cast<Ogre::Real>(any));
+            if((!(any = propDef->getMaxValue()).isEmpty()))
+                doubleManager->setMaximum(newProp, Ogre::any_cast<Ogre::Real>(any));
+            if((!(any = propDef->getStepSize()).isEmpty()))
+                doubleManager->setSingleStep(newProp, Ogre::any_cast<Ogre::Real>(any));
             doubleManager->setValue(newProp, static_cast<OgitorsProperty<Ogre::Real>*>(property)->get());
             break;
+
         case PROP_STRING:
             newProp = stringManager->addProperty(name);
             stringManager->setValue(newProp, static_cast<OgitorsProperty<Ogre::String>*>(property)->get().c_str());
             break;
+
         case PROP_VECTOR2:
             newProp = vector2Manager->addProperty(QVariant::PointF, name);
-            fieldX = propDef->fieldName(0).c_str();
-            fieldY = propDef->fieldName(1).c_str();
+            fieldX = propDef->getFieldName(0).c_str();
+            fieldY = propDef->getFieldName(1).c_str();
             vector2Manager->setPropertyNames(newProp, fieldX, fieldY);
+            if(!(any = propDef->getMinValue()).isEmpty())
+            {
+                val2 = Ogre::any_cast<Ogre::Vector2>(any);
+                vpf = QPointF(val2.x, val2.y);
+                vector2Manager->setMinimum(newProp, vpf);
+            }       
+            if(!(any = propDef->getMaxValue()).isEmpty())
+            {
+                val2 = Ogre::any_cast<Ogre::Vector2>(any);
+                vpf = QPointF(val2.x, val2.y);
+                vector2Manager->setMaximum(newProp, vpf);
+            } 
+            if(!(any = propDef->getStepSize()).isEmpty())
+            {
+                val2 = Ogre::any_cast<Ogre::Vector2>(any);
+                vpf = QPointF(val2.x, val2.y);
+                vector2Manager->setStepSize(newProp, vpf);
+            } 
             val2 = static_cast<OgitorsProperty<Ogre::Vector2>*>(property)->get();
             vpf = QPointF(val2.x, val2.y);
             vector2Manager->setValue(newProp, vpf);
             break;
         case PROP_VECTOR3:
             newProp = vector3Manager->addProperty(QVariant::RectF, name);
-            fieldX = propDef->fieldName(0).c_str();
-            fieldY = propDef->fieldName(1).c_str();
-            fieldZ = propDef->fieldName(2).c_str();
+            fieldX = propDef->getFieldName(0).c_str();
+            fieldY = propDef->getFieldName(1).c_str();
+            fieldZ = propDef->getFieldName(2).c_str();
             vector3Manager->setPropertyNames(newProp, fieldX, fieldY, fieldZ);
+            if(!(any = propDef->getMinValue()).isEmpty())
+            {
+                val3 = Ogre::any_cast<Ogre::Vector3>(any);
+                vrf = QRectF(val3.x, val3.y, val3.z, 0);
+                vector3Manager->setMinimum(newProp, vrf);
+            }       
+            if(!(any = propDef->getMaxValue()).isEmpty())
+            {
+                val3 = Ogre::any_cast<Ogre::Vector3>(any);
+                vrf = QRectF(val3.x, val3.y, val3.z, 0);
+                vector3Manager->setMaximum(newProp, vrf);
+            } 
+            if(!(any = propDef->getStepSize()).isEmpty())
+            {
+                val3 = Ogre::any_cast<Ogre::Vector3>(any);
+                vrf = QRectF(val3.x, val3.y, val3.z, 0);
+                vector3Manager->setStepSize(newProp, vrf);
+            } 
             val3 = static_cast<OgitorsProperty<Ogre::Vector3>*>(property)->get();
             vrf = QRectF(val3.x, val3.y, val3.z, 0);
             vector3Manager->setValue(newProp, vrf);
             break;
         case PROP_VECTOR4:
             newProp = vector4Manager->addProperty(QVariant::RectF, name);
-            fieldX = propDef->fieldName(0).c_str();
-            fieldY = propDef->fieldName(1).c_str();
-            fieldZ = propDef->fieldName(2).c_str();
-            fieldW = propDef->fieldName(3).c_str();
+            fieldX = propDef->getFieldName(0).c_str();
+            fieldY = propDef->getFieldName(1).c_str();
+            fieldZ = propDef->getFieldName(2).c_str();
+            fieldW = propDef->getFieldName(3).c_str();
             vector4Manager->setPropertyNames(newProp, fieldX, fieldY, fieldZ, fieldW);
+            if(!(any = propDef->getMinValue()).isEmpty())
+            {
+                val4 = Ogre::any_cast<Ogre::Vector4>(any);
+                vrf = QRectF(val4.x, val4.y, val4.z, val4.w);
+                vector4Manager->setMinimum(newProp, vrf);
+            }       
+            if(!(any = propDef->getMaxValue()).isEmpty())
+            {
+                val4 = Ogre::any_cast<Ogre::Vector4>(any);
+                vrf = QRectF(val4.x, val4.y, val4.z, val4.w);
+                vector4Manager->setMaximum(newProp, vrf);
+            } 
+            if(!(any = propDef->getStepSize()).isEmpty())
+            {
+                val4 = Ogre::any_cast<Ogre::Vector4>(any);
+                vrf = QRectF(val4.x, val4.y, val4.z, val4.w);
+                vector4Manager->setStepSize(newProp, vrf);
+            } 
             val4 = static_cast<OgitorsProperty<Ogre::Vector4>*>(property)->get();
             vrf = QRectF(val4.x, val4.y, val4.z, val4.w);
             vector4Manager->setValue(newProp, vrf);
             break;
+        case PROP_QUATERNION:
+            newProp = quaternionManager->addProperty(QVariant::RectF, name);
+            if(!(any = propDef->getMinValue()).isEmpty())
+            {
+                valQ = Ogre::any_cast<Ogre::Quaternion>(any);
+                vrf = QRectF(valQ.x, valQ.y, valQ.z, valQ.w);
+                quaternionManager->setMinimum(newProp, vrf);
+            }       
+            if(!(any = propDef->getMaxValue()).isEmpty())
+            {
+                valQ = Ogre::any_cast<Ogre::Quaternion>(any);
+                vrf = QRectF(valQ.x, valQ.y, valQ.z, valQ.w);
+                quaternionManager->setMaximum(newProp, vrf);
+            } 
+            if(!(any = propDef->getStepSize()).isEmpty())
+            {
+                valQ = Ogre::any_cast<Ogre::Quaternion>(any);
+                vrf = QRectF(valQ.x, valQ.y, valQ.z, valQ.w);
+                quaternionManager->setStepSize(newProp, vrf);
+            }
+            valQ = static_cast<OgitorsProperty<Ogre::Quaternion>*>(property)->get();
+            vrf = QRectF(valQ.x, valQ.y, valQ.z, valQ.w);
+            quaternionManager->setValue(newProp, vrf);
+            break;
+
         case PROP_COLOUR:
             newProp = colourManager->addProperty(name);
             valc = static_cast<OgitorsProperty<Ogre::ColourValue>*>(property)->get();
             col = QColor(valc.r * 255.0f, valc.g * 255.0f, valc.b * 255.0f, valc.a * 255.0f);
             colourManager->setValue(newProp, col);
-            break;
-        case PROP_BOOL:
-            newProp = boolManager->addProperty(name);
-            boolManager->setValue(newProp, static_cast<OgitorsProperty<bool>*>(property)->get());
-            break;
-        case PROP_QUATERNION:
-            newProp = quaternionManager->addProperty(QVariant::RectF, name);
-            valQ = static_cast<OgitorsProperty<Ogre::Quaternion>*>(property)->get();
-            vrf = QRectF(valQ.x, valQ.y, valQ.z, valQ.w);
-            quaternionManager->setValue(newProp, vrf);
-            break;
+            break;     
         };
     }
 

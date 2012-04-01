@@ -93,7 +93,7 @@ namespace Ogitors
     This definition is shared between all instances of an object and therefore
     has no value. Property contains values.
     */
-    class OgitorExport OgitorsPropertyDef: public Ogre::GeneralAllocatedObject
+    class OgitorExport OgitorsPropertyDef : public Ogre::GeneralAllocatedObject
     {
     public:
 
@@ -109,6 +109,11 @@ namespace Ogitors
             mFieldNames[1] = "Y";
             mFieldNames[2] = "Z";
             mFieldNames[3] = "W";
+
+            mMinValue = new Ogre::Any();
+            mMaxValue = new Ogre::Any();
+            mStepSize = new Ogre::Any();
+
             mOptions = 0;
             mAutoOptionType = AUTO_OPTIONS_NONE;
         }
@@ -146,8 +151,12 @@ namespace Ogitors
         /// Set options of the property
         void setOptions(PropertyOptionsVector *opt) { mOptions = opt; }
 
-        /// Return FieldNames of the property
-        const Ogre::String& fieldName(int index) const { return mFieldNames[index]; }
+        /// Return FieldName of the property
+        const Ogre::String& getFieldName(int index) const 
+        { 
+            assert((index > -1) && (index < 4));
+            return mFieldNames[index]; 
+        }
 
         /// Set FieldNames of the property
         void  setFieldNames(const Ogre::String& x = "X", const Ogre::String& y = "Y", const Ogre::String& z = "Z", const Ogre::String& w = "W") 
@@ -165,43 +174,74 @@ namespace Ogitors
             mFieldNames[index] = name; 
         }
 
+        /// Return MinValue of the property
+        const Ogre::Any& getMinValue() const { return *mMinValue; }
+        
+        /// Set MinValue of the property
+        void  setMinValue(const Ogre::Any& value) { *mMinValue = value; }
+
+        /// Return MaxValue of the property
+        const Ogre::Any& getMaxValue() const { return *mMaxValue; }
+
+        /// Set MaxValue of the property
+        void  setMaxValue(const Ogre::Any& value) { *mMaxValue = value; }
+
+        /// Set MinValue and MaxValue of the property, plus optional stepSize
+        void  setRange(const Ogre::Any& min, const Ogre::Any& max, const Ogre::Any& stepSize = Ogre::Any())
+        {
+            setMinValue(min);
+            setMaxValue(max);
+
+            if(!stepSize.isEmpty())
+                setStepSize(stepSize);
+        }
+
+        /// Return StepSize of the property
+        const Ogre::Any& getStepSize() const { return *mStepSize; }
+
+        /// Set StepSize of the property
+        void  setStepSize(const Ogre::Any& value) { *mStepSize = value; }
+
         inline AutoOptionType getAutoOptionType() const { return mAutoOptionType; }
         void setAutoOptionType(const AutoOptionType newtype) { mAutoOptionType = newtype; }
 
         /// Get a string name of a property type
         static const Ogre::String& getTypeName(OgitorsPropertyType theType);
 
-        static OgitorsPropertyType getTypeForValue(const short& val) { return PROP_SHORT; }
-        static OgitorsPropertyType getTypeForValue(const unsigned short& val) { return PROP_UNSIGNED_SHORT; }
-        static OgitorsPropertyType getTypeForValue(const int& val) { return PROP_INT; }
-        static OgitorsPropertyType getTypeForValue(const unsigned int& val) { return PROP_UNSIGNED_INT; }
-        static OgitorsPropertyType getTypeForValue(const long& val) { return PROP_LONG; }
-        static OgitorsPropertyType getTypeForValue(const unsigned long& val) { return PROP_UNSIGNED_LONG; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::Real& val) { return PROP_REAL; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::String& val) { return PROP_STRING; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::Vector2& val) { return PROP_VECTOR2; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::Vector3& val) { return PROP_VECTOR3; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::Vector4& val) { return PROP_VECTOR4; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::ColourValue& val) { return PROP_COLOUR; }
-        static OgitorsPropertyType getTypeForValue(const bool& val) { return PROP_BOOL; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::Quaternion& val) { return PROP_QUATERNION; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::Matrix3& val) { return PROP_MATRIX3; }
-        static OgitorsPropertyType getTypeForValue(const Ogre::Matrix4& val) { return PROP_MATRIX4; }
+        static OgitorsPropertyType getTypeForValue(const short& val)                { return PROP_SHORT; }
+        static OgitorsPropertyType getTypeForValue(const unsigned short& val)       { return PROP_UNSIGNED_SHORT; }
+        static OgitorsPropertyType getTypeForValue(const int& val)                  { return PROP_INT; }
+        static OgitorsPropertyType getTypeForValue(const unsigned int& val)         { return PROP_UNSIGNED_INT; }
+        static OgitorsPropertyType getTypeForValue(const long& val)                 { return PROP_LONG; }
+        static OgitorsPropertyType getTypeForValue(const unsigned long& val)        { return PROP_UNSIGNED_LONG; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::Real& val)           { return PROP_REAL; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::String& val)         { return PROP_STRING; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::Vector2& val)        { return PROP_VECTOR2; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::Vector3& val)        { return PROP_VECTOR3; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::Vector4& val)        { return PROP_VECTOR4; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::ColourValue& val)    { return PROP_COLOUR; }
+        static OgitorsPropertyType getTypeForValue(const bool& val)                 { return PROP_BOOL; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::Quaternion& val)     { return PROP_QUATERNION; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::Matrix3& val)        { return PROP_MATRIX3; }
+        static OgitorsPropertyType getTypeForValue(const Ogre::Matrix4& val)        { return PROP_MATRIX4; }
 
     protected:
         // no default construction
         OgitorsPropertyDef() {}
 
-        Ogre::String mName;
-        Ogre::String mDisplayName;
-        Ogre::String mDesc;
-        OgitorsPropertyType mType;
-        bool                mCanRead;
-        bool                mCanWrite;
-        bool                mTrackChanges;
-        PropertyOptionsVector *mOptions;
-        Ogre::String        mFieldNames[4];
-        AutoOptionType      mAutoOptionType;
+        Ogre::String            mName;
+        Ogre::String            mDisplayName;
+        Ogre::String            mDesc;
+        OgitorsPropertyType     mType;
+        bool                    mCanRead;
+        bool                    mCanWrite;
+        bool                    mTrackChanges;
+        PropertyOptionsVector*  mOptions;
+        Ogre::String            mFieldNames[4];
+        Ogre::Any*              mMinValue;
+        Ogre::Any*              mMaxValue;
+        Ogre::Any*              mStepSize;
+        AutoOptionType          mAutoOptionType;
     };
 
     /// Map from property name to shared definition
@@ -209,7 +249,7 @@ namespace Ogitors
 
     /** Base interface for an instance of a property.
     */
-    class OgitorExport OgitorsPropertyBase: public Ogre::GeneralAllocatedObject
+    class OgitorExport OgitorsPropertyBase : public Ogre::GeneralAllocatedObject
     {
     public:
         /// Constructor
@@ -262,15 +302,14 @@ namespace Ogitors
     protected:
         // disallow default construction
         OgitorsPropertyBase() {}
-        OgitorsPropertyDef* mDef;
-        unsigned int mTag;
-        OgitorsSignal mSignal;
-        OgitorsScopedConnection mConnection;
-        int mRefCount;
-
+        OgitorsPropertyDef*         mDef;
+        unsigned int                mTag;
+        OgitorsSignal               mSignal;
+        OgitorsScopedConnection     mConnection;
+        int                         mRefCount;
     };
 
-    /** Property instance with passthrough calls to a given object. */
+    /** Property instance with pass through calls to a given object. */
     template <typename T>
     class OgitorsProperty : public OgitorsPropertyBase
     {
@@ -476,7 +515,6 @@ namespace Ogitors
         {
             OGRE_DELETE mSetter;
         }
-
     };
 
     class CBaseEditor;
@@ -608,14 +646,13 @@ namespace Ogitors
         {
             OGRE_DELETE mSetter;
         }
-
     };
 
     /** A simple structure designed just as a holder of property values between
     the instances of objects they might target. There is just enough information
     here to be able to interpret the results accurately but no more.
     */
-    struct OgitorsPropertyValue: public Ogre::GeneralAllocatedObject
+    struct OgitorsPropertyValue : public Ogre::GeneralAllocatedObject
     {
         OgitorsPropertyType propType;
         Ogre::Any val;
@@ -702,7 +739,7 @@ namespace Ogitors
 
     class OgitorsPropertySet;
 
-    class OgitorExport OgitorsPropertySetListener: public Ogre::GeneralAllocatedObject
+    class OgitorExport OgitorsPropertySetListener : public Ogre::GeneralAllocatedObject
     {
     public:
         OgitorsPropertySetListener() {};
@@ -716,7 +753,7 @@ namespace Ogitors
 
     /** Defines a complete set of properties for a single object instance.
     */
-    class OgitorExport OgitorsPropertySet: public Ogre::GeneralAllocatedObject
+    class OgitorExport OgitorsPropertySet : public Ogre::GeneralAllocatedObject
     {
     public:
         OgitorsPropertySet();
