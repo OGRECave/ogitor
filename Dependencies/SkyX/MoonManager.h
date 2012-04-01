@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -47,15 +46,22 @@ namespace SkyX
 		 */
 		void create();
 
-		/** Update
-		 */
-		void update();
-
 		/** Remove all resources
 		 */
 		void remove();
+
+		/** Update moon phase
+		    @param phase Moon phase in [-1,1] range, where -1 means fully covered Moon, 0 clear Moon and 1 fully covered Moon
+		 */
+		void updateMoonPhase(const Ogre::Real& phase);
+
+		/** Update geometry
+		    @param c Camera
+		 */
+		void updateGeometry(Ogre::Camera* c);
 	
 		/** Get moon billboard
+		    @return Moon billboard
 		 */
 		inline Ogre::BillboardSet* getMoonBillboard()
 		{
@@ -63,6 +69,7 @@ namespace SkyX
 		}
 
 		/** Get moon scene node
+		    @return Moon scene node
 		 */
 		inline Ogre::SceneNode* getMoonSceneNode()
 		{
@@ -72,7 +79,10 @@ namespace SkyX
 		/** Set moon size
 		    @param MoonSize Moon size
 		 */
-		void setMoonSize(const Ogre::Real& MoonSize);
+		inline void setMoonSize(const Ogre::Real& MoonSize)
+		{
+			mMoonSize = MoonSize;
+		}
 
 		/** Get moon size
 		    @return Moon size
@@ -80,6 +90,38 @@ namespace SkyX
 		inline const Ogre::Real& getMoonSize() const
 		{
 			return mMoonSize;
+		}
+
+		/** Set moon halo intensity
+		    @param MoonHaloIntensity Moon halo intensity
+		 */
+		inline void setMoonHaloIntensity(const Ogre::Real& MoonHaloIntensity)
+		{
+			mMoonHaloIntensity = MoonHaloIntensity;
+		}
+
+		/** Get moon halo intensity
+		    @return Moon halo intensity
+		 */
+		inline const Ogre::Real& getMoonHaloIntensity() const
+		{
+			return mMoonHaloIntensity;
+		}
+
+		/** Set moon halo strength
+		    @param MoonHaloStrength Moon halo strength (linear/exponential fading)
+		 */
+		inline void setMoonHaloStrength(const Ogre::Real& MoonHaloStrength)
+		{
+			mMoonHaloStrength = MoonHaloStrength;
+		}
+
+		/** Get moon halo strength
+		    @return Moon halo strength (linear/exponential fading)
+		 */
+		inline const Ogre::Real& getMoonHaloStrength() const
+		{
+			return mMoonHaloStrength;
 		}
 
 		/** Is moon manager created?
@@ -92,8 +134,9 @@ namespace SkyX
 
 	private:
 		/** Update moon bounds
+		    @param c Camera
 	     */
-		void _updateMoonBounds();
+		void _updateMoonBounds(Ogre::Camera* c);
 
 		/// Moon billboard
 		Ogre::BillboardSet* mMoonBillboard;
@@ -103,8 +146,15 @@ namespace SkyX
 		/// Is moon manager created?
 		bool mCreated;
 
-		// Moon size
+		/// Moon size
 		Ogre::Real mMoonSize;
+		/// Moon halo intensity
+		Ogre::Real mMoonHaloIntensity;
+		/// Moon halo strength
+		Ogre::Real mMoonHaloStrength;
+
+		/// Moon material
+		Ogre::MaterialPtr mMoonMaterial;
 
 		/// SkyX parent pointer
 		SkyX *mSkyX;

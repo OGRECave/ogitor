@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -39,9 +38,12 @@ namespace SkyX
         , mIndexBuffer(0)
 	    , mSceneNode(0)
 		, mSteps(70)
-		, mCircles(80)
-		, mSmoothSkydomeFading(true)
-		, mSkydomeFadingPercent(0.05f)
+		, mCircles(95)
+		, mUnderHorizonCircles(12)
+		, mUnderHorizonFading(true)
+		, mUnderHorizonFadingExponent(0.75)
+		, mUnderHorizonFadingMultiplier(2)
+		, mRadiusMultiplier(0.95f)
         , mMaterialName("_NULL_")
 	{
 	}
@@ -93,6 +95,9 @@ namespace SkyX
 		// Create mesh geometry
 		_createGeometry();
 
+		// Build edge list
+		mMesh->buildEdgeList();
+
 		// End mesh creation
         mMesh->load();
         mMesh->touch();
@@ -100,56 +105,59 @@ namespace SkyX
         mEntity = mSkyX->getSceneManager()->createEntity("SkyXMeshEnt", "SkyXMesh");
         mEntity->setMaterialName(mMaterialName);
 		mEntity->setCastShadows(false);
-		mEntity->setRenderQueueGroup(Ogre::RENDER_QUEUE_SKIES_EARLY);
+		mEntity->setRenderQueueGroup(mSkyX->getRenderQueueGroups().skydome);
 
 		mSceneNode = mSkyX->getSceneManager()->getRootSceneNode()->createChildSceneNode();
 		mSceneNode->showBoundingBox(false);
         mSceneNode->attachObject(mEntity);
-        mSceneNode->setPosition(mSkyX->getCamera()->getDerivedPosition());
 
 		mCreated = true;
-
-		_updateGeometry();
 	}
 
-	void MeshManager::_updateGeometry()
+	void MeshManager::updateGeometry(Ogre::Camera* cam)
 	{
 		if (!mCreated)
 		{
 			return;
 		}
 
-		// 95% of camera far clip distance
-		float TODO_Radius = mSkyX->getCamera()->getFarClipDistance()*0.95f;
+		float Radius = getSkydomeRadius(cam);
 
-		mVertices[0].x = 0; mVertices[0].z = 0;	mVertices[0].y = TODO_Radius;
+		mVertices[0].x = 0; mVertices[0].z = 0;	mVertices[0].y = Radius;
 		mVertices[0].nx = 0; mVertices[0].nz = 0; mVertices[0].ny = 1; 
 		mVertices[0].u = 4; mVertices[0].v = 4;
 		mVertices[0].o = 1;
 
-		float AngleStep = (Ogre::Math::PI/2) / (mCircles-1);
+		float AngleStep = (Ogre::Math::PI/2) / (mCircles-mUnderHorizonCircles);
 
-		float r, uvr, c, s, sc;
+		float r, uvr, c, s, h;
+		float currentPhiAngle, currentTethaAngle;
 		int x, y;
 
-		for(y=0;y<mCircles-1;y++) 
+		// Above-horizon
+		for(y=0;y<mCircles-mUnderHorizonCircles;y++) 
 		{
-			r = Ogre::Math::Cos(Ogre::Math::PI/2 - AngleStep*(y+1));
-			uvr = static_cast<float>(y+1)/(mCircles-1);
+			currentTethaAngle = Ogre::Math::PI/2 - AngleStep*(y+1);
+
+			r = Ogre::Math::Cos(currentTethaAngle);
+			h = Ogre::Math::Sin(currentTethaAngle);
+
+			uvr = static_cast<float>(y+1)/(mCircles-mUnderHorizonCircles);
 
 			for(x=0;x<mSteps;x++) 
 			{
-				c = Ogre::Math::Cos(Ogre::Math::TWO_PI * x / mSteps) * r;
-				s = Ogre::Math::Sin(Ogre::Math::TWO_PI * x / mSteps) * r;
-				sc = Ogre::Math::Sin(Ogre::Math::ACos(r));
+				currentPhiAngle = Ogre::Math::TWO_PI * x / mSteps;
 
-				mVertices[1+y*mSteps + x].x = c * TODO_Radius;
-				mVertices[1+y*mSteps + x].z = s * TODO_Radius;
-				mVertices[1+y*mSteps + x].y = sc * TODO_Radius;
+				c = Ogre::Math::Cos(currentPhiAngle) * r;
+				s = Ogre::Math::Sin(currentPhiAngle) * r;
+
+				mVertices[1+y*mSteps + x].x = c * Radius;
+				mVertices[1+y*mSteps + x].z = s * Radius;
+				mVertices[1+y*mSteps + x].y = h * Radius;
 
 				mVertices[1+y*mSteps + x].nx = c;
 				mVertices[1+y*mSteps + x].nz = s;
-				mVertices[1+y*mSteps + x].ny = sc;
+				mVertices[1+y*mSteps + x].ny = h;
 
 				mVertices[1+y*mSteps + x].u = (1 + c*uvr/r)*4;
 				mVertices[1+y*mSteps + x].v = (1 + s*uvr/r)*4;
@@ -158,26 +166,40 @@ namespace SkyX
 			}
 		}
 
-		r = Ogre::Math::Cos(AngleStep);
-		uvr = static_cast<float>(mCircles+1)/(mCircles-1);
+		float op; // Opacity
 
-		for(x=0;x<mSteps;x++) 
+		// Under-horizon
+		for(y=mCircles-mUnderHorizonCircles;y<mCircles;y++) 
 		{
-			c = Ogre::Math::Cos(Ogre::Math::TWO_PI * x / mSteps) * r;
-			s = Ogre::Math::Sin(Ogre::Math::TWO_PI * x / mSteps) * r;
+			currentTethaAngle = Ogre::Math::PI/2 - AngleStep*(y+1);
 
-			mVertices[1+(mCircles-1)*mSteps + x].x = mVertices[1+(mCircles-2)*mSteps + x].x;
-			mVertices[1+(mCircles-1)*mSteps + x].z = mVertices[1+(mCircles-2)*mSteps + x].z;
-			mVertices[1+(mCircles-1)*mSteps + x].y = mVertices[1+(mCircles-2)*mSteps + x].y - TODO_Radius*mSkydomeFadingPercent;
+			r = Ogre::Math::Cos(currentTethaAngle);
+			h = Ogre::Math::Sin(currentTethaAngle);
 
-			mVertices[1+(mCircles-1)*mSteps + x].nx = mVertices[1+(mCircles-2)*mSteps + x].nx;
-			mVertices[1+(mCircles-1)*mSteps + x].nz = mVertices[1+(mCircles-2)*mSteps + x].nz;
-			mVertices[1+(mCircles-1)*mSteps + x].ny = mVertices[1+(mCircles-2)*mSteps + x].ny;
+			uvr = static_cast<float>(y+1)/(mCircles-mUnderHorizonCircles);
 
-			mVertices[1+(mCircles-1)*mSteps + x].u = (1 + c*uvr/r)*4;
-			mVertices[1+(mCircles-1)*mSteps + x].v = (1 + s*uvr/r)*4;
+			op = Ogre::Math::Clamp<Ogre::Real>(Ogre::Math::Pow(static_cast<Ogre::Real>(mCircles-y-1) / mUnderHorizonCircles, mUnderHorizonFadingExponent)*mUnderHorizonFadingMultiplier, 0, 1);
 
-			mVertices[1+(mCircles-1)*mSteps + x].o = mSmoothSkydomeFading ? 0 : 1;
+			for(x=0;x<mSteps;x++) 
+			{
+				currentPhiAngle = Ogre::Math::TWO_PI * x / mSteps;
+
+				c = Ogre::Math::Cos(currentPhiAngle) * r;
+				s = Ogre::Math::Sin(currentPhiAngle) * r;
+
+				mVertices[1+y*mSteps + x].x = c * Radius;
+				mVertices[1+y*mSteps + x].z = s * Radius;
+				mVertices[1+y*mSteps + x].y = h * Radius;
+
+				mVertices[1+y*mSteps + x].nx = c;
+				mVertices[1+y*mSteps + x].nz = s;
+				mVertices[1+y*mSteps + x].ny = h;
+
+				mVertices[1+y*mSteps + x].u = (1 + c*uvr/r)*4;
+				mVertices[1+y*mSteps + x].v = (1 + s*uvr/r)*4;
+
+				mVertices[1+y*mSteps + x].o = op;
+			}
 		}
 
 		// Update data
@@ -189,8 +211,8 @@ namespace SkyX
 	
 		// Update bounds
 	    Ogre::AxisAlignedBox meshBounds =
-			Ogre::AxisAlignedBox(-TODO_Radius, 0,          -TODO_Radius,
-			                      TODO_Radius, TODO_Radius, TODO_Radius);
+			Ogre::AxisAlignedBox(-Radius, 0,     -Radius,
+			                      Radius, Radius, Radius);
 
 		mMesh->_setBounds(meshBounds);
 		mSceneNode->_updateBounds();
@@ -219,13 +241,13 @@ namespace SkyX
 		vdecl->addElement(0, offset, Ogre::VET_FLOAT1, Ogre::VES_TEXTURE_COORDINATES, 2);
 
 		mVertexBuffer = Ogre::HardwareBufferManager::getSingleton().
-			createVertexBuffer(sizeof(POS_UV_VERTEX),
+			createVertexBuffer(sizeof(VERTEX),
 			                   numVertices,
 			                   Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 
 		vbind->setBinding(0, mVertexBuffer);
 
-		unsigned int *indexbuffer = new unsigned int[numEle];
+		unsigned short *indexbuffer = new unsigned short[numEle];
 
 		for (int k = 0; k < mSteps; k++)
 		{
@@ -242,11 +264,13 @@ namespace SkyX
 			}
 		}
 
+		unsigned short *twoface;
+
 		for(int y=0; y<mCircles-1; y++) 
 		{
 		    for(int x=0; x<mSteps; x++) 
 			{
-			    unsigned int *twoface = indexbuffer + (y*mSteps+x)*6 + 3 * mSteps;
+			    twoface = indexbuffer + (y*mSteps+x)*6 + 3 * mSteps;
 
 			    int p0 = 1+y * mSteps + x ;
 			    int p1 = 1+y * mSteps + x + 1 ;
@@ -274,7 +298,7 @@ namespace SkyX
 		// Prepare buffer for indices
 		mIndexBuffer =
 			Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
-			Ogre::HardwareIndexBuffer::IT_32BIT,
+			Ogre::HardwareIndexBuffer::IT_16BIT,
 			numEle,
 			Ogre::HardwareBuffer::HBU_STATIC, true);
 
@@ -292,15 +316,31 @@ namespace SkyX
 		mSubMesh->indexData->indexCount = numEle;
 
 	    // Create our internal buffer for manipulations
-		mVertices = new POS_UV_VERTEX[1+mSteps * mCircles];
+		mVertices = new VERTEX[1+mSteps * mCircles];
 	}
 
-	void MeshManager::_setGeometryParameters(const int &Steps, const int &Circles)
+	void MeshManager::setGeometryParameters(const int &Steps, const int &Circles)
 	{
 		mSteps = Steps;
 		mCircles = Circles;
 
 		if (mCreated)
+		{
+		    remove();
+		    create();
+		}
+	}
+
+	void MeshManager::setUnderHorizonParams(const int& UnderHorizonCircles, const bool& UnderHorizonFading, const Ogre::Real& UnderHorizonFadingExponent, const Ogre::Real& UnderHorizonFadingMultiplier)
+	{
+		bool needToRecreate = (mUnderHorizonCircles != UnderHorizonCircles);
+
+		mUnderHorizonCircles = UnderHorizonCircles;
+		mUnderHorizonFading = UnderHorizonFading;
+		mUnderHorizonFadingExponent = UnderHorizonFadingExponent;
+		mUnderHorizonFadingMultiplier = UnderHorizonFadingMultiplier;
+
+		if (needToRecreate)
 		{
 		    remove();
 		    create();
@@ -317,8 +357,15 @@ namespace SkyX
 		}
 	}
 
-	const float MeshManager::getSkydomeRadius() const
+	const float MeshManager::getSkydomeRadius(Ogre::Camera* c) const
 	{
-		return mSkyX->getCamera()->getFarClipDistance()*0.95f;
+		float cameraFarClipDistance = c->getFarClipDistance();
+
+		if (!cameraFarClipDistance)
+		{
+			cameraFarClipDistance = mSkyX->getInfiniteCameraFarClipDistance();
+		}
+
+		return cameraFarClipDistance*mRadiusMultiplier;
 	}
 }

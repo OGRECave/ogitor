@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -32,21 +31,60 @@ http://www.gnu.org/copyleft/lesser.txt.
 #include "GPUManager.h"
 #include "MoonManager.h"
 #include "CloudsManager.h"
+#include "ColorGradient.h"
+#include "Controller.h"
+#include "BasicController.h"
 #include "VCloudsManager.h"
 #include "VClouds/VClouds.h"
-#include "ColorGradient.h"
+#include "VClouds/GeometryManager.h"
+#include "VClouds/GeometryBlock.h"
+#include "VClouds/FastFakeRandom.h"
+#include "VClouds/Ellipsoid.h"
+#include "VClouds/DataManager.h"
 
 namespace SkyX
 {
-	/** Main SkyX class
+	/** SkyX class
 	    Create simple and beautiful skies!
+		@remarks How to update SkyX:
+				 Updating SkyX is a very easy task that can be done manually or automatically by using listeners.
+				 There're two update steps in SkyX: per-frame update and per-camera update, and the order is very
+				 important. 
+				 The per-frame update must be performed at first: SkyX::update(...), after that and before each
+				 camera render operation SkyX::notifyCameraRender(...) must be invoked.
+				 Both updates can be automatically performed by using listeners: the Ogre::FrameListener is used
+				 for the per-frame udpate, and the Ogre::RenderTargetListener is used for the per-camera update.
+				 For more information have a look to sample projects.
+			     
      */
-    class DllExport SkyX 
+	class DllExport SkyX : public Ogre::FrameListener, public Ogre::RenderTargetListener
 	{
 	public:
+		/** Render queue groups
+		 */
+		struct RenderQueueGroups
+		{
+			/** Constructor
+			    @param s Skydome render queue group
+				@param vc VClouds render queue group
+				@param vcl VClouds lightnings render queue group
+			 */
+			inline RenderQueueGroups(const Ogre::uint8& s, const Ogre::uint8& vc, const Ogre::uint8& vcl)
+				: skydome(s), vclouds(vc), vcloudsLightnings(vcl)
+			{
+			}
+
+			/// Skydome render queue group
+			Ogre::uint8 skydome;
+			/// VClouds render queue group
+			Ogre::uint8 vclouds;
+			/// VClouds lightnings render queue group
+			Ogre::uint8 vcloudsLightnings;
+		};
+
 		/** Lighting mode enumeration
-		    SkyX is designed for true HDR rendering, but there're a lot of applications
-			that doesn't use HDR rendering, due to this a little exponential tone-mapping 
+		    SkyX is designed for true HDR rendering, but there is a big number of applications
+			which don't use HDR rendering, due to this fact a little exponential tone-mapping 
 			algoritm is applied to SkyX materials if LM_LDR is selected. (See: AtmosphereManager::Options::Exposure)
 			Select LM_HDR if your app is designed for true HDR rendering.
 		 */
@@ -59,10 +97,10 @@ namespace SkyX
 		};
 
 		/** Contructor 
-		    @param sm Ogre Scene manager pointer
-		    @param c Ogre Camera pointer
+		    @param sm Ogre Scene manager
+			@param c SkyX controller
 		 */
-		SkyX(Ogre::SceneManager* sm, Ogre::Camera *c);
+		SkyX(Ogre::SceneManager* sm, Controller* c);
 
 		/** Destructor 
 		 */
@@ -72,16 +110,27 @@ namespace SkyX
          */
         void create();
 
-		/** Remove SkyX, you can call this method to remove SkyX from the scene
-		    or release (secondary) SkyX memory, call create() to return SkyX to the scene.
+		/** Remove SkyX (free resources)
 		 */
 		void remove();
 
-        /** Call every frame
+        /** Update (to be invoked per frame)
 		    @param timeSinceLastFrame Time elapsed since last frame
-            @todo Add listener interface
+            @remarks Invoke this function only one time per frame.
+					 Per-frame update must be performed before per-camera updates through SkyX::notifyCameraRender(...)
+			         Also it's possible to use listeners, making all this process transparent,
+					 just register SkyX in ogre root through Ogre::Root::addFrameListener(...)
          */
         void update(const Ogre::Real &timeSinceLastFrame);
+
+		/** Notify camera render (to be invoked per camera and per frame)
+		    @param c Camera
+			@remarks Invoke this method manually before the camera render operation
+				     Per-camera updates must be performed after the per-frame update through SkyX::update(...)
+			         Also it's possible to use listeners, making all this process transparent,
+					 just register SkyX in your render target through Ogre::RenderTarget::addListener(...)
+		 */
+		void notifyCameraRender(Ogre::Camera* c);
 
 		/** Is SkyX created?
 		    @return true if yes, false if not
@@ -89,6 +138,19 @@ namespace SkyX
 		inline const bool isCreated() const
 		{
 			return mCreated;
+		}
+
+		/** Set visible
+		    @param visible true to set SkyX visible, false to hide it
+		 */
+		void setVisible(const bool& visible);
+
+		/** Is SkyX visible?
+		    @return true if SkyX is visible, false otherwise
+		 */
+		inline const bool& isVisible() const
+		{
+			return mVisible;
 		}
 
 		/** Set time multiplier
@@ -108,15 +170,6 @@ namespace SkyX
 		inline const Ogre::Real& getTimeMultiplier() const
 		{
 			return mTimeMultiplier;
-		}
-
-		/** Get time offset
-		    @return Time offset
-			@remarks Only for internal use
-		 */
-		inline const Ogre::Real& _getTimeOffset() const
-		{
-			return mTimeOffset;
 		}
 
 		/** Get mesh manager
@@ -167,6 +220,40 @@ namespace SkyX
 			return mVCloudsManager;
 		}
 
+		/** Set controller
+		    @param c Controller
+		 */
+		inline void setController(Controller* c)
+		{
+			if (mController->getDeleteBySkyX())
+			{
+				delete mController;
+			}
+
+			mController = c;
+		}
+
+		/** Get current controller
+		    @return Current controller
+		 */
+		inline Controller* getController() const
+		{
+			return mController;
+		}
+
+		/** Set render queue groups
+		    @param rqg Render queue groups
+		 */
+		void setRenderQueueGroups(const RenderQueueGroups& rqg);
+
+		/** Get render queue groups
+		    @return Current render queue groups
+		 */
+		inline const RenderQueueGroups& getRenderQueueGroups() const
+		{
+			return mRenderQueueGroups;
+		}
+
 		/** Set lighting mode
 		    @param lm Lighting mode
 			@remarks SkyX is designed for true HDR rendering, but there're a lot of applications
@@ -197,20 +284,58 @@ namespace SkyX
 			return mStarfield;
 		}
 
+		/** Set infinite camera far clip distance
+		    @param d Infinite camera far clip distance
+			@remarks SkyX needs a finite camera far clip distance in order to builds its geometry. Since Ogre allows infinite far clip
+			         camera distances (camearFarClipDistance = 0) you'll need to manually provide a far clip distance if you're using
+					 an infinite camera far clip distance.
+		 */
+		inline void setInfiniteCameraFarClipDistance(const Ogre::Real& d)
+		{
+			mInfiniteCameraFarClipDistance = d;
+		}
+
+		/** Get infinite cmaera far clip distance
+		    @return Infinite camera far clip distance
+		 */
+		inline const Ogre::Real& getInfiniteCameraFarClipDistance() const
+		{
+			return mInfiniteCameraFarClipDistance;
+		}
+
 		/** Get scene manager
-		    @return Ogre::SceneManager pointer
+		    @return Ogre scene manager
 		 */
 		inline Ogre::SceneManager* getSceneManager()
 		{
 			return mSceneManager;
 		}
 
-		/** Get camera
-		    @return SkyX camera
+		/** Get current rendering camera
+		    @return Current rendering camera
 		 */
 		inline Ogre::Camera* getCamera()
 		{
             return mCamera;
+		}
+
+		/** Frame started
+		    @param evt Frame event
+		 */
+		bool frameStarted(const Ogre::FrameEvent& evt);
+
+		/** Fired before update a render target viewport
+		    @param evt Render target viewport event
+		 */
+		void preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt);
+
+		/** Get time offset
+		    @return Time offset
+			@remarks Only for internal use
+		 */
+		inline const Ogre::Real& _getTimeOffset() const
+		{
+			return mTimeOffset;
 		}
 
 	private:
@@ -230,15 +355,26 @@ namespace SkyX
 		/// Volumetric clouds manager
 		VCloudsManager* mVCloudsManager;
 
-		/// Pointer to Ogre::SceneManager
+		/// Controller
+		Controller* mController;
+
+		/// Render queue groups
+		RenderQueueGroups mRenderQueueGroups;
+
+		/// Scene manager
         Ogre::SceneManager *mSceneManager;
-		/// Main ogre camera
+		/// Current rendering camera
 		Ogre::Camera* mCamera;
 
 		/// Last camera position
 		Ogre::Vector3 mLastCameraPosition;
 		/// Last camera far clip distance
 		Ogre::Real mLastCameraFarClipDistance;
+		/// Infinite camera far clip distance
+		Ogre::Real mInfiniteCameraFarClipDistance;
+
+		/// Is SkyX visible?
+		bool mVisible;
 
 		/// Lighting mode
 		LightingMode mLightingMode;

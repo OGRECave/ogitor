@@ -4,8 +4,10 @@ project(Skyx)
 
 set(HEADER_FILES
 	AtmosphereManager.h
+	BasicController.h
 	CloudsManager.h
 	ColorGradient.h
+	Controller.h
 	GPUManager.h
 	MeshManager.h
 	MoonManager.h
@@ -17,11 +19,14 @@ set(HEADER_FILES
 	VClouds/FastFakeRandom.h
 	VClouds/GeometryBlock.h
 	VClouds/GeometryManager.h
+	VClouds/Lightning.h
+	VClouds/LightningManager.h
 	VClouds/VClouds.h
 )
 
 set(SOURCE_FILES
 	AtmosphereManager.cpp
+	BasicController.cpp
 	CloudsManager.cpp
 	ColorGradient.cpp
 	GPUManager.cpp
@@ -35,16 +40,21 @@ set(SOURCE_FILES
 	VClouds/FastFakeRandom.cpp
 	VClouds/GeometryBlock.cpp
 	VClouds/GeometryManager.cpp
+	VClouds/Lightning.cpp
+	VClouds/LightningManager.cpp
 	VClouds/VClouds.cpp
 )
 
 set(SKYX_VERSION_MAJOR "0")
-set(SKYX_VERSION_MINOR "1")
+set(SKYX_VERSION_MINOR "3")
 set(SKYX_VERSION_PATCH "0")
 set(SKYX_VERSION "${SKYX_VERSION_MAJOR}.${SKYX_VERSION_MINOR}.${SKYX_VERSION_PATCH}")
 
 add_library(Skyx SHARED ${HEADER_FILES} ${SOURCE_FILES})
 set(LIBRARY_OUTPUT_PATH  ../lib)
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/VClouds")
 
 set_target_properties(Skyx PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(Skyx PROPERTIES VERSION ${SKYX_VERSION} SOVERSION ${SKYX_VERSION_MAJOR})

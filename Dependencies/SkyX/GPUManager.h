@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -55,10 +54,10 @@ namespace SkyX
 
 		/** Add ground pass (Use for atmospheric scattering effect on the terrain)
 		    @param GroundPass Ground pass
-			@param AtmosphereRaidus Atmosphere radius (far carmera clip plane, or needed)
+			@param AtmosphereRaidus Atmosphere radius (typically far carmera clip plane)
 			@param SBT Scene blend type
 		 */
-		void addGroundPass(Ogre::Pass* GroundPass, const Ogre::Real& AtmosphereRadius = 0, const Ogre::SceneBlendType& SBT = Ogre::SBT_ADD);
+		void addGroundPass(Ogre::Pass* GroundPass, const Ogre::Real& AtmosphereRadius, const Ogre::SceneBlendType& SBT = Ogre::SBT_ADD);
 
 		/** Set gpu program int parameter
 		    @param GpuP Gpu program type (Vertex/Fragment)
@@ -91,11 +90,6 @@ namespace SkyX
 			@param UpdateGroundPasses true to update ground passes
 		 */
 		void setGpuProgramParameter(const GpuProgram &GpuP, const Ogre::String &Name, const Ogre::Vector3 &Value, const bool& UpdateGroundPasses = true); 
-	
-		/** Update fragment program materials
-		    @remarks Only for internal use
-		 */
-		void _updateFP();
 
 		/** Get skydome material name
 		    @return Skydome material name
@@ -109,8 +103,29 @@ namespace SkyX
 		{
 			return "SkyX_Moon";
 		}
+
+		/** Update fragment program materials
+		    @remarks Only for internal use
+		 */
+		void _updateFP();
+
+		/** Notify skydome material changed
+		    @remarks Only for internal use
+		 */
+		inline void _notifySkydomeMaterialChanged()
+		{
+			mSkydomeMaterial = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(getSkydomeMaterialName()));
+
+			if (mSkydomeMaterial.isNull())
+			{
+				SkyXLOG("Error in SkyX::GPUManager: '" + getSkydomeMaterialName() + "' material not found");
+				return;
+			}
+		}
 		
 	private:
+		/// Skydome material
+		Ogre::MaterialPtr mSkydomeMaterial;
 		/// Ground pass vector
 		std::vector<Ogre::Pass*> mGroundPasses;
 

@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -24,14 +23,15 @@ http://www.gnu.org/copyleft/lesser.txt.
 
 #include "GeometryBlock.h"
 
-#include "VClouds.h"
+#include "VClouds/VClouds.h"
 
 namespace SkyX { namespace VClouds
 {
 	GeometryBlock::GeometryBlock(VClouds* vc,
 		    const float& Height, const Ogre::Radian& Alpha, const Ogre::Radian& Beta, 
 			const float& Radius, const Ogre::Radian& Phi, const int& Na, 
-			const int& Nb, const int& Nc, const int& Position)
+			const int& Nb, const int& Nc, const int& A, 
+			const int& B, const int& C, const int& Position)
 		: mVClouds(vc)
 		, mCreated(false)
 		, mSubMesh(0)
@@ -45,10 +45,12 @@ namespace SkyX { namespace VClouds
 		, mRadius(Radius)
 		, mPhi(Phi)
 		, mNa(Na) , mNb(Nb) , mNc(Nc)
-		, mA(0) , mB(0) , mC(0)
+		, mA(A) , mB(B) , mC(C)
 		, mPosition(Position)
 		, mDisplacement(Ogre::Vector3(0,0,0))
 		, mWorldOffset(Ogre::Vector2(0,0))
+		, mCamera(0)
+		, mLastFallingDistance(0)
 	{
 		_calculateDataSize();
 	}
@@ -71,6 +73,9 @@ namespace SkyX { namespace VClouds
 		// Create mesh geometry
 		_createGeometry();
 
+		// Build edge list
+		mMesh->buildEdgeList();
+
 		// End mesh creation
         mMesh->load();
         mMesh->touch();
@@ -79,18 +84,12 @@ namespace SkyX { namespace VClouds
         mEntity = mVClouds->getSceneManager()->createEntity("_SkyX_VClouds_BlockEnt" + Ogre::StringConverter::toString(mPosition), "_SkyX_VClouds_Block" + Ogre::StringConverter::toString(mPosition));
         mEntity->setMaterialName("SkyX_VolClouds");
 		mEntity->setCastShadows(false);
-		mEntity->setRenderQueueGroup(Ogre::RENDER_QUEUE_SKIES_LATE);
-
-        /* BEGIN OGITOR HACK */
-        mEntity->setQueryFlags(0);
-        /* END OGITOR HACK */
+		mEntity->setRenderQueueGroup(mVClouds->getRenderQueueGroups().vclouds);
 
 		// Set bounds
-		mMesh->_setBounds(_buildAABox());
+		mMesh->_setBounds(_buildAABox(mLastFallingDistance));
 
 		mCreated = true;
-
-		_updateGeometry();
 	}
 
 	void GeometryBlock::remove()
@@ -114,7 +113,7 @@ namespace SkyX { namespace VClouds
 		mCreated = false;
 	}
 
-	const Ogre::AxisAlignedBox GeometryBlock::_buildAABox() const
+	const Ogre::AxisAlignedBox GeometryBlock::_buildAABox(const float& fd) const
 	{
 		Ogre::Vector2 Center = Ogre::Vector2(0,0);
 		Ogre::Vector2 V1     = mRadius*Ogre::Vector2(Ogre::Math::Cos(mPhi*mPosition), Ogre::Math::Sin(mPhi*mPosition));
@@ -122,22 +121,18 @@ namespace SkyX { namespace VClouds
 
 		Ogre::Vector2 Max    = Ogre::Vector2(std::max<float>(std::max<float>(V1.x, V2.x), Center.x), std::max<float>(std::max<float>(V1.y, V2.y), Center.y) );
 		Ogre::Vector2 Min    = Ogre::Vector2(std::min<float>(std::min<float>(V1.x, V2.x), Center.x), std::min<float>(std::min<float>(V1.y, V2.y), Center.y) );
-		
+
 		return Ogre::AxisAlignedBox(
 							  // Min x,y,z
-							  Min.x, 0,      Min.y,
+							  Min.x, -std::max<float>(fd,0),          Min.y,
 							  // Max x,y,z
-			                  Max.x, mHeight, Max.y);
+			                  Max.x, mHeight - std::min<float>(fd,0), Max.y);
 	}
 
 	void GeometryBlock::_calculateDataSize()
 	{
 		mVertexCount = 7*mNa + 6*mNb + 4*mNc;
 		mNumberOfTriangles = 5*mNa + 4*mNb + 2*mNc;
-
-		mA = mHeight / Ogre::Math::Cos(Ogre::Math::PI/2-mBeta.valueRadians());
-		mB = mHeight / Ogre::Math::Cos(Ogre::Math::PI/2-mAlpha.valueRadians());
-	    mC = mRadius;
 
 		mV2Cos = Ogre::Vector2(Ogre::Math::Cos(mPosition*mPhi), Ogre::Math::Cos((mPosition+1)*mPhi));
 		mV2Sin = Ogre::Vector2(Ogre::Math::Sin(mPosition*mPhi), Ogre::Math::Sin((mPosition+1)*mPhi));
@@ -176,7 +171,7 @@ namespace SkyX { namespace VClouds
 
 		vbind->setBinding(0, mVertexBuffer);
 
-		unsigned int *indexbuffer = new unsigned int[mNumberOfTriangles*3];
+		unsigned short *indexbuffer = new unsigned short[mNumberOfTriangles*3];
 
 		int IndexOffset = 0;
 		int VertexOffset = 0;
@@ -260,7 +255,7 @@ namespace SkyX { namespace VClouds
 		// Prepare buffer for indices
 		mIndexBuffer =
 			Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
-			Ogre::HardwareIndexBuffer::IT_32BIT,
+			Ogre::HardwareIndexBuffer::IT_16BIT,
 			mNumberOfTriangles*3,
 			Ogre::HardwareBuffer::HBU_STATIC, true);
 
@@ -279,37 +274,46 @@ namespace SkyX { namespace VClouds
 
 	    // Create our internal buffer for manipulations
 		mVertices = new VERTEX[mVertexCount];
-
-		// Update geometry
-		_updateGeometry();
 	}
 
-	void GeometryBlock::update(const Ogre::Real& offset)
+	void GeometryBlock::updateGeometry(Ogre::Camera* c, const Ogre::Vector3& displacement)
 	{
 		if (!mCreated)
 		{
 			return;
 		}
 
-		mDisplacement += Ogre::Vector3(offset);
+		mDisplacement = displacement;
 
-		if (mDisplacement.z < 0 || mDisplacement.z > (mC-mB)/mNc)
+		float fallingDistance = mVClouds->getDistanceFallingParams().x*(mEntity->getParentSceneNode()->_getDerivedPosition().y-c->getDerivedPosition().y);
+
+		if (mVClouds->getDistanceFallingParams().y > 0) // -1 means no max falling
 		{
-			mDisplacement.z -= ((mC-mB)/mNc)*Ogre::Math::IFloor((mDisplacement.z)/((mC-mB)/mNc));
+			if (fallingDistance > 0)
+			{
+				if (fallingDistance > mVClouds->getDistanceFallingParams().y)
+				{
+					fallingDistance = mVClouds->getDistanceFallingParams().y;
+				}
+			}
+			else
+			{
+				if (-fallingDistance > mVClouds->getDistanceFallingParams().y)
+				{
+					fallingDistance = -mVClouds->getDistanceFallingParams().y;
+				}
+			}
 		}
 
-		if (mDisplacement.y < 0 || mDisplacement.y > (mB-mA)/mNb)
+		if (fallingDistance != mLastFallingDistance)
 		{
-			mDisplacement.y -= ((mB-mA)/mNb)*Ogre::Math::IFloor((mDisplacement.y)/((mB-mA)/mNb));
+			mLastFallingDistance = fallingDistance;
+			mMesh->_setBounds(_buildAABox(mLastFallingDistance));
 		}
 
-		if (mDisplacement.x < 0 || mDisplacement.x > mA/mNa)
+		if (isInFrustum(c))
 		{
-			mDisplacement.x -= (mA/mNa)*Ogre::Math::IFloor((mDisplacement.x)/(mA/mNa));
-		}
-
-		if (isInFrustum(mVClouds->getCamera()))
-		{
+			mCamera = c;
 			_updateGeometry();
 		}
 	}
@@ -376,9 +380,9 @@ namespace SkyX { namespace VClouds
 			 hip = mHeight / Ogre::Math::Sin(ang);
 
 		// Vertex 0
-		_setVertexData(VertexOffset, Ogre::Vector3(x1.x, 0, z1.x), opacity);
+		_setVertexData(VertexOffset, or0, opacity);
 		// Vertex 1
-		_setVertexData(VertexOffset+1, Ogre::Vector3(x1.y, 0, z1.y), opacity);
+		_setVertexData(VertexOffset+1, or1, opacity);
 		// Vertex 2
 		_setVertexData(VertexOffset+2, or0+(Ogre::Vector3(x2.x, y0, z2.x)-or0).normalisedCopy()*hip, opacity);
 		// Vertex 3
@@ -482,28 +486,46 @@ namespace SkyX { namespace VClouds
 
 	void GeometryBlock::_setVertexData(const int& index, const Ogre::Vector3& p, const float& o)
 	{
+		float fallingDistance = mVClouds->getDistanceFallingParams().x*(mEntity->getParentSceneNode()->_getDerivedPosition().y-mCamera->getDerivedPosition().y)*(Ogre::Vector2(p.x,p.z).length()/mRadius);
+		
+		if (mVClouds->getDistanceFallingParams().y > 0) // -1 means no max falling
+		{
+			if (fallingDistance > 0)
+			{
+				if (fallingDistance > mVClouds->getDistanceFallingParams().y)
+				{
+					fallingDistance = mVClouds->getDistanceFallingParams().y;
+				}
+			}
+			else
+			{
+				if (-fallingDistance > mVClouds->getDistanceFallingParams().y)
+				{
+					fallingDistance = -mVClouds->getDistanceFallingParams().y;
+				}
+			}
+		}
+		
 		// Position
 		mVertices[index].x = p.x;
-		mVertices[index].y = p.y; // - mHeight*0.075*Ogre::Math::Sin(Ogre::Vector2(p.x,p.z).length()/mRadius);
+		mVertices[index].y = p.y - fallingDistance;
 		mVertices[index].z = p.z;
 
 		// 3D coords (Z-UP)
 		float scale = mVClouds->getCloudFieldScale()/mRadius;
 		mVertices[index].xc = (p.x+mWorldOffset.x)*scale;
 		mVertices[index].yc = (p.z+mWorldOffset.y)*scale;
-		mVertices[index].zc = Ogre::Math::Clamp<Ogre::Real>((p.y/mHeight) * 0.5f, 0, 1);
+		mVertices[index].zc = Ogre::Math::Clamp<Ogre::Real>(p.y/mHeight, 0, 1);
 
 		// Noise coords
-		float noise_scale = mVClouds->getNoiseScale()/mRadius; //0.000175f;
+		float noise_scale = mVClouds->getNoiseScale()/mRadius;
 		float xz_length_radius = Ogre::Vector2(p.x,p.z).length() / mRadius;
-		Ogre::Vector3 origin = Ogre::Vector3(0,(mEntity != 0 && mEntity->getParentSceneNode() != 0) ? -(mEntity->getParentSceneNode()->_getDerivedPosition().y-mVClouds->getCamera()->getDerivedPosition().y) -mRadius*(0.5f+0.5f*Ogre::Vector2(p.x,p.z).length()/mRadius): -100,0);
+		Ogre::Vector3 origin = Ogre::Vector3(0,-(mEntity->getParentSceneNode()->_getDerivedPosition().y-mCamera->getDerivedPosition().y) -mRadius*(0.5f+0.5f*Ogre::Vector2(p.x,p.z).length()/mRadius),0);
 		Ogre::Vector3 dir = (p-origin).normalisedCopy();
 		float hip = Ogre::Math::Sqrt(Ogre::Math::Pow(xz_length_radius * mRadius, 2) + Ogre::Math::Pow(origin.y, 2));
-		Ogre::Vector3 uv = dir*hip; // Only x/z, += origin don't needed
-		float far_scalemultiplier = 1-0.5f*xz_length_radius;
-		if (xz_length_radius<0.01)far_scalemultiplier-=0.25*100*(0.01-xz_length_radius);
-		mVertices[index].u = (uv.x*far_scalemultiplier+mWorldOffset.x)*noise_scale;
-		mVertices[index].v = (uv.z*far_scalemultiplier+mWorldOffset.y)*noise_scale;
+		Ogre::Vector3 uv = dir*hip; // Only x/z, += origin doesn't need
+		mVertices[index].u = (uv.x+mWorldOffset.x)*noise_scale;
+		mVertices[index].v = (uv.z+mWorldOffset.y)*noise_scale;
 
 		// Opacity
 		mVertices[index].o = o * mVClouds->getGlobalOpacity();
@@ -516,16 +538,9 @@ namespace SkyX { namespace VClouds
 			return false;
 		}
 
-		if (!mEntity->getParentSceneNode())
-		{
-			return false;
-		}
-
-		// TODO: See Ogre::PlaneBoundedVolume (A volume bounded by planes, Ogre::Ray intersection ;) )
-		// Se contruye el planebvol y se lanza un rayo con cada esquina del frustum, si intersecta, está dentro y tiene que ser visible
-		// Tambien puede ocurrir que no intersecte porque todo el objeto está dentro, entonces para ver si está dentro
-		// Frustum::isVisibile(Ogre::Vector3 vertice) con un vertice cualkiera, por ejemplo mVertices[0].xyz ;)
-		
+		// TODO: Use a world bounding box for each geometry zone, this way the
+		// culling is going to be more acurrated and the geometry falling is going to be culled
+		// when the falling factor is bigger than 1.
 		return c->isVisible(mEntity->getParentSceneNode()->_getWorldAABB());
 	}
 }}

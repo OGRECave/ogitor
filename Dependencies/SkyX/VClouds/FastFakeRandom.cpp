@@ -1,10 +1,9 @@
 /*
 --------------------------------------------------------------------------------
 This source file is part of SkyX.
-Visit ---
+Visit http://www.paradise-studios.net/products/skyx/
 
-Copyright (C) 2009 Xavier Verguín González <xavierverguin@hotmail.com>
-                                           <xavyiy@gmail.com>
+Copyright (C) 2009-2012 Xavier Verguín González <xavyiy@gmail.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free Software
@@ -22,7 +21,7 @@ http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
 
-#include "FastFakeRandom.h"
+#include "VClouds/FastFakeRandom.h"
 
 namespace SkyX { namespace VClouds
 {
@@ -45,7 +44,7 @@ namespace SkyX { namespace VClouds
 
 	float& FastFakeRandom::get() 
 	{
-		mIndex ++; if (mIndex >= mCapacity) {mIndex = -1;}
+		mIndex ++; if (mIndex >= mCapacity) {mIndex = 0;}
 
 		return mData[mIndex];
 	}
