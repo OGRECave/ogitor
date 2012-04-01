@@ -189,6 +189,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/pythonqt/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/pythonqt/src/generated_cpp"
 )
 set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
 
