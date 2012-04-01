@@ -34,17 +34,77 @@
 #include "OgitorsScriptInterpreter.h"
 #include "PythonqtInterpreter.h"
 
+
 using namespace Ogitors;
+
+PythonQtOutput::PythonQtOutput()
+{
+    connect(PythonQt::self(), SIGNAL(pythonStdOut(const QString&)), this, SLOT(stdOut(const QString&)));
+    connect(PythonQt::self(), SIGNAL(pythonStdErr(const QString&)), this, SLOT(stdErr(const QString&)));
+}
+
+PythonQtOutput::~PythonQtOutput()
+{
+    
+}
+
+//----------------------------------------------------------------------------
+void PythonQtOutput::stdOut(const QString& s)
+{
+  _stdOut += s;
+  int idx;
+  while ((idx = _stdOut.indexOf('\n'))!=-1) {
+    //consoleMessage(_stdOut.left(idx));
+    std::cout << _stdOut.left(idx).data();
+    std::cout << _stdOut.left(idx).toLatin1().data() << std::endl;
+    _stdOut = _stdOut.mid(idx+1);
+  }
+}
+//----------------------------------------------------------------------------
+void PythonQtOutput::stdErr(const QString& s)
+{
+  _hadError = true;
+  _stdErr += s;
+  int idx;
+  while ((idx = _stdErr.indexOf('\n'))!=-1) {
+    //consoleMessage(_stdErr.left(idx));
+    std::cerr << _stdErr.left(idx).data();
+    std::cerr << _stdErr.left(idx).toLatin1().data() << std::endl;
+    _stdErr = _stdErr.mid(idx+1);
+  }
+}
+//----------------------------------------------------------------------------
+void PythonQtOutput::flushStdOut()
+{
+  if (!_stdOut.isEmpty()) {
+    stdOut("\n");
+  }
+  if (!_stdErr.isEmpty()) {
+    stdErr("\n");
+  }
+}
 
 PythonqtInterpreter::PythonqtInterpreter() : OgitorsScriptInterpreter()
 {
     PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
+    //PythonQt_init_QtCore(0);
+    //PythonQt_init_QtGui(0);
+    //PythonQt_init_QtSvg(0);
+    
+    mPythonQtOutput = new PythonQtOutput();
+    
     mMainContext = PythonQt::self()->getMainModule();
+    
 }
 //----------------------------------------------------------------------------
 PythonqtInterpreter::~PythonqtInterpreter()
 {
+    delete mPythonQtOutput;
 }
+//----------------------------------------------------------------------------
+
+static OutputData data;
+
 //----------------------------------------------------------------------------
 const std::string PythonqtInterpreter::getInitMessage()
 {

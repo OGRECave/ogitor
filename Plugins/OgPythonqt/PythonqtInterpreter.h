@@ -49,6 +49,25 @@
 
 namespace Ogitors
 {
+    class PythonQtOutput: public QObject
+    {
+    public:
+        
+        PythonQtOutput();
+        virtual ~PythonQtOutput();
+
+        //! output redirection
+        void stdOut(const QString& s);
+        //! output redirection
+        void stdErr(const QString& s);
+        //! flush output that was not yet printed
+        void flushStdOut();
+        
+        QString _stdOut;
+        QString _stdErr;
+        bool _hadError;
+    };
+    
     class PluginExport PythonqtInterpreter: public OgitorsScriptInterpreter
     {
     public:
@@ -88,9 +107,10 @@ namespace Ogitors
         virtual Ogre::StringVector runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time);
         // release resources associated with handle
         virtual void releaseHandle(unsigned int handle);
-        
+
     private:
         PythonQtObjectPtr mMainContext;
+        PythonQtOutput* mPythonQtOutput;
     };
 }
 
