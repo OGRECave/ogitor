@@ -73,53 +73,51 @@ namespace Ogitors
         virtual TiXmlElement*       exportDotScene(TiXmlElement *pParent);
 
     protected:
-        SkyX::SkyX                      *mHandle;
-        SkyX::BasicController           *mBasicController;          
+        SkyX::SkyX                          *mHandle;
+        SkyX::BasicController               *mBasicController;          
 
-        OgitorsProperty<Ogre::Real>     *mTimeMultiplier;
+        OgitorsProperty<Ogre::Real>         *mTimeMultiplier;
 
         // SkyX Basic Controller parameters
-        OgitorsProperty<Ogre::Vector3>  *mTime;
-        OgitorsProperty<Ogre::Vector2>  *mEastPosition;
-        OgitorsProperty<Ogre::Real>     *mMoonPhase;
+        OgitorsProperty<Ogre::Vector3>      *mTime;
+        OgitorsProperty<Ogre::Vector2>      *mEastPosition;
+        OgitorsProperty<Ogre::Real>         *mMoonPhase;
 
         // SkyX Atmosphere parameters
-        OgitorsProperty<Ogre::Real>     *mInnerRadius;
-        OgitorsProperty<Ogre::Real>     *mOuterRadius;
-        OgitorsProperty<Ogre::Real>     *mHeightPosition;
-        OgitorsProperty<Ogre::Real>     *mRayleighMultiplier;
-        OgitorsProperty<Ogre::Real>     *mMieMultiplier;
-        OgitorsProperty<Ogre::Real>     *mSunIntensity;
-        OgitorsProperty<Ogre::Vector3>  *mWaveLength;
-        OgitorsProperty<Ogre::Real>     *mG;        
-        OgitorsProperty<Ogre::Real>     *mExposure;        
-        OgitorsProperty<int>            *mSampleCount; 
-        
-        OgitorsProperty<bool>           *mUseLayeredClouds;
+        OgitorsProperty<Ogre::Real>         *mInnerRadius;
+        OgitorsProperty<Ogre::Real>         *mOuterRadius;
+        OgitorsProperty<Ogre::Real>         *mHeightPosition;
+        OgitorsProperty<Ogre::Real>         *mRayleighMultiplier;
+        OgitorsProperty<Ogre::Real>         *mMieMultiplier;
+        OgitorsProperty<Ogre::Real>         *mSunIntensity;
+        OgitorsProperty<Ogre::Vector3>      *mWaveLength;
+        OgitorsProperty<Ogre::Real>         *mG;        
+        OgitorsProperty<Ogre::Real>         *mExposure;        
+        OgitorsProperty<int>                *mSampleCount; 
 
         // SkyX Volumetric Clouds parameters
-        OgitorsProperty<bool>           *mVCEnable;
-        OgitorsProperty<bool>           *mVCAutoUpdate;
-        OgitorsProperty<Ogre::Real>     *mVCWindSpeed;
-        OgitorsProperty<Ogre::Real>     *mVCWindDirection;
-        OgitorsProperty<Ogre::Real>     *mVCNoiseScale;
-        OgitorsProperty<Ogre::Vector3>  *mVCAmbientColor;
-        OgitorsProperty<Ogre::Vector4>  *mVCLightReponse;
-        OgitorsProperty<Ogre::Vector4>  *mVCAmbientFactors;
-        OgitorsProperty<Ogre::Vector2>  *mVCWeather;
+        OgitorsProperty<bool>               *mVCEnable;
+        OgitorsProperty<bool>               *mVCAutoUpdate;
+        OgitorsProperty<Ogre::Real>         *mVCWindSpeed;
+        OgitorsProperty<Ogre::Real>         *mVCWindDirection;
+        OgitorsProperty<Ogre::Real>         *mVCNoiseScale;
+        OgitorsProperty<Ogre::ColourValue>  *mVCAmbientColor;
+        OgitorsProperty<Ogre::Vector4>      *mVCLightReponse;
+        OgitorsProperty<Ogre::Vector4>      *mVCAmbientFactors;
+        OgitorsProperty<Ogre::Vector2>      *mVCWeather;
 
         // SkyX Volumetric Clouds Lightning parameters
-        OgitorsProperty<bool>           *mVCLightningEnable;
-        OgitorsProperty<Ogre::Real>     *mVCLightningAT;
-        OgitorsProperty<Ogre::Vector3>  *mVCLightningColor;
-        OgitorsProperty<Ogre::Real>     *mVCLightningTM;        
+        OgitorsProperty<bool>               *mVCLightningEnable;
+        OgitorsProperty<Ogre::Real>         *mVCLightningAT;
+        OgitorsProperty<Ogre::ColourValue>  *mVCLightningColor;
+        OgitorsProperty<Ogre::Real>         *mVCLightningTM;        
 
         CSkyxEditor(CBaseEditorFactory *factory);
         virtual ~CSkyxEditor();
 
         void _restoreState();
 
-        bool _setTimeMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setOptionsTimeMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
 
         bool _setOptionsRayleighMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setOptionsMieMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
@@ -135,15 +133,22 @@ namespace Ogitors
         bool _setOptionsG(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setOptionsMoonPhase(OgitorsPropertyBase* property, const Ogre::Real& value);
 
+        // SkyX Volumetric Clouds setter
         bool _setVCEnable(OgitorsPropertyBase* property, const bool& value);
         bool _setVCAutoUpdate(OgitorsPropertyBase* property, const bool& value);
         bool _setVCWindSpeed(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setVCWindDirection(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setVCNoiseScale(OgitorsPropertyBase* property, const Ogre::Real& value);
-        bool _setVCAmbientColor(OgitorsPropertyBase* property, const Ogre::Vector3& value);
+        bool _setVCAmbientColor(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
         bool _setVCLightResponse(OgitorsPropertyBase* property, const Ogre::Vector4& value);
         bool _setVCAmbientFactors(OgitorsPropertyBase* property, const Ogre::Vector4& value);
         bool _setVCWeather(OgitorsPropertyBase* property, const Ogre::Vector2& value);
+
+        // SkyX Volumetric Clouds Lightning setter
+        bool _setVCLightningEnable(OgitorsPropertyBase* property, const bool& value);
+        bool _setVCLightningAT(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setVCLightningColor(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
+        bool _setVCLightningTM(OgitorsPropertyBase* property, const Ogre::Real& value);
     };
 
     class PluginExport CSkyxEditorFactory : public CBaseEditorFactory
