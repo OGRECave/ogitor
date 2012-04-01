@@ -492,14 +492,15 @@ CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     definition->setFieldNames("R Mult.", "G Mult.", "B Mult.");
     AddPropertyDefinition("options::g",                                 "Options::G",                   "", PROP_REAL);
     definition = AddPropertyDefinition("options::moonphase",            "Options::Moon Phase",          "", PROP_REAL);
-    definition->setRange(Ogre::Any(-1.0f), Ogre::Any(1.0f));
+    definition->setRange(Ogre::Any(-1.0f), Ogre::Any(1.0f), Ogre::Any(0.05f));
 
     // SkyX Volumetric Clouds
     AddPropertyDefinition("vclouds::enable",                            "Volumetric Clouds::Enable",            "", PROP_BOOL);
     AddPropertyDefinition("vclouds::autoupdate",                        "Volumetric Clouds::Auto Update",       "", PROP_BOOL);
     AddPropertyDefinition("vclouds::noisescale",                        "Volumetric Clouds::Noise Scale",       "", PROP_REAL);
     AddPropertyDefinition("vclouds::windspeed",                         "Volumetric Clouds::Wind Speed",        "", PROP_REAL);
-    AddPropertyDefinition("vclouds::winddirection",                     "Volumetric Clouds::Wind Direction",    "", PROP_REAL);
+    definition = AddPropertyDefinition("vclouds::winddirection",        "Volumetric Clouds::Wind Direction",    "", PROP_REAL);
+    definition->setRange(Ogre::Any(0), Ogre::Any(360));
     AddPropertyDefinition("vclouds::noisescale",                        "Volumetric Clouds::Noise Scale",       "", PROP_REAL);
     definition = AddPropertyDefinition("vclouds::ambientcolor",         "Volumetric Clouds::Ambient Color",     "", PROP_COLOUR);
     definition = AddPropertyDefinition("vclouds::lightresponse",        "Volumetric Clouds::Light Response",    "", PROP_VECTOR4);
