@@ -67,8 +67,10 @@ namespace Ogitors
         ETYPE_PARTICLE,         /** Particle editor type */
         ETYPE_BILLBOARDSET,     /** Billboard set editor type */
         ETYPE_MOVABLE,          /** Movable editor type */
-        ETYPE_GENERALPURPOSE,   /** Material editor type */
-        ETYPE_MULTISEL          /** Multi-selection editor type */
+        ETYPE_GENERALPURPOSE,   /** General editor type */
+        ETYPE_MULTISEL,         /** Multi-selection editor type */
+        ETYPE_MATERIAL,         /** Material editor type */
+        ETYPE_TECHNIQUE         /** Technique editor type */
     };
 
     /** String'ified EDITORTYPE enumeration @see EDITORTYPE */
@@ -79,19 +81,19 @@ namespace Ogitors
         "ETYPE_VIEWPORT",       /** String'ification of EDITORTYPE::ETYPE_VIEWPORT */
         "ETYPE_FOLDER",         /** String'ification of EDITORTYPE::ETYPE_FOLDER */
         "ETYPE_PAGINGMANAGER",  /** String'ification of EDITORTYPE::ETYPE_PAGINGMANAGER */
+        "ETYPE_NODE",           /** String'ification of EDITORTYPE::ETYPE_NODE */
         "ETYPE_SKY_MANAGER",    /** String'ification of EDITORTYPE::ETYPE_SKY_MANAGER */
         "ETYPE_LIGHT",          /** String'ification of EDITORTYPE::ETYPE_LIGHT */
-        "ETYPE_WATER_MANAGER",  /** String'ification of EDITORTYPE::ETYPE_WATER_MANAGER */
         "ETYPE_TERRAIN_MANAGER",/** String'ification of EDITORTYPE::ETYPE_TERRAIN_MANAGER */
+        "ETYPE_WATER_MANAGER",  /** String'ification of EDITORTYPE::ETYPE_WATER_MANAGER */
         "ETYPE_CUSTOM_MANAGER", /** String'ification of EDITORTYPE::ETYPE_CUSTOM_MANAGER */
-        "ETYPE_NODE",           /** String'ification of EDITORTYPE::ETYPE_NODE */
         "ETYPE_CAMERA",         /** String'ification of EDITORTYPE::ETYPE_CAMERA */
         "ETYPE_ENTITY",         /** String'ification of EDITORTYPE::ETYPE_ENTITY */
         "ETYPE_PLANE",          /** String'ification of EDITORTYPE::ETYPE_PLANE */
         "ETYPE_PARTICLE",       /** String'ification of EDITORTYPE::ETYPE_PARTICLE */    
         "ETYPE_BILLBOARDSET",   /** String'ification of EDITORTYPE::ETYPE_BILLBOARDSET */
         "ETYPE_MOVABLE",        /** String'ification of EDITORTYPE::ETYPE_MOVABLE */
-        "ETYPE_EDITABLEMESH",   /** String'ification of EDITORTYPE::ETYPE_EDITABLEMESH */
+        "ETYPE_GENERALPURPOSE", /** String'ification of EDITORTYPE::ETYPE_GENERALPURPOSE */
         "ETYPE_MULTISEL",       /** String'ification of EDITORTYPE::ETYPE_MULTISEL */
         "ETYPE_MATERIAL",       /** String'ification of EDITORTYPE::ETYPE_MATERIAL */
         "ETYPE_TECHNIQUE"       /** String'ification of EDITORTYPE::ETYPE_TECHNIQUE */
@@ -110,57 +112,58 @@ namespace Ogitors
     /** Load state enumeration */
     enum LoadState
     {
-        LS_UNLOADED = 0,
-        LS_LOADING = 1,
-        LS_LOADED = 2
+        LS_UNLOADED     = 0,
+        LS_LOADING      = 1,
+        LS_LOADED       = 2
     };
 
     /** Run state enumeration */
     enum RunState
     {
-        RS_STOPPED = 0,
-        RS_PAUSED = 1,
-        RS_RUNNING = 2
+        RS_STOPPED      = 0,
+        RS_PAUSED       = 1,
+        RS_RUNNING      = 2
     };
 
     /** Default World Sections enumeration */
     enum OgitorWorldSectionId
     {
-        SECT_TERRAIN = 0,
-        SECT_GENERAL = 1,
-        SECT_MAX = 32
+        SECT_TERRAIN    = 0,
+        SECT_GENERAL    = 1,
+        SECT_MAX        = 32
     };
 
     /** The Axis enumeration */
     enum AXISTYPE 
     {
-        AXIS_X = 1,     /** X Axis */
-        AXIS_Y = 2,     /** Y Axis */
-        AXIS_XY = 3,    /** XY Axis */
-        AXIS_Z = 4,     /** Z Axis */
-        AXIS_XZ = 5,    /** XZ Axis */
-        AXIS_YZ = 6,    /** YZ Axis */
-        AXIS_ALL = 7    /** XYZ Axis */
+        AXIS_X          = 1, /**  X Axis */
+        AXIS_Y          = 2, /**  Y Axis */
+        AXIS_XY         = 3, /** XY Axis */
+        AXIS_Z          = 4, /**  Z Axis */
+        AXIS_XZ         = 5, /** XZ Axis */
+        AXIS_YZ         = 6, /** YZ Axis */
+        AXIS_ALL        = 7  /** XYZ Axis */
     };
+
     /** Capabilities enumeration for editor class(es) */
     enum EDITFLAGS 
     {
-        CAN_MOVE   = 1,             /** Determines if editor object can be moved */
-        CAN_SCALE  = 2,             /** Determines if editor object can be scaled */
-        CAN_ROTATEX = 4,            /** Determines if editor object can be rotated around X Axis*/
-        CAN_ROTATEY = 8,            /** Determines if editor object can be rotated around Y Axis */
-        CAN_ROTATEZ = 16,           /** Determines if editor object can be rotated around Z Axis */
-        CAN_ROTATE = 28,            /** Enable All Rotations Mask */
-        CAN_DELETE = 32,            /** Determines if editor object can be deleted */
-        CAN_UNDO   = 64,            /** Determines if editor object can perform undo/redo operation(s) */
-        CAN_CLONE  = 128,           /** Determines if editor object can be cloned */
-        CAN_FOCUS  = 256,           /** Determines if editor object can be focused to when user presses focus key */
-        CAN_DRAG   = 512,           /** Determines if editor object can be dragged */
-        CAN_DROP   = 1024,          /** Determines if editor object can be dropped to */
+        CAN_MOVE        = 1,        /** Determines if editor object can be moved */
+        CAN_SCALE       = 2,        /** Determines if editor object can be scaled */
+        CAN_ROTATEX     = 4,        /** Determines if editor object can be rotated around X Axis*/
+        CAN_ROTATEY     = 8,        /** Determines if editor object can be rotated around Y Axis */
+        CAN_ROTATEZ     = 16,       /** Determines if editor object can be rotated around Z Axis */
+        CAN_ROTATE      = 28,       /** Enable All Rotations Mask */
+        CAN_DELETE      = 32,       /** Determines if editor object can be deleted */
+        CAN_UNDO        = 64,       /** Determines if editor object can perform undo/redo operation(s) */
+        CAN_CLONE       = 128,      /** Determines if editor object can be cloned */
+        CAN_FOCUS       = 256,      /** Determines if editor object can be focused to when user presses focus key */
+        CAN_DRAG        = 512,      /** Determines if editor object can be dragged */
+        CAN_DROP        = 1024,     /** Determines if editor object can be dropped to */
         CAN_USEMATERIAL = 2048,     /** Determines if editor object can receive a material through drag'n'drop */
-        CAN_ACCEPTCOPY = 4096,      /** Determines if editor object can be copied */
+        CAN_ACCEPTCOPY  = 4096,     /** Determines if editor object can be copied */
         CAN_ACCEPTPASTE = 8192,     /** Determines if editor object is a paste target */
-        CAN_PAGE = 16384            /** Determines if editor object is pageable */
+        CAN_PAGE        = 16384     /** Determines if editor object is pageable */
     };
 
     /** Possible types of editor tools enumeration */
@@ -219,9 +222,9 @@ namespace Ogitors
     /** Ogitor mouse button enumeration */
     enum OgitorsMouseButtons
     {
-        OMB_LEFT = 1,       /** Left mouse button type */
-        OMB_RIGHT = 2,      /** Right mouse button type */
-        OMB_MIDDLE = 4      /** Middle mouse button type */
+        OMB_LEFT    = 1,     /** Left mouse button type */
+        OMB_RIGHT   = 2,     /** Right mouse button type */
+        OMB_MIDDLE  = 4      /** Middle mouse button type */
     };
     
     /** Ogitor special keys bindings structure */
