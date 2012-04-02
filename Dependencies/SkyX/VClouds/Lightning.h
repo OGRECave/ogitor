@@ -72,7 +72,7 @@ namespace SkyX { namespace VClouds{
 			@param wm Width multiplier
 			@param b Bounds
 		 */
-		Lightning(Ogre::SceneManager* sm, Ogre::SceneNode* sn, const Ogre::Vector3& or, const Ogre::Vector3& dir, const Ogre::Real& l, 
+		Lightning(Ogre::SceneManager* sm, Ogre::SceneNode* sn, const Ogre::Vector3& orig, const Ogre::Vector3& dir, const Ogre::Real& l, 
 			const Ogre::uint32& d, const Ogre::uint32& rec, const Ogre::Real& tm,  const Ogre::Real& wm, const Ogre::Vector2& b = Ogre::Vector2(0,1));
 
 		/** Destructor
