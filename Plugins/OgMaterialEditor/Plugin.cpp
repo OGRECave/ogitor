@@ -81,6 +81,8 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("glsl",         matCodecFactory);
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("frag",         matCodecFactory);
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("vert",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("fragment",     matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("vertex",       matCodecFactory);
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("program",      matCodecFactory);
     GenericTextEditor::getSingletonPtr()->registerCodecFactory("compositor",   matCodecFactory);
 

@@ -66,7 +66,7 @@ MaterialTextEditorCodecToolBar::MaterialTextEditorCodecToolBar(const QString& na
 {
     mActRefresh = new QAction("Refresh Material", this);
     mActRefresh->setStatusTip("Refresh Material");
-    mActRefresh->setIcon( QIcon( ":/icons/refresh.svg"));
+    mActRefresh->setIcon(QIcon(":/icons/refresh.svg"));
     mActRefresh->setEnabled(true);
     connect(mActRefresh, SIGNAL(triggered()), this, SLOT(onRefresh()));
 
