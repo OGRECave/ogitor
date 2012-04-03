@@ -184,9 +184,12 @@ void SceneTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
         QSignalMapper *signalMapper = 0;
         QSignalMapper *pasteSignalMapper = 0;
 
+        contextMenu->addAction(mOgitorMainWindow->actEditRename);
+        contextMenu->addSeparator();
         contextMenu->addAction(mOgitorMainWindow->actEditCopy);
         contextMenu->addAction(mOgitorMainWindow->actEditCut);
         contextMenu->addAction(mOgitorMainWindow->actEditPaste);
+        contextMenu->addSeparator();
 
         QMenu *menuPasteList = 0;
         Ogre::StringVector pastelist;
@@ -205,10 +208,15 @@ void SceneTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
         }
 
         contextMenu->addAction(mOgitorMainWindow->actEditDelete);
-        contextMenu->addAction(mOgitorMainWindow->actEditRename);
-        contextMenu->addSeparator();
-        contextMenu->addAction(mOgitorMainWindow->actEditCopyToTemplate);
-        contextMenu->addAction(mOgitorMainWindow->actEditCopyToTemplateWithChildren);
+        
+        if(mOgitorMainWindow->actEditCopyToTemplate->isEnabled() || 
+            mOgitorMainWindow->actEditCopyToTemplateWithChildren->isEnabled())
+        {
+            contextMenu->addSeparator();
+            QMenu* templateMenu = contextMenu->addMenu(tr("Templates"));
+            templateMenu->addAction(mOgitorMainWindow->actEditCopyToTemplate);
+            templateMenu->addAction(mOgitorMainWindow->actEditCopyToTemplateWithChildren);
+        }
         
         UTFStringVector menuList;
         if(e->getObjectContextMenu(menuList))
@@ -232,7 +240,7 @@ void SceneTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
                         continue;
                     }
 
-                    QAction *item = contextMenu->addAction( ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
+                    QAction *item = contextMenu->addAction(ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
                     if(vList.size() > 1)
                         item->setIcon(QIcon(ConvertToQString(vList[1])));
                     signalMapper->setMapping(item, mapslot);
