@@ -425,8 +425,7 @@ namespace OFS
 
         struct OfsEntryDesc;
 
-        typedef void (*CallBackFunction)(void *userData, OfsEntryDesc* arg1, const char *arg2);
-        
+        typedef void (*CallBackFunction)(void *userData, OfsEntryDesc* arg1, const char *arg2);        
 
         enum CallBackType
         {
@@ -661,7 +660,7 @@ namespace OFS
         * List files/folders in a given directory including subfolders, the filenames contain full path
         * @param path path of the directory
         * @param list Filled with results
-        * @return Total filesize of returned files
+        * @return Total file size of returned files
         */
         unsigned int listFilesRecursive(const std::string& path, FileList& list);
         /**
@@ -721,56 +720,56 @@ namespace OFS
         */
         OfsResult    getModificationTime(OFSHANDLE& handle, time_t& mod_time); 
         /**
-        * Retrieves filesize of file
+        * Retrieves file size of file
         * @param filename path to the file
         * @param size Returns file's size
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    getFileSize(const char *filename, unsigned int& size); 
         /**
-        * Retrieves filesize of file
+        * Retrieves file size of file
         * @param handle handle to the file
         * @param size Returns file's size
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    getFileSize(OFSHANDLE& handle, unsigned int& size); 
         /**
-        * Sets file flags like readonly/hidden
+        * Sets file flags like read-only/hidden
         * @param filename path to the file
         * @param flags combination of flags to set
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    setFileFlags(const char *filename, unsigned int flags); 
         /**
-        * Sets file flags like readonly/hidden
+        * Sets file flags like read-only/hidden
         * @param handle handle to the file
         * @param flags combination of flags to set
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    setFileFlags(OFSHANDLE& handle, unsigned int flags); 
         /**
-        * Retrieves file flags like readonly/hidden
+        * Retrieves file flags like read-only/hidden
         * @param filename path to the file
         * @param flags returns combination of current file flags
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    getFileFlags(const char *filename, unsigned int& flags); 
         /**
-        * Retrieves file flags like readonly/hidden
+        * Retrieves file flags like read-only/hidden
         * @param handle handle to the file
         * @param flags returns combination of current file flags
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    getFileFlags(OFSHANDLE& handle, unsigned int& flags); 
         /**
-        * Sets directory flags like readonly/hidden
+        * Sets directory flags like read-only/hidden
         * @param dirpath path to the directory
         * @param flags combination of flags to set
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    setDirFlags(const char *dirpath, unsigned int flags); 
         /**
-        * Retrieves directory flags like readonly/hidden
+        * Retrieves directory flags like read-only/hidden
         * @param dirpath path to the directory
         * @param flags returns combination of current directory flags
         * @return Result of operation, OFS_OK if successful
@@ -823,8 +822,7 @@ namespace OFS
         * @param filename path of the file to check
         * @return True if file exists
         */
-        bool         exists(const char *filename); 
-
+        bool         exists(const char *filename);
         /**
         * Reads data from a given file (handle)
         * @param handle handle of the file
@@ -893,7 +891,7 @@ namespace OFS
         std::vector<CallBackData> mTriggers;            // Vector of File System Triggers 
         LogCallBackFunction       mLogCallBackFunc;     // Function pointer to callback handler
         
-        static NameOfsHandleMap   mAllocatedHandles; // Static map containing all file system instances
+        static NameOfsHandleMap   mAllocatedHandles;    // Static map containing all file system instances
 
         /* Private Constructor */
         _Ofs();
@@ -1064,7 +1062,7 @@ namespace OFS
             return *this;
         }
 
-        /* Consruction operator */
+        /* Construction operator */
         OfsPtr(const OfsPtr& other)
         {
             mPtr = other.mPtr;

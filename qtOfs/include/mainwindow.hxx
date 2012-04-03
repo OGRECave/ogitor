@@ -102,7 +102,7 @@ class AddFilesThread : public QThread
     Q_OBJECT
 public:
 
-    void add(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list);
+    void addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list);
 
     float getCurrentPos()
     {
