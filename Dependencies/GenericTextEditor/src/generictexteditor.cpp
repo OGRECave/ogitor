@@ -32,6 +32,7 @@
 
 #include <QtGui/QtGui>
 #include "generictexteditor.hxx"
+#include "xmltexteditorcodec.hxx"
 
 #include "OgitorsDefinitions.h"
 #include "DefaultEvents.h"
@@ -99,13 +100,16 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     // Register the standard generic text editor codec extensions
     GenericTextEditorCodecFactory* genCodecFactory = new GenericTextEditorCodecFactory();
     GenericTextEditor::registerCodecFactory("txt",         genCodecFactory);
-    GenericTextEditor::registerCodecFactory("xml",         genCodecFactory);
-    GenericTextEditor::registerCodecFactory("ogscene",     genCodecFactory);
-    GenericTextEditor::registerCodecFactory("html",        genCodecFactory);
-    GenericTextEditor::registerCodecFactory("htm",         genCodecFactory);
-    GenericTextEditor::registerCodecFactory("scene",       genCodecFactory);
     GenericTextEditor::registerCodecFactory("cfg",         genCodecFactory);
     GenericTextEditor::registerCodecFactory("log",         genCodecFactory);
+
+    // Register the XML generic text editor codec extensions
+    XMLTextEditorCodecFactory* XMLCodecFactory = new XMLTextEditorCodecFactory();
+    GenericTextEditor::registerCodecFactory("xml",         XMLCodecFactory);
+    GenericTextEditor::registerCodecFactory("ogscene",     XMLCodecFactory);
+    GenericTextEditor::registerCodecFactory("html",        XMLCodecFactory);
+    GenericTextEditor::registerCodecFactory("htm",         XMLCodecFactory);
+    GenericTextEditor::registerCodecFactory("scene",       XMLCodecFactory);
 
     Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::MODIFIED_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericTextEditor, onModifiedStateChanged));
     Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericTextEditor, onLoadStateChanged));
@@ -182,6 +186,8 @@ bool GenericTextEditor::displayTextFromFile(QString filePath, QString optionalDa
     
     mActSave->setEnabled(false);
 
+    document->setInitialDisplay(false);
+
     return true;
 }
 //-----------------------------------------------------------------------------------------
@@ -257,7 +263,8 @@ bool GenericTextEditor::isDocAlreadyShowing(QString docName, GenericTextEditorDo
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabContentChange()
 {
-    mActSave->setEnabled(true);
+    if(!mLastDocument->isIntialDisplay())
+        mActSave->setEnabled(true);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
@@ -456,7 +463,8 @@ void GenericTextEditor::onClipboardChanged()
 }
 //-----------------------------------------------------------------------------------------
 GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
-mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false)
+mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false),
+mInitialDisplay(true)
 {
     QFont fnt = font();
     fnt.setFamily("Courier New");
