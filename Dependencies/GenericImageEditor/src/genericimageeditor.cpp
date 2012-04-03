@@ -48,16 +48,38 @@ ImageCodecExtensionFactoryMap GenericImageEditor::mRegisteredCodecFactories = Im
 //-----------------------------------------------------------------------------------------
 GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QMdiArea(parent)
 {
-    mParentTabWidget = static_cast<QTabWidget*>(parent);
+    mParentTabWidget = static_cast<QTabWidget*>(parent->parent());
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
-
+    
     QTabBar* tabBar = findChildren<QTabBar*>().at(0);
     tabBar->setTabsClosable(true);
 
-    connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    connect(tabBar, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
-    connect(this,   SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+    connect(tabBar,         SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    connect(tabBar,         SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+    connect(this,           SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+
+    mActZoomIn = new QAction(tr("Zoom In"), this);
+    mActZoomIn->setStatusTip(tr("Zoom In"));
+    mActZoomIn->setIcon(QIcon(":/icons/zoom_in.svg"));
+    mActZoomIn->setEnabled(false);
+
+    mActZoomOut = new QAction(tr("Zoom Out"), this);
+    mActZoomOut->setStatusTip(tr("Zoom Out"));
+    mActZoomOut->setIcon(QIcon(":/icons/zoom_out.svg"));
+    mActZoomOut->setEnabled(false);
+
+    mMainToolBar = new QToolBar();
+    mMainToolBar->setObjectName("renderwindowtoolbar");
+    mMainToolBar->setIconSize(QSize(20, 20));
+    mMainToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    mMainToolBar->addAction(mActZoomIn);
+    mMainToolBar->addAction(mActZoomOut);
+
+    QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+    mw->addToolBar(Qt::TopToolBarArea, mMainToolBar);
+
+    mLastDocument = 0;
 
     // Register the standard generic text editor codec extensions
     GenericImageEditorCodecFactory* genCodecFactory = new GenericImageEditorCodecFactory();
@@ -157,6 +179,13 @@ bool GenericImageEditor::isDocAlreadyShowing(QString docName, GenericImageEditor
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::closeTab(int index)
 {
+    if(mLastDocument)
+    {
+        disconnect(mActZoomIn,  SIGNAL(triggered()), mLastDocument, SLOT(onZoomIn()));
+        disconnect(mActZoomOut, SIGNAL(triggered()), mLastDocument, SLOT(onZoomOut()));
+        mLastDocument = 0;
+    }
+    
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
 }
 //-----------------------------------------------------------------------------------------
@@ -188,11 +217,23 @@ IImageEditorCodecFactory* GenericImageEditor::findMatchingCodecFactory(QString e
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::moveToForeground()
 {
-    mParentTabWidget->setCurrentIndex(mParentTabWidget->indexOf(this));
+    mParentTabWidget->setCurrentIndex(mParentTabWidget->indexOf(this->parentWidget()));
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::tabChanged(int index)
 {
+    QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+
+    if(mLastDocument)
+    {
+        disconnect(mActZoomIn,  SIGNAL(triggered()), mLastDocument, SLOT(onZoomIn()));
+        disconnect(mActZoomOut, SIGNAL(triggered()), mLastDocument, SLOT(onZoomOut()));
+
+        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
+        if(tb != 0)
+            mw->removeToolBar(tb);
+    }
+    
     // -1 means that the last tab was just closed and so there is no one left anymore to switch to
     if(index != -1)
     {
@@ -200,6 +241,26 @@ void GenericImageEditor::tabChanged(int index)
         QList<QMdiSubWindow*> list = subWindowList();
         document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
         document->getCodec()->onTabChange();
+
+        connect(mActZoomIn,  SIGNAL(triggered()), document, SLOT(onZoomIn()));
+        connect(mActZoomOut, SIGNAL(triggered()), document, SLOT(onZoomOut()));
+        mActZoomIn->setEnabled(true);
+        mActZoomOut->setEnabled(true);
+        
+        mLastDocument = document;
+
+        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
+        if(tb != 0)
+        {
+            mw->addToolBar(Qt::TopToolBarArea, tb);
+            tb->show();
+        }
+    }
+    else
+    {
+        mActZoomIn->setEnabled(false);
+        mActZoomOut->setEnabled(false);
+        mLastDocument = 0;
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -212,7 +273,23 @@ void GenericImageEditor::onLoadStateChanged(Ogitors::IEvent* evt)
         Ogitors::LoadState state = change_event->getType();
 
         if(state == Ogitors::LS_UNLOADED)
-            close();
+        {
+            if(mLastDocument)
+            {
+                disconnect(mActZoomIn,  SIGNAL(triggered()), mLastDocument, SLOT(onZoomIn()));
+                disconnect(mActZoomOut, SIGNAL(triggered()), mLastDocument, SLOT(onZoomOut()));
+
+                QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+
+                QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
+                if(tb != 0)
+                    mw->removeToolBar(tb);
+            }
+
+            mLastDocument = 0;
+
+            closeAllSubWindows();
+        }
     }
 }
 /************************************************************************/
@@ -220,6 +297,7 @@ GenericImageEditorDocument::GenericImageEditorDocument(QWidget *parent) : QScrol
 mCodec(0), mDocName(""), mFilePath(""), mFile(0), mIsOfsFile(false)
 {
     mLabel = new ToolTipLabel(this);
+    mLabel->setScaledContents(true);
 }
 //-----------------------------------------------------------------------------------------
 GenericImageEditorDocument::~GenericImageEditorDocument()
@@ -271,7 +349,7 @@ void GenericImageEditorDocument::displayImageFromFile(QString docName, QString f
 void GenericImageEditorDocument::displayImage(QString docName, Ogre::DataStreamPtr stream)
 {
     mLabel->setMouseTracking(true);
-    mLabel->setPixmap(*mCodec->onBeforeDisplay(stream));
+    mLabel->setPixmap(mCodec->onBeforeDisplay(stream));
     mLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     setWidget(mLabel);
@@ -308,6 +386,38 @@ void GenericImageEditorDocument::closeEvent(QCloseEvent* event)
     getCodec()->onClose();
     releaseFile();
     close();
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditorDocument::wheelEvent(QWheelEvent* event)
+{
+    int numDegrees = event->delta() / 8;
+    float numSteps = numDegrees / 15;
+
+    scaleImage(1 + (float)(numSteps / 10));
+    event->accept();
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditorDocument::scaleImage(float factor)
+{  
+    // Currently limited to 5120px to prevent huge slowdowns when trying to zoom in any further.
+    // Changing the logic to only deal with the part of the image / pixmap that is actually displayed 
+    // might help to reduce the load in future revisions.
+    if(getCodec()->getScaleFactor() * factor * mLabel->pixmap()->size().height() < 5120)
+    {
+        QPixmap map = getCodec()->onScaleImage(factor);
+        qDebug(QString::number(map.height()).toAscii());
+        mLabel->resize(getCodec()->onScaleImage(factor).size());
+    }
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditorDocument::onZoomIn()
+{
+    scaleImage(1.1f);
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditorDocument::onZoomOut()
+{
+    scaleImage(0.9f);
 }
 /************************************************************************/
 ToolTipLabel::ToolTipLabel(GenericImageEditorDocument* genImgEdDoc, QWidget *parent) : QLabel(parent),

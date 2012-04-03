@@ -38,11 +38,12 @@
 
 #include <QtGui/QScrollArea>
 #include <QtGui/QWidget>
-#include <QtGui/QPainter>
 #include <QtGui/QScrollBar>
 #include <QtGui/QMdiArea>
 #include <QtGui/QMdiSubWindow>
 #include <QtGui/QLabel>
+#include <QtGui/QToolBar>
+#include <QtGui/QAction>
 
 #include "OgreSingleton.h"
 #include "Ogitors.h"
@@ -112,6 +113,10 @@ private:
      static ImageCodecExtensionFactoryMap   mRegisteredCodecFactories;
      QTabWidget*                            mParentTabWidget;
      bool                                   mAllowDoubleDisplay;
+     GenericImageEditorDocument*            mLastDocument;
+     QToolBar*                              mMainToolBar;
+     QAction*                               mActZoomIn;
+     QAction*                               mActZoomOut;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -137,10 +142,17 @@ public:
     inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
     ToolTipLabel* getLabel(){return mLabel;};
 
+public slots:
+    void onZoomIn();
+    void onZoomOut();
+
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void closeEvent(QCloseEvent* event);
+    void wheelEvent(QWheelEvent* event);
+
+    void scaleImage(float factor);
 
 protected:
     IImageEditorCodec*  mCodec;

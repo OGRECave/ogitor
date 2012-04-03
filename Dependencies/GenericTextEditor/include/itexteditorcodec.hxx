@@ -34,6 +34,7 @@
 #define I_TEXT_EDITOR_CODEC_HXX
 
 #include <QtCore/QString>
+
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QToolBar>
@@ -119,16 +120,16 @@ public:
     virtual void        onTabChange(){};
 
     /**
-    * Returns a custom toolbar instance for this codec.
-    */
-    virtual QToolBar*   getCustomToolBar(){return 0;};
-
-    /**
     * Called whenever the document this codec instance is attached to is being closed. At this stage 
     * at runtime the document was already requested to be saved if there were unsaved changes, so
     * no need to do this again in this method.
     */
     virtual void        onClose(){};
+
+    /**
+    * Returns a custom toolbar instance for this codec.
+    */
+    virtual QToolBar*   getCustomToolBar(){return 0;};
 
     QString         getDocumentIcon(){return mDocumentIcon;}
     void            setOptionalData(QString optionalData){mOptionalData = optionalData;};
