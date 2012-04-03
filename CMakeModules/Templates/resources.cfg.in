@@ -8,16 +8,16 @@ Zip=@OGITOR_MEDIA_PATH@/packs/SdkTrays.zip
 FileSystem=@OGITOR_MEDIA_PATH@/particle
 
 [EditorResources]
-FileSystem=@OGITOR_MEDIA_PATH@/EditorResources
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources
 
 [Hydrax]
-FileSystem=@OGITOR_MEDIA_PATH@/EditorResources/HYDRAX
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources/Hydrax
 
 [Caelum]
-FileSystem=@OGITOR_MEDIA_PATH@/EditorResources/CAELUM
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources/Caelum
 
 [SkyX]
-FileSystem=@OGITOR_MEDIA_PATH@/EditorResources/SKYX
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources/SkyX
 
 [Brushes]
 FileSystem=@OGITOR_MEDIA_PATH@/brushes
@@ -26,4 +26,4 @@ FileSystem=@OGITOR_MEDIA_PATH@/brushes
 FileSystem=@OGITOR_MEDIA_PATH@/plants
 
 [TerrainTextures]
-FileSystem=@OGITOR_MEDIA_PATH@/TerrainTextures
+FileSystem=@OGITOR_MEDIA_PATH@/terrainTextures
