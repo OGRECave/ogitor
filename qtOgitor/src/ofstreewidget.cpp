@@ -51,7 +51,7 @@ OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, std::st
     setDragDropOverwriteMode(false);
     
     if(capabilities & CAP_ALLOW_DROPS)
-        setDragDropMode(QAbstractItemView::DropOnly);
+        setDragDropMode(QAbstractItemView::DragDrop);
 
     mUnknownFileIcon = mOgitorMainWindow->mIconProvider.icon(QFileIconProvider::File);
 
@@ -390,6 +390,8 @@ QStringList OfsTreeWidget::getFilenames(const QMimeData * data)
 {
    QStringList result;
 
+   result = data->formats();
+
    QList<QUrl> urls = data->urls();
    for(int i = 0; i < urls.size(); ++i)
       result.push_back(urls.at(i).toLocalFile());
@@ -439,14 +441,30 @@ void OfsTreeWidget::dropEvent(QDropEvent *evt)
 
         if(item != NULL && item->whatsThis(0).endsWith("/"))
         {
-            // Get the filenames
-            QStringList filenames = getFilenames(evt->mimeData());
+            QByteArray itemData = evt->mimeData()->data("application/x-qabstractitemmodeldatalist");
+            QDataStream stream(&itemData, QIODevice::ReadOnly);
 
-            // Don't accept empty drags
-            if(!filenames.empty())
+            int r, c;
+            QMap<int, QVariant> variant;
+            stream >> r >> c >> variant;
+
+            QString source = variant[5].toString();
+            QString target = item->whatsThis(0).append(variant[0].toString());
+            if(source != target)
             {
-                addFiles(item->whatsThis(0), filenames);
-                return;
+                if(!source.endsWith(".OGSCENE", Qt::CaseInsensitive))
+                {
+                    mFile->moveFile(source.toAscii(), target.toAscii());
+                    refreshWidget();
+                    evt->accept();
+                    return;
+                }
+                else
+                {
+                    QMessageBox::information(QApplication::activeWindow(), "Ogitor", tr("The Ogitor scene file cannot be moved!"));
+                    evt->ignore();
+                    return;
+                }
             }
         }
     }
@@ -459,7 +477,16 @@ void OfsTreeWidget::addFiles(QString rootDir, QStringList list)
     if(!mAddFilesThread->isRunning())
     {
         emit busyState(true);
-        mAddFilesThread->add(mFile, rootDir.toStdString(), list);
+        mAddFilesThread->addFiles(mFile, rootDir.toStdString(), list);
+    }
+}
+//----------------------------------------------------------------------------------------
+void OfsTreeWidget::addEmptyFolder(QString rootDir, QString name)
+{
+    if(!mAddFilesThread->isRunning())
+    {
+        emit busyState(true);
+        mAddFilesThread->addEmptyFolder(mFile, rootDir.toStdString(), name);
     }
 }
 //----------------------------------------------------------------------------------------
@@ -685,15 +712,31 @@ bool AddFilesListCompare ( AddFilesData elem1, AddFilesData elem2 )
     return (strcmp(elem1.ofsName.toStdString().c_str(), elem2.ofsName.toStdString().c_str()) < 0);
 }
 //------------------------------------------------------------------------------------
-void AddFilesThread::add(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list)
+void AddFilesThread::addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list)
 {
     mlist.clear();
     AddFilesData data;
     for(int i = 0;i < _list.size();i++)
     {
         data.fileName = _list.at(i);
+        data.onFS = true;
         mlist.push_back(data);
     }
+
+    currentDir = _currentDir;
+    ofsFileName = _ofsFile->getFileSystemName();
+
+    start();
+}
+//------------------------------------------------------------------------------------
+void AddFilesThread::addEmptyFolder(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _name)
+{
+    mlist.clear();
+    AddFilesData data;
+    data.fileName = _name;
+    data.onFS = false;
+    data.isDir = true;
+    mlist.push_back(data);
 
     currentDir = _currentDir;
     ofsFileName = _ofsFile->getFileSystemName();
@@ -794,7 +837,7 @@ void AddFilesThread::addFiles(const AddFilesList& list)
                     }
                     catch(OFS::Exception& e)
                     {
-                        QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", QString(e.getDescription().c_str()), QMessageBox::Ok);
+                        QMessageBox::information(QApplication::activeWindow(), "Ofs Exception:", QString(e.getDescription().c_str()), QMessageBox::Ok);
                     }
 
                     stream.close();
@@ -813,8 +856,8 @@ void AddFilesThread::addFiles(const AddFilesList& list)
                             currentPos = (float)output_amount / (float)mTotalFileSize; 
                             mutex.unlock();
                         }
-                        //createFile accepts initial data to be written during alocation
-                        //its an optimization, thats why we dont have to call Ofs:write after createFile
+                        //createFile accepts initial data to be written during allocation
+                        //its an optimization, thats why we don't have to call Ofs:write after createFile
                         if(ofsFile->createFile(fhandle, file_ofs_path.c_str(), stream_size, stream_size, tmp_buffer) != OFS::OFS_OK)
                         {
                             QMessageBox::information(QApplication::activeWindow(),"File Copy Error", tr("File copy failed for : ")+ QString(file_ofs_path.c_str()), QMessageBox::Ok);
@@ -871,13 +914,13 @@ unsigned int AddFilesThread::generateList(AddFilesList& list)
     {
         QFileInfo file(list[i].fileName);
 
-        if(!file.isDir())
+        if(!file.isDir() && (list[i].onFS == true))
         {
             list[i].isDir = false;
             list[i].ofsName = QString(currentDir.c_str()) + file.fileName();
             file_size += file.size();
         }
-        else
+        else if(file.isDir() || (list[i].onFS == false && list[i].isDir == true))
         {
             QString path = file.baseName();
 
@@ -946,3 +989,4 @@ void AddFilesThread::run()
     ofsFile.unmount();
 }
 //------------------------------------------------------------------------------------
+

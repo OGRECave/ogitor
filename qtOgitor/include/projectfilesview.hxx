@@ -51,38 +51,41 @@ public:
     void clearView();
 
 public Q_SLOTS:
-    void itemDoubleClicked(QTreeWidgetItem * item, int column);
-    void ofsWidgetCustomContextMenuRequested(const QPoint &pos);
-    void ofsWidgetBusyState(bool state);
+    void itemDoubleClicked(QTreeWidgetItem* item, int column);
+    void onOfsWidgetCustomContextMenuRequested(const QPoint &pos);
+    void onOfsWidgetBusyState(bool state);
 
-    void onCommandRefresh();
-    void onCommandExtract();
-    void onCommandDefrag();
-    void onCommandDelete();
-    void onCommandRename();
-    void onCommandReadOnly();
-    void onCommandHidden();
-    void onCommandAddFolder();
-    void onCommandAddFile();
-    void onCommandMakeAsset();
+    void onRefresh();
+    void onExtract();
+    void onDefrag();
+    void onDelete();
+    void onRename();
+    void onReadOnly();
+    void onHidden();
+    void onImportFolder();
+    void onImportFile();
+    void onMakeAsset();
+    void onAddFolder();
 
 protected:
-    std::string     addFileFolderPath;
-    OfsTreeWidget*  ofsWidget;
-    QVBoxLayout*    vboxLayout;
-    QToolBar*       toolBar;
-    QMenu*          menuCommands; 
+    std::string     mAddFileFolderPath;
+    OfsTreeWidget*  mOfsTreeWidget;
+    QVBoxLayout*    mVBoxLayout;
+    QToolBar*       mToolBar;
+
+    QMenu*          mMenu; 
     
-    QAction*        actCommandRefresh;
-    QAction*        actCommandAddFolder;
-    QAction*        actCommandAddFile;
-    QAction*        actCommandMakeAsset;
-    QAction*        actCommandExtract;
-    QAction*        actCommandDefrag;
-    QAction*        actCommandDelete;
-    QAction*        actCommandRename;
-    QAction*        actCommandReadOnly;
-    QAction*        actCommandHidden;
+    QAction*        mActRefresh;
+    QAction*        mActImportFolder;
+    QAction*        mActImportFile;
+    QAction*        mActAddFolder;
+    QAction*        mActMakeAsset;
+    QAction*        mActExtract;
+    QAction*        mActDefrag;
+    QAction*        mActDelete;
+    QAction*        mActRename;
+    QAction*        mActReadOnly;
+    QAction*        mActHidden;
 };
 
 //------------------------------------------------------------------------------

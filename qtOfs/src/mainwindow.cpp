@@ -565,7 +565,7 @@ void MainWindow::addFiles(QStringList list)
         mProgressBar->setValue(0);
         mProgressBar->setVisible(true);
         mProgressLabel->setVisible(true);
-        mAddFilesThread->add(mOfsFile, mCurrentDir, list);
+        mAddFilesThread->addFiles(mOfsFile, mCurrentDir, list);
         mProgressTimer->start();
     }
 }
@@ -848,7 +848,7 @@ void ExtractThread::run()
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void AddFilesThread::add(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list)
+void AddFilesThread::addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list)
 {
     mlist.clear();
     AddFilesData data;

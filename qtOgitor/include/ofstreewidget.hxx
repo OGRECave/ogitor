@@ -88,6 +88,14 @@ struct AddFilesData
     QString fileName;
     QString ofsName;
     bool    isDir;
+
+    /* Flag indicating that this file/folder does exist on the real files system. Therefore
+    /* the file system meta data can be sued to determine whether the passed fileName is a
+    /* directory or not.
+    /* This flag is only to be set to false when a new folder is added, so when no 
+    /* import process is executed. In this case, the isDir flag has to be set manually.
+    */
+    bool    onFS;        
 };
 
 typedef std::vector<AddFilesData> AddFilesList;
@@ -97,7 +105,8 @@ class AddFilesThread : public QThread
     Q_OBJECT
 public:
 
-    void add(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list);
+    void addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list);
+    void addEmptyFolder(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _name);
 
     float getCurrentPos()
     {
@@ -155,6 +164,7 @@ public:
     void refreshWidget();
     void extractFiles();
     void addFiles(QString rootDir, QStringList list);
+    void addEmptyFolder(QString rootDir, QString name);
 
 public Q_SLOTS:
     void onSelectionChanged();

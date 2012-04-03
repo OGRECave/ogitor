@@ -46,147 +46,160 @@
 
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
-    QWidget(parent), ofsWidget(0)
+    QWidget(parent), mOfsTreeWidget(0)
 {
-    vboxLayout = new QVBoxLayout(this);
-    vboxLayout->setMargin(0);
-    vboxLayout->setSpacing(0);
-    menuCommands = new QMenu();
+    mVBoxLayout = new QVBoxLayout(this);
+    mVBoxLayout->setMargin(0);
+    mVBoxLayout->setSpacing(0);
+    mMenu = new QMenu();
 
-    actCommandRefresh = new QAction(tr("Refresh"), this);
-    actCommandRefresh->setStatusTip(tr("Refresh file contents"));
-    actCommandRefresh->setIcon( QIcon( ":/icons/refresh.svg" ));
+    mActRefresh = new QAction(tr("Refresh"), this);
+    mActRefresh->setStatusTip(tr("Refresh file contents"));
+    mActRefresh->setIcon(QIcon(":/icons/refresh.svg"));
      
-    actCommandExtract = new QAction(tr("Extract To..."), this);
-    actCommandExtract->setStatusTip(tr("Extract file contents to.."));
-    actCommandExtract->setIcon( QIcon( ":/icons/extract.svg" ));
+    mActExtract = new QAction(tr("Extract To..."), this);
+    mActExtract->setStatusTip(tr("Extract file contents to.."));
+    mActExtract->setIcon(QIcon(":/icons/extract.svg"));
 
-    actCommandDefrag = new QAction(tr("Defrag"), this);
-    actCommandDefrag->setStatusTip(tr("Defragment file"));
-    actCommandDefrag->setIcon( QIcon( ":/icons/defrag.svg" ));
+    mActDefrag = new QAction(tr("Defrag"), this);
+    mActDefrag->setStatusTip(tr("Defragment file"));
+    mActDefrag->setIcon(QIcon(":/icons/defrag.svg"));
 
-    actCommandDelete = new QAction(tr("Remove"), this);
-    actCommandDelete->setStatusTip(tr("Remove a file/folder from your Ogitor project"));
-    actCommandDelete->setIcon( QIcon( ":/icons/trash.svg"));
+    mActDelete = new QAction(tr("Remove"), this);
+    mActDelete->setStatusTip(tr("Remove a file/folder from your Ogitor project"));
+    mActDelete->setIcon(QIcon(":/icons/trash.svg"));
 
-    actCommandAddFolder = new QAction(tr("Import Folder"), this);
-    actCommandAddFolder->setStatusTip(tr("Import a folder into your Ogitor project"));
-    actCommandAddFolder->setIcon( QIcon( ":/icons/import.svg"));
+    mActAddFolder = new QAction(tr("Add Empty Folder"), this);
+    mActAddFolder->setStatusTip(tr("Add a new empty folder to your Ogitor project"));
+    mActAddFolder->setIcon(QIcon(":/icons/folder.svg"));
 
-    actCommandAddFile = new QAction(tr("Import File"), this);
-    actCommandAddFile->setStatusTip(tr("Import a single file into your Ogitor project"));
-    actCommandAddFile->setIcon( QIcon( ":/icons/additional.svg"));
+    mActImportFolder = new QAction(tr("Import Folder"), this);
+    mActImportFolder->setStatusTip(tr("Import a folder into your Ogitor project"));
+    mActImportFolder->setIcon(QIcon(":/icons/import.svg"));
 
-    actCommandMakeAsset = new QAction(tr("Make scene asset"), this);
-    actCommandMakeAsset->setStatusTip(tr("Make the resource usable as a scene asset"));
-    actCommandMakeAsset->setIcon( QIcon( ":/icons/objects.svg"));
-    actCommandMakeAsset->setCheckable(true);
-    actCommandMakeAsset->setChecked(false);
+    mActImportFile = new QAction(tr("Import File"), this);
+    mActImportFile->setStatusTip(tr("Import a single file into your Ogitor project"));
+    mActImportFile->setIcon(QIcon(":/icons/additional.svg"));
 
-    actCommandRename = new QAction(tr("Rename"), this);
-    actCommandRename->setStatusTip(tr("Rename Selected File/Folder"));
-    actCommandRename->setIcon( QIcon( ":/icons/editrename.svg"));
+    mActMakeAsset = new QAction(tr("Make scene asset"), this);
+    mActMakeAsset->setStatusTip(tr("Make the resource usable as a scene asset"));
+    mActMakeAsset->setIcon(QIcon(":/icons/objects.svg"));
+    mActMakeAsset->setCheckable(true);
+    mActMakeAsset->setChecked(false);
 
-    actCommandReadOnly = new QAction(tr("Read Only"), this);
-    actCommandReadOnly->setStatusTip(tr("Set/UnSet File/Folder as Read Only"));
-    actCommandReadOnly->setCheckable(true);
-    actCommandReadOnly->setChecked(false);
+    mActRename = new QAction(tr("Rename"), this);
+    mActRename->setStatusTip(tr("Rename Selected File/Folder"));
+    mActRename->setIcon(QIcon(":/icons/editrename.svg"));
 
-    actCommandHidden = new QAction(tr("Hidden"), this);
-    actCommandHidden->setStatusTip(tr("Set/UnSet File/Folder as Hidden"));
-    actCommandHidden->setCheckable(true);
-    actCommandHidden->setChecked(false);
+    mActReadOnly = new QAction(tr("Read Only"), this);
+    mActReadOnly->setStatusTip(tr("Set/UnSet File/Folder as Read Only"));
+    mActReadOnly->setIcon(QIcon(":/icons/lock.svg"));
+    mActReadOnly->setCheckable(true);
+    mActReadOnly->setChecked(false);
 
-    menuCommands->addAction(actCommandAddFile);
-    menuCommands->addAction(actCommandAddFolder);
-    menuCommands->addSeparator();
-    menuCommands->addAction(actCommandMakeAsset);
-    menuCommands->addSeparator();
-    menuCommands->addAction(actCommandRename);
-    menuCommands->addAction(actCommandReadOnly);
-    menuCommands->addAction(actCommandHidden);
-    menuCommands->addSeparator();
-    menuCommands->addAction(actCommandDelete);
+    mActHidden = new QAction(tr("Hidden"), this);
+    mActHidden->setStatusTip(tr("Set/UnSet File/Folder as Hidden"));
+    mActHidden->setCheckable(true);
+    mActHidden->setChecked(false);
 
-    actCommandAddFile->setEnabled(false);
-    actCommandAddFolder->setEnabled(false);
-    actCommandMakeAsset->setEnabled(false);
-    actCommandRefresh->setEnabled(false);
-    actCommandExtract->setEnabled(false);
-    actCommandDefrag->setEnabled(false);
-    actCommandDelete->setEnabled(false);
-    actCommandRename->setEnabled(false);
-    actCommandReadOnly->setEnabled(false);
-    actCommandHidden->setEnabled(false);
+    mMenu->addAction(mActAddFolder);
+    mMenu->addSeparator();
+    mMenu->addAction(mActImportFile);
+    mMenu->addAction(mActImportFolder);
+    mMenu->addSeparator();
+    mMenu->addAction(mActMakeAsset);
+    mMenu->addSeparator();
+    mMenu->addAction(mActRename);
+    mMenu->addAction(mActReadOnly);
+    mMenu->addAction(mActHidden);
+    mMenu->addSeparator();
+    mMenu->addAction(mActDelete);
 
-    connect(actCommandAddFile,      SIGNAL(triggered()), this, SLOT(onCommandAddFile()));
-    connect(actCommandAddFolder,    SIGNAL(triggered()), this, SLOT(onCommandAddFolder()));
-    connect(actCommandMakeAsset,    SIGNAL(triggered()), this, SLOT(onCommandMakeAsset()));
-    connect(actCommandRefresh,      SIGNAL(triggered()), this, SLOT(onCommandRefresh()));
-    connect(actCommandExtract,      SIGNAL(triggered()), this, SLOT(onCommandExtract()));
-    connect(actCommandDefrag,       SIGNAL(triggered()), this, SLOT(onCommandDefrag()));
-    connect(actCommandDelete,       SIGNAL(triggered()), this, SLOT(onCommandDelete()));
-    connect(actCommandRename,       SIGNAL(triggered()), this, SLOT(onCommandRename()));
-    connect(actCommandReadOnly,     SIGNAL(triggered()), this, SLOT(onCommandReadOnly()));
-    connect(actCommandHidden,       SIGNAL(triggered()), this, SLOT(onCommandHidden()));
+    mActAddFolder->setEnabled(false);
+    mActImportFile->setEnabled(false);
+    mActImportFolder->setEnabled(false);
+    mActMakeAsset->setEnabled(false);
+    mActRefresh->setEnabled(false);
+    mActExtract->setEnabled(false);
+    mActDefrag->setEnabled(false);
+    mActDelete->setEnabled(false);
+    mActRename->setEnabled(false);
+    mActReadOnly->setEnabled(false);
+    mActHidden->setEnabled(false);
 
-    toolBar = new QToolBar();
-    toolBar->setIconSize(QSize(16, 16));
-    toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    connect(mActAddFolder,      SIGNAL(triggered()),    this,   SLOT(onAddFolder()));
+    connect(mActImportFile,     SIGNAL(triggered()),    this,   SLOT(onImportFile()));
+    connect(mActImportFolder,   SIGNAL(triggered()),    this,   SLOT(onImportFolder()));
+    connect(mActMakeAsset,      SIGNAL(triggered()),    this,   SLOT(onMakeAsset()));
+    connect(mActRefresh,        SIGNAL(triggered()),    this,   SLOT(onRefresh()));
+    connect(mActExtract,        SIGNAL(triggered()),    this,   SLOT(onExtract()));
+    connect(mActDefrag,         SIGNAL(triggered()),    this,   SLOT(onDefrag()));
+    connect(mActDelete,         SIGNAL(triggered()),    this,   SLOT(onDelete()));
+    connect(mActRename,         SIGNAL(triggered()),    this,   SLOT(onRename()));
+    connect(mActReadOnly,       SIGNAL(triggered()),    this,   SLOT(onReadOnly()));
+    connect(mActHidden,         SIGNAL(triggered()),    this,   SLOT(onHidden()));
 
-    toolBar->addAction(actCommandRefresh);
-    toolBar->addSeparator();
-    toolBar->addAction(actCommandExtract);
-    toolBar->addAction(actCommandDefrag);
+    mToolBar = new QToolBar();
+    mToolBar->setIconSize(QSize(16, 16));
+    mToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    addFileFolderPath = "/";
+    mToolBar->addAction(mActRefresh);
+    mToolBar->addSeparator();
+    mToolBar->addAction(mActAddFolder);
+    mToolBar->addSeparator();
+    mToolBar->addAction(mActExtract);
+    mToolBar->addAction(mActDefrag);
+
+    mAddFileFolderPath = "/";
 }
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::~ProjectFilesViewWidget()
 {
-    delete menuCommands;
-    menuCommands = 0;
+    delete mMenu;
+    mMenu = 0;
 
-    delete toolBar;
-    toolBar = 0;
+    delete mToolBar;
+    mToolBar = 0;
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::prepareView()
 {
-    ofsWidget = new OfsTreeWidget(this, OfsTreeWidget::CAP_FULL_FUNCTIONS);
+    mOfsTreeWidget = new OfsTreeWidget(this, OfsTreeWidget::CAP_FULL_FUNCTIONS);
     
-    actCommandRefresh->setEnabled(true);
-    actCommandExtract->setEnabled(true);
-    actCommandDefrag->setEnabled(true);
+    mActRefresh->setEnabled(true);
+    mActAddFolder->setEnabled(true);
+    mActExtract->setEnabled(true);
+    mActDefrag->setEnabled(true);
 
-    vboxLayout->addWidget(toolBar, 0);
-    vboxLayout->addWidget(ofsWidget, 1);
+    mVBoxLayout->addWidget(mToolBar, 0);
+    mVBoxLayout->addWidget(mOfsTreeWidget, 1);
 
-    connect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
-    connect(ofsWidget, SIGNAL(customContextMenuRequested ( const QPoint &)), this, SLOT(ofsWidgetCustomContextMenuRequested ( const QPoint &)));
-    connect(ofsWidget, SIGNAL(busyState(bool)), this, SLOT(ofsWidgetBusyState(bool)));
+    connect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
+    connect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested ( const QPoint &)));
+    connect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::clearView()
 {
-    if(ofsWidget != 0)
+    if(mOfsTreeWidget != 0)
     {
-        disconnect(ofsWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
-        disconnect(ofsWidget, SIGNAL(customContextMenuRequested ( const QPoint &)), this, SLOT(ofsWidgetCustomContextMenuRequested ( const QPoint &)));
-        disconnect(ofsWidget, SIGNAL(busyState(bool)), this, SLOT(ofsWidgetBusyState(bool)));
+        disconnect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
+        disconnect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested ( const QPoint &)));
+        disconnect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
         
-        delete ofsWidget;
-        ofsWidget = 0;
+        delete mOfsTreeWidget;
+        mOfsTreeWidget = 0;
 
-        vboxLayout->removeWidget(toolBar);
+        mVBoxLayout->removeWidget(mToolBar);
     }
 
-    actCommandRefresh->setEnabled(false);
-    actCommandExtract->setEnabled(false);
-    actCommandDefrag->setEnabled(false);
+    mActRefresh->setEnabled(false);
+    mActAddFolder->setEnabled(false);
+    mActExtract->setEnabled(false);
+    mActDefrag->setEnabled(false);
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int column)
+void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
 {
     if(item != NULL)
     {
@@ -199,14 +212,16 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem * item, int colum
             if(!mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path))
                 mOgitorMainWindow->getGenericImageEditor()->displayImageFromFile(path);
         }
+        else
+            onRename();
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint & pos )
+void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint & pos)
 {
-    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
  
-    addFileFolderPath = "/";
+    mAddFileFolderPath = "/";
 
     if(selItems.size() > 0)
     {
@@ -214,28 +229,28 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
  
         if(path == "/")
         {
-            actCommandMakeAsset->setEnabled(false);
-            actCommandMakeAsset->setChecked(false);
-            actCommandReadOnly->setChecked(false);
-            actCommandHidden->setChecked(false);
-            actCommandReadOnly->setEnabled(false);
-            actCommandHidden->setEnabled(false);
-            actCommandRename->setEnabled(false);
-            actCommandDelete->setEnabled(false);
+            mActMakeAsset->setEnabled(false);
+            mActMakeAsset->setChecked(false);
+            mActReadOnly->setChecked(false);
+            mActHidden->setChecked(false);
+            mActReadOnly->setEnabled(false);
+            mActHidden->setEnabled(false);
+            mActRename->setEnabled(false);
+            mActDelete->setEnabled(false);
         }
         else
         {
             if(path.endsWith("/"))
-                addFileFolderPath = path.toStdString();
+                mAddFileFolderPath = path.toStdString();
 
-            actCommandMakeAsset->setEnabled(true);
-            actCommandMakeAsset->setChecked(false);
-            actCommandReadOnly->setChecked(true);
-            actCommandHidden->setChecked(true);
-            actCommandReadOnly->setEnabled(true);
-            actCommandHidden->setEnabled(true);
-            actCommandRename->setEnabled(true);
-            actCommandDelete->setEnabled(true);
+            mActMakeAsset->setEnabled(true);
+            mActMakeAsset->setChecked(false);
+            mActReadOnly->setChecked(true);
+            mActHidden->setChecked(true);
+            mActReadOnly->setEnabled(true);
+            mActHidden->setEnabled(true);
+            mActRename->setEnabled(true);
+            mActDelete->setEnabled(true);
         }
 
         OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
@@ -246,8 +261,10 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
         else
             file->getFileFlags(path.toStdString().c_str(), flags);
 
-        actCommandReadOnly->setChecked(flags & OFS::OFS_READONLY);
-        actCommandHidden->setChecked(flags & OFS::OFS_HIDDEN);
+        mActReadOnly->setChecked(flags & OFS::OFS_READONLY);
+        if(flags & OFS::OFS_READONLY)
+            mActReadOnly->setIcon(QIcon(":icons/unlock.svg"));
+        mActHidden->setChecked(flags & OFS::OFS_HIDDEN);
        
         Ogre::StringVector dirs = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories;
         Ogre::StringVector::iterator it;
@@ -255,45 +272,46 @@ void ProjectFilesViewWidget::ofsWidgetCustomContextMenuRequested( const QPoint &
         for(it = dirs.begin(); it != dirs.end(); it++)
         {
             if((*it) == path.toStdString())
-                actCommandMakeAsset->setChecked(true);
+                mActMakeAsset->setChecked(true);
         }
     }
     else
     {
-        actCommandMakeAsset->setEnabled(false);
-        actCommandMakeAsset->setChecked(false);
-        actCommandReadOnly->setChecked(false);
-        actCommandHidden->setChecked(false);
-        actCommandReadOnly->setEnabled(false);
-        actCommandHidden->setEnabled(false);
-        actCommandRename->setEnabled(false);
-        actCommandDelete->setEnabled(false);
+        mActMakeAsset->setEnabled(false);
+        mActMakeAsset->setChecked(false);
+        mActReadOnly->setChecked(false);
+        mActHidden->setChecked(false);
+        mActReadOnly->setEnabled(false);
+        mActHidden->setEnabled(false);
+        mActRename->setEnabled(false);
+        mActDelete->setEnabled(false);
     }
 
-    actCommandAddFile->setEnabled(true);
-    actCommandAddFolder->setEnabled(true);
+    mActImportFile->setEnabled(true);
+    mActImportFolder->setEnabled(true);
 
-    QPoint globalPos = ofsWidget->mapToGlobal(pos);
-    menuCommands->exec( globalPos );
+    QPoint globalPos = mOfsTreeWidget->mapToGlobal(pos);
+    mMenu->exec( globalPos );
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::ofsWidgetBusyState(bool state)
+void ProjectFilesViewWidget::onOfsWidgetBusyState(bool state)
 {
-    actCommandAddFile->setEnabled(!state);
-    actCommandAddFolder->setEnabled(!state);
-    actCommandRefresh->setEnabled(!state);
-    actCommandExtract->setEnabled(!state);
-    actCommandDefrag->setEnabled(!state);
+    mActAddFolder->setEnabled(!state);
+    mActImportFile->setEnabled(!state);
+    mActImportFolder->setEnabled(!state);
+    mActRefresh->setEnabled(!state);
+    mActExtract->setEnabled(!state);
+    mActDefrag->setEnabled(!state);
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandRefresh()
+void ProjectFilesViewWidget::onRefresh()
 {
-    ofsWidget->refreshWidget();
+    mOfsTreeWidget->refreshWidget();
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandExtract()
+void ProjectFilesViewWidget::onExtract()
 {
-    ofsWidget->extractFiles();
+    mOfsTreeWidget->extractFiles();
 }
 //----------------------------------------------------------------------------------------
 void ofsCallback(std::string msg)
@@ -301,7 +319,7 @@ void ofsCallback(std::string msg)
     mOgitorMainWindow->updateLog(new QListWidgetItem(msg.c_str(), 0, 2));
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandDefrag()
+void ProjectFilesViewWidget::onDefrag()
 {
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
@@ -310,7 +328,7 @@ void ProjectFilesViewWidget::onCommandDefrag()
         QString fileName = ofsFile->getFileSystemName().c_str();
         QString tmpFile = fileName + ".tmp";
         
-        // Step-1 defrag the file to temp file
+        // Step-1 defragment the file to temp file
         OFS::LogCallBackFunction callback = ofsCallback;
         ofsFile->defragFileSystemTo(tmpFile.toStdString().c_str(), &callback);
         // Step-2 make the temp file active file, so that we can overwrite the original file
@@ -320,14 +338,14 @@ void ProjectFilesViewWidget::onCommandDefrag()
         // Step-4 remove temp file
         QFile::remove(tmpFile);
 
-        ofsWidget->refreshWidget();
+        mOfsTreeWidget->refreshWidget();
         mOgitorMainWindow->scrollLogToBottom();
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandDelete()
+void ProjectFilesViewWidget::onDelete()
 {
-    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     if(selItems.size() > 0 && ofsFile.valid())
@@ -344,14 +362,14 @@ void ProjectFilesViewWidget::onCommandDelete()
                     ofsFile->deleteFile(name.toStdString().c_str());
             }
             
-            ofsWidget->refreshWidget();            
+            mOfsTreeWidget->refreshWidget();            
         }
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandRename()
+void ProjectFilesViewWidget::onRename()
 {
-    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     if(selItems.size() == 1 && ofsFile.valid())
@@ -368,14 +386,14 @@ void ProjectFilesViewWidget::onCommandRename()
             else
                 ofsFile->renameFile(name.toStdString().c_str(), text.toStdString().c_str());
             
-            ofsWidget->refreshWidget();            
+            mOfsTreeWidget->refreshWidget();            
         } 
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandReadOnly()
+void ProjectFilesViewWidget::onReadOnly()
 {
-    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     if(selItems.size() > 0 && ofsFile.valid())
@@ -390,7 +408,7 @@ void ProjectFilesViewWidget::onCommandReadOnly()
             {
                 ofsFile->getDirFlags(name.toStdString().c_str(), new_flag);
                 
-                if(actCommandReadOnly->isChecked())
+                if(mActReadOnly->isChecked())
                     new_flag |= OFS::OFS_READONLY;
                 else
                     new_flag &= ~OFS::OFS_READONLY;
@@ -401,7 +419,7 @@ void ProjectFilesViewWidget::onCommandReadOnly()
             {
                 ofsFile->getFileFlags(name.toStdString().c_str(), new_flag);
                 
-                if(actCommandReadOnly->isChecked())
+                if(mActReadOnly->isChecked())
                     new_flag |= OFS::OFS_READONLY;
                 else
                     new_flag &= ~OFS::OFS_READONLY;
@@ -410,13 +428,13 @@ void ProjectFilesViewWidget::onCommandReadOnly()
             }
         }
             
-        ofsWidget->refreshWidget();            
+        mOfsTreeWidget->refreshWidget();            
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandHidden()
+void ProjectFilesViewWidget::onHidden()
 {
-    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     if(selItems.size() > 0 && ofsFile.valid())
@@ -431,7 +449,7 @@ void ProjectFilesViewWidget::onCommandHidden()
             {
                 ofsFile->getDirFlags(name.toStdString().c_str(), new_flag);
                 
-                if(actCommandHidden->isChecked())
+                if(mActHidden->isChecked())
                     new_flag |= OFS::OFS_HIDDEN;
                 else
                     new_flag &= ~OFS::OFS_HIDDEN;
@@ -442,7 +460,7 @@ void ProjectFilesViewWidget::onCommandHidden()
             {
                 ofsFile->getFileFlags(name.toStdString().c_str(), new_flag);
                 
-                if(actCommandHidden->isChecked())
+                if(mActHidden->isChecked())
                     new_flag |= OFS::OFS_HIDDEN;
                 else
                     new_flag &= ~OFS::OFS_HIDDEN;
@@ -451,33 +469,33 @@ void ProjectFilesViewWidget::onCommandHidden()
             }
         }
             
-        ofsWidget->refreshWidget();            
+        mOfsTreeWidget->refreshWidget();            
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandAddFolder()
+void ProjectFilesViewWidget::onImportFolder()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
     Ogre::String folderName = mSystem->DisplayDirectorySelector(OTR("Choose folder to import"));
 
     QStringList folders(folderName.c_str());
     if(!folders.empty())
-        ofsWidget->addFiles(addFileFolderPath.c_str(), folders);
+        mOfsTreeWidget->addFiles(mAddFileFolderPath.c_str(), folders);
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandAddFile()
+void ProjectFilesViewWidget::onImportFile()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
     Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose folder to import"), Ogitors::UTFStringVector());
 
     QStringList files(fileName.c_str());
     if(!files.empty())
-        ofsWidget->addFiles(addFileFolderPath.c_str(), files);
+        mOfsTreeWidget->addFiles(mAddFileFolderPath.c_str(), files);
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onCommandMakeAsset()
+void ProjectFilesViewWidget::onMakeAsset()
 {
-    QList<QTreeWidgetItem*> selItems = ofsWidget->selectedItems();
+    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
     QString name = selItems[0]->whatsThis(0);
     bool found = false;
 
@@ -506,5 +524,34 @@ void ProjectFilesViewWidget::onCommandMakeAsset()
     // Send event so that all listening plugins get notified as well and can update their views
     Ogitors::GlobalPrepareViewEvent evt;
     Ogitors::EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onAddFolder()
+{
+    QString selectItemName = mOfsTreeWidget->getSelected().c_str();
+    QString newFolderName;
+
+    // Search until a yet unused name has been found.
+    bool nameFound = false;
+    int i = 0;
+    while(nameFound == false)
+    {
+        newFolderName = QString("### NewFolder ").append(QString::number(i));
+        if(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).size() == 0)
+            nameFound = true;
+        else
+            i++;
+    }    
+    
+    // If current selected item is a folder, create a subfolder. Otherwise create
+    // the new folder as a sibling of the selected item.
+    if(selectItemName.right(1) == "/")
+        mOfsTreeWidget->addEmptyFolder(selectItemName, newFolderName);
+    else
+    {
+        selectItemName = selectItemName.right(selectItemName.size() - (selectItemName.lastIndexOf("/") + 1));
+        QString parentName = mOfsTreeWidget->findItems(selectItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
+        mOfsTreeWidget->addEmptyFolder(parentName, newFolderName);
+    }
 }
 //----------------------------------------------------------------------------------------
