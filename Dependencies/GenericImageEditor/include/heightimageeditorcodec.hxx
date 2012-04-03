@@ -42,7 +42,7 @@ class HeightImageEditorCodec : public IImageEditorCodec
 public:
     HeightImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon);
 
-    QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream);
+    QPixmap     onBeforeDisplay(Ogre::DataStreamPtr stream);
     QString     onToolTip(QMouseEvent* event);
 };
 

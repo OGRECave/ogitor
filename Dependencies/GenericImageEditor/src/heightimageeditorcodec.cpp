@@ -104,7 +104,7 @@ IImageEditorCodec(genImgEdDoc, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
-QPixmap* HeightImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
+QPixmap HeightImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
 {
     double file_len = stream->size() / 4;
 
@@ -145,10 +145,10 @@ QPixmap* HeightImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     else
         memset(buf, 0xFF, map_size * map_size * 4);
 
-    mImage = QImage((unsigned char *)buf, map_size, map_size, QImage::Format_ARGB32);
-    QPixmap *pixmap = new QPixmap(QPixmap::fromImage(mImage));
+    QImage image = QImage((unsigned char *)buf, map_size, map_size, QImage::Format_ARGB32);
+    mPixmap = QPixmap(QPixmap::fromImage(image));
 
-    return pixmap;
+    return mPixmap;
 }
 //-----------------------------------------------------------------------------------------
 QString HeightImageEditorCodec::onToolTip(QMouseEvent* event)

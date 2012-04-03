@@ -78,7 +78,7 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
 
     mMainToolBar = new QToolBar();
     mMainToolBar->setObjectName("renderwindowtoolbar");
-    mMainToolBar->setIconSize(QSize(20,20));
+    mMainToolBar->setIconSize(QSize(20, 20));
     mMainToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     mMainToolBar->addAction(mActSave);
     mMainToolBar->addSeparator();
@@ -367,15 +367,13 @@ void GenericTextEditor::tabChanged(int index)
         document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
         document->getCodec()->onTabChange();
 
-        bool retv;
-
         connect(mActSave, SIGNAL(triggered()), document, SLOT(save()));
         connect(mActEditCut, SIGNAL(triggered()), document, SLOT(cut()));
         connect(mActEditCopy, SIGNAL(triggered()), document, SLOT(copy()));
         connect(mActEditPaste, SIGNAL(triggered()), document, SLOT(paste()));
-        retv = connect(document, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
-        retv = connect(document, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
-        retv = connect(document, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+        connect(document, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+        connect(document, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+        connect(document, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
         mActSave->setEnabled(document->isTextModified());
         mActEditCut->setEnabled(false);
         mActEditCopy->setEnabled(false);

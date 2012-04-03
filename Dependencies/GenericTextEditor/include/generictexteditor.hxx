@@ -36,7 +36,16 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-#include <QtGui/QtGui>
+#include <QtGui/QScrollArea>
+#include <QtGui/QWidget>
+#include <QtGui/QPlainTextEdit>
+#include <QtGui/QScrollBar>
+#include <QtGui/QMdiArea>
+#include <QtGui/QMdiSubWindow>
+#include <QtGui/QToolBar>
+#include <QtGui/QStringListModel>
+#include <QtGui/QCompleter>
+#include <QtGui/QAction>
 
 #include "Ogitors.h"
 #include "OgreSingleton.h"
@@ -118,18 +127,15 @@ private slots:
     void                            closeTab(int index);
 
 private:
-     static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;
-     
-     GenericTextEditorDocument* mLastDocument;
-     
-     QTabWidget* mParentTabWidget;
-     bool        mAllowDoubleDisplay;
-  
-     QToolBar*   mMainToolBar;
-     QAction*    mActSave;
-     QAction*    mActEditCut;
-     QAction*    mActEditCopy;
-     QAction*    mActEditPaste;
+     static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;   
+     QTabWidget*                            mParentTabWidget;
+     bool                                   mAllowDoubleDisplay;
+     GenericTextEditorDocument*             mLastDocument;
+     QToolBar*                              mMainToolBar;
+     QAction*                               mActSave;
+     QAction*                               mActEditCut;
+     QAction*                               mActEditCopy;
+     QAction*                               mActEditPaste;
 };
 
 //-----------------------------------------------------------------------------------------

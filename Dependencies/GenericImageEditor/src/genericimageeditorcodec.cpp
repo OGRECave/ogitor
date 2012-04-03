@@ -38,7 +38,7 @@ IImageEditorCodec(genImgEdDoc, docName, documentIcon)
 {
 }
 //-----------------------------------------------------------------------------------------
-QPixmap* GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
+QPixmap GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
 {
     Ogre::Image image;
     image.load(stream);
@@ -51,17 +51,19 @@ QPixmap* GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
 
     Ogre::PixelUtil::bulkPixelConversion(image.getPixelBox(), pb);
 
-    mImage = QImage(mBuffer, w, h, QImage::Format_ARGB32);
-    QPixmap *pixmap = new QPixmap(QPixmap::fromImage(mImage));
+    QImage tmpImage = QImage(mBuffer, w, h, QImage::Format_ARGB32);
+    mPixmap = QPixmap(QPixmap::fromImage(tmpImage));
 
-    return pixmap;
+    return mPixmap;
 }
 //-----------------------------------------------------------------------------------------
 QString GenericImageEditorCodec::onToolTip(QMouseEvent* event)
 {
-    QPoint pos = event->pos();
-    QColor rgb = mImage.pixel(pos);
-    return QString("X: %1 Y: %2\nR: %3 G: %4 B: %5").arg(event->pos().x()).arg(event->pos().y())
+    QPoint pos = event->pos() / mScaleFactor;
+    // Read the pixel in question from the pixmap into a 1x1 pixel image
+    QImage image = mPixmap.copy(pos.x(), pos.y(), 1, 1).toImage();
+    QColor rgb = image.pixel(0, 0);
+    return QString("X: %1 Y: %2\nR: %3 G: %4 B: %5").arg(pos.x()).arg(pos.y())
         .arg(rgb.red()).arg(rgb.green()).arg(rgb.blue());
 }
 //-----------------------------------------------------------------------------------------

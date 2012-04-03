@@ -42,8 +42,8 @@ class GenericImageEditorCodec : public IImageEditorCodec
 public:
     GenericImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon);
 
-    QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream);
-    QString     onToolTip(QMouseEvent* event);   
+    QPixmap     onBeforeDisplay(Ogre::DataStreamPtr stream);
+    QString     onToolTip(QMouseEvent* event);  
 };
 
 //----------------------------------------------------------------------------------------

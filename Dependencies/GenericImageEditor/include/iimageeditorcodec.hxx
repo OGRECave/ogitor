@@ -34,9 +34,10 @@
 #define I_IMAGE_EDITOR_CODEC_HXX
 
 #include <QtCore/QString>
+
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QScrollArea>
+#include <QtGui/QToolBar>
 
 #include <Ogre.h>
 
@@ -51,10 +52,11 @@ class IImageEditorCodec
 public:
     IImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon)
     {
-        mGenImgEdDoc        = genImgEdDoc;
-        mDocName            = docName;
-        mDocumentIcon       = documentIcon;
-        mBuffer             = 0;
+        mGenImgEdDoc            = genImgEdDoc;
+        mDocName                = docName;
+        mDocumentIcon           = documentIcon;
+        mBuffer                 = 0;
+        mScaleFactor            = 1.0f;
     }
 
     virtual ~IImageEditorCodec()
@@ -68,7 +70,7 @@ public:
     * @param stream data stream of the image
     * @return the pixmap that is now going to be displayed.               
     */
-    virtual QPixmap*    onBeforeDisplay(Ogre::DataStreamPtr stream) = 0;
+    virtual QPixmap     onBeforeDisplay(Ogre::DataStreamPtr stream) = 0;
 
     /**
     * Called after the content was displayed for the first time            
@@ -95,6 +97,15 @@ public:
     * Called whenever the image this codec instance is attached to is made visible due to a tab change.
     */
     virtual void        onTabChange(){};
+    
+    /**
+    * Called whenever the image is scaled.
+    */
+    virtual QPixmap     onScaleImage(float scaleFactor)
+    {
+        mScaleFactor *= scaleFactor;
+        return mPixmap.scaled(mScaleFactor * mPixmap.size());
+    }
 
     /**
     * Called whenever the image this codec instance is attached to is being closed. At this stage 
@@ -103,14 +114,22 @@ public:
     */
     virtual void        onClose(){};
 
+    /**
+    * Returns a custom toolbar instance for this codec.
+    */
+    virtual QToolBar*   getCustomToolBar(){return 0;};
+
+    QPixmap             getPixmap(){return mPixmap;}
     QString             getDocumentIcon(){return mDocumentIcon;}
+    float               getScaleFactor(){return mScaleFactor;}
 
 protected:
     GenericImageEditorDocument*     mGenImgEdDoc;
     unsigned char*                  mBuffer;
-    QImage                          mImage;
+    QPixmap                         mPixmap;
     QString                         mDocName;
     QString                         mDocumentIcon;
+    float                           mScaleFactor;
 };
 
 //----------------------------------------------------------------------------------------
