@@ -261,6 +261,10 @@ mark_as_advanced(
     OGITOR_LIBOGREOFSPLUGIN_PATH
 )
 
+# Error ouot if old Media folder is detected
+if(UNIX AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media/EditorResources)
+  message(SEND_ERROR "An old version of the Media folder was detected in: ${CMAKE_CURRENT_SOURCE_DIR}/RunPath .\nMake sure that you've downloaded the latest version of 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
+endif()
 # Error out if Source_Dir/RunPath/Media and Source_Dir/RunPath/Projects isn't present on the users system
 if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
   message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media.\nMake sure that you've downloaded 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
