@@ -183,7 +183,7 @@ void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mVCEnable              , "vclouds::enable"             , bool,                 true,                                   0, SETTER(bool,                 CSkyxEditor, _setVCEnable));
     PROPERTY_PTR(mVCAutoUpdate          , "vclouds::autoupdate"         , bool,                 false,                                  0, SETTER(bool,                 CSkyxEditor, _setVCAutoUpdate));
     PROPERTY_PTR(mVCWindSpeed           , "vclouds::windspeed"          , Ogre::Real,           80,                                     0, SETTER(Ogre::Real,           CSkyxEditor, _setVCWindSpeed));
-    PROPERTY_PTR(mVCWindDirection       , "vclouds::winddirection"      , Ogre::Real,           0,                                      0, SETTER(Ogre::Real,           CSkyxEditor, _setVCWindDirection));
+    PROPERTY_PTR(mVCWindDirection       , "vclouds::winddirection"      , int,                  0,                                      0, SETTER(int,                  CSkyxEditor, _setVCWindDirection));
     PROPERTY_PTR(mVCNoiseScale          , "vclouds::noisescale"         , Ogre::Real,           4.2f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setVCNoiseScale));
     PROPERTY_PTR(mVCAmbientColor        , "vclouds::ambientcolor"       , Ogre::ColourValue,    Ogre::ColourValue(0.6f, 0.6f, 0.7f),    0, SETTER(Ogre::ColourValue,    CSkyxEditor, _setVCAmbientColor));
     PROPERTY_PTR(mVCLightReponse        , "vclouds::lightresponse"      , Ogre::Vector4,        Ogre::Vector4(0.3f, 0.2f, 0.9f, 0.1f),  0, SETTER(Ogre::Vector4,        CSkyxEditor, _setVCLightResponse));
@@ -358,9 +358,9 @@ bool CSkyxEditor::_setVCWindSpeed(OgitorsPropertyBase* property, const Ogre::Rea
     return true;
 }
 //-----------------------------------------------------------------------------------------
-bool CSkyxEditor::_setVCWindDirection(OgitorsPropertyBase* property, const Ogre::Real& value)
+bool CSkyxEditor::_setVCWindDirection(OgitorsPropertyBase* property, const int& value)
 {
-    mHandle->getVCloudsManager()->getVClouds()->setWindDirection(Ogre::Degree(value));
+    mHandle->getVCloudsManager()->getVClouds()->setWindDirection(Ogre::Degree(Ogre::Real(value)));
     return true;
 }
 //----------------------------------------------------------------------------
@@ -499,7 +499,7 @@ CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     AddPropertyDefinition("vclouds::autoupdate",                        "Volumetric Clouds::Auto Update",       "", PROP_BOOL);
     AddPropertyDefinition("vclouds::noisescale",                        "Volumetric Clouds::Noise Scale",       "", PROP_REAL);
     AddPropertyDefinition("vclouds::windspeed",                         "Volumetric Clouds::Wind Speed",        "", PROP_REAL);
-    definition = AddPropertyDefinition("vclouds::winddirection",        "Volumetric Clouds::Wind Direction",    "", PROP_REAL);
+    definition = AddPropertyDefinition("vclouds::winddirection",        "Volumetric Clouds::Wind Direction",    "", PROP_INT);
     definition->setRange(Ogre::Any(0), Ogre::Any(360));
     AddPropertyDefinition("vclouds::noisescale",                        "Volumetric Clouds::Noise Scale",       "", PROP_REAL);
     definition = AddPropertyDefinition("vclouds::ambientcolor",         "Volumetric Clouds::Ambient Color",     "", PROP_COLOUR);
@@ -535,7 +535,6 @@ CBaseEditorFactory *CSkyxEditorFactory::duplicate(OgitorsView *view)
 CBaseEditor *CSkyxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)
 {
   OgitorsRoot *ogroot = OgitorsRoot::getSingletonPtr();
-  Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
   Ogre::String value = "/SkyX";
   OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
     

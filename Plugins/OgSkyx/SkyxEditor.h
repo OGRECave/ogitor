@@ -99,7 +99,7 @@ namespace Ogitors
         OgitorsProperty<bool>               *mVCEnable;
         OgitorsProperty<bool>               *mVCAutoUpdate;
         OgitorsProperty<Ogre::Real>         *mVCWindSpeed;
-        OgitorsProperty<Ogre::Real>         *mVCWindDirection;
+        OgitorsProperty<int>                *mVCWindDirection;
         OgitorsProperty<Ogre::Real>         *mVCNoiseScale;
         OgitorsProperty<Ogre::ColourValue>  *mVCAmbientColor;
         OgitorsProperty<Ogre::Vector4>      *mVCLightReponse;
@@ -137,7 +137,7 @@ namespace Ogitors
         bool _setVCEnable(OgitorsPropertyBase* property, const bool& value);
         bool _setVCAutoUpdate(OgitorsPropertyBase* property, const bool& value);
         bool _setVCWindSpeed(OgitorsPropertyBase* property, const Ogre::Real& value);
-        bool _setVCWindDirection(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setVCWindDirection(OgitorsPropertyBase* property, const int& value);
         bool _setVCNoiseScale(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setVCAmbientColor(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
         bool _setVCLightResponse(OgitorsPropertyBase* property, const Ogre::Vector4& value);
