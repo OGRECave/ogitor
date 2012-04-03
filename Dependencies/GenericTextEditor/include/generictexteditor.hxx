@@ -168,6 +168,8 @@ public:
     inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
     inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
     inline QFile* getFile(){return &mFile;};
+    inline void setInitialDisplay(bool initial){mInitialDisplay = initial;};
+    inline bool isIntialDisplay(){return mInitialDisplay;};
 
 public slots:
     void save();
@@ -200,6 +202,7 @@ protected:
     QWidget*            mLineNumberArea;
     QCompleter*         mCompleter;
     bool                mTextModified;
+    bool                mInitialDisplay;
 };
 
 //-----------------------------------------------------------------------------------------

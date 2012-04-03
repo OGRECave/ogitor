@@ -29,24 +29,45 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifndef MATERIAL_HIGHLIGHTER_HXX
-#define MATERIAL_HIGHLIGHTER_HXX
 
-#include <QtGui/QWidget>
+#ifndef XML_TEXT_EDITOR_CODEC_HXX
+#define XML_TEXT_EDITOR_CODEC_HXX
+
+#include "itexteditorcodec.hxx"
+
 #include <QtGui/QSyntaxHighlighter>
-#include <QtGui/QTextCharFormat>
-#include <QtGui/QStringListModel>
-#include <QtGui/QTextObjectInterface>
 
-//-----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 
-class MaterialHighlighter : public QSyntaxHighlighter
+class GenericTextEditorDocument;
+
+//----------------------------------------------------------------------------------------
+
+class XMLTextEditorCodec : public ITextEditorCodec
+{
+public:
+    XMLTextEditorCodec(GenericTextEditorDocument* genTexEdDoc, QString docName, QString documentIcon);
+
+    QString onBeforeDisplay(QString text);
+    void    onAddHighlighter();
+};
+
+//----------------------------------------------------------------------------------------
+
+class XMLTextEditorCodecFactory : public ITextEditorCodecFactory
+{
+public:
+    ITextEditorCodec* create(GenericTextEditorDocument* genImgEdDoc, QString docName);
+};
+
+//----------------------------------------------------------------------------------------
+
+class XMLHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 
 public:
-    MaterialHighlighter(QStringListModel* keywords, QStringListModel* enums, QStringListModel* dataTypes, 
-                        QTextDocument *parent = 0);
+    XMLHighlighter(QTextDocument *parent = 0);
 
     struct HighlightingRule
     {
@@ -60,23 +81,20 @@ protected:
 private:
     void _highlightSimpleRegexList(const QString text, const QVector<HighlightingRule> rules);
 
-    QVector<HighlightingRule> keywordRules;
-    QVector<HighlightingRule> enumRules;
-    QVector<HighlightingRule> dataTypeRules;
     QVector<HighlightingRule> formatRules;
-    QVector<HighlightingRule> valueRules;
 
     QRegExp commentStartExpression;
     QRegExp commentEndExpression;
 
-    QTextCharFormat keywordFormat;
-    QTextCharFormat commentFormat;
-    QTextCharFormat textureFormat;
-    QTextCharFormat enumFormat;
-    QTextCharFormat dataTypeFormat;
-    QTextCharFormat stringFormat;
+    QTextCharFormat tagAngleBracketFormat;
+    QTextCharFormat tagKeyFormat;
+    QTextCharFormat nameSpaceFormat;
+    QTextCharFormat xmlCommentFormat;
+    QTextCharFormat xmlDefinitionFormat;
 };
 
 //-----------------------------------------------------------------------------------------
 
 #endif
+
+//----------------------------------------------------------------------------------------

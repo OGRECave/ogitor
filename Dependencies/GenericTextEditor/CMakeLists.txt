@@ -19,17 +19,20 @@ else(NOT QT4_FOUND)
         ./include/generictexteditor.hxx
         ./include/itexteditorcodec.hxx
         ./include/generictexteditorcodec.hxx
+	   ./include/xmltexteditorcodec.hxx
     )
 
     set(SOURCE_FILES
         ./src/generictexteditor.cpp
         ./src/generictexteditorcodec.cpp
+	   ./src/xmltexteditorcodec.cpp
     )
 
     SET(MOC_SRCS2
         ./include/generictexteditor.hxx
         ./include/itexteditorcodec.hxx
         ./include/generictexteditorcodec.hxx
+	   ./include/xmltexteditorcodec.hxx
     )
 
     qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})
