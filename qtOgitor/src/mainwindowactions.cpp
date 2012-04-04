@@ -127,37 +127,30 @@ void MainWindow::addActions()
     actScale->setStatusTip(tr("Scale"));
     actScale->setIcon( QIcon( ":/icons/scale.svg"));
     actScale->setShortcut(QKeySequence("Alt+S"));
-    actScale->setCheckable(true);
 
     actDeform = new QAction(tr("Deform"), this);
     actDeform->setStatusTip(tr("Deform"));
     actDeform->setIcon( QIcon( ":/icons/deform.svg"));
-    actDeform->setCheckable(true);
 
     actSmooth = new QAction(tr("Smooth"), this);
     actSmooth->setStatusTip(tr("Smooth"));
     actSmooth->setIcon( QIcon( ":/icons/smooth.svg"));
-    actSmooth->setCheckable(true);
 
     actSplat = new QAction(tr("Splat"), this);
     actSplat->setStatusTip(tr("Splat"));
     actSplat->setIcon( QIcon( ":/icons/splat.svg"));
-    actSplat->setCheckable(true);
 
     actSplatGrass = new QAction(tr("Splat Grass"), this);
     actSplatGrass->setStatusTip(tr("Splat Grass"));
     actSplatGrass->setIcon( QIcon( ":/icons/splatgrass.svg"));
-    actSplatGrass->setCheckable(true);
 
     actPaint = new QAction(tr("Paint"), this);
     actPaint->setStatusTip(tr("Paint"));
     actPaint->setIcon( QIcon( ":/icons/paint.svg"));
-    actPaint->setCheckable(true);
 
     actReLight = new QAction(tr("Re-Light"), this);
     actReLight->setStatusTip(tr("Re-Calculate Lighting"));
     actReLight->setIcon( QIcon( ":/icons/relight.svg"));
-    actReLight->setCheckable(false);
 
     actAbout = new QAction(tr("About"), this);
     actAbout->setStatusTip(tr("About qtOgitor"));
@@ -480,6 +473,14 @@ void MainWindow::updateLoadTerminateActions(bool loaded)
         actUndo->setEnabled(false);
         actRedo->setEnabled(false);
         actToggleWalkAround->setEnabled(false);
+        actScale->setEnabled(false);
+        actDeform->setEnabled(false);
+        actSmooth->setEnabled(false);
+        actSplat->setEnabled(false);
+        actSplatGrass->setEnabled(false);
+        actPaint->setEnabled(false);
+        actReLight->setEnabled(false);
+
 
         for(int i = 0;i < 10;i++)
             menuCameraPositions[i]->setEnabled(false);
