@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+	<assistant>
+		<title>Ogitor Help</title>
+		<startPage>qthelp://ogitor/doc/index.html</startPage>
+		<homePage>qthelp://ogitor/doc/index.html</homePage>
+		<currentFilter>Ogitor Help 0.4.3</currentFilter>
+		<applicationIcon>ogicon.png</applicationIcon>
+		<enableFilterFunctionality>true</enableFilterFunctionality>
+		<enableDocumentationManager>true</enableDocumentationManager>
+		<enableAddressBar visible="false">true</enableAddressBar>
+		<cacheDirectory>ogitor</cacheDirectory>
+		<aboutMenuText>
+			<text>About Ogitor</text>
+		</aboutMenuText>
+		<aboutDialog>
+			<file>about.txt</file>
+			<icon>ogitor.png</icon>
+		</aboutDialog>
+	</assistant>
+	<docFiles>
+		<generate>
+			<file>
+				<input>ogitor.qhp</input>
+				<output>ogitor.qch</output>
+			</file>
+		</generate>
+		<register>
+			<file>ogitor.qch</file>
+		</register>
+	</docFiles>
+</QHelpCollectionProject>
