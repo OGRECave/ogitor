@@ -267,9 +267,15 @@ void CTerrainGroupEditor::_splat(CTerrainPageEditor *handle, Ogre::Vector3 &edit
 
     mLayer = handle->_getLayerID(mTextureDiffuse, mTextureNormal, mEditDirection);
 
-    if(mLayer < 1)
+    if(mLayer == -1)
     {
-        Ogre::String msg = handle->getName() + " already has maximum number of supported layers...";
+        Ogre::String msg = handle->getName() + " already has the maximum number of supported texture layers.";
+        mSystem->DisplayMessageDialog(OTR(msg), DLGTYPE_OK);
+        return;
+    }
+    else if(mLayer == 0)
+    {
+        Ogre::String msg = "You cannot use that texture pn " + handle->getName() + " since that is already the texture of the base layer.";
         mSystem->DisplayMessageDialog(OTR(msg), DLGTYPE_OK);
         return;
     }
