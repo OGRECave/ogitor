@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=0.3.0b
+Comment=qtOgitor OGRE Scene Builder
+Exec=qtOgitor
+GenericName=qtOgitor
+Icon=qtOgitor
+Name=qtOgitor
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Qt;
+MimeType=application/x-qtogitor;
