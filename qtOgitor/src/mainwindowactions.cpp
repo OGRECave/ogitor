@@ -735,6 +735,9 @@ void MainWindow::saveSceneAs()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSelect()
 {
+    if (!actSelect->isChecked()) {
+        actSelect->setChecked(true);
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SELECT);
@@ -744,6 +747,10 @@ void MainWindow::setToolSelect()
 //------------------------------------------------------------------------------
 void MainWindow::setToolMove()
 {
+    if (!actMove->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_MOVE);
@@ -753,6 +760,10 @@ void MainWindow::setToolMove()
 //------------------------------------------------------------------------------
 void MainWindow::setToolRotate()
 {
+    if (!actRotate->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_ROTATE);
@@ -762,6 +773,10 @@ void MainWindow::setToolRotate()
 //------------------------------------------------------------------------------
 void MainWindow::setToolScale()
 {
+    if (!actScale->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SCALE);
@@ -771,6 +786,10 @@ void MainWindow::setToolScale()
 //------------------------------------------------------------------------------
 void MainWindow::setToolDeform()
 {
+    if (!actDeform->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_DEFORM);
@@ -779,6 +798,10 @@ void MainWindow::setToolDeform()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSmooth()
 {
+    if (!actSmooth->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SMOOTH);
@@ -787,6 +810,10 @@ void MainWindow::setToolSmooth()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSplat()
 {
+    if (!actSplat->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SPLAT);
@@ -795,6 +822,10 @@ void MainWindow::setToolSplat()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSplatGrass()
 {
+    if (!actSplatGrass->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SPLATGRASS);
@@ -803,6 +834,10 @@ void MainWindow::setToolSplatGrass()
 //------------------------------------------------------------------------------
 void MainWindow::setToolPaint()
 {
+    if (!actPaint->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_PAINT);
