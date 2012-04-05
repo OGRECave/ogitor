@@ -220,7 +220,7 @@ void CTerrainGroupEditor::setBrushSize(unsigned int size)
         mDecalFrustum->setNearClipDistance(ratio);
         mDecalFrustum->setOrthoWindow(ratio, ratio);
         
-        setBrushName(mBrushName);
+        //setBrushName(mBrushName);
     }
 }
 //-----------------------------------------------------------------------------------------
