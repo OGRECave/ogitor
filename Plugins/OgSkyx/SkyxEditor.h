@@ -90,16 +90,22 @@ namespace Ogitors
         OgitorsProperty<Ogre::Real>         *mRayleighMultiplier;
         OgitorsProperty<Ogre::Real>         *mMieMultiplier;
         OgitorsProperty<Ogre::Real>         *mSunIntensity;
-        OgitorsProperty<Ogre::Vector3>      *mWaveLength;
+        OgitorsProperty<Ogre::ColourValue>  *mWaveLength;
         OgitorsProperty<Ogre::Real>         *mG;        
         OgitorsProperty<Ogre::Real>         *mExposure;        
         OgitorsProperty<int>                *mSampleCount; 
 
+        // SkyX Moon parameters
+        OgitorsProperty<Ogre::Real>         *mMoonSize;
+        OgitorsProperty<Ogre::Real>         *mMoonHaloIntensity;
+        OgitorsProperty<Ogre::Real>         *mMoonHaloStrength;
+
         // SkyX Volumetric Clouds parameters
         OgitorsProperty<bool>               *mVCEnable;
         OgitorsProperty<bool>               *mVCAutoUpdate;
-        OgitorsProperty<Ogre::Real>         *mVCWindSpeed;
+        OgitorsProperty<int>                *mVCWindSpeed;
         OgitorsProperty<int>                *mVCWindDirection;
+        OgitorsProperty<Ogre::Real>         *mVCCloudScale;
         OgitorsProperty<Ogre::Real>         *mVCNoiseScale;
         OgitorsProperty<Ogre::ColourValue>  *mVCAmbientColor;
         OgitorsProperty<Ogre::Vector4>      *mVCLightReponse;
@@ -119,6 +125,12 @@ namespace Ogitors
 
         bool _setOptionsTimeMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
 
+        // SkyX Basic Controller parameters
+        bool _setOptionsTime(OgitorsPropertyBase* property, const Ogre::Vector3& value);
+        bool _setOptionsEastPosition(OgitorsPropertyBase* property, const Ogre::Vector2& value);
+        bool _setOptionsMoonPhase(OgitorsPropertyBase* property, const Ogre::Real& value);
+
+        // SkyX Atmosphere parameters
         bool _setOptionsRayleighMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setOptionsMieMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setOptionsSampleCount(OgitorsPropertyBase* property, const int& value);
@@ -126,18 +138,21 @@ namespace Ogitors
         bool _setOptionsExposure(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setOptionsInnerRadius(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setOptionsOuterRadius(OgitorsPropertyBase* property, const Ogre::Real& value);
-        bool _setOptionsTime(OgitorsPropertyBase* property, const Ogre::Vector3& value);
-        bool _setOptionsEastPosition(OgitorsPropertyBase* property, const Ogre::Vector2& value);
         bool _setOptionsSunIntensity(OgitorsPropertyBase* property, const Ogre::Real& value);
-        bool _setOptionsWaveLength(OgitorsPropertyBase* property, const Ogre::Vector3& value);
+        bool _setOptionsWaveLength(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
         bool _setOptionsG(OgitorsPropertyBase* property, const Ogre::Real& value);
-        bool _setOptionsMoonPhase(OgitorsPropertyBase* property, const Ogre::Real& value);
+        
+        // SkyX Moon parameters
+        bool _setOptionsMoonSize(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setOptionsMoonHaloIntensity(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setOptionsMoonHaloStrength(OgitorsPropertyBase* property, const Ogre::Real& value);
 
         // SkyX Volumetric Clouds setter
         bool _setVCEnable(OgitorsPropertyBase* property, const bool& value);
         bool _setVCAutoUpdate(OgitorsPropertyBase* property, const bool& value);
-        bool _setVCWindSpeed(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setVCWindSpeed(OgitorsPropertyBase* property, const int& value);
         bool _setVCWindDirection(OgitorsPropertyBase* property, const int& value);
+        bool _setVCCloudScale(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setVCNoiseScale(OgitorsPropertyBase* property, const Ogre::Real& value);
         bool _setVCAmbientColor(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
         bool _setVCLightResponse(OgitorsPropertyBase* property, const Ogre::Vector4& value);
