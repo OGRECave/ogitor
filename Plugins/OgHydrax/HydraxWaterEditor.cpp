@@ -58,16 +58,16 @@ CHydraxEditor::~CHydraxEditor()
 bool CHydraxEditor::getObjectContextMenu(UTFStringVector &menuitems)
 {
     menuitems.clear();
-    menuitems.push_back(OTR("Load Hydrax config file"));
+    menuitems.push_back(OTR("Load Hydrax config file") + ";:/icons/import.svg");
 
     return true;
 }
 //-----------------------------------------------------------------------------------------
 void CHydraxEditor::onObjectContextMenu(int menuresult)
 {
-    switch ( menuresult )
+    switch(menuresult)
     {
-        // Load landscape definitions from xml
+        // Load landscape definitions from XML
         case 0:
             UTFStringVector extlist;
             extlist.push_back(OTR("Hydrax Config File"));
