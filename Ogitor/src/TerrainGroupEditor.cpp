@@ -137,12 +137,23 @@ void CTerrainGroupEditor::prepareBeforePresentProperties()
 //-----------------------------------------------------------------------------------------
 bool CTerrainGroupEditor::getObjectContextMenu(UTFStringVector &menuitems)
 {
+    bool hasPages = false;
+    if(mHandle->getTerrainIterator().begin() != mHandle->getTerrainIterator().end())
+        hasPages = true;
+    
     menuitems.clear();
     menuitems.push_back(OTR("Add Page") + ";:/icons/additional.svg");
-    menuitems.push_back(OTR("Scale/Offset Height Values"));
-    menuitems.push_back(OTR("Import Terrain From Heightmap"));
-    menuitems.push_back(OTR("Export Heightmaps"));
-    menuitems.push_back(OTR("Export Compositemaps"));
+    if(hasPages)
+        menuitems.push_back(OTR("Scale/Offset Height Values") + ";:/icons/scale.svg");
+    
+    menuitems.push_back("---");
+    menuitems.push_back(OTR("Import Terrain From Heightmap")+ ";:/icons/import.svg");
+    menuitems.push_back("---");
+    if(hasPages)
+    {
+        menuitems.push_back(OTR("Export Heightmaps") + ";:/icons/export.svg");
+        menuitems.push_back(OTR("Export Compositemaps") + ";:/icons/export.svg");
+    }    
 
     return true;
 }
@@ -378,8 +389,8 @@ bool CTerrainGroupEditor::load(bool async)
         }
     }
 
-    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::enabled", CTerrainGroupEditor, OnShadowsChange, mShadowsConnection[0]);
-    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::technique", CTerrainGroupEditor, OnShadowsTechniqueChange, mShadowsConnection[1]);
+    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::enabled", CTerrainGroupEditor, onShadowsChange, mShadowsConnection[0]);
+    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::technique", CTerrainGroupEditor, onShadowsTechniqueChange, mShadowsConnection[1]);
 
     mHandle = OGRE_NEW Ogre::TerrainGroup(mOgitorsRoot->GetSceneManager() ,Ogre::Terrain::ALIGN_X_Z, mMapSize->get(), mWorldSize->get());
     mHandle->setOrigin(Ogre::Vector3::ZERO);
@@ -733,7 +744,7 @@ TiXmlElement* CTerrainGroupEditor::exportDotScene(TiXmlElement *pParent)
     return pTerrain;
 }
 //-----------------------------------------------------------------------------------------
-void CTerrainGroupEditor::OnShadowsChange(const OgitorsPropertyBase* property, Ogre::Any value)
+void CTerrainGroupEditor::onShadowsChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
     bool newstate = Ogre::any_cast<bool>(value);
 
@@ -760,7 +771,7 @@ void CTerrainGroupEditor::OnShadowsChange(const OgitorsPropertyBase* property, O
     }
 }
 //-----------------------------------------------------------------------------------------
-void CTerrainGroupEditor::OnShadowsTechniqueChange(const OgitorsPropertyBase* property, Ogre::Any value)
+void CTerrainGroupEditor::onShadowsTechniqueChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
 
     CSceneManagerEditor *mSceneMgr = static_cast<CSceneManagerEditor*>(mOgitorsRoot->GetSceneManagerEditor());

@@ -669,7 +669,7 @@ void MainWindow::createSceneRenderWindow()
     renderWindowToolBar->addAction(actScale);
     renderWindowToolBar->addSeparator();
 
-    QLabel *snapLabel = new QLabel(QString("  ") + tr("Snap :"));
+    QLabel *snapLabel = new QLabel(QString("  ") + tr("Snap:"));
     renderWindowToolBar->addWidget(snapLabel);
     renderWindowToolBar->addWidget(mSnapMultiplierBox);
     renderWindowToolBar->addSeparator();
@@ -686,7 +686,7 @@ void MainWindow::createSceneRenderWindow()
     mCameraSpeedSlider->setMaximumWidth(100);
 
     QWidgetAction * sliderActionWidget = new QWidgetAction( this );
-    sliderActionWidget->setDefaultWidget( mCameraSpeedSlider );
+    sliderActionWidget->setDefaultWidget(mCameraSpeedSlider);
     sliderActionWidget->setText(tr("Camera Speed"));
     menuCameraPositionMain->addAction(sliderActionWidget);
 
@@ -1007,7 +1007,6 @@ void MainWindow::addMenus()
     menuEdit->addAction(actSceneOptions);
     menuEdit->addAction(actOpenPreferences);
 
-
     menuTools = new QMenu(tr("Tools"), mMenuBar);
     menuTools->setObjectName(QString::fromUtf8("menuTools"));
     mMenuBar->addAction(menuTools->menuAction());
@@ -1022,7 +1021,6 @@ void MainWindow::addMenus()
        menuDefineSelectionList->addAction(mSelectActions[sa]);
        menuSelectSelectionList->addAction(mSelectActions[sa + 10]);
     }
-
 
     menuView = new QMenu(tr("View"),mMenuBar);
     menuView->setObjectName(QString::fromUtf8("menuView"));

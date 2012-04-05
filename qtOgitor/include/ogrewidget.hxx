@@ -133,7 +133,7 @@ public:
 
 public Q_SLOTS:
     void timerLoop();
-    void objectMenu(int id);
+    void contextMenu(int id);
 
 protected:
     Ogre::Root         *mOgreRoot;
