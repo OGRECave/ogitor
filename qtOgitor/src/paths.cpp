@@ -33,10 +33,6 @@
 #include <OgrePlatform.h>
 #include <OgitorsGlobals.h>
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#include <Carbon/Carbon.h>
-#endif
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #include <QtCore/QSettings>
 #include <QtCore/QString>
