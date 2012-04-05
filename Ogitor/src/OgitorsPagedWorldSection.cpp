@@ -31,10 +31,10 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "OgitorsPrerequisites.h"
-#include "Paging/OgreGrid2DPageStrategy.h"
-#include "Paging/OgrePagedWorld.h"
-#include "Paging/OgrePagedWorldSection.h"
-#include "Paging/OgrePageManager.h"
+#include "OgreGrid2DPageStrategy.h"
+#include "OgrePagedWorld.h"
+#include "OgrePagedWorldSection.h"
+#include "OgrePageManager.h"
 #include "OgitorsPagedWorldSection.h"
 #include "BaseEditor.h"
 #include "ViewportEditor.h"

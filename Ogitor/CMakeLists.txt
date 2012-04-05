@@ -148,10 +148,9 @@ message(STATUS ${OGRE_LIBRARY})
 target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
 
 if(APPLE)
-	find_package(CARBON REQUIRED)
-	message(STATUS ${Carbon_LIBRARY_FWK})
-	target_link_libraries(Ogitor ${Carbon_LIBRARY_FWK})
-
+        find_package(Cocoa REQUIRED)
+	message(STATUS ${Cocoa_LIBRARIES})
+	target_link_libraries(Ogitor ${Cocoa_LIBRARIES})
 	# Setup to be a framework
 	set_target_properties(Ogitor PROPERTIES FRAMEWORK TRUE)
 	set_target_properties(Ogitor PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
@@ -179,6 +178,7 @@ endif(WIN32)
 if(UNIX)
     install(TARGETS Ogitor
         LIBRARY DESTINATION lib
+        FRAMEWORK DESTINATION "~/Library/Frameworks"
         CONFIGURATIONS RelWithDebInfo Release)
 #    install(FILES
 #    ${Ogitor_hdrs}

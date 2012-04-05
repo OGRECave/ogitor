@@ -93,8 +93,8 @@ namespace Ogitors
 #include "OgitorsDefinitions.h"
 #include "StringId.h"
 #include "Event.h"
-#include "Paging/OgrePagedWorld.h"
-#include "Paging/OgrePagedWorldSection.h"
+#include "OgrePagedWorld.h"
+#include "OgrePagedWorldSection.h"
 #include "OgitorsProperty.h"
 #include "OgitorsUtils.h"
 

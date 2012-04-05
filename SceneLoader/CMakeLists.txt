@@ -27,6 +27,9 @@ else(NOT OIS_FOUND)
 		if(NOT OGRE_ROOT)
 			get_filename_component(OGRE_ROOT "${OGRE_INCLUDE_DIRS}/.." ABSOLUTE)
 		endif()
+                set(OGRE_SAMPLES_INCLUDEPATH
+                        ${ENV_OGRE_BYATIS}/Samples/Common/include
+                )
 		find_path(OGRE_SAMPLES_INCLUDEPATH SdkTrays.h
 			${OGRE_ROOT}/share/OGRE/Samples/Common/include/
  		)
@@ -63,8 +66,7 @@ else(NOT OIS_FOUND)
 
 	if(APPLE)
 		find_package(IOKIT REQUIRED)
-		find_package(Carbon REQUIRED)
-        TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${IOKit_LIBRARIES} ${Carbon_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry)
+        TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${IOKit_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry)
     ELSE()
         TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry ${Boost_LIBRARIES})
 	endif(APPLE)
@@ -91,11 +93,11 @@ else(NOT OIS_FOUND)
 			CONFIGURATIONS Release)
 	endif(WIN32)
 	
-	if(UNIX AND NOT OGITOR_DIST)
+	if(UNIX AND NOT OGITOR_DIST AND NOT APPLE)
         install(TARGETS SampleLoadApp
             RUNTIME DESTINATION bin
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-    endif(UNIX AND NOT OGITOR_DIST)
+    endif(UNIX AND NOT OGITOR_DIST AND NOT APPLE)
 
 endif(NOT OIS_FOUND)
 

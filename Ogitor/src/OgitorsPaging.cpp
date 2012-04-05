@@ -41,9 +41,9 @@
 #include "OgitorsPaging.h"
 #include "OgitorsPagedWorldSection.h"
 #include "tinyxml.h"
-#include "Paging/OgrePage.h"
-#include "Paging/OgrePageManager.h"
-#include "Paging/OgrePagedWorld.h"
+#include "OgrePage.h"
+#include "OgrePageManager.h"
+#include "OgrePagedWorld.h"
 
 using namespace Ogitors;
 
