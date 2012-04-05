@@ -106,6 +106,8 @@ void OgitorsUtils::ParseStringVector(Ogre::String &str, Ogre::StringVector &list
 //-----------------------------------------------------------------------------------------
 void OgitorsUtils::ParseUTFStringVector(Ogre::UTFString &str, UTFStringVector &list)
 {
+    int oldPos = 0;
+    
     list.clear();
     if(str == "") 
         return;
@@ -113,13 +115,13 @@ void OgitorsUtils::ParseUTFStringVector(Ogre::UTFString &str, UTFStringVector &l
     int pos = str.find(";");
     while(pos != -1)
     {
-        list.push_back(str.substr(0,pos));
-        str.erase(0,pos + 1);
-        pos = str.find(";");
+        list.push_back(str.substr(oldPos, pos));
+        oldPos = pos + 1;
+        pos = str.find(";", oldPos);        
     }
   
     if(str != "") 
-        list.push_back(str);
+        list.push_back(str.substr(oldPos, str.size()));
 }
 //-----------------------------------------------------------------------------------------
 void OgitorsUtils::CleanPath(Ogre::String &path)

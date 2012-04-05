@@ -190,26 +190,32 @@ Ogre::AxisAlignedBox CTerrainPageEditor::getAABB()
 bool CTerrainPageEditor::getObjectContextMenu(UTFStringVector &menuitems)
 {
     menuitems.clear();
-    menuitems.push_back(OTR("Remove Page"));
     if(mLoaded->get())
     {
-        menuitems.push_back(OTR("Re-Light"));
-        menuitems.push_back(OTR("Calculate Blendmap"));
-        menuitems.push_back(OTR("Scale/Offset Height Values"));
-        menuitems.push_back("-");
-        menuitems.push_back(OTR("Import Heightmap"));
-        menuitems.push_back(OTR("Export Heightmap"));
-        menuitems.push_back(OTR("Export Compositemap"));
-        menuitems.push_back("-");
-        menuitems.push_back(OTR("Import Blendmaps") +  Ogre::UTFString(" (RGB+A)"));
+        menuitems.push_back(OTR("Remove page") + ";:icons/trash.svg");
+        menuitems.push_back(OTR("Re-Light") + ";:icons/relight.svg");
+        menuitems.push_back(OTR("Calculate Blendmap") + ";:icons/toolbar.svg");
+        menuitems.push_back(OTR("Scale/Offset Height Values") + ";:icons/scale.svg");
+        menuitems.push_back("---");
+        menuitems.push_back(OTR("Import Heightmap") + ";:icons/import.svg");
+        
+        menuitems.push_back("---");
+        menuitems.push_back(OTR(">Import Blendmaps") +  Ogre::UTFString(" (RGB+A)")  + ";:icons/import.svg");
 
-        for(int i = 1; i < mLayerCount->get();i++)
+        for(int i = 1; i < mLayerCount->get(); i++)
         {
-            Ogre::UTFString prefix = "Layer ";
+            Ogre::UTFString prefix = "#Layer ";
             prefix = prefix + Ogre::StringConverter::toString(i);
             prefix = prefix + ": ";
             menuitems.push_back(prefix  + OTR("Import Blendmap") +  Ogre::UTFString(" (R)"));
         }
+
+        if(mLayerCount->get() > 0)
+            menuitems.push_back(OTR("#Base layer (not possible);;0"));
+
+        menuitems.push_back("---");
+        menuitems.push_back(OTR("Export Heightmap") + ";:icons/export.svg");
+        menuitems.push_back(OTR("Export Compositemap") + ";:icons/export.svg");
     }
 
     return true;
@@ -217,6 +223,8 @@ bool CTerrainPageEditor::getObjectContextMenu(UTFStringVector &menuitems)
 //-------------------------------------------------------------------------------
 void CTerrainPageEditor::onObjectContextMenu(int menuresult)
 {
+    int layerCount = mLayerCount->get();
+    
     if(menuresult == 0)
     {
         Ogre::UTFString msgStr = OTR("Do you want to remove %s?");
@@ -230,7 +238,7 @@ void CTerrainPageEditor::onObjectContextMenu(int menuresult)
 
         if(mSystem->DisplayMessageDialog(msgStr, DLGTYPE_YESNO) == DLGRET_YES)
         {
-            mOgitorsRoot->DestroyEditorObject(this,true,true);
+            mOgitorsRoot->DestroyEditorObject(this, true, true);
         }
     }
     else if(menuresult == 1)
@@ -269,22 +277,18 @@ void CTerrainPageEditor::onObjectContextMenu(int menuresult)
     {
         importHeightMap();
     }
-    else if(menuresult == 5)
+    else if(menuresult > 5 && menuresult <= (5 + layerCount))
+    {
+        int lyID = menuresult - 5;
+        importBlendMap(lyID);
+    }
+    else if(menuresult == (5 + layerCount + 1))
     {
         exportHeightMap();
     }
-    else if(menuresult == 6)
+    else if(menuresult == (5 + layerCount + 2))
     {
         exportCompositeMap();
-    }
-    else if(menuresult == 7)
-    {
-        importBlendMap();
-    }
-    else if(menuresult > 7)
-    {
-        int lyID = menuresult - 7;
-        importBlendMap(lyID);
     }
 }
 //-----------------------------------------------------------------------------------------

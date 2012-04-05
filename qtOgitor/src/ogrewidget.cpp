@@ -46,8 +46,6 @@
 
 using namespace Ogitors;
 
-extern QString ConvertToQString(Ogre::UTFString& value);
-
 bool ViewKeyboard[1024];
 
 //----------------------------------------------------------------------------------------
@@ -527,75 +525,45 @@ void OgreWidget::showObjectMenu()
     if(!OgitorsRoot::getSingletonPtr()->GetSelection()->isEmpty())
         e = OgitorsRoot::getSingletonPtr()->GetSelection()->getAsSingle();
 
-    QMenu* ctxMenu = new QMenu(this);
+    QMenu* contextMenu = new QMenu(this);
 
     if(e != 0)
     {
-        ctxMenu->setTitle(tr("Object Menu : ") + QString(e->getName().c_str()));
+        contextMenu->setTitle(tr("Object Menu : ") + QString(e->getName().c_str()));
         QSignalMapper *signalMapper = 0;
         QSignalMapper *pasteSignalMapper = 0;
 
-        ctxMenu->addAction(mOgitorMainWindow->actEditCopy);
-        ctxMenu->addAction(mOgitorMainWindow->actEditCut);
-        ctxMenu->addAction(mOgitorMainWindow->actEditDelete);
-        ctxMenu->addAction(mOgitorMainWindow->actEditRename);
-        ctxMenu->addSeparator();
-        ctxMenu->addAction(mOgitorMainWindow->actEditCopyToTemplate);
-        ctxMenu->addAction(mOgitorMainWindow->actEditCopyToTemplateWithChildren);
+        contextMenu->addAction(mOgitorMainWindow->actEditCopy);
+        contextMenu->addAction(mOgitorMainWindow->actEditCut);
+        contextMenu->addAction(mOgitorMainWindow->actEditDelete);
+        contextMenu->addAction(mOgitorMainWindow->actEditRename);
+        contextMenu->addSeparator();
+        contextMenu->addAction(mOgitorMainWindow->actEditCopyToTemplate);
+        contextMenu->addAction(mOgitorMainWindow->actEditCopyToTemplateWithChildren);
 
         UTFStringVector menuList;
         if(e->getObjectContextMenu(menuList))
         {
-            UTFStringVector vList;
-            int counter = 0;
-            int mapslot = 0;
-            signalMapper = new QSignalMapper(this);
-
-            for(unsigned int i = 0;i < menuList.size();i++)
-            {
-                if(i == 0)
-                    ctxMenu->addSeparator();
-
-                OgitorsUtils::ParseUTFStringVector(menuList[i], vList);
-                if(vList.size() > 0 && vList[0] != "")
-                {
-                    if(vList[0] == "-")
-                    {
-                        ctxMenu->addSeparator();
-                        continue;
-                    }
-
-                    QAction *item = ctxMenu->addAction( ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
-                    if(vList.size() > 1)
-                        item->setIcon(QIcon(ConvertToQString(vList[1])));
-                    signalMapper->setMapping(item, mapslot);
-                    counter++;
-                }
-                ++mapslot;
-            }
-            if(counter)
-            {
-                connect(signalMapper, SIGNAL(mapped( int )), this, SLOT(objectMenu( int )));
-            }
+            mOgitorMainWindow->parseAndAppendContextMenuList(contextMenu, menuList, this);
         }
-        ctxMenu->exec(QCursor::pos());
+        contextMenu->exec(QCursor::pos());
         delete signalMapper;
     }
     else
     {
-        ctxMenu->addAction(mOgitorMainWindow->menuFile->menuAction());
-        ctxMenu->addAction(mOgitorMainWindow->menuEdit->menuAction());
-        ctxMenu->addAction(mOgitorMainWindow->menuView->menuAction());
-        ctxMenu->addAction(mOgitorMainWindow->menuCamera->menuAction());
-        ctxMenu->addAction(mOgitorMainWindow->menuTools->menuAction());
-        ctxMenu->addAction(mOgitorMainWindow->menuTerrainTools->menuAction());
-        ctxMenu->exec(QCursor::pos());
+        contextMenu->addAction(mOgitorMainWindow->menuFile->menuAction());
+        contextMenu->addAction(mOgitorMainWindow->menuEdit->menuAction());
+        contextMenu->addAction(mOgitorMainWindow->menuView->menuAction());
+        contextMenu->addAction(mOgitorMainWindow->menuCamera->menuAction());
+        contextMenu->addAction(mOgitorMainWindow->menuTools->menuAction());
+        contextMenu->addAction(mOgitorMainWindow->menuTerrainTools->menuAction());
+        contextMenu->exec(QCursor::pos());
     }
 
-    delete ctxMenu;
+    delete contextMenu;
 }
 //-------------------------------------------------------------------------------------------
-void OgreWidget::objectMenu(int id)
+void OgreWidget::contextMenu(int id)
 {
     if(!OgitorsRoot::getSingletonPtr()->GetSelection()->isEmpty())
         OgitorsRoot::getSingletonPtr()->GetSelection()->getAsSingle()->onObjectContextMenu(id);

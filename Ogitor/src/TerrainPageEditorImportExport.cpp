@@ -244,7 +244,6 @@ bool CTerrainPageEditor::importBlendMap(int layerID, Ogre::String filename)
     _notifyModification(layerID, rect);
     _notifyEndModification();
 
-
     Ogre::TerrainLayerBlendMap *mBlendMap;
     float *mBlendData;
 

@@ -368,12 +368,11 @@ namespace Ogitors
         */
         virtual void loadResource(Ogre::Resource* resource);
         
-        void OnShadowsChange(const OgitorsPropertyBase* property, Ogre::Any value);
-        void OnShadowsTechniqueChange(const OgitorsPropertyBase* property, Ogre::Any value);
-
+        void onShadowsChange(const OgitorsPropertyBase* property, Ogre::Any value);
+        void onShadowsTechniqueChange(const OgitorsPropertyBase* property, Ogre::Any value);
 
         /**
-        * Modifies the heightfields of all pages
+        * Modifies the height fields of all pages
         * @param scale the scale to multiply current heights with
         * @param offset value to offset current heights with (after scale)
         */
@@ -408,7 +407,7 @@ namespace Ogitors
         static PropertyOptionsVector *GetMapSizeOptions() { return &mMapSizeOptions; }
         /**
         * Fetches colour map size options property(ies)
-        * @return colourmap size options property(ies)
+        * @return colour map size options property(ies)
         */
         static PropertyOptionsVector *GetColourMapSizeOptions() { return &mColourMapSizeOptions; }
 
