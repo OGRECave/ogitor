@@ -167,6 +167,7 @@ endif(UNIX)
 
 include_directories(${OGRE_INCLUDE_DIRS})
 include_directories(${OGRE_Terrain_INCLUDE_DIR})
+include_directories(${OGRE_Paging_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
 #library_directories(${Boost_LIBRARY_DIR})
 
