@@ -115,15 +115,24 @@ endif(UNIX AND NOT OGITOR_DIST)
 
 find_package(OGRE REQUIRED)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
     # Newer ld versions need this linked explicitly
     find_package(Threads REQUIRED)
     add_definitions(${CMAKE_THREAD_LIBS_INIT})
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}-Wl,--no-as-needed ${CMAKE_THREAD_LIBS_INIT}")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}-Wl,--no-as-needed ${CMAKE_THREAD_LIBS_INIT}")
     set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}-Wl,--no-as-needed ${CMAKE_THREAD_LIBS_INIT}")
-endif(UNIX)
+endif(UNIX AND NOT APPLE)
 
+if(APPLE)
+    # Newer ld versions need this linked explicitly
+    find_package(Threads REQUIRED)
+    add_definitions(${CMAKE_THREAD_LIBS_INIT})
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}-Wl ${CMAKE_THREAD_LIBS_INIT}")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}-Wl ${CMAKE_THREAD_LIBS_INIT}")
+    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}-Wl 
+${CMAKE_THREAD_LIBS_INIT}")
+endif(APPLE)
 
 if(APPLE)
     find_package(CG REQUIRED)
