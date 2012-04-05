@@ -21,9 +21,6 @@ set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPOR
 target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARY} OFS ${Boost_LIBRARIES})
 
 if(APPLE)
-	find_package(CARBON REQUIRED)
-	message(STATUS ${Carbon_LIBRARY_FWK})
-	target_link_libraries(OgreOfsPlugin ${Carbon_LIBRARY_FWK})
 
 	# Setup to be a framework
 	set_target_properties(OgreOfsPlugin PROPERTIES FRAMEWORK TRUE)

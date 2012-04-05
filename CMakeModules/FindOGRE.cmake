@@ -66,7 +66,7 @@ else ()
 endif ()
 
 
-set(OGRE_LIBRARY_NAMES "OgreMain${OGRE_LIB_SUFFIX}")
+set(OGRE_LIBRARY_NAMES "Ogre${OGRE_LIB_SUFFIX}")
 get_debug_names(OGRE_LIBRARY_NAMES)
 
 # construct search paths from environmental hints and
@@ -222,8 +222,7 @@ if (OGRE_STATIC)
   endif ()
   if (APPLE)
     find_package(Cocoa QUIET)
-    find_package(Carbon QUIET)
-    if (NOT Cocoa_FOUND OR NOT Carbon_FOUND)
+    if (NOT Cocoa_FOUND)
       set(OGRE_DEPS_FOUND FALSE)
     endif ()
   endif ()
@@ -232,7 +231,7 @@ if (OGRE_STATIC)
   set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${ZZip_LIBRARIES} ${ZLIB_LIBRARIES} 
     ${FreeImage_LIBRARIES} ${FREETYPE_LIBRARIES} 
     ${X11_LIBRARIES} ${X11_Xt_LIBRARIES} ${XAW_LIBRARY} ${X11_Xrandr_LIB}
-    ${Cocoa_LIBRARIES} ${Carbon_LIBRARIES})
+    ${Cocoa_LIBRARIES})
   
   if (NOT ZLIB_FOUND OR NOT ZZip_FOUND)
     set(OGRE_DEPS_FOUND FALSE)
