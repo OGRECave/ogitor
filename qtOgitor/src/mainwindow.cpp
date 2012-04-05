@@ -1071,13 +1071,11 @@ void MainWindow::addMenus()
     menuTerrainTools = new QMenu(tr("Terrain Tools"), mMenuBar);
     menuTerrainTools->setObjectName(QString::fromUtf8("menuTerrainTools"));
     mMenuBar->addAction(menuTerrainTools->menuAction());
-    menuTerrainTools->addAction(actSelect);
     menuTerrainTools->addAction(actDeform);
     menuTerrainTools->addAction(actSmooth);
     menuTerrainTools->addAction(actSplat);
     menuTerrainTools->addAction(actPaint);
-    menuTerrainTools->setEnabled(false);
-
+    menuTerrainTools->addAction(actReLight);
 
     menuHelp = new QMenu(tr("Help"), mMenuBar);
     menuHelp->setObjectName(QString::fromUtf8("menuHelp"));
@@ -1563,7 +1561,12 @@ void MainWindow::onTerrainEditorChange(Ogitors::IEvent* evt)
         ITerrainEditor *terED = change_event->getHandle();
 
         actToggleWalkAround->setEnabled(terED);
+        actDeform->setEnabled(terED && terED->canDeform());
+        actSmooth->setEnabled(terED && terED->canDeform());
+        actSplat->setEnabled(terED && terED->canSplat());
+        actSplatGrass->setEnabled(terED && terED->canSplat());
         actPaint->setEnabled(terED && terED->canPaint());
+        actReLight->setEnabled(terED);
     }
 }
 //------------------------------------------------------------------------------------
