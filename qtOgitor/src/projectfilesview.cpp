@@ -486,7 +486,7 @@ void ProjectFilesViewWidget::onImportFolder()
 void ProjectFilesViewWidget::onImportFile()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose folder to import"), Ogitors::UTFStringVector());
+    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector());
 
     QStringList files(fileName.c_str());
     if(!files.empty())
@@ -554,4 +554,10 @@ void ProjectFilesViewWidget::onAddFolder()
         mOfsTreeWidget->addEmptyFolder(parentName, newFolderName);
     }
 }
+
+void ProjectFilesViewWidget::triggerRefresh()
+{
+mActRefresh->trigger();
+}
+
 //----------------------------------------------------------------------------------------

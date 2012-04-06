@@ -166,6 +166,8 @@ public:
     void addFiles(QString rootDir, QStringList list);
     void addEmptyFolder(QString rootDir, QString name);
 
+    static void triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2);
+
 public Q_SLOTS:
     void onSelectionChanged();
     void onItemCollapsed(QTreeWidgetItem * item);
