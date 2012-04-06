@@ -1438,17 +1438,14 @@ void CTerrainPageEditor::_modifyHeights(float scale, float offset)
     }
 }
 //-----------------------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------------------
 //------CTERRAINPAGEEDITORFACTORY-----------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 CTerrainPageEditorFactory::CTerrainPageEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
     mTypeName = "Terrain Page Object";
-    mEditorType = ETYPE_MOVABLE;
+    mEditorType = ETYPE_TERRAIN_PAGE;
     mIcon = "pagedterrain.svg";
-    mCapabilities = CAN_PAGE | CAN_DELETE | CAN_UNDO;
+    mCapabilities = CAN_PAGE | CAN_DELETE | CAN_UNDO | CAN_FOCUS;
     mDefaultWorldSection = SECT_TERRAIN;
 
     OgitorsPropertyDef *definition;

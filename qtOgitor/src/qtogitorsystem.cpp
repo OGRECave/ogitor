@@ -992,7 +992,7 @@ void QtOgitorSystem::SelectTreeItem(Ogitors::CBaseEditor *object)
     }
 }
 //-------------------------------------------------------------------------------
-void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object,int iconid, unsigned int colour)
+void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object, int iconid, unsigned int colour)
 {
     if(!parent || !object)
         return;
@@ -1002,7 +1002,7 @@ void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBase
     item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(object->getName().c_str())));
     object->setSceneTreeItemHandle(item);
     item->setIcon(0, QIcon( mIconList[iconid]));
-    item->setTextColor(0,QColor(GetRED(colour),GetGREEN(colour),GetBLUE(colour)));
+    item->setTextColor(0, QColor(GetRED(colour), GetGREEN(colour), GetBLUE(colour)));
 
     static_cast<QTreeWidgetItem*>(parent->getSceneTreeItemHandle())->addChild(item);
 
