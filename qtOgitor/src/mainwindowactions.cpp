@@ -722,6 +722,13 @@ void MainWindow::openRecentFile(const QString& value)
 //------------------------------------------------------------------------------
 void MainWindow::closeScene()
 {
+    ITerrainEditor *terED = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
+    if(terED && terED->isBackgroundProcessActive())
+    {
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Terrain is still making background calculations.") + "\n" + tr("Closing at this time may take much longer and cause temporary freeze.") + "\n" + tr("Do you want to continue?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
+            return;
+    }
+    
     OgitorsRoot::getSingletonPtr()->TerminateScene();
 }
 //------------------------------------------------------------------------------

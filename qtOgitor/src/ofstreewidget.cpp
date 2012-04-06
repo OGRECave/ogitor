@@ -40,11 +40,6 @@
 #define MAX_BUFFER_SIZE 0xFFFFFF
 
 //----------------------------------------------------------------------------------------
-void triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2)
-{
-    mOgitorMainWindow->getProjectFilesViewWidget()->onRefresh();
-}
-//----------------------------------------------------------------------------------------
 OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, std::string initialSelection) : QTreeWidget(parent), mCapabilities(capabilities) 
 {
     mSelected = initialSelection;
@@ -554,6 +549,11 @@ void OfsTreeWidget::threadFinished()
     refreshWidget();
     emit busyState(false);
 }
+//----------------------------------------------------------------------------------------
+void OfsTreeWidget::triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2)
+{
+    emit mOgitorMainWindow->getProjectFilesViewWidget()->triggerRefresh();
+}
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -763,7 +763,7 @@ void AddFilesThread::addFiles(const AddFilesList& list)
     msgProgress = "";
     mutex.unlock();
 
-    // Handle the dropped items
+    // Handle the items
     for(unsigned int i = 0; i < list.size(); ++i)
     {
         if(!list[i].isDir)
@@ -788,8 +788,8 @@ void AddFilesThread::addFiles(const AddFilesList& list)
  
                 if(stream_size >= MAX_BUFFER_SIZE)
                 {
-                    //createFile accepts initial data to be written during alocation
-                    //its an optimization, thats why we dont have to call Ofs:write after createFile
+                    //createFile accepts initial data to be written during allocation
+                    //its an optimization, thats why we don't have to call Ofs:write after createFile
                     stream.read(tmp_buffer, MAX_BUFFER_SIZE);
                     try
                     {
