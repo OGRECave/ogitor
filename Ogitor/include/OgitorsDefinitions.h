@@ -59,7 +59,7 @@ namespace Ogitors
         ETYPE_SKY_MANAGER,      /** Sky manager editor type */
         ETYPE_LIGHT,            /** Light editor type */
         ETYPE_TERRAIN_MANAGER,  /** Terrain manager editor type */
-        ETYPE_WATER_MANAGER,    /** Terrain manager editor type */
+        ETYPE_WATER_MANAGER,    /** Water manager editor type */
         ETYPE_CUSTOM_MANAGER,   /** Custom manager editor type */
         ETYPE_CAMERA,           /** Camera editor type */
         ETYPE_ENTITY,           /** Entity editor type */
@@ -70,7 +70,8 @@ namespace Ogitors
         ETYPE_GENERALPURPOSE,   /** General editor type */
         ETYPE_MULTISEL,         /** Multi-selection editor type */
         ETYPE_MATERIAL,         /** Material editor type */
-        ETYPE_TECHNIQUE         /** Technique editor type */
+        ETYPE_TECHNIQUE,        /** Technique editor type */
+        ETYPE_TERRAIN_PAGE      /** Terrain Page editor type */
     };
 
     /** String'ified EDITORTYPE enumeration @see EDITORTYPE */
@@ -96,7 +97,8 @@ namespace Ogitors
         "ETYPE_GENERALPURPOSE", /** String'ification of EDITORTYPE::ETYPE_GENERALPURPOSE */
         "ETYPE_MULTISEL",       /** String'ification of EDITORTYPE::ETYPE_MULTISEL */
         "ETYPE_MATERIAL",       /** String'ification of EDITORTYPE::ETYPE_MATERIAL */
-        "ETYPE_TECHNIQUE"       /** String'ification of EDITORTYPE::ETYPE_TECHNIQUE */
+        "ETYPE_TECHNIQUE",      /** String'ification of EDITORTYPE::ETYPE_TECHNIQUE */
+        "ETYPE_TERRAIN_PAGE"    /** String'ification of EDITORTYPE::ETYPE_TERRAIN_PAGE */
     };
     /** Last unique ID for an editor */
     const unsigned int LAST_EDITOR = ETYPE_MULTISEL + 1;
