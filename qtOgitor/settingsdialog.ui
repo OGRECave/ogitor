@@ -72,7 +72,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="mGeneralTab_3">
       <attribute name="title">
@@ -1018,6 +1018,26 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>mProjectDirTextBox</tabstop>
+  <tabstop>mBrowseProjectDirButton</tabstop>
+  <tabstop>mProjectNameTextBox</tabstop>
+  <tabstop>mSceneMgrNameMenu</tabstop>
+  <tabstop>mConfigFileTextBox</tabstop>
+  <tabstop>mTerrainDirTextBox</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>buttonBox</tabstop>
+  <tabstop>autoBackupPathEdit</tabstop>
+  <tabstop>autoBackupPeriodTypeComboBox</tabstop>
+  <tabstop>enableAutoBackupBox</tabstop>
+  <tabstop>autoBackupTimeSpinBox</tabstop>
+  <tabstop>autoBackupMaxStoredSpinBox</tabstop>
+  <tabstop>autoBackupPathButton</tabstop>
+  <tabstop>mResourceListBox</tabstop>
+  <tabstop>mGridSpacingMenu</tabstop>
+  <tabstop>mSnapAngleMenu</tabstop>
+  <tabstop>mSelectionDepthMenu</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

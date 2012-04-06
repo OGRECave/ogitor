@@ -403,7 +403,12 @@ Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
-    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), QApplication::applicationDirPath()
+    QSettings settings;
+    settings.beginGroup("OgitorSystem");
+    QString oldOpenPath = settings.value("oldOpenPath", mProjectsDirectory).toString();
+    settings.endGroup();
+
+    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), oldOpenPath
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
       , QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
 #else
@@ -411,6 +416,13 @@ Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+
+    if(path != "")
+    {
+        settings.beginGroup("OgitorSystem");
+        settings.setValue("oldOpenPath", path);
+        settings.endGroup();
+    }
 
     return path.toStdString();
 }
