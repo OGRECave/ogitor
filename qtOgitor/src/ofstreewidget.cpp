@@ -32,18 +32,12 @@
 
 #include "mainwindow.hxx"
 #include "ofstreewidget.hxx"
-#include "projectfilesview.hxx"
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 
 #define MAX_BUFFER_SIZE 0xFFFFFF
 
-//----------------------------------------------------------------------------------------
-void triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2)
-{
-    mOgitorMainWindow->getProjectFilesViewWidget()->onRefresh();
-}
 //----------------------------------------------------------------------------------------
 OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, std::string initialSelection) : QTreeWidget(parent), mCapabilities(capabilities) 
 {
@@ -62,8 +56,6 @@ OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, std::st
     mUnknownFileIcon = mOgitorMainWindow->mIconProvider.icon(QFileIconProvider::File);
 
     mFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
-    mFile->addTrigger(this, OFS::_Ofs::CLBK_CREATE, &triggerCallback);
-    mFile->addTrigger(this, OFS::_Ofs::CLBK_DELETE, &triggerCallback);
 
     QTreeWidgetItem* item = 0;
     QTreeWidgetItem* pItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("Project")));
