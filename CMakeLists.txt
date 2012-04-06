@@ -30,8 +30,9 @@ message(STATUS "Building Ogitor version ${OGITOR_VERSION_STRING}")
 set(abi_version ${OGITOR_VERSION_STRING})
 
 # OGITOR_DIST (global install) is TRUE by default for Linux
+# EDIT: No, it's FALSE - creates too many problems if it's true by default
 if(UNIX AND NOT APPLE)
-    option(OGITOR_DIST "Ogitor Installer Installation" TRUE)
+    option(OGITOR_DIST "Ogitor Installer Installation" FALSE)
 else(UNIX AND NOT APPLE)
     option(OGITOR_DIST "Ogitor Installer Installation" FALSE)
 endif(UNIX AND NOT APPLE)

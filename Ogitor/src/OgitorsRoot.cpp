@@ -204,6 +204,7 @@ mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSourc
     mObjectDisplayOrder.push_back(ETYPE_SKY_MANAGER);
     mObjectDisplayOrder.push_back(ETYPE_WATER_MANAGER);
     mObjectDisplayOrder.push_back(ETYPE_TERRAIN_MANAGER);
+    mObjectDisplayOrder.push_back(ETYPE_TERRAIN_PAGE);
     mObjectDisplayOrder.push_back(ETYPE_CUSTOM_MANAGER);
     mObjectDisplayOrder.push_back(ETYPE_FOLDER);
     mObjectDisplayOrder.push_back(ETYPE_LIGHT);
