@@ -590,11 +590,11 @@ void OgitorsRoot::CreateGizmo()
     AxisGizmo::createMesh(GetSceneManager(), "OgitorAxisGizmoMesh");
     AxisGizmo::createPlaneMesh(GetSceneManager(), "OgitorAxisPlaneMesh");
 
-    mGizmoNode = GetSceneManager()->getRootSceneNode()->createChildSceneNode("scbWidgetNode",Vector3(0,0,0),Quaternion::IDENTITY);
+    mGizmoNode = GetSceneManager()->getRootSceneNode()->createChildSceneNode("scbWidgetNode", Vector3(0,0,0), Quaternion::IDENTITY);
 
-    mGizmoX = mGizmoNode->createChildSceneNode("scbnwx",Vector3(0,0,0),Quaternion::IDENTITY);
-    mGizmoY = mGizmoNode->createChildSceneNode("scbnwy",Vector3(0,0,0),Quaternion::IDENTITY);
-    mGizmoZ = mGizmoNode->createChildSceneNode("scbnwz",Vector3(0,0,0),Quaternion::IDENTITY);
+    mGizmoX = mGizmoNode->createChildSceneNode("scbnwx", Vector3(0,0,0), Quaternion::IDENTITY);
+    mGizmoY = mGizmoNode->createChildSceneNode("scbnwy", Vector3(0,0,0), Quaternion::IDENTITY);
+    mGizmoZ = mGizmoNode->createChildSceneNode("scbnwz", Vector3(0,0,0), Quaternion::IDENTITY);
 
     Quaternion q1;
     Quaternion q2;
@@ -657,6 +657,11 @@ void OgitorsRoot::CreateGizmo()
     mGizmoEntities[5]->setQueryFlags(QUERYFLAG_WIDGET);
     mGizmoZ->attachObject(mGizmoEntities[5]);
 
+    // Call once to derive bounding boxes 
+    mGizmoEntities[0]->getWorldBoundingBox(true);
+    mGizmoEntities[1]->getWorldBoundingBox(true);
+    mGizmoEntities[2]->getWorldBoundingBox(true);
+
     mGizmoNode->setVisible(false);
 }
 //-----------------------------------------------------------------------------------------
@@ -684,7 +689,6 @@ void OgitorsRoot::UpdateGizmo()
             increment = -1;
             orders[0] = orders[1] = orders[2] = 95;
         }
-
 
         if(dist1 > dist2) 
             orders[0] += increment;
