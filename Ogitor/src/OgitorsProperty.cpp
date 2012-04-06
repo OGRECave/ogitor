@@ -345,7 +345,10 @@ namespace Ogitors
                 Ogitors::OgitorsSystem* mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
                 if(j->second->getType() != i->second.propType)
                 {
-                    mSystem->DisplayMessageDialog(OTR(Ogre::String("The type of the property ").append(i->first) + " seems to have changed.\n\nOgitor will attempt to automatically correct the situation, but please check the values of the property afterwards."), Ogitors::DLGTYPE_OK);
+                    Ogre::String msg = Ogre::String("The type of the property ");
+                    msg += i->first;
+                    msg += " seems to have changed.\n\nOgitor will attempt to automatically correct the situation, but please check the values of the property afterwards.";
+                    mSystem->DisplayMessageDialog(OTR(msg), Ogitors::DLGTYPE_OK);
                     changePropertyType(&i->second, j->second->getType());
                 }
 
