@@ -7,6 +7,8 @@ project(ogQtExample)
 set(QT_MIN_VERSION "4.5.0")
 find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 
+find_package(OGITOR REQUIRED)
+
 if(NOT QT4_FOUND)
 	MESSAGE(SEND_ERROR "Failed to find Qt 4.5 or greater.")
 else(NOT QT4_FOUND)
