@@ -248,7 +248,7 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
             pvalue.val = Ogre::Any((Ogre::Real)10.0f);
             creationparams["layer0::worldsize"] = pvalue;
 
-            CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this,"Terrain Page Object", creationparams, true, true);
+            CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page Object", creationparams, true, true);
         }
     }
     else if(menuresult == 1)
