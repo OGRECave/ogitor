@@ -64,6 +64,7 @@ QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 
     mProjectDirTextBox->setText(mOptions->ProjectDir.c_str());
     mProjectNameTextBox->setText(mOptions->ProjectName.c_str());
+    mProjectNameTextBox->setFocus();
     mSceneMgrNameMenu->addItem("OctreeSceneManager");
     mSceneMgrNameMenu->setCurrentIndex(0);
     mConfigFileTextBox->setText(mOptions->SceneManagerConfigFile.c_str());
@@ -338,7 +339,7 @@ void SettingsDialog::onAccept()
         QFile file(filename.c_str());
         if(file.exists())
         {
-            int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Project file with that name already exists. Would you like to overwrite it?", QMessageBox::Yes | QMessageBox::No);
+            int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Project file with that name already exists. Would you like to overwrite it?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
             if (result != QMessageBox::Yes)
                 return;
         }
