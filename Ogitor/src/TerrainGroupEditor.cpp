@@ -93,10 +93,6 @@ mHandle(0), mBrushData(0), mModificationRect(0,0,0,0)
 
     mMaxLayersAllowed = 6;
 
-    Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-    Ogre::String value = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/";
-    mngr->addResourceLocation(value,"Ofs","TerrainResources");
-
     mTerrainGlobalOptions = OGRE_NEW Ogre::TerrainGlobalOptions();
 }
 //-----------------------------------------------------------------------------------------
@@ -330,6 +326,11 @@ bool CTerrainGroupEditor::load(bool async)
 
     if(!getParent()->load())
         return false;
+
+    Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+    Ogre::String value = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/";
+    mngr->addResourceLocation(value,"Ofs","TerrainResources");
+    mngr->initialiseResourceGroup("TerrainResources");
 
     mDecalFrustum = OGRE_NEW Ogre::Frustum();
     mDecalNode = getSceneManager()->getRootSceneNode()->createChildSceneNode("OgitorTerrainDecalNode");
@@ -887,6 +888,10 @@ CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, Ogit
     {
         Ogre::String value = "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
         OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory(value.c_str());
+
+        Ogre::String copydir = Ogitors::Globals::MEDIA_PATH + "/terrainTextures/";
+        OgitorsUtils::CopyDirOfs(copydir, value + "/");
+
         params.erase(ni);
     }
 
