@@ -49,11 +49,11 @@ IF(UNIX AND NOT APPLE)
     if(OGITOR_DIST)
         install(TARGETS OgreOfsPlugin
             LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
     else(OGITOR_DIST)
         install(TARGETS OgreOfsPlugin
             LIBRARY DESTINATION lib
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
     endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)
