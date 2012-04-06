@@ -520,7 +520,7 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("/debug/*Script_d.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/debug/*Script_d.dll",ScriptPluginList);
 #else
     mSystem->GetFileList("../Plugins/*Script.dll",ScriptPluginList);
 #endif
@@ -548,9 +548,10 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
     PluginList.clear();
 
-    if(mScriptInterpreterList["AngelScript"] != 0)
+    //FIXME: How do we decide what interpreter to use?
+    if(mScriptInterpreterList["PythonQt"] != 0)
     {
-        mScriptInterpreter = mScriptInterpreterList["AngelScript"];
+        mScriptInterpreter = mScriptInterpreterList["PythonQt"];
         mScriptInterpreter->Init();
     }
     else

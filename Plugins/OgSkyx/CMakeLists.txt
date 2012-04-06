@@ -37,7 +37,7 @@ endif(NOT OGITOR_DIST)
 
 set_target_properties(OgSkyx PROPERTIES VERSION ${OgSkyx_VERSION} SOVERSION ${OgSkyx_VERSION_MAJOR})
 set_target_properties(OgSkyx PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-set_target_properties(OgSkyx PROPERTIES SOLUTION_FOLDER Plugins)
+set_target_properties(OgSkyx PROPERTIES FOLDER Plugins) 
 
 if(UNIX AND NOT APPLE)
 	add_custom_command(TARGET OgSkyx PRE_BUILD

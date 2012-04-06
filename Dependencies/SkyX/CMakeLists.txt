@@ -60,6 +60,7 @@ set_target_properties(Skyx PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE
 set_target_properties(Skyx PROPERTIES VERSION ${SKYX_VERSION} SOVERSION ${SKYX_VERSION_MAJOR})
 set_target_properties(Skyx PROPERTIES COMPILE_DEFINITIONS SKYX_LIB)
 set_target_properties(Skyx PROPERTIES SOLUTION_FOLDER Dependencies)
+set_target_properties(Skyx PROPERTIES FOLDER Dependencies) 
 
 target_link_libraries(Skyx ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
