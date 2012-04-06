@@ -10,15 +10,6 @@ FileSystem=@OGITOR_MEDIA_PATH@/particle
 [EditorResources]
 FileSystem=@OGITOR_MEDIA_PATH@/editorResources
 
-[Hydrax]
-FileSystem=@OGITOR_MEDIA_PATH@/editorResources/Hydrax
-
-[Caelum]
-FileSystem=@OGITOR_MEDIA_PATH@/editorResources/Caelum
-
-[SkyX]
-FileSystem=@OGITOR_MEDIA_PATH@/editorResources/SkyX
-
 [Brushes]
 FileSystem=@OGITOR_MEDIA_PATH@/brushes
 
