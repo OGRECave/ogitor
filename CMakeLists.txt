@@ -342,6 +342,50 @@ add_custom_target(lupdate
 
 
 if(WIN32)
+	# SDK : main libs - debug
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug
+		DESTINATION ${PREFIX}/sdk/lib
+		CONFIGURATIONS Debug
+	)
+	# SDK : main libs - release
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Release
+		DESTINATION ${PREFIX}/sdk/lib
+		CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+	)
+	# SDK : Ogitor includes
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include
+		DESTINATION ${PREFIX}/sdk
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK : Dependencies libs
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Dependencies/lib
+		DESTINATION ${PREFIX}/sdk/dependencies
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: SkyX includes
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
+		DESTINATION ${PREFIX}/sdk/dependencies/include
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: Angelscript includes
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript
+		DESTINATION ${PREFIX}/sdk/dependencies/include
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "*.dsp" EXCLUDE
+		PATTERN "*.dsw" EXCLUDE
+		PATTERN "*.asm" EXCLUDE
+		PATTERN "*.txt" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: Caelum includes
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include
+		DESTINATION ${PREFIX}/sdk/dependencies/include/Caelum-0.5.0
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+
     install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
         ${OGRE_PLUGIN_DIR_REL}/RenderSystem_Direct3D9.dll
         ${OGRE_PLUGIN_DIR_REL}/RenderSystem_GL.dll
