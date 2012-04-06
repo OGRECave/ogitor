@@ -81,7 +81,7 @@ Ogre::String OgitorsUtils::GetEditorResourcesPath()
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 	  return QualifyPath(GetMacBundlePath() + "/Contents/Resources/Media/editorResources");
 #else
-	  return QualifyPath(Ogitors::Globals::MEDIA_PATH+"/editorResources");
+	  return QualifyPath(Ogitors::Globals::MEDIA_PATH + "/editorResources");
 #endif
 }
 //-----------------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ Ogre::String OgitorsUtils::QualifyPath(const Ogre::String &dirname)
     Ogre::String path = dirname;
     if(path.substr(0,1) == ".") path = mExePath + "/" + path;
 
-    std::replace(path.begin(),path.end(),'\\','/');
+    std::replace(path.begin(), path.end(), '\\', '/');
     
     // Remember if there is a leading '/'
     bool leadingSlash = false;
@@ -195,8 +195,8 @@ Ogre::String OgitorsUtils::QualifyPath(const Ogre::String &dirname)
     while(pos != -1)
     {
         if(pos > 0 && path.substr(0,pos) != ".")  // Ignore zero strings and same directory pointers
-            list.push_back(path.substr(0,pos));
-        path.erase(0,pos + 1);
+            list.push_back(path.substr(0, pos));
+        path.erase(0, pos + 1);
         pos = path.find("/");
     }
 
@@ -208,7 +208,7 @@ Ogre::String OgitorsUtils::QualifyPath(const Ogre::String &dirname)
     {
         if(list[pos2] == "..")
         {
-              list.erase(list.begin() + pos2 - 1,list.begin() + pos2 + 1);
+              list.erase(list.begin() + pos2 - 1, list.begin() + pos2 + 1);
             pos2--;
         }
         else
@@ -231,7 +231,7 @@ Ogre::String OgitorsUtils::QualifyPath(const Ogre::String &dirname)
     return path;
 }
 //-----------------------------------------------------------------------------------------
-Ogre::String OgitorsUtils::GetRelativePath(const Ogre::String pathFrom,const Ogre::String pathTo)
+Ogre::String OgitorsUtils::GetRelativePath(const Ogre::String pathFrom, const Ogre::String pathTo)
 {
     Ogre::String sFrom = QualifyPath(pathFrom);
     Ogre::String sTo = QualifyPath(pathTo);
@@ -247,8 +247,8 @@ Ogre::String OgitorsUtils::GetRelativePath(const Ogre::String pathFrom,const Ogr
     int pos = sFrom.find("/");
     while(pos != -1)
     {
-        listfrom.push_back(sFrom.substr(0,pos));
-        sFrom.erase(0,pos + 1);
+        listfrom.push_back(sFrom.substr(0, pos));
+        sFrom.erase(0, pos + 1);
         pos = sFrom.find("/");
     }
     
@@ -259,8 +259,8 @@ Ogre::String OgitorsUtils::GetRelativePath(const Ogre::String pathFrom,const Ogr
     pos = sTo.find("/");
     while(pos != -1)
     {
-        listto.push_back(sTo.substr(0,pos));
-        sTo.erase(0,pos + 1);
+        listto.push_back(sTo.substr(0, pos));
+        sTo.erase(0, pos + 1);
         pos = sTo.find("/");
     }
     
@@ -280,8 +280,8 @@ Ogre::String OgitorsUtils::GetRelativePath(const Ogre::String pathFrom,const Ogr
             break;
     }
 
-    listfrom.erase(listfrom.begin(),listfrom.begin() + i);
-    listto.erase(listto.begin(),listto.begin() + i);
+    listfrom.erase(listfrom.begin(), listfrom.begin() + i);
+    listto.erase(listto.begin(), listto.begin() + i);
 
     if(listfrom.size() == 0 && listto.size() == 0) 
         return "./";
@@ -317,12 +317,12 @@ void OgitorsUtils::GetMeshData(const Ogre::MeshPtr mesh, size_t &vertex_count, s
     // Calculate how many vertices and indices we're going to need
     for (unsigned short i = 0; i < mesh->getNumSubMeshes(); ++i)
     {
-        Ogre::SubMesh* submesh = mesh->getSubMesh( i );
+        Ogre::SubMesh* submesh = mesh->getSubMesh(i);
 
         // We only need to add the shared vertices once
         if(submesh->useSharedVertices)
         {
-            if( !added_shared )
+            if(!added_shared)
             {
                 vertex_count += mesh->sharedVertexData->vertexCount;
                 added_shared = true;
@@ -341,21 +341,21 @@ void OgitorsUtils::GetMeshData(const Ogre::MeshPtr mesh, size_t &vertex_count, s
     if(vertex_count > mVertexBufferSize)
     {
         OGRE_FREE(mVertexBuffer, Ogre::MEMCATEGORY_GEOMETRY);
-        mVertexBuffer = OGRE_ALLOC_T(Ogre::Vector3,vertex_count, Ogre::MEMCATEGORY_GEOMETRY);
+        mVertexBuffer = OGRE_ALLOC_T(Ogre::Vector3, vertex_count, Ogre::MEMCATEGORY_GEOMETRY);
         mVertexBufferSize = vertex_count;
     }
 
     if(index_count > mIndexBufferSize)
     {
         OGRE_FREE(mIndexBuffer, Ogre::MEMCATEGORY_GEOMETRY);
-        mIndexBuffer = OGRE_ALLOC_T(unsigned long,index_count, Ogre::MEMCATEGORY_GEOMETRY);
+        mIndexBuffer = OGRE_ALLOC_T(unsigned long, index_count, Ogre::MEMCATEGORY_GEOMETRY);
         mIndexBufferSize = index_count;
     }
 
     added_shared = false;
 
     // Run through the submeshes again, adding the data into the arrays
-    for ( unsigned short i = 0; i < mesh->getNumSubMeshes(); ++i)
+    for (unsigned short i = 0; i < mesh->getNumSubMeshes(); ++i)
     {
         Ogre::SubMesh* submesh = mesh->getSubMesh(i);
 
@@ -377,11 +377,11 @@ void OgitorsUtils::GetMeshData(const Ogre::MeshPtr mesh, size_t &vertex_count, s
 
             // There is _no_ baseVertexPointerToElement() which takes an Ogre::Real or a double
             //  as second argument. So make it float, to avoid trouble when Ogre::Real will
-            //  be comiled/typedefed as double:
+            //  be compiled/typedef-ed as double:
             //      Ogre::Real* pReal;
             float* pReal;
 
-            for( size_t j = 0; j < vertex_data->vertexCount; ++j, vertex += vbuf->getVertexSize())
+            for(size_t j = 0; j < vertex_data->vertexCount; ++j, vertex += vbuf->getVertexSize())
             {
                 posElem->baseVertexPointerToElement(vertex, &pReal);
 
@@ -406,16 +406,16 @@ void OgitorsUtils::GetMeshData(const Ogre::MeshPtr mesh, size_t &vertex_count, s
 
         size_t offset = (submesh->useSharedVertices)? shared_offset : current_offset;
 
-        if ( use32bitindexes )
+        if (use32bitindexes)
         {
-            for ( size_t k = 0; k < numTris*3; ++k)
+            for (size_t k = 0; k < numTris*3; ++k)
             {
                 mIndexBuffer[index_offset++] = pLong[k] + static_cast<unsigned long>(offset);
             }
         }
         else
         {
-            for ( size_t k = 0; k < numTris*3; ++k)
+            for (size_t k = 0; k < numTris*3; ++k)
             {
                 mIndexBuffer[index_offset++] = static_cast<unsigned long>(pShort[k]) + static_cast<unsigned long>(offset);
             }
@@ -428,7 +428,7 @@ void OgitorsUtils::GetMeshData(const Ogre::MeshPtr mesh, size_t &vertex_count, s
 }
 //-----------------------------------------------------------------------------------------
 void OgitorsUtils::GetMeshDataEx(const Ogre::Entity *entity, size_t &vertex_count, size_t &index_count,
-                               const Ogre::Vector3 &position, const Ogre::Quaternion &orient, const Ogre::Vector3 &scale)
+                                 const Ogre::Vector3 &position, const Ogre::Quaternion &orient, const Ogre::Vector3 &scale)
 {
     bool added_shared = false;
     size_t current_offset = 0;
@@ -448,7 +448,7 @@ void OgitorsUtils::GetMeshDataEx(const Ogre::Entity *entity, size_t &vertex_coun
         // We only need to add the shared vertices once
         if(submesh->useSharedVertices)
         {
-            if( !added_shared )
+            if(!added_shared)
             {
                 vertex_count += mesh->sharedVertexData->vertexCount;
                 added_shared = true;
@@ -467,14 +467,14 @@ void OgitorsUtils::GetMeshDataEx(const Ogre::Entity *entity, size_t &vertex_coun
     if(vertex_count > mVertexBufferSize)
     {
         OGRE_FREE(mVertexBuffer, Ogre::MEMCATEGORY_GEOMETRY);
-        mVertexBuffer = OGRE_ALLOC_T(Ogre::Vector3,vertex_count, Ogre::MEMCATEGORY_GEOMETRY);
+        mVertexBuffer = OGRE_ALLOC_T(Ogre::Vector3, vertex_count, Ogre::MEMCATEGORY_GEOMETRY);
         mVertexBufferSize = vertex_count;
     }
 
     if(index_count > mIndexBufferSize)
     {
         OGRE_FREE(mIndexBuffer, Ogre::MEMCATEGORY_GEOMETRY);
-        mIndexBuffer = OGRE_ALLOC_T(unsigned long,index_count, Ogre::MEMCATEGORY_GEOMETRY);
+        mIndexBuffer = OGRE_ALLOC_T(unsigned long, index_count, Ogre::MEMCATEGORY_GEOMETRY);
         mIndexBufferSize = index_count;
     }
 
@@ -506,7 +506,7 @@ void OgitorsUtils::GetMeshDataEx(const Ogre::Entity *entity, size_t &vertex_coun
 
             // There is _no_ baseVertexPointerToElement() which takes an Ogre::Real or a double
             //  as second argument. So make it float, to avoid trouble when Ogre::Real will
-            //  be comiled/typedefed as double:
+            //  be compiled/typedef-ed as double:
             //      Ogre::Real* pReal;
             float* pReal;
 
@@ -535,16 +535,16 @@ void OgitorsUtils::GetMeshDataEx(const Ogre::Entity *entity, size_t &vertex_coun
 
         size_t offset = (submesh->useSharedVertices)? shared_offset : current_offset;
 
-        if ( use32bitindexes )
+        if (use32bitindexes)
         {
-            for ( size_t k = 0; k < numTris*3; ++k)
+            for (size_t k = 0; k < numTris * 3; ++k)
             {
                 mIndexBuffer[index_offset++] = pLong[k] + static_cast<unsigned long>(offset);
             }
         }
         else
         {
-            for ( size_t k = 0; k < numTris*3; ++k)
+            for (size_t k = 0; k < numTris * 3; ++k)
             {
                 mIndexBuffer[index_offset++] = static_cast<unsigned long>(pShort[k]) + static_cast<unsigned long>(offset);
             }
@@ -809,7 +809,7 @@ int OgitorsUtils::PickSubMesh(Ogre::Ray& ray, Ogre::Entity* pEntity)
         int index_pos = 0;
         for (unsigned short sm = 0; sm < pEntity->getMesh()->getNumSubMeshes(); ++sm)
         {
-            index_pos += pEntity->getMesh()->getSubMesh( sm )->indexData->indexCount;
+            index_pos += pEntity->getMesh()->getSubMesh(sm)->indexData->indexCount;
             if(closest_index < index_pos)
                 return sm;
         }
@@ -955,13 +955,13 @@ Ogre::String OgitorsUtils::GetCustomPropertySaveString(OgitorsCustomPropertySet 
 
     Ogre::String indentStr = "";
 
-    for(int k = 0; k < indentation;k++)
+    for(int k = 0; k < indentation; k++)
         indentStr += " ";
     
     buffer += indentStr + "<CUSTOMPROPERTIES>\n";
     OgitorsPropertyVector vec = set->getPropertyVector();
 
-    for(unsigned int i = 0;i < vec.size();i++)
+    for(unsigned int i = 0; i < vec.size(); i++)
     {
         OgitorsPropertyBase *property = vec[i];
         const OgitorsPropertyDef *def = property->getDefinition();
@@ -1045,7 +1045,7 @@ void OgitorsUtils::ReadCustomPropertySet(TiXmlElement *element, OgitorsCustomPro
         OgitorsUtils::ParseStringVector(attFields, svec);
 
         def = set->addProperty(attID, OgitorsPropertyValue::createFromString((OgitorsPropertyType)attType, attValue));
-        for(unsigned int i = 0;i < svec.size();i++)
+        for(unsigned int i = 0; i < svec.size(); i++)
             def->setFieldName(i, svec[i]);
 
         def->setAutoOptionType(attAutoOptionType);
@@ -1056,7 +1056,7 @@ void OgitorsUtils::ReadCustomPropertySet(TiXmlElement *element, OgitorsCustomPro
             if(svec.size() > 1)
             {
                 PropertyOptionsVector *options = new PropertyOptionsVector();
-                for(unsigned int o = 0;o < (svec.size() - 1);o += 2)
+                for(unsigned int o = 0; o < (svec.size() - 1); o += 2)
                 {
                     OgitorsPropertyValue propVal = OgitorsPropertyValue::createFromString(def->getType(), svec[o + 1]);
                     options->push_back(PropertyOption(svec[o], propVal.val));
@@ -1084,12 +1084,12 @@ Ogre::String OgitorsUtils::GetUserDataSaveString(OgitorsCustomPropertySet *set, 
     if(vec.size() < 1)
         return "";
 
-    for(int k = 0; k < indentation;k++)
+    for(int k = 0; k < indentation; k++)
         indentStr += " ";
     
     buffer += indentStr + "<userData>\n";
 
-    for(unsigned int i = 0;i < vec.size();i++)
+    for(unsigned int i = 0; i < vec.size(); i++)
     {
         OgitorsPropertyBase *property = vec[i];
         const OgitorsPropertyDef *def = property->getDefinition();
@@ -1111,7 +1111,7 @@ Ogre::String OgitorsUtils::GetObjectSaveStringV2(CBaseEditor *object, int indent
     Ogre::String outStr;
     Ogre::String indentStr = "";
 
-    for(int k = 0; k < indentation;k++)
+    for(int k = 0; k < indentation; k++)
         indentStr += " ";
     
     outStr = indentStr + "<OBJECT";
@@ -1219,7 +1219,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
 
     char *tmp_buffer = new char[MAX_BUFFER_SIZE];
 
-    for(unsigned int i = 0;i < filelist.size();i++)
+    for(unsigned int i = 0; i < filelist.size(); i++)
     {
         Ogre::String path = filelist[i];
         Ogre::String file_ofs_path = ofs_path + ExtractFileName(filelist[i]);
@@ -1310,7 +1310,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
 
     OgitorsSystem::getSingletonPtr()->GetDirList(dirpath + "/", filelist);
 
-    for(unsigned int i = 0;i < filelist.size();i++)
+    for(unsigned int i = 0; i < filelist.size(); i++)
     {
         Ogre::String dir_name = ofs_path + filelist[i] + "/"; 
         mFile->createDirectory(dir_name.c_str());
