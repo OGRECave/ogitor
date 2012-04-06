@@ -80,7 +80,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
 
     if(!testpassed)
     {
-        mSystem->DisplayMessageDialog("The path is Read-Only. Ogitor can not work with Read-Only Project Paths!", DLGTYPE_OK);
+        mSystem->DisplayMessageDialog("The path is read-only. Ogitor can not work with read-only project paths!", DLGTYPE_OK);
         return SCF_CANCEL;
     }
 

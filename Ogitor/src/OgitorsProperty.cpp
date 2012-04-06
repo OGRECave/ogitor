@@ -32,11 +32,16 @@
 //This File is modified version of the Original Implementation by OGITOR TEAM
 /////////////////////////////////////////////////////////////////////////////
 
+#include "OgitorsPrerequisites.h"
+#include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
 #include <Ogre.h>
 #include <istream>
 #include "OgitorsExports.h"
 #include "OgitorsProperty.h"
 #include "OgitorsUndoManager.h"
+
+using namespace Ogitors;
 
 namespace Ogitors
 {
@@ -199,6 +204,7 @@ namespace Ogitors
         {
             OgitorsPropertyValue val;
             val.propType = i->second->getType();
+
             switch(val.propType)
             {
             case PROP_SHORT:
@@ -249,14 +255,11 @@ namespace Ogitors
             case PROP_MATRIX4:
                 val.val = Ogre::Any(static_cast<OgitorsProperty<Ogre::Matrix4>*>(i->second)->get());
                 break;
-
             };
             ret[i->second->getName()] = val;
         }
 
         return ret;
-
-
     }
     //---------------------------------------------------------------------
     void OgitorsPropertySet::setValueMap(const OgitorsPropertyValueMap& values)
@@ -325,24 +328,26 @@ namespace Ogitors
                     break;
                 case PROP_MATRIX4:
                     static_cast<OgitorsProperty<Ogre::Matrix4>*>(j->second)->set(Ogre::any_cast<Ogre::Matrix4>(i->second.val));
-                    break;
-
+                    break; 
                 };
             }
         }
     }
-
     //---------------------------------------------------------------------
-    void OgitorsPropertySet::initValueMap(const OgitorsPropertyValueMap& values)
+    void OgitorsPropertySet::initValueMap(OgitorsPropertyValueMap& values)
     {
-        for (OgitorsPropertyValueMap::const_iterator i = values.begin(); i != values.end(); ++i)
+        for (OgitorsPropertyValueMap::iterator i = values.begin(); i != values.end(); ++i)
         {
             OgitorsPropertyMap::iterator j = mPropertyMap.find(i->first);
             if (j != mPropertyMap.end())
             {
-                // matching properties
-                // check type
-                assert (j->second->getType() == i->second.propType);
+                // Check for property type mismatch and try to correct it
+                Ogitors::OgitorsSystem* mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
+                if(j->second->getType() != i->second.propType)
+                {
+                    mSystem->DisplayMessageDialog(OTR(Ogre::String("The type of the property ").append(i->first) + " seems to have changed.\n\nOgitor will attempt to automatically correct the situation, but please check the values of the property afterwards."), Ogitors::DLGTYPE_OK);
+                    changePropertyType(&i->second, j->second->getType());
+                }
 
                 switch(i->second.propType)
                 {
@@ -394,10 +399,14 @@ namespace Ogitors
                 case PROP_MATRIX4:
                     static_cast<OgitorsProperty<Ogre::Matrix4>*>(j->second)->init(Ogre::any_cast<Ogre::Matrix4>(i->second.val));
                     break;
-
                 };
             }
         }
+    }
+    //---------------------------------------------------------------------
+    void OgitorsPropertySet::changePropertyType(OgitorsPropertyValue* currentValue, OgitorsPropertyType targetType)
+    {
+        *currentValue = OgitorsPropertyValue::createFromString(targetType, currentValue->origVal);
     }
     //---------------------------------------------------------------------
     OgitorsCustomPropertySet::OgitorsCustomPropertySet()
