@@ -64,6 +64,8 @@ protected:
     QSlider*     mBrushIntensitySlider;
     ColourPickerWidget* mPaintColour;
 
+    /* Useful for getting images out of Ogre/OFS and into QT */
+    QImage getQImageFromOgre(Ogre::String name, Ogre::String resourceGroup);
 
     void resizeEvent(QResizeEvent* evt);
 

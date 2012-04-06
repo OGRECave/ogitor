@@ -39,6 +39,7 @@
 #include "OgitorsRoot.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
+#include "ofs.h"
 
 #define GRID_SIZE_X 52
 #define GRID_SIZE_Y 64
@@ -161,6 +162,13 @@ void TerrainToolsWidget::resizeEvent(QResizeEvent* evt)
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::updateTerrainOptions(ITerrainEditor *terrain)
 {
+    Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+    if (!mngr->resourceGroupExists("TerrainTextures"))
+        return;
+
+    OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
+    updateTools();
+
     if(texturesWidget->currentItem())
     {
         QString str = texturesWidget->currentItem()->whatsThis();
@@ -259,14 +267,14 @@ void TerrainToolsWidget::populateTextures()
 
     Ogre::String fname_diffuse;
     Ogre::String fname_normal;
+   
     for (Ogre::FileInfoList::const_iterator it = resList2->begin(); it != resList2->end(); ++it)
     {
         Ogre::FileInfo fInfo = (*it);
-        if(fInfo.archive->getType() == "FileSystem")
+        if(fInfo.archive->getType() == "Ofs")
         {
             if(fInfo.filename.find("_diffuse.png") == -1) continue;
-            fname_diffuse = fInfo.archive->getName() + "/";
-            fname_diffuse += fInfo.filename;
+            fname_diffuse = fInfo.filename;
             fname_normal = fInfo.filename;
             fname_normal.erase(fname_normal.length() - 12,12);
             fname_normal += "_normalheight.dds";
@@ -290,7 +298,12 @@ void TerrainToolsWidget::populateTextures()
     {
         QString name = ct->second.mid(0, (ct->second.length() / 2) - 3);
         name.replace("_diffuse.png","");
-        QListWidgetItem *witem = new QListWidgetItem(QIcon(ct->first), name);
+
+        QPixmap pixmap;
+        if (!pixmap.convertFromImage(getQImageFromOgre(ct->first.toUtf8().constData(), "TerrainTextures")))
+            continue;
+
+        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name);
         witem->setWhatsThis(ct->second);
         witem->setToolTip(name);
         texturesWidget->addItem(witem);
@@ -344,6 +357,23 @@ void TerrainToolsWidget::populatePlants()
         plantsWidget->setCurrentItem(plantsWidget->item(0));
 }
 //----------------------------------------------------------------------------------------
+QImage TerrainToolsWidget::getQImageFromOgre(Ogre::String name, Ogre::String resourceGroup)
+{
+        Ogre::Image img;
+        img.load(name,resourceGroup);
+
+        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, img.getWidth() * img.getHeight() * 3, Ogre::MEMCATEGORY_GEOMETRY);
+
+        Ogre::PixelBox pixbox(128,128,1,Ogre::PF_B8G8R8,dataptr);
+        Ogre::Image::scale(img.getPixelBox(), pixbox);
+        pixbox.setConsecutive();
+        QImage qimg = QImage(dataptr, pixbox.getWidth(), pixbox.getHeight(), QImage::Format_RGB888);
+
+        OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GEOMETRY);
+        
+        return qimg;
+}
+//----------------------------------------------------------------------------------------
 void TerrainToolsWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 {
     LoadStateChangeEvent *change_event = Ogitors::event_cast<LoadStateChangeEvent*>(evt);
@@ -355,11 +385,10 @@ void TerrainToolsWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 
         if(state == LS_LOADED)
         {
-            updateTools();
-
             ITerrainEditor *terrain = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
-            if(terrain)
+            if(terrain) {
                 updateTerrainOptions(terrain);
+            }
 
             mOgitorMainWindow->menuTerrainTools->setEnabled(true);
         }

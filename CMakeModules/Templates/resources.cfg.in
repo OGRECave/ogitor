@@ -15,6 +15,3 @@ FileSystem=@OGITOR_MEDIA_PATH@/brushes
 
 [Plants]
 FileSystem=@OGITOR_MEDIA_PATH@/plants
-
-[TerrainTextures]
-FileSystem=@OGITOR_MEDIA_PATH@/terrainTextures
