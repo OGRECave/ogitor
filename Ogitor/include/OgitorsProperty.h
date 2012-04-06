@@ -650,12 +650,14 @@ namespace Ogitors
 
     /** A simple structure designed just as a holder of property values between
     the instances of objects they might target. There is just enough information
-    here to be able to interpret the results accurately but no more.
+    here to be able to interpret the results accurately and store the original
+    for potential later use, but no more.
     */
     struct OgitorsPropertyValue : public Ogre::GeneralAllocatedObject
     {
         OgitorsPropertyType propType;
         Ogre::Any val;
+        Ogre::String origVal;
 
         OgitorsPropertyValue() : propType(PROP_UNKNOWN)
         {
@@ -669,11 +671,12 @@ namespace Ogitors
         {
             OgitorsPropertyValue propVal;
             propVal.propType = type;
+            propVal.origVal = value;
 
             switch(type)
             {
             case PROP_SHORT:
-                propVal.val = Ogre::Any((short)Ogre::StringConverter::parseInt(value));break;
+                propVal.val =  Ogre::Any((short)Ogre::StringConverter::parseInt(value));break;
             case PROP_UNSIGNED_SHORT:
                 propVal.val =  Ogre::Any((unsigned short)Ogre::StringConverter::parseUnsignedInt(value));break;
             case PROP_INT:
@@ -824,9 +827,9 @@ namespace Ogitors
         */
         void setValueMap(const OgitorsPropertyValueMap& values);
 
-        /** Inits the current state from a given value map.
+        /** Init the current state from a given value map.
         */
-        void initValueMap(const OgitorsPropertyValueMap& values);
+        void initValueMap(OgitorsPropertyValueMap& values);
 
         /** Get a named property value. 
         */
@@ -876,6 +879,11 @@ namespace Ogitors
         /** Remove a listener from the listeners list. 
         */
         void removeListener(OgitorsPropertySetListener* listener);
+
+        /** Convert an property value to another type, e.g. needed if between
+        *   Ogitor runs, the property types of an editor have been changed
+        */
+        void changePropertyType(OgitorsPropertyValue* currentValue, OgitorsPropertyType targetType);
 
         void _addRef() { ++mRefCount; }
 

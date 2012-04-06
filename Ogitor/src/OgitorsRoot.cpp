@@ -986,7 +986,7 @@ Ogre::SceneManager *OgitorsRoot::GetFirstSceneManager()
         return 0;
 }
 //-----------------------------------------------------------------------------------------
-CBaseEditor *OgitorsRoot::CreateEditorObject(CBaseEditor *parent, const Ogre::String objecttypestring, OgitorsPropertyValueMap &params,bool addtotreelist, bool display)
+CBaseEditor *OgitorsRoot::CreateEditorObject(CBaseEditor *parent, const Ogre::String objecttypestring, OgitorsPropertyValueMap &params, bool addtotreelist, bool display)
 {
     if(parent == 0)
     {
