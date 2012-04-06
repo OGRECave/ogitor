@@ -81,7 +81,7 @@ Ogre::String OgitorsUtils::GetEditorResourcesPath()
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 	  return QualifyPath(GetMacBundlePath() + "/Contents/Resources/Media/editorResources");
 #else
-	  return QualifyPath("../Media/editorResources");
+	  return QualifyPath(Ogitors::Globals::MEDIA_PATH+"/editorResources");
 #endif
 }
 //-----------------------------------------------------------------------------------------
