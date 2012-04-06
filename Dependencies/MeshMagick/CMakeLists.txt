@@ -90,6 +90,7 @@ else()
 	set_source_files_properties(${COPY_FRAMEWORKS} PROPERTIES MACOSX_PACKAGE_LOCATION Frameworks)
 endif(NOT APPLE)
 
+set_target_properties(meshmagick_bin PROPERTIES FOLDER Dependencies) 
 set_target_properties(meshmagick_bin PROPERTIES
 	OUTPUT_NAME meshmagick
 	DEFINE_SYMBOL MESHMAGICK_IMPORTS)

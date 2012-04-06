@@ -171,6 +171,9 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
     if(!OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
         return;
 
+	if(!mMaterialEditor) // Catch double-click on root of treeview
+		return;
+
     Ogre::Material* material = static_cast<Ogre::Material*>(mMaterialEditor->getHandle());
     try
     {
