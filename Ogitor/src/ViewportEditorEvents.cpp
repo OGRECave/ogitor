@@ -986,8 +986,19 @@ namespace Ogitors
 
             float dist = std::max(std::max(vSize.x,vSize.y),vSize.z) * 2.0f;
 
-            Ogre::Vector3 lookat = (mActiveCamera->getCamera()->getDerivedDirection() * dist);
-            mNewCamPosition = vCenter - lookat;
+            if(mOgitorsRoot->GetSelection()->getFirstObject()->getEditorType() == ETYPE_TERRAIN_PAGE)
+            {
+                mNewCamPosition = vCenter;
+                mNewCamPosition.y += vSize.y;
+                
+                if(mActiveCamera)
+                    mActiveCamera->lookAt(vCenter);
+            }
+            else
+            {
+                Ogre::Vector3 lookat = (mActiveCamera->getCamera()->getDerivedDirection() * dist);
+                mNewCamPosition = vCenter - lookat;
+            }            
         }
     }
     //-------------------------------------------------------------------------------
