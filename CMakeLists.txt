@@ -318,7 +318,7 @@ add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
-add_subdirectory(Plugins/ogQtExample)
+#add_subdirectory(Plugins/ogQtExample)
 
 add_subdirectory(OgreOfsPlugin)
 
