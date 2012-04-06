@@ -186,9 +186,6 @@ void CTerrainGroupEditor::setBrushName(const std::string& brush)
                 pos += 4;
         }
 
-        mDecalTexture->setHeight(height);
-        mDecalTexture->setWidth(width);
-        
         /* Width, Height and Format must match when copying into mDecalTexture
            or the decal texture won't show on linux and possibly other platforms. */
         Ogre::HardwarePixelBufferSharedPtr ptr = mDecalTexture->getBuffer();
