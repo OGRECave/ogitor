@@ -131,7 +131,7 @@ bool CSkyxEditor::load(bool async)
 
     mHandle->getVCloudsManager()->getVClouds()->registerCamera(mOgitorsRoot->GetViewport()->getCameraEditor()->getCamera());
 
-    mHandle->getVCloudsManager()->getVClouds()->setDistanceFallingParams(Ogre::Vector2(2,-1));
+    mHandle->getVCloudsManager()->getVClouds()->setDistanceFallingParams(Ogre::Vector2(2, -1));
 
     _restoreState();
 
@@ -230,10 +230,7 @@ bool CSkyxEditor::_setOptionsMieMultiplier(OgitorsPropertyBase* property, const 
 }
 //-----------------------------------------------------------------------------------------
 bool CSkyxEditor::_setOptionsSampleCount(OgitorsPropertyBase* property, const int& value)
-{
-    if(value < 1)
-        return false;
-    
+{   
     SkyX::AtmosphereManager::Options opt = mHandle->getAtmosphereManager()->getOptions();
     opt.NumberOfSamples = value;
     mHandle->getAtmosphereManager()->setOptions(opt);
@@ -280,25 +277,9 @@ bool CSkyxEditor::_setOptionsOuterRadius(OgitorsPropertyBase* property, const Og
 //-----------------------------------------------------------------------------------------
 bool CSkyxEditor::_setOptionsTime(OgitorsPropertyBase* property, const Ogre::Vector3& value)
 {
-    Ogre::Vector3 checkvalue = value;
-    if(checkvalue.x < 0.0f)
-        checkvalue.x = 0.0f;
-    else if(checkvalue.x > 24.0f)
-        checkvalue.x = 24.0f;
+    mTime->init(value);
 
-    if(checkvalue.y < 0.0f)
-        checkvalue.y = 0.0f;
-    else if(checkvalue.y > 24.0f)
-        checkvalue.y = 24.0f;
-
-    if(checkvalue.z < 0.0f)
-        checkvalue.z = 0.0f;
-    else if(checkvalue.z > 24.0f)
-        checkvalue.z = 24.0f;
-
-    mTime->init(checkvalue);
-
-    mBasicController->setTime(checkvalue);
+    mBasicController->setTime(value);
     return true;
 }
 //-----------------------------------------------------------------------------------------
@@ -550,10 +531,10 @@ CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     definition = AddPropertyDefinition("vclouds::ambientcolor",         "Volumetric Clouds::Ambient Color",     "", PROP_COLOUR);
     definition = AddPropertyDefinition("vclouds::lightresponse",        "Volumetric Clouds::Light Response",    "", PROP_VECTOR4);
     definition->setFieldNames("Sun light power", "Sun beta multiplier", "Ambient color multiplier", "Distance attenuation");
-    definition->setRange(Ogre::Any(0.0f), Ogre::Any(5.0f), Ogre::Any(0.02f));
+    definition->setRange(Ogre::Any(Ogre::Vector4(0.0f)), Ogre::Any(Ogre::Vector4(5.0f)), Ogre::Any(Ogre::Vector4(0.02f)));
     definition = AddPropertyDefinition("vclouds::ambientfactors",       "Volumetric Clouds::Ambient Factors",   "", PROP_VECTOR4);
     definition->setFieldNames("Constant", "Linear", "Quadratic", "Cubic");    
-    definition->setRange(Ogre::Any(0.0f), Ogre::Any(5.0f), Ogre::Any(0.02f));
+    definition->setRange(Ogre::Any(Ogre::Vector4(0.0f)), Ogre::Any(Ogre::Vector4(5.0f)), Ogre::Any(Ogre::Vector4(0.02f)));
     definition = AddPropertyDefinition("vclouds::weather",              "Volumetric Clouds::Weather",           "", PROP_VECTOR2);
     definition->setFieldNames("Humidity", "Average Cloud Size");
     definition->setRange(Ogre::Any(Ogre::Vector2(0, 0)), Ogre::Any(Ogre::Vector2(1, 1)), Ogre::Any(Ogre::Vector2(0.1, 0.1)));
@@ -587,7 +568,7 @@ CBaseEditor *CSkyxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPrope
   Ogre::String value = "/SkyX";
   OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
     
-  CSkyxEditor *object = OGRE_NEW CSkyxEditor(this);
+  CSkyxEditor *editor = OGRE_NEW CSkyxEditor(this);
 
   if(params.find("init") != params.end())
   {
@@ -598,25 +579,33 @@ CBaseEditor *CSkyxEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPrope
       params.erase(params.find("init"));
   }
 
-  object->createProperties(params);
-  object->mParentEditor->init(*parent);
-  object->load();
-  object->update(0);
+  editor->createProperties(params);
+  editor->mParentEditor->init(*parent);
+  editor->load();
+  editor->update(0);
 
   mInstanceCount++;
-  return object;
+  return editor;
 }
 //----------------------------------------------------------------------------
 void CSkyxEditorFactory::DestroyObject(CBaseEditor *object)
 {
-    CSkyxEditor *SKYXOBJECT = static_cast<CSkyxEditor*>(object);
+    CSkyxEditor *editor = static_cast<CSkyxEditor*>(object);
 
-    SKYXOBJECT->unLoad();
-    SKYXOBJECT->destroyAllChildren();
-    if(SKYXOBJECT->getName() != "")
-        OgitorsRoot::getSingletonPtr()->UnRegisterObjectName(SKYXOBJECT->getName(), SKYXOBJECT);
+    editor->unLoad();
+    editor->destroyAllChildren();
+    if(editor->getName() != "")
+        OgitorsRoot::getSingletonPtr()->UnRegisterObjectName(editor->getName(), editor);
 
-    OGRE_DELETE SKYXOBJECT;
+    Ogitors::OgitorsSystem* mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
+    LoadState state = OgitorsRoot::getSingletonPtr()->GetLoadState();
+    if(state != LS_UNLOADED && DLGRET_YES == mSystem->DisplayMessageDialog(OTR("Should the 'SkyX' folder be removed from the OFS project file?"), Ogitors::DLGTYPE_YESNO))
+    {
+        OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+        mFile->deleteDirectory("/SkyX", true);
+    }
+
+    OGRE_DELETE editor;
     mInstanceCount--;
 }
 
