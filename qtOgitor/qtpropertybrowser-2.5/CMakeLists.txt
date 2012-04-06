@@ -181,7 +181,7 @@ ELSE(NOT QT4_FOUND)
 
 	install(TARGETS QtSolutions_PropertyBrowser
 	    LIBRARY DESTINATION lib
-	    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+	    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
     ENDIF(UNIX AND NOT APPLE)
 
