@@ -101,7 +101,7 @@ namespace Ogitors
         "ETYPE_TERRAIN_PAGE"    /** String'ification of EDITORTYPE::ETYPE_TERRAIN_PAGE */
     };
     /** Last unique ID for an editor */
-    const unsigned int LAST_EDITOR = ETYPE_MULTISEL + 1;
+    const unsigned int LAST_EDITOR = ETYPE_TERRAIN_PAGE + 1;
 
     typedef Ogre::vector<Ogre::UTFString>::type UTFStringVector;
 

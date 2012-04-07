@@ -204,7 +204,6 @@ mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSourc
     mObjectDisplayOrder.push_back(ETYPE_SKY_MANAGER);
     mObjectDisplayOrder.push_back(ETYPE_WATER_MANAGER);
     mObjectDisplayOrder.push_back(ETYPE_TERRAIN_MANAGER);
-    mObjectDisplayOrder.push_back(ETYPE_TERRAIN_PAGE);
     mObjectDisplayOrder.push_back(ETYPE_CUSTOM_MANAGER);
     mObjectDisplayOrder.push_back(ETYPE_FOLDER);
     mObjectDisplayOrder.push_back(ETYPE_LIGHT);
@@ -1250,19 +1249,19 @@ void OgitorsRoot::RecurseFillTreeView(CBaseEditor *pEditor)
     mymap.clear();
     for (i = children.begin(); i != iend; ++i)
     {
-        mymap.insert(std::map<Ogre::String,CBaseEditor*>::value_type(i->first,i->second));
+        mymap.insert(std::map<Ogre::String,CBaseEditor*>::value_type(i->first, i->second));
     }
 
     std::map<Ogre::String,CBaseEditor*>::const_iterator i2, i2end;
     i2end = mymap.end();
 
-    for(unsigned int z = 0;z < mObjectDisplayOrder.size();z++)
+    for(unsigned int z = 0; z < mObjectDisplayOrder.size(); z++)
     {
       for (i2 = mymap.begin(); i2 != i2end; ++i2)
       {
           if(i2->second->getEditorType() == mObjectDisplayOrder[z])
           {
-              mSystem->InsertTreeItem(pEditor,i2->second,i2->second->getTypeID(),i2->second->getTextColourInt());
+              mSystem->InsertTreeItem(pEditor, i2->second, i2->second->getTypeID(), i2->second->getTextColourInt());
               RecurseFillTreeView(i2->second);
           }
       }

@@ -327,6 +327,7 @@ add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgPythonQtScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
+#add_subdirectory(Plugins/ogQtExample)
 
 add_subdirectory(OgreOfsPlugin)
 
@@ -343,7 +344,93 @@ add_subdirectory(RunPath)
 add_subdirectory(Help)
 
 if(WIN32)
-    install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
+	# SDK : main libs - debug
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug
+		DESTINATION ${PREFIX}/sdk/lib
+		CONFIGURATIONS Debug
+	)
+	# SDK : main libs - release
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Release
+		DESTINATION ${PREFIX}/sdk/lib
+		CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+	)
+	# SDK : Ogitor includes
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include
+		DESTINATION ${PREFIX}/sdk
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK : Dependencies libs
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Dependencies/lib
+		DESTINATION ${PREFIX}/sdk/dependencies
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: OFS headers
+	FILE(GLOB ofs_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
+	install(FILES ${ofs_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/OFS
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: GenericImageEditor headers
+	FILE(GLOB GenericImageEditor_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include/*.hxx")
+	install(FILES ${GenericImageEditor_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/GenericImageEditor
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: GenericTextEditor headers
+	FILE(GLOB GenericTextEditor_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include/*.hxx")
+	install(FILES ${GenericTextEditor_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/GenericTextEditor
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: Hydrax headers
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
+		DESTINATION ${PREFIX}/sdk/dependencies/include
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: SkyX headers
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
+		DESTINATION ${PREFIX}/sdk/dependencies/include
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: PagedGeometry headers
+	FILE(GLOB pg_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
+	install(FILES ${pg_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/OFS
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: Angelscript headers
+	FILE(GLOB angelscript_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include/*.h")
+	install(FILES ${angelscript_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/Angelscript
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
+		DESTINATION ${PREFIX}/sdk/dependencies/include/Angelscript
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "*.dsp" EXCLUDE
+		PATTERN "*.dsw" EXCLUDE
+		PATTERN "*.asm" EXCLUDE
+		PATTERN "*.txt" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: Caelum headers
+	FILE(GLOB caelum_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
+	install(FILES ${caelum_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/Caelum-0.5.0
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	
+	# TODO: MeshMagick
+	# TODO: lua
+	# TODO: PythonQt
+	
+    # Ogre DLLs
+	install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
         ${OGRE_PLUGIN_DIR_REL}/RenderSystem_Direct3D9.dll
         ${OGRE_PLUGIN_DIR_REL}/RenderSystem_GL.dll
         ${OGRE_PLUGIN_DIR_REL}/Plugin_OctreeSceneManager.dll
