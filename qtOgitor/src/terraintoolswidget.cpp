@@ -363,12 +363,14 @@ QImage TerrainToolsWidget::getQImageFromOgre(Ogre::String name, Ogre::String res
         Ogre::Image img;
         img.load(name,resourceGroup);
 
-        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, img.getWidth() * img.getHeight() * 3, Ogre::MEMCATEGORY_GEOMETRY);
+        size_t size = Ogre::PixelUtil::getMemorySize(img.getWidth(), img.getHeight(), img.getDepth(), Ogre::PF_A8R8G8B8);
+        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GEOMETRY);
 
-        Ogre::PixelBox pixbox(128,128,1,Ogre::PF_B8G8R8,dataptr);
+        Ogre::PixelBox pixbox(128,128,1, Ogre::PF_A8R8G8B8, dataptr);
         Ogre::Image::scale(img.getPixelBox(), pixbox);
         pixbox.setConsecutive();
-        QImage qimg = QImage(dataptr, pixbox.getWidth(), pixbox.getHeight(), QImage::Format_RGB888);
+
+        QImage qimg = QImage(dataptr, pixbox.getWidth(), pixbox.getHeight(), QImage::Format_ARGB32);
 
         OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GEOMETRY);
         
