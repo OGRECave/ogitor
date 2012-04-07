@@ -44,12 +44,19 @@ class UITerrainSquare : public QObject, public QGraphicsRectItem
 
 public:
     UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent);
+    /** Used to set the information needed to draw the map and use the class **/
     void set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool hasTerrain);
+    /** Returns true if the terrain page has no neighbour terrain pages next to it **/
+    bool hasFreeNeighbour();
 
     QAction* actAddPage;
+    QAction* actAddNeighbourPage;
+    QAction* actRemovePage;
 
 public Q_SLOTS:
     void addPage();
+    void removePage();
+    void addNeighbourPage();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

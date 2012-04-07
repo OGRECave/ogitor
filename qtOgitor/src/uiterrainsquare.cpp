@@ -38,6 +38,7 @@
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
 
 #include "BaseEditor.h"
 #include "TerrainEditor.h"
@@ -57,7 +58,19 @@ UITerrainSquare::UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *paren
     actAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
     connect(actAddPage, SIGNAL(triggered()), (QObject*) this, SLOT(addPage()));
 
+    actAddNeighbourPage = new QAction(tr("Add Neighbour Pages"), (QObject*) this);
+    actAddNeighbourPage->setStatusTip(tr("Creates terrain pages around this page"));
+    connect(actAddNeighbourPage, SIGNAL(triggered()), (QObject*) this, SLOT(addNeighbourPage()));
+
+    actRemovePage = new QAction(tr("Remove Terrain Page"), (QObject*) this);
+    actRemovePage->setStatusTip(tr("Removes a new page to the terrain group"));
+    connect(actRemovePage, SIGNAL(triggered()), (QObject*) this, SLOT(removePage()));
+
+
     contextMenu.addAction(actAddPage);
+    contextMenu.addAction(actAddNeighbourPage);
+//TODO: Implement remove page
+//    contextMenu.addAction(actRemovePage);
 }
 
 void UITerrainSquare::set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool hasTerrain)
@@ -69,23 +82,46 @@ void UITerrainSquare::set(const signed int x, const signed int y, const QPen pen
     mHasTerrain = hasTerrain;
 }
 
+bool UITerrainSquare::hasFreeNeighbour()
+{
+    int X,Y;
+    for(int Y = this->y-1;Y < this->y+2;Y++)
+    {
+        for(int X = this->x-1;X < this->x+2;X++)
+        {
+            if (Y == this->y && X == this->x)
+                continue;
+
+            Ogre::String coords = Ogre::StringConverter::toString(X)+"x"+Ogre::StringConverter::toString(Y);
+            if (parent->getTerrainPageFlags()->count(coords) == 0)
+                return true;
+        }
+    }
+    return false;
+}
+
 void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    QGraphicsItem::mouseReleaseEvent(event);
+    QGraphicsItem::mousePressEvent(event);
+    QColor green(71, 130, 71);
+    QColor grey(52, 51, 49);
+    QColor orange(173, 81, 44);
 
-    actAddPage->setEnabled(mHasTerrain);
+    actAddPage->setEnabled(!mHasTerrain);
+    actRemovePage->setEnabled(mHasTerrain);
+    actAddNeighbourPage->setEnabled(hasFreeNeighbour() && mHasTerrain);
 
-    this->setBrush(QBrush(QColor(173, 81, 44)));
+    this->setBrush(QBrush(orange));
     QAction* actionSelected = contextMenu.exec(QCursor::pos());
-    this->setBrush(QBrush(QColor(52, 51, 49)));
+    this->setBrush(QBrush(grey));
 
     update();
     QGraphicsItem::mousePressEvent(event);
 
-    if (mHasTerrain)
+    if (!mHasTerrain)
         return;
 
-    this->setBrush(QBrush(QColor(71, 130, 71)));
+    this->setBrush(QBrush(green));
 }
 
 void UITerrainSquare::addPage()
@@ -96,9 +132,52 @@ void UITerrainSquare::addPage()
         Ogre::String diffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
         Ogre::String normal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
 
+        // FIXME: Uncomment when displaying a progress dialog becomes threaded
+        //OgitorsSystem::getSingletonPtr()->DisplayProgressDialog("Creating terrain page", 0,1,0);
+
         CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor *>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
         terGroup->addPage(this->x, this->y, diffuse, normal);
+
+        //OgitorsSystem::getSingletonPtr()->HideProgressDialog();
+        Ogre::String coords = Ogre::StringConverter::toString(this->x)+"x"+Ogre::StringConverter::toString(this->y);
+        parent->writeTerrainFlag(this->x, this->y, "1");
         parent->drawPageMap();
     }
 }
 
+void UITerrainSquare::addNeighbourPage()
+{
+    CreateTerrainDialog dlg(QApplication::activeWindow());
+
+    if(dlg.exec() != QDialog::Accepted)
+        return;
+
+    Ogre::String diffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
+    Ogre::String normal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
+
+    CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor *>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
+    
+    int X,Y;
+    for(int Y = this->y-1;Y < this->y+2;Y++)
+    {
+        for(int X = this->x-1;X < this->x+2;X++)
+        {
+            if (Y == this->y && X == this->x)
+                continue;
+
+            Ogre::String coords = Ogre::StringConverter::toString(X)+"x"+Ogre::StringConverter::toString(Y);
+            if (parent->getTerrainPageFlags()->count(coords) != 0)
+                continue;
+
+            //terGroup->addPage(X, Y, diffuse, normal);
+            parent->writeTerrainFlag(X, Y, "1");
+        }
+    }
+
+    parent->drawPageMap();
+}
+
+void UITerrainSquare::removePage()
+{
+
+}
