@@ -318,7 +318,7 @@ add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
-add_subdirectory(Plugins/OgQtExample)
+#add_subdirectory(Plugins/OgQtExample)
 
 add_subdirectory(OgreOfsPlugin)
 
@@ -328,7 +328,7 @@ add_subdirectory(qtOgitor)
 
 add_subdirectory(qtOfs)
 
-#add_subdirectory(SceneLoader)
+add_subdirectory(SceneLoader)
 
 add_subdirectory(RunPath)
 
