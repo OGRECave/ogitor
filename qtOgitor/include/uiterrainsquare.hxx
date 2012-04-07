@@ -36,39 +36,35 @@
 #include <QtGui/QGraphicsItem>
 #include <QtCore/QtCore>
 #include <Ogre.h>
-
+#include "manageTerrainDialog.hxx"
 
 class UITerrainSquare : public QObject, public QGraphicsRectItem 
 {
     Q_OBJECT
 
 public:
-    UITerrainSquare(QGraphicsView* view, Ogre::NameValuePairList *params);
+    UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent);
+    void set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool hasTerrain);
 
-    void set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool selectable);
-    
     QAction* actAddPage;
 
 public Q_SLOTS:
     void addPage();
-    
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
 
     void createPage();
 
     QMenu contextMenu;
-    QWidget *parent;
     QGraphicsView* view;
     QPen pen;
     QBrush brush;
     signed int x;
     signed int y;
-    Ogre::NameValuePairList *params;
-    bool selectable;
+    ManageTerrainDialog *parent;
+    bool mHasTerrain;
 };
 

@@ -41,7 +41,7 @@
 #include "qttreepropertybrowser.h"
 #include "propertiesviewgeneral.hxx"
 #include "propertiesviewcustom.hxx"
-#include "manageterraindialog.hxx"
+#include "manageTerrainDialog.hxx"
 #include "importheightmapdialog.hxx"
 #include "eucliddialog.hxx"
 #include "calculateblendmapdialog.hxx"

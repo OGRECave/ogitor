@@ -31,17 +31,13 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #include <../QtGui/qgraphicsitem.h>
 
-#include "manageterraindialog.hxx"
+#include "manageTerrainDialog.hxx"
+
 #include "OgitorsPrerequisites.h"
-#include "OgitorsSystem.h"
-#include "BaseEditor.h"
 #include "OgitorsRoot.h"
-#include "OgitorsSystem.h"
-#include "CameraEditor.h"
-#include "ViewportEditor.h"
+#include "BaseEditor.h"
 #include "TerrainEditor.h"
 #include "TerrainPageEditor.h"
-#include "addtemplatedialog.hxx"
 #include "uiterrainsquare.hxx"
 
 ManageTerrainDialog::ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params) 
@@ -49,14 +45,12 @@ ManageTerrainDialog::ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairLis
 {
     this->setWindowFlags(Qt::Window);
     setupUi(this);
-    drawPageMap(params);
+    drawPageMap();
 }
 
-void ManageTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
+void ManageTerrainDialog::drawPageMap()
 {
-
     Ogitors::CBaseEditor* editor = Ogitors::OgitorsRoot::getSingletonPtr()->GetTerrainEditorObject();
-
     Ogitors::NameObjectPairList::iterator it;
 
     int minX = -1, minY = -1, maxX = 1, maxY = 1, PX, PY;
@@ -95,7 +89,7 @@ void ManageTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
     {
         for(int X = 0;X < width;++X)
         {
-            rect = new UITerrainSquare(mPageGraphics, &params);
+            rect = new UITerrainSquare(mPageGraphics, this);
             rect->setRect(X*30, Y*30, 30, 30);
 
             if(!mtx[(Y * width) + X])

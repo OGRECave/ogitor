@@ -33,18 +33,24 @@
 #include <QtGui/QtGui>
 
 #include "uiterrainsquare.hxx"
+
 #include "createterraindialog.hxx"
+
 #include "OgitorsPrerequisites.h"
-#include "OgitorsDefinitions.h"
+#include "OgitorsRoot.h"
 
+#include "BaseEditor.h"
+#include "TerrainEditor.h"
+#include "TerrainPageEditor.h"
+#include "TerrainGroupEditor.h"
 
+using namespace Ogitors;
 
-//class CTerrainGroupEditor;
-
-UITerrainSquare::UITerrainSquare(QGraphicsView* view, Ogre::NameValuePairList *params)
+UITerrainSquare::UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent)
 {
     this->view = view;
-    this->params = params;
+    this->parent = parent;
+
     setAcceptedMouseButtons(Qt::RightButton);
 
     actAddPage = new QAction(tr("Add Terrain Page"), (QObject*) this);
@@ -54,22 +60,20 @@ UITerrainSquare::UITerrainSquare(QGraphicsView* view, Ogre::NameValuePairList *p
     contextMenu.addAction(actAddPage);
 }
 
-void UITerrainSquare::set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool selectable)
+void UITerrainSquare::set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool hasTerrain)
 {
     this->x = x;
     this->y = y;
     this->setPen(pen);
     this->setBrush(brush);
-    this->selectable = selectable;
+    mHasTerrain = hasTerrain;
 }
 
 void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (!this->selectable)
-    {
-        actAddPage->setEnabled(false);
-    }
+    QGraphicsItem::mouseReleaseEvent(event);
 
+    actAddPage->setEnabled(mHasTerrain);
 
     this->setBrush(QBrush(QColor(173, 81, 44)));
     QAction* actionSelected = contextMenu.exec(QCursor::pos());
@@ -78,7 +82,7 @@ void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
     update();
     QGraphicsItem::mousePressEvent(event);
 
-    if (this->selectable)
+    if (mHasTerrain)
         return;
 
     this->setBrush(QBrush(QColor(71, 130, 71)));
@@ -91,25 +95,10 @@ void UITerrainSquare::addPage()
     {
         Ogre::String diffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
         Ogre::String normal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
-        
-        CTerrainGroupEditor* editor = OgitorsRoot::getSingletonPtr()->GetTerrainEditorObject();
-        editor->addPage(this->x, this->y, diffuse, normal);
+
+        CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor *>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
+        terGroup->addPage(this->x, this->y, diffuse, normal);
+        parent->drawPageMap();
     }
 }
 
-void UITerrainSquare::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (!this->selectable)
-        return;
-
-    QGraphicsItem::mouseMoveEvent(event);
-}
-
-void UITerrainSquare::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (!this->selectable)
-        return;
-
-    setCursor(Qt::OpenHandCursor);
-    QGraphicsItem::mouseReleaseEvent(event);
-}
