@@ -94,8 +94,8 @@ mHandle(0), mBrushData(0), mModificationRect(0,0,0,0)
     mMaxLayersAllowed = 6;
 
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-    Ogre::String value = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/";
-    mngr->addResourceLocation(value,"Ofs","TerrainResources");
+    Ogre::String terrainDir = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain";
+    mngr->addResourceLocation(terrainDir,"Ofs","TerrainResources");
 
     mTerrainGlobalOptions = OGRE_NEW Ogre::TerrainGlobalOptions();
 }
@@ -334,7 +334,8 @@ bool CTerrainGroupEditor::load(bool async)
 
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
     if (!mngr->resourceGroupExists("TerrainTextures")) {
-        Ogre::String value = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/terrainTextures/";
+        Ogre::String value = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
+        value = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/"+value+"/textures/";
         mngr->addResourceLocation(value,"Ofs","TerrainTextures");
         mngr->initialiseResourceGroup("TerrainTextures");
     }
@@ -895,14 +896,17 @@ CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, Ogit
 
     if ((ni = params.find("init")) != params.end())
     {
-        Ogre::String value = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory + "/";
-        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory(value.c_str());
+        // create Terrain folder
+        Ogre::String terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
+        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory(terrainDir.c_str());
 
-        value = "/terrainTextures/";
-        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory(value.c_str());
+        // create folders for the textures
+        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory((terrainDir+"/terrain/").c_str());
+        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory((terrainDir+"/plants/").c_str());
+        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory((terrainDir+"/textures/").c_str());
 
         Ogre::String copydir = Ogitors::Globals::MEDIA_PATH + "/terrainTextures/";
-        OgitorsUtils::CopyDirOfs(copydir, value + "/");
+        OgitorsUtils::CopyDirOfs(copydir, (terrainDir+"/textures/").c_str());
         params.erase(ni);
     }
 
