@@ -364,7 +364,7 @@ QImage TerrainToolsWidget::getQImageFromOgre(Ogre::String name, Ogre::String res
         img.load(name,resourceGroup);
 
         size_t size = Ogre::PixelUtil::getMemorySize(img.getWidth(), img.getHeight(), img.getDepth(), Ogre::PF_A8R8G8B8);
-        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GEOMETRY);
+        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
 
         Ogre::PixelBox pixbox(128,128,1, Ogre::PF_A8R8G8B8, dataptr);
         Ogre::Image::scale(img.getPixelBox(), pixbox);
@@ -372,8 +372,8 @@ QImage TerrainToolsWidget::getQImageFromOgre(Ogre::String name, Ogre::String res
 
         QImage qimg = QImage(dataptr, pixbox.getWidth(), pixbox.getHeight(), QImage::Format_ARGB32);
 
-        OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GEOMETRY);
-        
+        OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
+
         return qimg;
 }
 //----------------------------------------------------------------------------------------
@@ -389,9 +389,8 @@ void TerrainToolsWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
         if(state == LS_LOADED)
         {
             ITerrainEditor *terrain = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
-            if(terrain) {
+            if(terrain)
                 updateTerrainOptions(terrain);
-            }
 
             mOgitorMainWindow->menuTerrainTools->setEnabled(true);
         }

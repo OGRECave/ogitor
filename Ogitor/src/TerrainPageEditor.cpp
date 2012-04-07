@@ -118,7 +118,7 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
 {
     Ogre::TerrainGroup *terGroup = static_cast<Ogre::TerrainGroup*>(mParentEditor->get()->getHandle());
     Ogre::String filename = pathPrefix + terGroup->generateFilename(mPageX->get(), mPageY->get());
-    
+
     if(pathPrefix == "/Temp/tmp")
     {
         mTempFileName = pathPrefix + Ogre::StringConverter::toString(mObjectID->get()) + ".ogt";
