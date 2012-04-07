@@ -109,7 +109,8 @@ namespace Ogitors
         inline Ogre::Real            getWorldSize() { return mWorldSize->get(); }
         Ogre::Real                   getHeightAt(Ogre::Real x, Ogre::Real z);
         inline Ogre::String          getPageNamePrefix() { return mPageNamePrefix->get(); }
-        Ogre::Vector3                getPagePosition(int x, int y);
+        Ogre::Vector3                getPagePosition(const int x, const int y);
+        bool                         addPage(const int x, const int y, const Ogre::String diffuse, const Ogre::String normal);
         /**
         * Fetches terrain editor handle
         * @return terrain editor handle

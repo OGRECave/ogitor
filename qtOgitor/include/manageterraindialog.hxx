@@ -37,11 +37,11 @@
 
 #include "ui_addterraindialog.h"
 
-class AddTerrainDialog : public QDialog, public Ui::addterraindialog {
+class ManageTerrainDialog : public QDialog, public Ui::addterraindialog {
     Q_OBJECT
 public:
-    AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
-    virtual ~AddTerrainDialog();
+    ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
+    virtual ~ManageTerrainDialog();
 private:
     QGraphicsScene mScene;
     void drawPageMap(Ogre::NameValuePairList &params);

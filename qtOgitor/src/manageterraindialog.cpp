@@ -31,7 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #include <../QtGui/qgraphicsitem.h>
 
-#include "addterraindialog.hxx"
+#include "manageterraindialog.hxx"
 #include "OgitorsPrerequisites.h"
 #include "OgitorsSystem.h"
 #include "BaseEditor.h"
@@ -44,7 +44,7 @@
 #include "addtemplatedialog.hxx"
 #include "uiterrainsquare.hxx"
 
-AddTerrainDialog::AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params) 
+ManageTerrainDialog::ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params) 
     : QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     this->setWindowFlags(Qt::Window);
@@ -52,7 +52,7 @@ AddTerrainDialog::AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &par
     drawPageMap(params);
 }
 
-void AddTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
+void ManageTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
 {
 
     Ogitors::CBaseEditor* editor = Ogitors::OgitorsRoot::getSingletonPtr()->GetTerrainEditorObject();
@@ -95,13 +95,15 @@ void AddTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
     {
         for(int X = 0;X < width;++X)
         {
-            rect = new UITerrainSquare(this, &params);
+            rect = new UITerrainSquare(mPageGraphics, &params);
             rect->setRect(X*30, Y*30, 30, 30);
 
             if(!mtx[(Y * width) + X])
             {
+                // Terrain exists
                 rect->set((X + minX), (Y + minY), QPen(Qt::black), QBrush(QColor(71, 130, 71)), false);
             } else {
+                // Terrain does not exist
                 rect->set((X + minX), (Y + minY), QPen(Qt::black), QBrush(QColor(52, 51, 49)), true);
             }
             mScene.addItem(rect);
@@ -118,7 +120,7 @@ void AddTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
     mPageGraphics->show();
 }
  
-AddTerrainDialog::~AddTerrainDialog()
+ManageTerrainDialog::~ManageTerrainDialog()
 {
 }
 

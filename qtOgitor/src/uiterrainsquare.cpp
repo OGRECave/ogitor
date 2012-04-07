@@ -34,12 +34,24 @@
 
 #include "uiterrainsquare.hxx"
 #include "createterraindialog.hxx"
+#include "OgitorsPrerequisites.h"
+#include "OgitorsDefinitions.h"
 
-UITerrainSquare::UITerrainSquare(QWidget *parent, Ogre::NameValuePairList *params)
+
+
+//class CTerrainGroupEditor;
+
+UITerrainSquare::UITerrainSquare(QGraphicsView* view, Ogre::NameValuePairList *params)
 {
-    this->parent = parent;
+    this->view = view;
     this->params = params;
     setAcceptedMouseButtons(Qt::RightButton);
+
+    actAddPage = new QAction(tr("Add Terrain Page"), (QObject*) this);
+    actAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
+    connect(actAddPage, SIGNAL(triggered()), (QObject*) this, SLOT(addPage()));
+
+    contextMenu.addAction(actAddPage);
 }
 
 void UITerrainSquare::set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool selectable)
@@ -54,27 +66,35 @@ void UITerrainSquare::set(const signed int x, const signed int y, const QPen pen
 void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (!this->selectable)
-        return;
-
-    setCursor(Qt::ClosedHandCursor);
-    this->setBrush(QBrush(QColor(173, 81, 44)));
-
-    CreateTerrainDialog dlg(QApplication::activeWindow());
-
-    if(dlg.exec() == QDialog::Accepted)
     {
-        (*this->params)["init"] = "true";
-        (*this->params)["pagex"] = Ogre::StringConverter::toString(this->x);
-        (*this->params)["pagey"] = Ogre::StringConverter::toString(this->y);
-        (*this->params)["diffuse"] = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
-        (*this->params)["normal"] = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
-        this->parent->close();
-    } else {
-        this->setBrush(QBrush(QColor(52, 51, 49)));
+        actAddPage->setEnabled(false);
     }
+
+
+    this->setBrush(QBrush(QColor(173, 81, 44)));
+    QAction* actionSelected = contextMenu.exec(QCursor::pos());
+    this->setBrush(QBrush(QColor(52, 51, 49)));
 
     update();
     QGraphicsItem::mousePressEvent(event);
+
+    if (this->selectable)
+        return;
+
+    this->setBrush(QBrush(QColor(71, 130, 71)));
+}
+
+void UITerrainSquare::addPage()
+{
+    CreateTerrainDialog dlg(QApplication::activeWindow());
+    if(dlg.exec() == QDialog::Accepted)
+    {
+        Ogre::String diffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
+        Ogre::String normal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
+        
+        CTerrainGroupEditor* editor = OgitorsRoot::getSingletonPtr()->GetTerrainEditorObject();
+        editor->addPage(this->x, this->y, diffuse, normal);
+    }
 }
 
 void UITerrainSquare::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

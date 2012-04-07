@@ -34,22 +34,36 @@
 
 #include <QtGui/QtGui>
 #include <QtGui/QGraphicsItem>
+#include <QtCore/QtCore>
 #include <Ogre.h>
 
 
-class UITerrainSquare : public QGraphicsRectItem
+class UITerrainSquare : public QObject, public QGraphicsRectItem 
 {
+    Q_OBJECT
+
 public:
-    UITerrainSquare(QWidget *parent, Ogre::NameValuePairList *params);
+    UITerrainSquare(QGraphicsView* view, Ogre::NameValuePairList *params);
 
     void set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool selectable);
+    
+    QAction* actAddPage;
+
+public Q_SLOTS:
+    void addPage();
+    
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+
+    void createPage();
+
+    QMenu contextMenu;
     QWidget *parent;
+    QGraphicsView* view;
     QPen pen;
     QBrush brush;
     signed int x;

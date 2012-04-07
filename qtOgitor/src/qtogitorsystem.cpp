@@ -41,7 +41,7 @@
 #include "qttreepropertybrowser.h"
 #include "propertiesviewgeneral.hxx"
 #include "propertiesviewcustom.hxx"
-#include "addterraindialog.hxx"
+#include "manageterraindialog.hxx"
 #include "importheightmapdialog.hxx"
 #include "eucliddialog.hxx"
 #include "calculateblendmapdialog.hxx"
@@ -88,7 +88,7 @@ void QtOgitorSystem::DummyTranslationFunction()
     dummyStr = tr("Import Blendmap");
     dummyStr = tr("Import Blendmaps");
     dummyStr = tr("Remove Page");
-    dummyStr = tr("Add Page");
+    dummyStr = tr("Manage Terrain Pages");
     dummyStr = tr("Add Row Top");
     dummyStr = tr("Add Row Bottom");
     dummyStr = tr("Add Column Left");
@@ -628,10 +628,10 @@ void QtOgitorSystem::ShowMouseCursor(bool bShow)
 bool QtOgitorSystem::DisplayTerrainDialog(Ogre::NameValuePairList &params)
 {
     params.clear();
-    AddTerrainDialog dlg(QApplication::activeWindow(), params);
- 
+    ManageTerrainDialog dlg(QApplication::activeWindow(), params);
     dlg.exec();
-    return Ogre::StringConverter::parseBool(params["init"]);
+
+    return false;
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList &params)
