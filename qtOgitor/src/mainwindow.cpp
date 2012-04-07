@@ -205,7 +205,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     if(objectName().isEmpty())
         setObjectName(QString::fromUtf8("this"));
-    resize(800, 600);
+    resize(1152, 864);
 
     setDockNestingEnabled(true);
 
@@ -443,7 +443,8 @@ void MainWindow::readSettings(QString filename)
     settings->beginGroup("session");
     restoreState(settings->value("Layout").toByteArray());
     bool maximized = settings->value("MainWindowMaximized", false).toBool();
-    QRect rect = settings->value("MainWindowGeometry", QRect(0, 0, 800, 600)).toRect();
+    QRect rect = settings->value("MainWindowGeometry", QRect(0, 0, 1152,
+864)).toRect();
     settings->endGroup();
 
     settings->beginGroup("messagefilters");
