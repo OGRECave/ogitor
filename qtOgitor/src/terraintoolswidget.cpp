@@ -334,12 +334,9 @@ void TerrainToolsWidget::populatePlants()
         Ogre::FileInfoListPtr resPtr = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo("Plants", texName);
         Ogre::FileInfo fInfo = (*(resPtr->begin()));
 
-        Ogre::String fname = fInfo.archive->getName() + "/";
-        fname += fInfo.filename;
-
-        if(items.find(QString(fname.c_str())) == items.end())
+        if(items.find(QString(fInfo.filename.c_str())) == items.end())
         {
-            items.insert(ComboData::value_type(QString(fname.c_str()), QString(matName.c_str())));
+            items.insert(ComboData::value_type(QString(fInfo.filename.c_str()), QString(matName.c_str())));
         }
 
         resPtr.setNull();
@@ -347,7 +344,11 @@ void TerrainToolsWidget::populatePlants()
 
     for(ComboData::iterator ct = items.begin();ct != items.end();ct++)
     {
-        QListWidgetItem *witem = new QListWidgetItem(QIcon(ct->first), ct->second);
+        QPixmap pixmap;
+        if (!pixmap.convertFromImage(getQImageFromOgre(ct->first.toUtf8().constData(), "Plants")))
+            continue;
+
+        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), ct->second);
         witem->setWhatsThis(ct->second);
         witem->setToolTip(ct->second);
         plantsWidget->addItem(witem);
