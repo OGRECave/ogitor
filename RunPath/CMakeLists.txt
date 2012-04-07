@@ -11,6 +11,7 @@ if(WIN32)
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
 		PATTERN "languages" EXCLUDE
+		PATTERN "sdk" EXCLUDE
 	)
 
 	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
@@ -21,7 +22,7 @@ if(WIN32)
 		PATTERN "bin" EXCLUDE
 		PATTERN "Debug" EXCLUDE
 		PATTERN "languages" EXCLUDE
-		PATTERN "Plugins/icon_backup" EXCLUDE
+		PATTERN "sdk" EXCLUDE
 	)
 
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/plugins_debug.cfg
