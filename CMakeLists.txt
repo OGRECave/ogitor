@@ -328,7 +328,10 @@ add_subdirectory(qtOgitor)
 
 add_subdirectory(qtOfs)
 
-add_subdirectory(SceneLoader)
+# New version of OIS broke our SceneLoader..
+if(NOT UNIX)
+    add_subdirectory(SceneLoader)
+endif(NOT UNIX)
 
 add_subdirectory(RunPath)
 
@@ -480,11 +483,6 @@ if(UNIX)
     install(FILES ${ogitor_headers}
         DESTINATION
 ${CMAKE_INSTALL_PREFIX}/include/ogitor
-        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
-    )
-    # SDK : Dependencies libs
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Dependencies/lib
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor/dependencies
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: OFS headers
