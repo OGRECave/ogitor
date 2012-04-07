@@ -476,7 +476,7 @@ if(WIN32)
 
 endif(WIN32)
 
-if(UNIX)
+if(doesnt_work)
     # SDK : Ogitor includes
     FILE(GLOB ogitor_headers
 "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include/*.h")
@@ -565,7 +565,7 @@ ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Caelum-0.5.0
     # TODO: lua
     # TODO: PythonQt
 
-endif(UNIX)
+endif(doesnt_work)
 
 # uninstall target
 configure_file(
