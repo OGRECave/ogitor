@@ -337,15 +337,11 @@ bool CTerrainGroupEditor::load(bool async)
     Ogre::String terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
     terrainDir = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/"+terrainDir+"/";
 
-    if (!mngr->resourceGroupExists("TerrainTextures")) {
-        mngr->addResourceLocation(terrainDir+"textures/","Ofs","TerrainTextures");
-        mngr->initialiseResourceGroup("TerrainTextures");
-    }
+    mngr->addResourceLocation(terrainDir+"textures/","Ofs","TerrainTextures");
+    mngr->initialiseResourceGroup("TerrainTextures");
 
-    if (!mngr->resourceGroupExists("Plants")) {
-        mngr->addResourceLocation(terrainDir+"plants/","Ofs","Plants");
-        mngr->initialiseResourceGroup("Plants");
-    }
+    mngr->addResourceLocation(terrainDir+"plants/","Ofs","Plants");
+    mngr->initialiseResourceGroup("Plants");
 
     OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
     OgitorsRoot::getSingletonPtr()->ReloadUserResources();
