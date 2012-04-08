@@ -43,8 +43,8 @@
 
 using namespace Ogitors;
 
-ManageTerrainDialog::ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params) 
-    : QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+ManageTerrainDialog::ManageTerrainDialog(QWidget *parent) 
+    : QDialog(0, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     this->setWindowFlags(Qt::Window);
     setupUi(this);
