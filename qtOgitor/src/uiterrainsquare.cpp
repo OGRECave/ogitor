@@ -39,7 +39,6 @@
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
-
 #include "BaseEditor.h"
 #include "TerrainEditor.h"
 #include "TerrainPageEditor.h"
@@ -140,35 +139,31 @@ void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void UITerrainSquare::addPage()
 {
-    CreateTerrainDialog dlg(QApplication::activeWindow());
+    CreateTerrainDialog dlg(QApplication::activeWindow(), mParent->mLastUsedDiffuse, mParent->mLastUsedNormal);
     if(dlg.exec() == QDialog::Accepted)
     {
-        Ogre::String diffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
-        Ogre::String normal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
-
-        // FIXME: Uncomment when displaying a progress dialog becomes threaded
-        OgitorsSystem::getSingletonPtr()->DisplayProgressDialog("Creating terrain page", 0,1,0);
+        mParent->mLastUsedDiffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
+        mParent->mLastUsedNormal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
 
         CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor *>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
-        terGroup->addPage(mPosX, mPosY, diffuse, normal);
+        terGroup->addPage(mPosX, mPosY, mParent->mLastUsedDiffuse, mParent->mLastUsedNormal);
 
-        OgitorsSystem::getSingletonPtr()->HideProgressDialog();
         mParent->requestPageDraw();
     }
 }
 
 void UITerrainSquare::addNeighbourPage()
 {
-    CreateTerrainDialog dlg(QApplication::activeWindow());
+    CreateTerrainDialog dlg(QApplication::activeWindow(), mParent->mLastUsedDiffuse, mParent->mLastUsedNormal);
 
     if(dlg.exec() != QDialog::Accepted)
         return;
 
-    Ogre::String diffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
-    Ogre::String normal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
+    mParent->mLastUsedDiffuse = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
+    mParent->mLastUsedNormal = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
 
     CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor *>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
-    
+
     int X,Y;
     for(int Y = mPosY-1;Y < mPosY+2;Y++)
     {
@@ -180,7 +175,7 @@ void UITerrainSquare::addNeighbourPage()
             if (mParent->hasTerrain(X, Y))
                 continue;
 
-            terGroup->addPage(X, Y, diffuse, normal);
+            terGroup->addPage(X, Y, mParent->mLastUsedDiffuse, mParent->mLastUsedNormal);
         }
     }
 
