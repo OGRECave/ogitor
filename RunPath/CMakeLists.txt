@@ -44,6 +44,7 @@ if(UNIX)
 		PATTERN "bin" EXCLUDE
 		PATTERN ".xml" EXCLUDE
 		PATTERN "Plugins/icon_backup" EXCLUDE
+        PATTERN "sdk" EXCLUDE
 	)
 
     if(OGITOR_DIST)
