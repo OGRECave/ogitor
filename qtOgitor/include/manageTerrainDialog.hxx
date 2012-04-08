@@ -42,25 +42,21 @@ class ManageTerrainDialog : public QDialog, public Ui::manageTerrainDialog {
 public:
     ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
     virtual ~ManageTerrainDialog();
-    void drawPageMap();
-    
-    /** Runs through all the terrain pages and creates a new list **/
-    void regenerateMapFlags();
-    /** Flags terrain as being added for the map renderer. If flag already exists it is overwritten. **/ 
-    void writeTerrainFlag(const int x, const int y, Ogre::String flag);
-    /** Flags terrain as not existing for the map renderer **/ 
-    void removeTerrainFlag(const int x, const int y);
-    /** Retrives a list of terrain page flags. Anything in the list is terrain. **/
-    const Ogre::NameValuePairList* getTerrainPageFlags() { return &mTerrainPages; }
-    /** returns how wide the terrain pages extend to **/ 
-    const int getWidth() { return mWidth; }
-    /** returns how high the terrain pages extend to **/
-    const int getHeight() { return mHeight; }
+    void requestPageDraw();
+    bool hasTerrain(int X, int Y);
+
+public Q_SLOTS:
+    void update();
 private:
+    QTimer* mTimerDrawPage;
+    bool mDrawRequested;
+    void drawPageMap();
+    bool *mtx;
+    int width;
+    int height;
+    int minY;
+    int minX;
     QGraphicsScene mScene;
-    int mWidth;
-    int mHeight;
-    QRect mTerrainSize;
     Ogre::NameValuePairList mTerrainPages;
 };
 

@@ -43,9 +43,7 @@ class UITerrainSquare : public QObject, public QGraphicsRectItem
     Q_OBJECT
 
 public:
-    UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent);
-    /** Used to set the information needed to draw the map and use the class **/
-    void set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool hasTerrain);
+    UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent, const int x, const int y, const bool hasTerrain);
     /** Returns true if the terrain page has no neighbour terrain pages next to it **/
     bool hasFreeNeighbour();
 
@@ -62,16 +60,13 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-
     void createPage();
 
-    QMenu contextMenu;
-    QGraphicsView* view;
-    QPen pen;
-    QBrush brush;
-    signed int x;
-    signed int y;
-    ManageTerrainDialog *parent;
+    QMenu mContextMenu;
+    QGraphicsView* mView;
+    int mPosX;
+    int mPosY;
+    ManageTerrainDialog *mParent;
     bool mHasTerrain;
 };
 

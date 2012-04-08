@@ -45,41 +45,54 @@ ManageTerrainDialog::ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairLis
 {
     this->setWindowFlags(Qt::Window);
     setupUi(this);
-    regenerateMapFlags();
+
+    QTimer *mTimerDrawPage = new QTimer(this);
+    connect(mTimerDrawPage, SIGNAL(timeout()), this, SLOT(update()));
+    mTimerDrawPage->start(300);
+    mDrawRequested = false;
+
+    mPageGraphics->setScene(&mScene);
+    mPageGraphics->centerOn(0,0);
+    mPageGraphics->setDragMode(QGraphicsView::ScrollHandDrag);
+    mPageGraphics->setRenderHint(QPainter::Antialiasing);
+    mPageGraphics->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    mPageGraphics->show();
+
     drawPageMap();
 }
 
 ManageTerrainDialog::~ManageTerrainDialog()
 {
-    // TODO: Do we need to clean up the UITerrainSquare objects or does QT clean those up?
+    // TODO: Find out if I need to clean up the UITerrainSquare objects or does QT clean those up?
+    OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
 }
 
-void ManageTerrainDialog::writeTerrainFlag(const int x, const int y, Ogre::String flag)
+bool ManageTerrainDialog::hasTerrain(int X, int Y)
 {
-    Ogre::String coords = Ogre::StringConverter::toString(x)+"x"+Ogre::StringConverter::toString(y);
-    mTerrainPages[coords] = "1";
-    mTerrainSize.united(QRect(x, y, 1, 1));
-    mWidth = mTerrainSize.width();
-    mHeight= mTerrainSize.height();
+    X = X - minX;
+    Y = Y - minY;
+
+    if (X < 0 || Y < 0 || X > width || Y > height)
+        return false;
+
+    if (!mtx[(Y * width) + X]) {
+        return true;
+    }
+
+    return false;
 }
 
-void ManageTerrainDialog::removeTerrainFlag(const int x, const int y)
+void ManageTerrainDialog::drawPageMap()
 {
-    Ogre::String coords = Ogre::StringConverter::toString(x)+"x"+Ogre::StringConverter::toString(y);
-    mTerrainPages.erase(coords);
-    mTerrainSize.united(QRect(x, y, 1, 1));
-    mWidth = mTerrainSize.width();
-    mHeight= mTerrainSize.height();
-}
-
-void ManageTerrainDialog::regenerateMapFlags()
-{
-    mTerrainPages.clear();
+    // Remove all items
+	mScene.clear();
+    mScene.setBackgroundBrush(QBrush(Qt::black));
 
     Ogitors::CBaseEditor* editor = Ogitors::OgitorsRoot::getSingletonPtr()->GetTerrainEditorObject();
     Ogitors::NameObjectPairList::iterator it;
-    
-    int minX = -1, minY = -1, maxX = 1, maxY = 1, PX, PY;
+
+    minX = -1, minY = -1;
+    int maxX = 1, maxY = 1, PX, PY;
     for(it = editor->getChildren().begin(); it != editor->getChildren().end();it++)
     {
          Ogitors::CTerrainPageEditor *terrain = static_cast<Ogitors::CTerrainPageEditor*>(it->second);
@@ -91,13 +104,11 @@ void ManageTerrainDialog::regenerateMapFlags()
          maxY = std::max(maxY, PY + 1);
     }
 
-    mWidth = maxX - minX + 1;
-    mHeight = maxY - minY + 1;
+    width = maxX - minX + 1;
+    height = maxY - minY + 1;
 
-    mScene.setBackgroundBrush(QBrush(Qt::black));
-     
-    bool *mtx = OGRE_ALLOC_T(bool, mWidth * mHeight, Ogre::MEMCATEGORY_GEOMETRY);
-    for(int i = 0; i < mWidth * mHeight;++i)
+    mtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
+    for(int i = 0; i < width * height;++i)
         mtx[i] = true;
  
     for(it = editor->getChildren().begin(); it != editor->getChildren().end();it++)
@@ -106,58 +117,33 @@ void ManageTerrainDialog::regenerateMapFlags()
          PX = terrain->getPageX();
          PY = terrain->getPageY();
 
-         mtx[((PY - minY) * mWidth) + (PX - minX)] = false;
+         mtx[((PY - minY) * width) + (PX - minX)] = false;
     }
 
-    for(int Y = 0;Y < mHeight;++Y)
+    UITerrainSquare * rect;
+    for(int Y = 0;Y < height;++Y)
     {
-        for(int X = 0;X < mWidth;++X)
+        for(int X = 0;X < width;++X)
         {
             // Terrain exists
-            if(!mtx[(Y * mWidth) + X])
-            {
-                Ogre::String coords = Ogre::StringConverter::toString(X + minX)+"x"+Ogre::StringConverter::toString(Y + minY);
-                mTerrainPages[coords] = "1";
-            }
-        }
-    }
-
-    OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
-
-    // Get actual size
-    mTerrainSize = QRect(minX+1, minY+1, mWidth-2, mHeight-2);
-}
-
-void ManageTerrainDialog::drawPageMap()
-{
-    UITerrainSquare* rect;
-    QColor green(71, 130, 71);
-    QColor grey(52, 51, 49);
-
-    for(int Y = mTerrainSize.y()-1;Y < mTerrainSize.height()+1;Y++)
-    {
-        for(int X = mTerrainSize.x()-1;X < mTerrainSize.width()+1;X++)
-        {
-            rect = new UITerrainSquare(mPageGraphics, this);
-            rect->setRect(X*30, Y*30, 30, 30);
-            Ogre::String coords = Ogre::StringConverter::toString(X)+"x"+Ogre::StringConverter::toString(Y);
-            if(mTerrainPages.count(coords) > 0)
-            {
-                // Terrain exists
-                rect->set(X, Y, QPen(Qt::black), QBrush(green), true);
-            } else {
-                // Terrain does not exist
-                rect->set(X, Y, QPen(Qt::black), QBrush(grey), false);
-            }
+            rect = new UITerrainSquare(mPageGraphics, this, X + minX, Y + minY, !mtx[(Y * width) + X]);
             mScene.addItem(rect);
         }
     }
+}
 
-    mPageGraphics->setScene(&mScene);
-    mPageGraphics->centerOn(0,0);
-    mPageGraphics->setDragMode(QGraphicsView::ScrollHandDrag);
-    mPageGraphics->setRenderHint(QPainter::Antialiasing);
-    mPageGraphics->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    mPageGraphics->show();
+void ManageTerrainDialog::requestPageDraw()
+{
+    mDrawRequested = true;
+}
+
+void ManageTerrainDialog::update()
+{
+    if (!mDrawRequested)
+        return;
+
+    mDrawRequested = false;
+    OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
+    drawPageMap();
 }
 
