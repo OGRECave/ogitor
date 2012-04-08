@@ -183,6 +183,8 @@ void SceneTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
         QSignalMapper *pasteSignalMapper = 0;
 
         contextMenu->addAction(mOgitorMainWindow->actEditRename);
+        if(e->supports(CAN_FOCUS))
+            contextMenu->addAction(mOgitorMainWindow->actFocus);
         contextMenu->addSeparator();
         contextMenu->addAction(mOgitorMainWindow->actEditCopy);
         contextMenu->addAction(mOgitorMainWindow->actEditCut);

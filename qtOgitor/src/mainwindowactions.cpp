@@ -210,6 +210,10 @@ void MainWindow::addActions()
     actEditCopyToTemplateWithChildren->setStatusTip(tr("Copy Object and Children as a Template"));
     actEditCopyToTemplateWithChildren->setIcon(QIcon(":/icons/editcopy.svg"));
 
+    actFocus = new QAction(tr("Go to"), this);
+    actFocus->setStatusTip(tr("Focus camera on object"));
+    actFocus->setIcon(QIcon(":/icons/search.svg"));
+
     actFullScreen = new QAction(tr("Fullscreen"), this);
     actFullScreen->setStatusTip(tr("Fullscreen"));
     actFullScreen->setIcon(QIcon(":/icons/fullscreen.svg"));
@@ -451,6 +455,7 @@ void MainWindow::addActions()
     connect(actToggleGrid, SIGNAL(triggered()), this, SLOT(toggleGrid()));
     connect(actToggleWorldSpaceGizmo, SIGNAL(triggered()), this, SLOT(toggleWorldSpaceGizmo()));
     connect(actToggleWalkAround, SIGNAL(triggered()), this, SLOT(toggleWalkAround()));
+    connect(actFocus, SIGNAL(triggered()), this, SLOT(onFocusOnObject()));
 
     QMetaObject::connectSlotsByName(this);
 }

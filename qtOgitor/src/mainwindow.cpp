@@ -1631,3 +1631,20 @@ void MainWindow::autoSaveScene()
     OgitorsRoot::getSingletonPtr()->SetSceneModified(modified);
 }
 //------------------------------------------------------------------------------------
+void MainWindow::onFocusOnObject()
+{
+    CBaseEditor *target = 0;
+    QTreeWidgetItem *item = mSceneViewWidget->getTreeWidget()->selectedItems().at(0);
+
+    if(item)
+        target = OgitorsRoot::getSingletonPtr()->FindObject(item->text(0).toStdString());
+
+    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
+
+    if(target && ovp && target->supports(CAN_FOCUS))
+    {
+        OgitorsRoot::getSingletonPtr()->GetSelection()->setSelection(target);
+        ovp->FocusSelectedObject();
+    }
+}
+//------------------------------------------------------------------------------------
