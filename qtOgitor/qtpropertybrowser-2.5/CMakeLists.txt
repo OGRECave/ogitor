@@ -187,5 +187,12 @@ ELSE(NOT QT4_FOUND)
 
     ENDIF(UNIX AND NOT APPLE)
 
+    IF (APPLE)
+       set_target_properties(QtSolutions_PropertyBrowser
+       PROPERTIES BUILD_WITH_INSTALL_RPATH 1
+       INSTALL_NAME_DIR "@executable_path/../Components"
+    )
+    ENDIF (APPLE)
+
 ENDIF(NOT QT4_FOUND)
 

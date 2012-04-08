@@ -170,7 +170,6 @@ else(NOT QT4_FOUND)
         if(NOT OGITOR_FRAMEWORK_FILE)
             file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/Ogitor.framework")
         endif()
-
         set(COPY_FRAMEWORKS ${OGRE_LIBRARIES} ${Cg_LIBRARY_FWK} "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/Ogitor.framework")
         set(COPY_RESOURCES "${MAC_PATH}/resources.cfg" "${MAC_PATH}/plugins.cfg" "${RUNPATH}/Media")
         set(COPY_PLUGINS
@@ -207,7 +206,7 @@ else(NOT QT4_FOUND)
         set(MakeBundle
             cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_Terrain_LIBRARY_DBG} ${OGRE_Paging_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Components && 
             cp ${OGRE_RenderSystem_GL_LIBRARY_DBG} ${OGRE_Plugin_OctreeSceneManager_LIBRARY_DBG} ${OGRE_Plugin_ParticleFX_LIBRARY_DBG} ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
-            cp -r /Library/Frameworks/OGRE.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
+            cp -r ${OGRE_LIBRARY}/{CMAKE_BUILD_TYPE}/Ogre.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
             cp -r ../lib/${CMAKE_CFG_INTDIR}/Ogitor.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
             cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
             cp -r ../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
@@ -227,18 +226,12 @@ else(NOT QT4_FOUND)
     else(OGITOR_MESHMAGICK_INTERFACE)
         TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     endif(OGITOR_MESHMAGICK_INTERFACE)
-    if(UNIX AND NOT APPLE)
-        TARGET_LINK_LIBRARIES(qtOgitor optimized QtSolutions_PropertyBrowser ${Boost_LIBRARIES})
-    elseif(APPLE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser)
-    elseif(WIN32)
-        TARGET_LINK_LIBRARIES(qtOgitor optimized QtSolutions_PropertyBrowser)
-    endif()
 
     if(UNIX AND NOT APPLE)
         target_link_libraries(qtOgitor optimized QtSolutions_PropertyBrowser ${Boost_LIBRARIES})
     elseif(APPLE)
-        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser)
+        find_package(Cocoa REQUIRED)
+        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${Cocoa_LIBRARIES})
     elseif(WIN32)
         target_link_libraries(qtOgitor optimized QtSolutions_PropertyBrowser)
     endif()
