@@ -44,12 +44,14 @@ public:
     virtual ~ManageTerrainDialog();
     void requestPageDraw();
     bool hasTerrain(int X, int Y);
-
+    Ogre::String mLastUsedDiffuse;
+    Ogre::String mLastUsedNormal;
 public Q_SLOTS:
     void update();
 private:
     QTimer* mTimerDrawPage;
     bool mDrawRequested;
+
     void drawPageMap();
     bool *mtx;
     int width;
@@ -57,6 +59,7 @@ private:
     int minY;
     int minX;
     QGraphicsScene mScene;
+    
     Ogre::NameValuePairList mTerrainPages;
 };
 

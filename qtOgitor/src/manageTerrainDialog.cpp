@@ -35,10 +35,13 @@
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
 #include "BaseEditor.h"
 #include "TerrainEditor.h"
 #include "TerrainPageEditor.h"
 #include "uiterrainsquare.hxx"
+
+using namespace Ogitors;
 
 ManageTerrainDialog::ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params) 
     : QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
@@ -57,7 +60,6 @@ ManageTerrainDialog::ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairLis
     mPageGraphics->setRenderHint(QPainter::Antialiasing);
     mPageGraphics->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     mPageGraphics->show();
-
     drawPageMap();
 }
 
