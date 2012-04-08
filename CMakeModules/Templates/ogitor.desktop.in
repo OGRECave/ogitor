@@ -1,0 +1,20 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=qtOgitor - Ogre Scene Builder
+Exec=@OGITOR_WORK_DIR@/RunPath/bin/qtOgitor
+GenericName[en_US]=
+GenericName=
+Icon=akonadi
+MimeType=
+Name[en_US]=qtOgitor
+Name=qtOgitor
+Path=@OGITOR_WORK_DIR@/RunPath/bin
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
+X-Ubuntu-Gettext-Domain=desktop_kdebase
