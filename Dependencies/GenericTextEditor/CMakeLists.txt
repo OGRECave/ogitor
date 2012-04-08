@@ -101,7 +101,7 @@ else(NOT QT4_FOUND)
     IF (APPLE)
         set_target_properties(GenericTextEditor PROPERTIES OUTPUT_NAME GenericTextEditor)
         # Set the INSTALL_PATH so that Frameworks can be local
-        set_target_properties(GenericTextEditor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Components")
+        set_target_properties(GenericTextEditor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
     ENDIF(APPLE)
 
 endif(NOT QT4_FOUND)

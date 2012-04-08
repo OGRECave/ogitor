@@ -171,7 +171,7 @@ else(NOT QT4_FOUND)
             file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/Ogitor.framework")
         endif()
         set(COPY_FRAMEWORKS ${OGRE_LIBRARIES} ${Cg_LIBRARY_FWK} "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/Ogitor.framework")
-        set(COPY_RESOURCES "${MAC_PATH}/resources.cfg" "${MAC_PATH}/plugins.cfg" "${RUNPATH}/Media")
+        set(COPY_RESOURCES "../../resources.cfg" "../../plugins.cfg" "${RUNPATH}/Media")
         set(COPY_PLUGINS
             ${OGRE_RenderSystem_GL_LIBRARY_DBG}
             ${OGRE_Plugin_ParticleFX_LIBRARY_DBG}
@@ -204,14 +204,14 @@ else(NOT QT4_FOUND)
         get_target_property(qtOgitorLocation qtOgitor LOCATION)
         get_dotapp_dir(${qtOgitorLocation} qtOgitorLocationAppdir)
         set(MakeBundle
-            cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_Terrain_LIBRARY_DBG} ${OGRE_Paging_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Components && 
-            cp ${OGRE_RenderSystem_GL_LIBRARY_DBG} ${OGRE_Plugin_OctreeSceneManager_LIBRARY_DBG} ${OGRE_Plugin_ParticleFX_LIBRARY_DBG} ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
+            cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_LIBRARIES}/../../libOgreTerrain*.dylib ${OGRE_LIBRARIES}/../../libOgrePaging*.dylib ${qtOgitorLocationAppdir}/Contents/Components && 
+            cp ${OGRE_LIBRARIES}/../../libRenderSystem_GL*.dylib ${OGRE_LIBRARIES}/../../libPlugin_OctreeSceneManager*.dylib ${OGRE_LIBRARIES}/../../libPlugin_ParticleFX*.dylib ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
             cp -r ${OGRE_LIBRARY} ${qtOgitorLocationAppdir}/Contents/Frameworks && 
             cp -r ../lib/${CMAKE_CFG_INTDIR}/Ogitor.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
-            cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
-            cp -r ../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
-            cp -r ../RunPath/Plugins/Icons ${qtOgitorLocationAppdir}/Contents/Plugins && 
-            cp ../Mac/plugins.cfg ../Mac/resources.cfg ${qtOgitorLocationAppdir}/Contents/Resources
+            cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ../Dependencies/lib/libGenericTextEditor*.dylib ../Dependencies/lib/libGenericImageEditor*.dylib ../Dependencies/lib/libOFS*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
+            cp -r ../../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
+            cp -r ../../RunPath/Plugins/Icons ${qtOgitorLocationAppdir}/Contents/Plugins && 
+            cp ../../Mac/plugins.cfg ../../Mac/resources.cfg ${qtOgitorLocationAppdir}/Contents/Resources
         )
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND mkdir -p ${qtOgitorLocationAppdir}/Contents/Resources && mkdir -p ${qtOgitorLocationAppdir}/Contents/Components && mkdir -p ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && mkdir -p ${qtOgitorLocationAppdir}/Contents/Frameworks)
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})

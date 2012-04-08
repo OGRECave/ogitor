@@ -94,7 +94,7 @@ ENDIF(UNIX AND NOT APPLE)
 IF (APPLE)
         set_target_properties(Skyx PROPERTIES OUTPUT_NAME Skyx_Ogitor)
         # Set the INSTALL_PATH so that Frameworks can be local
-        set_target_properties(Skyx PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Components")
+        set_target_properties(Skyx PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
    ENDIF(APPLE)
 
 # vim: set sw=2 ts=2 noet:
