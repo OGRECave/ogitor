@@ -148,7 +148,9 @@ target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Pagi
 
 if(APPLE)
         find_package(Cocoa REQUIRED)
-	message(STATUS ${Cocoa_LIBRARIES})
+        if (NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
+            message(FATAL_ERROR "OGRE Paging and Terrain Components are required dependencies. If you are sure you have them, make sure to set OGRE_SDK to the correct path.")
+        endif(NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
 	target_link_libraries(Ogitor ${Cocoa_LIBRARIES} ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
 	# Setup to be a framework
 	set_target_properties(Ogitor PROPERTIES FRAMEWORK TRUE)

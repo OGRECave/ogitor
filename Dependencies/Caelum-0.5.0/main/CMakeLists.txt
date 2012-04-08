@@ -104,4 +104,10 @@ IF(UNIX AND NOT APPLE)
 
 ENDIF(UNIX AND NOT APPLE)
 
+IF (APPLE)
+        set_target_properties(Caelum PROPERTIES OUTPUT_NAME Caelum_Ogitor)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(Caelum PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Components")
+   ENDIF(APPLE)
+
 # vim: set sw=2 ts=2 noet:

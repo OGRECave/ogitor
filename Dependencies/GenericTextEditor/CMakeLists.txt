@@ -98,6 +98,12 @@ else(NOT QT4_FOUND)
 
     ENDIF(UNIX AND NOT APPLE)
 
+    IF (APPLE)
+        set_target_properties(GenericTextEditor PROPERTIES OUTPUT_NAME GenericTextEditor)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(GenericTextEditor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Components")
+    ENDIF(APPLE)
+
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:
