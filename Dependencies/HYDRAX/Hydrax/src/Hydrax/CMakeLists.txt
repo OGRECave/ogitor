@@ -104,3 +104,11 @@ IF(UNIX AND NOT APPLE)
     endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)
+
+
+IF (APPLE)
+        set_target_properties(Hydrax PROPERTIES OUTPUT_NAME Hydrax_Ogitor)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(Hydrax PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Components")
+   ENDIF(APPLE)
+
