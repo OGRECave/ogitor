@@ -40,6 +40,9 @@
      <property name="midLineWidth">
       <number>0</number>
      </property>
+     <property name="dragMode">
+      <enum>QGraphicsView::ScrollHandDrag</enum>
+     </property>
     </widget>
    </item>
    <item row="0" column="0">
