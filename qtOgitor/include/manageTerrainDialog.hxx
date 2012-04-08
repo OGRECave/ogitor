@@ -40,7 +40,7 @@
 class ManageTerrainDialog : public QDialog, public Ui::manageTerrainDialog {
     Q_OBJECT
 public:
-    ManageTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
+    ManageTerrainDialog(QWidget *parent);
     virtual ~ManageTerrainDialog();
     void requestPageDraw();
     bool hasTerrain(int X, int Y);
@@ -59,8 +59,6 @@ private:
     int minY;
     int minX;
     QGraphicsScene mScene;
-    
-    Ogre::NameValuePairList mTerrainPages;
 };
 
 #endif // ADDTERRAINDIALOG_HXX
