@@ -1626,7 +1626,7 @@ void MainWindow::autoSaveScene()
     if(exportfile[0] == '.')
         exportfile = QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectDir.c_str()) + QString("/") + exportfile;
 
-    saveScene(exportfile);
+    OgitorsRoot::getSingletonPtr()->SaveScene(false, exportfile.toStdString());
 
     OgitorsRoot::getSingletonPtr()->SetSceneModified(modified);
 }

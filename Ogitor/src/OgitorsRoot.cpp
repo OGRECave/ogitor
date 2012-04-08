@@ -1686,7 +1686,7 @@ bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
         {
             /* Since we're saving as a new project, refresh the menu
             controls because we change the names of certain items
-            for example the ogscene file name to match the OFS file  */
+            for example the *.OGSCENE file name to match the OFS file  */
             SetEditorTool(TOOL_SELECT);
             setLoadState(LS_UNLOADED);
             mSystem->ClearTreeItems();
