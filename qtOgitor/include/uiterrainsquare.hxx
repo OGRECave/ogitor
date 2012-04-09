@@ -62,11 +62,11 @@ protected:
 private:
     void createPage();
 
-    QMenu mContextMenu;
-    QGraphicsView* mView;
-    int mPosX;
-    int mPosY;
-    ManageTerrainDialog *mParent;
-    bool mHasTerrain;
+    QMenu                   mContextMenu;
+    QGraphicsView*          mView;
+    int                     mPosX;
+    int                     mPosY;
+    ManageTerrainDialog*    mParent;
+    bool                    mHasTerrain;
 };
 
