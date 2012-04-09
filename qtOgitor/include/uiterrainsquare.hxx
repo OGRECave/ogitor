@@ -34,27 +34,39 @@
 
 #include <QtGui/QtGui>
 #include <QtGui/QGraphicsItem>
+#include <QtCore/QtCore>
 #include <Ogre.h>
+#include "manageTerrainDialog.hxx"
 
-
-class UITerrainSquare : public QGraphicsRectItem
+class UITerrainSquare : public QObject, public QGraphicsRectItem 
 {
-public:
-    UITerrainSquare(QWidget *parent, Ogre::NameValuePairList *params);
+    Q_OBJECT
 
-    void set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool selectable);
+public:
+    UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent, const int x, const int y, const bool hasTerrain);
+    /** Returns true if the terrain page has no neighbour terrain pages next to it **/
+    bool hasFreeNeighbour();
+
+    QAction* actAddPage;
+    QAction* actAddNeighbourPage;
+    QAction* actRemovePage;
+
+public Q_SLOTS:
+    void addPage();
+    void removePage();
+    void addNeighbourPage();
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    QWidget *parent;
-    QPen pen;
-    QBrush brush;
-    signed int x;
-    signed int y;
-    Ogre::NameValuePairList *params;
-    bool selectable;
+    void createPage();
+
+    QMenu mContextMenu;
+    QGraphicsView* mView;
+    int mPosX;
+    int mPosY;
+    ManageTerrainDialog *mParent;
+    bool mHasTerrain;
 };
 
