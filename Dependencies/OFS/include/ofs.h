@@ -597,6 +597,13 @@ namespace OFS
         */
         OfsResult    renameDirectory(const char *dirname, const char *newname);
         /**
+        * Moves a given directory
+        * @param dirname path of directory to move
+        * @param newname new name of the directory
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    moveDirectory(const char *dirname, const char *dest);
+        /**
         * Creates a new file
         * @param handle File Handle, once the file is created, this handle will point to it
         * @param filename path of file to be created
