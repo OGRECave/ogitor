@@ -37,28 +37,38 @@
 
 #include "ui_manageTerrainDialog.h"
 
-class ManageTerrainDialog : public QDialog, public Ui::manageTerrainDialog {
+class ManageTerrainDialog : public QDialog, public Ui::manageTerrainDialog 
+{
     Q_OBJECT
 public:
     ManageTerrainDialog(QWidget *parent);
     virtual ~ManageTerrainDialog();
+
     void requestPageDraw();
-    bool hasTerrain(int X, int Y);
-    Ogre::String mLastUsedDiffuse;
-    Ogre::String mLastUsedNormal;
+    bool hasTerrain(int X, int Y);  
+    void drawPageMap();
+
+    inline Ogre::String getLastUsedDiffuse(){return mLastUsedDiffuse;};
+    inline Ogre::String getLastUsedNormal(){return mLastUsedNormal;};
+
+    void setLastUsedDiffuse(Ogre::String diffuse){mLastUsedDiffuse = diffuse;};
+    void setLastUsedNormal(Ogre::String normal){mLastUsedNormal = normal;};
+
 public Q_SLOTS:
     void update();
-private:
-    QTimer* mTimerDrawPage;
-    bool mDrawRequested;
 
-    void drawPageMap();
-    bool *mtx;
-    int width;
-    int height;
-    int minY;
-    int minX;
-    QGraphicsScene mScene;
+private:   
+    QTimer*         mTimerDrawPage;
+    bool            mDrawRequested;
+    Ogre::String    mLastUsedDiffuse;
+    Ogre::String    mLastUsedNormal;
+    
+    bool*           mMtx;
+    int             mWidth;
+    int             mHeight;
+    int             mMinY;
+    int             mMinX;
+    QGraphicsScene  mScene;
 };
 
 #endif // ADDTERRAINDIALOG_HXX
