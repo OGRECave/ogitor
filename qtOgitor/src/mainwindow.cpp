@@ -634,12 +634,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
             widget->setElideMode(Qt::ElideRight);
         }
     }
-    explorerDockWidget->setMinimumWidth(25);
-    layerDockWidget->setMinimumWidth(25);
-    propertiesDockWidget->setMinimumWidth(25);
-    resourcesDockWidget->setMinimumWidth(25);
-    toolsDockWidget->setMinimumWidth(25);
-    projectFilesDockWidget->setMinimumWidth(25);
 }
 //------------------------------------------------------------------------------
 void MainWindow::createSceneRenderWindow()
