@@ -132,7 +132,6 @@ void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
     else
     {
         setBrush(QBrush(orange)); 
-        return;
     }
 
     if (!mHasTerrain)
