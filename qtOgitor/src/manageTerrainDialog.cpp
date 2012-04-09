@@ -111,7 +111,7 @@ void ManageTerrainDialog::drawPageMap()
 
     mMtx = OGRE_ALLOC_T(bool, mWidth * mHeight, Ogre::MEMCATEGORY_GEOMETRY);
     for(int i = 0; i < mWidth * mHeight; ++i)
-        mMtx[i] = false;
+        mMtx[i] = true;
  
     for(it = editor->getChildren().begin(); it != editor->getChildren().end(); it++)
     {
@@ -119,7 +119,7 @@ void ManageTerrainDialog::drawPageMap()
          PX = terrain->getPageX();
          PY = terrain->getPageY();
 
-         mMtx[((PY - mMinY) * mWidth) + (PX - mMinX)] = true;
+         mMtx[((PY - mMinY) * mWidth) + (PX - mMinX)] = false;
     }
 
     UITerrainSquare * rect;
@@ -128,7 +128,7 @@ void ManageTerrainDialog::drawPageMap()
         for(int X = 0; X < mWidth; ++X)
         {
             // Terrain exists
-            rect = new UITerrainSquare(mPageGraphics, this, X + mMinX, Y + mMinY, mMtx[(Y * mWidth) + X]);
+            rect = new UITerrainSquare(mPageGraphics, this, X + mMinX, Y + mMinY, !mMtx[(Y * mWidth) + X]);
             mScene.addItem(rect);
         }
     }
