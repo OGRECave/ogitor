@@ -895,26 +895,53 @@ CBaseEditorFactory *CTerrainGroupEditorFactory::duplicate(OgitorsView *view)
 //-----------------------------------------------------------------------------------------
 CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)
 {
-
+    OgitorsRoot* ogitorsRoot = OgitorsRoot::getSingletonPtr();
     OgitorsPropertyValueMap::iterator ni;
+    Ogre::String terrainDir = ogitorsRoot->GetProjectOptions()->TerrainDirectory;
 
     if ((ni = params.find("init")) != params.end())
     {
-        // create Terrain folder
-        Ogre::String terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
-        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory(terrainDir.c_str());
-
-        // create folders for the textures
-        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory((terrainDir+"/terrain/").c_str());
-        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory((terrainDir+"/plants/").c_str());
+        
+        // create Terrain project folder and folder to hold the terrain
+        ogitorsRoot->GetProjectFile()->createDirectory(terrainDir.c_str());
+        ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/terrain/").c_str());
+        // copy default plant textures
+        ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/plants/").c_str());
         Ogre::String copydir = Ogitors::Globals::MEDIA_PATH + "/plants/";
         OgitorsUtils::CopyDirOfs(copydir, (terrainDir+"/plants/").c_str());
-
-        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory((terrainDir+"/textures/").c_str());
-
+        // copy default terrain textures
+        ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/textures/").c_str());
         copydir = Ogitors::Globals::MEDIA_PATH + "/terrainTextures/";
         OgitorsUtils::CopyDirOfs(copydir, (terrainDir+"/textures/").c_str());
         params.erase(ni);
+    }
+    
+    
+    
+    /* A hack for 0.4 and old 0.5 files that still include the Plants and TerrainTextures
+    resource groups in their resources.cfg */
+    ogitorsRoot->DestroyResourceGroup("Plants");
+    ogitorsRoot->DestroyResourceGroup("TerrainTextures");
+
+    /* Check for old 0.4 and 0.5 files that do not include the terrain textures */
+    OFS::OfsPtr& file = ogitorsRoot->GetProjectFile();
+    Ogre::StringVector filelist;
+    Ogre::String dirpath = OgitorsUtils::QualifyPath(terrainDir+ "/*.ogt");
+    OgitorsSystem::getSingletonPtr()->GetFileList(dirpath, filelist);
+    
+    if (!file->exists((terrainDir+"/terrain/").c_str()))
+    {
+        file->moveDirectory((terrainDir).c_str(), (terrainDir+"/terrain/").c_str());
+
+        // copy default plant textures
+        ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/plants/").c_str());
+        Ogre::String copydir = Ogitors::Globals::MEDIA_PATH + "/plants/";
+        OgitorsUtils::CopyDirOfs(copydir, (terrainDir+"/plants/").c_str());
+
+        // copy default terrain textures
+        ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/textures/").c_str());
+        copydir = Ogitors::Globals::MEDIA_PATH + "/terrainTextures/";
+        OgitorsUtils::CopyDirOfs(copydir, (terrainDir+"/textures/").c_str());
     }
 
     CTerrainGroupEditor *object = OGRE_NEW CTerrainGroupEditor(this);

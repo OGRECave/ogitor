@@ -1536,6 +1536,61 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
+    OfsResult _Ofs::moveDirectory(const char *dirname, const char *dest)
+    {
+        LOCK_AUTO_MUTEX
+
+        OFSHANDLE srcHandle;
+        OfsResult ret = OFS_OK;
+
+        /* call this before createDirectory because we might be moving
+        to a new directory within the same directory */
+        OFS::FileList allFiles = listFiles(dirname);
+
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(dest);
+
+        if(dirDesc == NULL)
+        {
+            createDirectory(dest, true);
+            dirDesc = _getDirectoryDesc(dest);
+        }
+
+        if(dirDesc == NULL)
+        {
+            return OFS_INVALID_PATH;            
+        }
+
+        for(unsigned int i = 0;i < allFiles.size();i++)
+        {
+            std::string currentLoc = dirname;
+            if(dirname[strlen(dirname) - 1] != '/')
+                currentLoc += "/";
+            currentLoc += allFiles[i].name;
+
+            std::string destLoc = dest;
+            if(dirname[strlen(dest) - 1] != '/')
+                destLoc += "/";
+            destLoc += allFiles[i].name;
+
+            if(allFiles[i].flags & OFS::OFS_DIR)
+            {
+                ret = moveDirectory(currentLoc.c_str(), destLoc.c_str());
+            } else {
+                ret = moveFile(currentLoc.c_str(), destLoc.c_str());
+            }
+
+            if (ret != OFS_OK)
+                return ret;
+        }
+        
+        /* Delete the directory only if it is empty as it might contain our new folder */
+        deleteDirectory(dirname, false);
+
+        return ret;
+    }
+
+//------------------------------------------------------------------------------
+
     OfsResult _Ofs::openFile(OFSHANDLE& handle, const char *filename, unsigned int open_mode)
     {
         assert(filename != NULL);
