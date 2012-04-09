@@ -434,16 +434,21 @@ void MainWindow::hideSubWindows()
 void MainWindow::readSettings(QString filename)
 {
     QSettings *settings;
+	bool invalid_win_rect = false;
 
     if(filename.isEmpty())
+	{
         settings = new QSettings();
+	}
     else
         settings = new QSettings(filename, QSettings::IniFormat);
 
     settings->beginGroup("session");
     restoreState(settings->value("Layout").toByteArray());
     bool maximized = settings->value("MainWindowMaximized", false).toBool();
-    QRect rect = settings->value("MainWindowGeometry", QRect(0, 0, 1024, 768)).toRect();
+    QRect rect = settings->value("MainWindowGeometry").toRect();
+	if(rect.isEmpty())
+		invalid_win_rect = true;
     settings->endGroup();
 
     settings->beginGroup("messagefilters");
@@ -463,6 +468,9 @@ void MainWindow::readSettings(QString filename)
     }
 
     delete settings;
+
+	if(invalid_win_rect)
+		return readSettings(":/layouts/initial.oglayout");
 }
 //------------------------------------------------------------------------------
 void MainWindow::writeSettings(QString filename)
@@ -552,7 +560,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     explorerDockWidget = new QDockWidget(parent);
     explorerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-	explorerDockWidget->setMinimumWidth(230);
     explorerDockWidget->setObjectName(QString::fromUtf8("explorerDockWidget"));
     explorerDockWidget->setWidget(mExplorerToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), explorerDockWidget);
@@ -560,7 +567,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mLayerViewWidget = new LayerViewWidget(parent);
     layerDockWidget = new QDockWidget(parent);
     layerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-	layerDockWidget->setMinimumWidth(230);
     layerDockWidget->setObjectName(QString::fromUtf8("layerDockWidget"));
     layerDockWidget->setWidget(mLayerViewWidget);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), layerDockWidget);
@@ -574,7 +580,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     propertiesDockWidget = new QDockWidget(parent);
     propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-	propertiesDockWidget->setMinimumWidth(230);
     propertiesDockWidget->setObjectName(QString::fromUtf8("propertiesDockWidget"));
     propertiesDockWidget->setWidget(mPropertiesToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), propertiesDockWidget);
@@ -592,7 +597,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     resourcesDockWidget = new QDockWidget(parent);
     resourcesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-	resourcesDockWidget->setMinimumWidth(230);
     resourcesDockWidget->setObjectName(QString::fromUtf8("resourcesDockWidget"));
     resourcesDockWidget->setWidget(mResourcesToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), resourcesDockWidget);
@@ -604,7 +608,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     projectFilesDockWidget = new QDockWidget(parent);
     projectFilesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-	projectFilesDockWidget->setMinimumWidth(230);
     projectFilesDockWidget->setObjectName(QString::fromUtf8("projectFilesDockWidget"));
     projectFilesDockWidget->setWidget(mProjectFilesViewWidget);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), projectFilesDockWidget);
@@ -631,6 +634,12 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
             widget->setElideMode(Qt::ElideRight);
         }
     }
+    explorerDockWidget->setMinimumWidth(25);
+    layerDockWidget->setMinimumWidth(25);
+    propertiesDockWidget->setMinimumWidth(25);
+    resourcesDockWidget->setMinimumWidth(25);
+    toolsDockWidget->setMinimumWidth(25);
+    projectFilesDockWidget->setMinimumWidth(25);
 }
 //------------------------------------------------------------------------------
 void MainWindow::createSceneRenderWindow()
