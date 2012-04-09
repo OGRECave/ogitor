@@ -142,7 +142,7 @@ bool CTerrainGroupEditor::getObjectContextMenu(UTFStringVector &menuitems)
         hasPages = true;
     
     menuitems.clear();
-    menuitems.push_back(OTR("Add Page") + ";:/icons/additional.svg");
+    menuitems.push_back(OTR("Manage Terrain Pages") + ";:/icons/additional.svg");
     if(hasPages)
         menuitems.push_back(OTR("Scale/Offset Height Values") + ";:/icons/scale.svg");
     
@@ -212,43 +212,7 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
         {
             int x = Ogre::StringConverter::parseInt(params["pagex"]);
             int y = Ogre::StringConverter::parseInt(params["pagey"]);
-
-            OgitorsPropertyValueMap creationparams;
-            OgitorsPropertyValue pvalue;
-
-            Ogre::String pagename = mPageNamePrefix->get();
-            pagename += Ogre::StringConverter::toString(x);
-            pagename += "x";
-            pagename += Ogre::StringConverter::toString(y);
-
-            creationparams["init"] = EMPTY_PROPERTY_VALUE;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(pagename);
-            creationparams["name"] = pvalue;
-
-            Ogre::Vector3 position;
-            mHandle->convertTerrainSlotToWorldPosition(x, y, &position);
-
-            pvalue.propType = PROP_VECTOR3;
-            pvalue.val = Ogre::Any(position);
-            creationparams["position"] = pvalue;
-            pvalue.propType = PROP_INT;
-            pvalue.val = Ogre::Any(x);
-            creationparams["pagex"] = pvalue;
-            pvalue.propType = PROP_INT;
-            pvalue.val = Ogre::Any(y);
-            creationparams["pagey"] = pvalue;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(params["diffuse"]);
-            creationparams["layer0::diffusespecular"] = pvalue;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(params["normal"]);
-            creationparams["layer0::normalheight"] = pvalue;
-            pvalue.propType = PROP_REAL;
-            pvalue.val = Ogre::Any((Ogre::Real)10.0f);
-            creationparams["layer0::worldsize"] = pvalue;
-
-            CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page Object", creationparams, true, true);
+            addPage(x, y, params["diffuse"], params["normal"]);
         }
     }
     else if(menuresult == 1)
@@ -281,7 +245,50 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
     }
 }
 //-----------------------------------------------------------------------------------------
-Ogre::Vector3 CTerrainGroupEditor::getPagePosition(int x, int y)
+bool CTerrainGroupEditor::addPage(const int x, const int y, const Ogre::String diffuse, const Ogre::String normal)
+{
+    if (diffuse.empty() || normal.empty())
+        return false;
+
+    OgitorsPropertyValueMap creationparams;
+    OgitorsPropertyValue pvalue;
+
+    Ogre::String pagename = mPageNamePrefix->get();
+    pagename += Ogre::StringConverter::toString(x);
+    pagename += "x";
+    pagename += Ogre::StringConverter::toString(y);
+
+    creationparams["init"] = EMPTY_PROPERTY_VALUE;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(pagename);
+    creationparams["name"] = pvalue;
+
+    Ogre::Vector3 position;
+    mHandle->convertTerrainSlotToWorldPosition(x, y, &position);
+
+    pvalue.propType = PROP_VECTOR3;
+    pvalue.val = Ogre::Any(position);
+    creationparams["position"] = pvalue;
+    pvalue.propType = PROP_INT;
+    pvalue.val = Ogre::Any(x);
+    creationparams["pagex"] = pvalue;
+    pvalue.propType = PROP_INT;
+    pvalue.val = Ogre::Any(y);
+    creationparams["pagey"] = pvalue;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(diffuse);
+    creationparams["layer0::diffusespecular"] = pvalue;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(normal);
+    creationparams["layer0::normalheight"] = pvalue;
+    pvalue.propType = PROP_REAL;
+    pvalue.val = Ogre::Any((Ogre::Real)10.0f);
+    creationparams["layer0::worldsize"] = pvalue;
+
+    CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page Object", creationparams, true, true);
+}
+//-----------------------------------------------------------------------------------------
+Ogre::Vector3 CTerrainGroupEditor::getPagePosition(const int x, const int y)
 {
     Ogre::Vector3 pos;
     mHandle->convertTerrainSlotToWorldPosition(x, y, &pos);

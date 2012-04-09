@@ -31,35 +31,70 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #include <../QtGui/qgraphicsitem.h>
 
-#include "addterraindialog.hxx"
+#include "manageTerrainDialog.hxx"
+
 #include "OgitorsPrerequisites.h"
-#include "OgitorsSystem.h"
-#include "BaseEditor.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
-#include "CameraEditor.h"
-#include "ViewportEditor.h"
+#include "BaseEditor.h"
 #include "TerrainEditor.h"
 #include "TerrainPageEditor.h"
-#include "addtemplatedialog.hxx"
 #include "uiterrainsquare.hxx"
 
-AddTerrainDialog::AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params) 
-    : QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+using namespace Ogitors;
+
+ManageTerrainDialog::ManageTerrainDialog(QWidget *parent) 
+    : QDialog(0, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     this->setWindowFlags(Qt::Window);
     setupUi(this);
-    drawPageMap(params);
+
+    QTimer *mTimerDrawPage = new QTimer(this);
+    connect(mTimerDrawPage, SIGNAL(timeout()), this, SLOT(update()));
+    mTimerDrawPage->start(300);
+    mDrawRequested = false;
+
+    mPageGraphics->setScene(&mScene);
+    mPageGraphics->centerOn(0,0);
+    mPageGraphics->setDragMode(QGraphicsView::ScrollHandDrag);
+    mPageGraphics->setRenderHint(QPainter::Antialiasing);
+    mPageGraphics->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    mPageGraphics->show();
+    drawPageMap();
 }
 
-void AddTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
+ManageTerrainDialog::~ManageTerrainDialog()
 {
+    // TODO: Find out if I need to clean up the UITerrainSquare objects or does QT clean those up?
+    OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
+}
+
+bool ManageTerrainDialog::hasTerrain(int X, int Y)
+{
+    X = X - minX;
+    Y = Y - minY;
+
+    if (X < 0 || Y < 0 || X > width || Y > height)
+        return false;
+
+    if (!mtx[(Y * width) + X]) {
+        return true;
+    }
+
+    return false;
+}
+
+void ManageTerrainDialog::drawPageMap()
+{
+    // Remove all items
+	mScene.clear();
+    mScene.setBackgroundBrush(QBrush(Qt::black));
 
     Ogitors::CBaseEditor* editor = Ogitors::OgitorsRoot::getSingletonPtr()->GetTerrainEditorObject();
-
     Ogitors::NameObjectPairList::iterator it;
 
-    int minX = -1, minY = -1, maxX = 1, maxY = 1, PX, PY;
+    minX = -1, minY = -1;
+    int maxX = 1, maxY = 1, PX, PY;
     for(it = editor->getChildren().begin(); it != editor->getChildren().end();it++)
     {
          Ogitors::CTerrainPageEditor *terrain = static_cast<Ogitors::CTerrainPageEditor*>(it->second);
@@ -71,12 +106,10 @@ void AddTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
          maxY = std::max(maxY, PY + 1);
     }
 
-    int width = maxX - minX + 1;
-    int height = maxY - minY + 1;
+    width = maxX - minX + 1;
+    height = maxY - minY + 1;
 
-    mScene.setBackgroundBrush(QBrush(Qt::black));
-     
-    bool *mtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
+    mtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
     for(int i = 0; i < width * height;++i)
         mtx[i] = true;
  
@@ -89,37 +122,30 @@ void AddTerrainDialog::drawPageMap(Ogre::NameValuePairList &params)
          mtx[((PY - minY) * width) + (PX - minX)] = false;
     }
 
-    UITerrainSquare* rect;
-
+    UITerrainSquare * rect;
     for(int Y = 0;Y < height;++Y)
     {
         for(int X = 0;X < width;++X)
         {
-            rect = new UITerrainSquare(this, &params);
-            rect->setRect(X*30, Y*30, 30, 30);
-
-            if(!mtx[(Y * width) + X])
-            {
-                rect->set((X + minX), (Y + minY), QPen(Qt::black), QBrush(QColor(71, 130, 71)), false);
-            } else {
-                rect->set((X + minX), (Y + minY), QPen(Qt::black), QBrush(QColor(52, 51, 49)), true);
-            }
+            // Terrain exists
+            rect = new UITerrainSquare(mPageGraphics, this, X + minX, Y + minY, !mtx[(Y * width) + X]);
             mScene.addItem(rect);
         }
     }
-
-    OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
-
-    mPageGraphics->setScene(&mScene);
-    mPageGraphics->centerOn(0,0);
-    mPageGraphics->setDragMode(QGraphicsView::ScrollHandDrag);
-    mPageGraphics->setRenderHint(QPainter::Antialiasing);
-    mPageGraphics->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    mPageGraphics->show();
 }
- 
-AddTerrainDialog::~AddTerrainDialog()
+
+void ManageTerrainDialog::requestPageDraw()
 {
+    mDrawRequested = true;
 }
 
+void ManageTerrainDialog::update()
+{
+    if (!mDrawRequested)
+        return;
+
+    mDrawRequested = false;
+    OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
+    drawPageMap();
+}
 

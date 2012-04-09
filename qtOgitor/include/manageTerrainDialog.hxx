@@ -35,16 +35,30 @@
 #include <QtGui/QDialog>
 #include <Ogre.h>
 
-#include "ui_addterraindialog.h"
+#include "ui_manageTerrainDialog.h"
 
-class AddTerrainDialog : public QDialog, public Ui::addterraindialog {
+class ManageTerrainDialog : public QDialog, public Ui::manageTerrainDialog {
     Q_OBJECT
 public:
-    AddTerrainDialog(QWidget *parent, Ogre::NameValuePairList &params);
-    virtual ~AddTerrainDialog();
+    ManageTerrainDialog(QWidget *parent);
+    virtual ~ManageTerrainDialog();
+    void requestPageDraw();
+    bool hasTerrain(int X, int Y);
+    Ogre::String mLastUsedDiffuse;
+    Ogre::String mLastUsedNormal;
+public Q_SLOTS:
+    void update();
 private:
+    QTimer* mTimerDrawPage;
+    bool mDrawRequested;
+
+    void drawPageMap();
+    bool *mtx;
+    int width;
+    int height;
+    int minY;
+    int minX;
     QGraphicsScene mScene;
-    void drawPageMap(Ogre::NameValuePairList &params);
 };
 
 #endif // ADDTERRAINDIALOG_HXX
