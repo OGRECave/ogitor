@@ -73,7 +73,7 @@ else(NOT QT4_FOUND)
 
     set_target_properties(OgAngelDialogManager PROPERTIES VERSION ${OgAngelDialogManager_VERSION} SOVERSION ${OgAngelDialogManager_VERSION_MAJOR})
 	set_target_properties(OgAngelDialogManager PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
-	set_target_properties(OgAngelDialogManager PROPERTIES SOLUTION_FOLDER Plugins)
+    set_target_properties(OgAngelDialogManager PROPERTIES FOLDER Plugins) 
 
 	if(UNIX AND NOT APPLE)
 		add_custom_command(TARGET OgAngelDialogManager PRE_BUILD
