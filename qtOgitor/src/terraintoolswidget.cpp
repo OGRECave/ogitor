@@ -270,18 +270,9 @@ void TerrainToolsWidget::populateTextures()
         Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
         
         QPixmap pixmap;
-        std::cout << name << std::endl;
-        
-        try {
-            if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupDiffuseSpecular")))
-                continue;
-        }
-        catch(Ogre::Exception& e)
-        {
+        if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupDiffuseSpecular")))
             continue;
-        }
-        
-        
+
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
         witem->setWhatsThis(name.c_str());
         witem->setToolTip(name.c_str());
@@ -344,9 +335,81 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
 
         if (!Ogre::PixelUtil::isAccessible(img.getFormat()))
         {
-            OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_STATE, 
-                "Can not convert this format ",
-                "TerrainToolsWidget::getQImageFromOgre");
+            /* Some formats aren't possible to get the image data
+            just render to a render target so we can generate an image that way */
+
+            // create resources for storing the material
+            Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+            mngr->createResourceGroup(resourceGroup+"_renderTarget");
+            mngr->initialiseResourceGroup(resourceGroup+"_renderTarget");
+
+            Ogre::TexturePtr terraintex = Ogre::TextureManager::getSingleton().loadImage(name, resourceGroup, img);
+
+            // create our render texture
+            Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual( "RenderTex", 
+                   resourceGroup+"_renderTarget", Ogre::TEX_TYPE_2D, 
+                   128, 128, 0, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET );
+
+            Ogre::RenderTexture *rttTex = texture->getBuffer()->getRenderTarget();
+            Ogre::SceneManager *sceneMgrPtr = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", name);
+
+            sceneMgrPtr->setAmbientLight(Ogre::ColourValue(1,1,1));
+
+            // create our plane to set a texture to
+            Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+            Ogre::MeshManager::getSingleton().createPlane("terrain", resourceGroup+"_renderTarget",
+                plane, 100, 100, 10, 10, true, 1, 1, 1, Ogre::Vector3::UNIT_Z);
+
+            // create our material
+            Ogre::MaterialManager& materialManager = Ogre::MaterialManager::getSingleton();
+            Ogre::MaterialPtr material = materialManager.create("terrainMaterial", resourceGroup);
+            Ogre::Technique * technique = material->getTechnique(0);
+            Ogre::Pass* pass = technique->getPass(0);
+            Ogre::TextureUnitState* textureUnit = pass->createTextureUnitState();
+            textureUnit->setTextureName(name);
+
+            // attach the plane to the scene manager and rotate it so the camera can see it
+            Ogre::Entity* entTerrain = sceneMgrPtr->createEntity("terrainEntity", "terrain");
+            Ogre::SceneNode* node = sceneMgrPtr->getRootSceneNode()->createChildSceneNode();
+            node->attachObject(entTerrain);
+            node->yaw( Ogre::Degree( -90 ) );
+            node->roll( Ogre::Degree( -90 ) );
+            entTerrain->setCastShadows(false);
+            entTerrain->setMaterialName("terrainMaterial");
+
+            Ogre::Camera* RTTCam = sceneMgrPtr->createCamera("EntityCam");
+            RTTCam->setNearClipDistance(0.01F);
+            RTTCam->setFarClipDistance(0);
+            RTTCam->setAspectRatio(1);
+            RTTCam->setFOVy(Ogre::Degree(90));
+            RTTCam->setPosition(0,0,50);
+            RTTCam->lookAt(0,0,0);
+
+            Ogre::Viewport *v = rttTex->addViewport( RTTCam );
+            v->setClearEveryFrame( true );
+            rttTex->update();
+
+            size_t size = Ogre::PixelUtil::getMemorySize(128, 128, 1, Ogre::PF_B8G8R8);
+            unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
+
+            Ogre::PixelBox pb(128,128,1,Ogre::PF_B8G8R8, dataptr);
+            pb.setConsecutive();
+
+            rttTex->copyContentsToMemory(pb, Ogre::RenderTarget::FB_FRONT);
+            QImage qimg(dataptr, pb.getWidth(), pb.getHeight(), QImage::Format_RGB888);
+
+            OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
+
+            rttTex->removeAllViewports();
+
+            Ogre::TextureManager::getSingletonPtr()->unload(rttTex->getName());
+            Ogre::TextureManager::getSingletonPtr()->remove(rttTex->getName());
+            Ogre::TextureManager::getSingletonPtr()->unload(texture->getName());
+            Ogre::TextureManager::getSingletonPtr()->remove(texture->getName());
+            Ogre::Root::getSingletonPtr()->destroySceneManager(sceneMgrPtr);
+            OgitorsRoot::getSingletonPtr()->DestroyResourceGroup(resourceGroup+"_renderTarget");
+
+            return qimg;
         }
 
         size_t size = Ogre::PixelUtil::getMemorySize(img.getWidth(), img.getHeight(), img.getDepth(), Ogre::PF_A8R8G8B8);
@@ -398,7 +461,7 @@ void TerrainToolsWidget::textureIndexChanged()
     QString str = texturesWidget->currentItem()->whatsThis();
 
     if(OgitorsRoot::getSingletonPtr()->GetTerrainEditor())
-        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setTexture(str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive).toStdString());
+        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setTexture(str.toStdString());
 }
 //------------------------------------------------------------------------------
 void TerrainToolsWidget::plantIndexChanged()
