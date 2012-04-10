@@ -383,8 +383,7 @@ private:
     void initHiddenRenderWindow();
     void updateRecentFiles();
     bool mHasFileArgs;
-    bool mUpdateLastSceneFile1;
-    bool mUpdateLastSceneFile2;
+    std::string mLastLoadedScene;
     void addDockWidgets(QMainWindow* parent);
     void createSceneRenderWindow();
     void createHomeTab();

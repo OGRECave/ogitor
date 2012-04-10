@@ -1517,6 +1517,18 @@ CMultiSelEditor *OgitorsRoot::GetSelection()
     return mMultiSelection;
 }
 //-----------------------------------------------------------------------------------------
+std::string OgitorsRoot::GetSceneName()
+{
+	if(mLoadState == LS_LOADED)
+	{
+		return (*mProjectFile)->getFileSystemName();
+	}
+	else
+	{
+		return "";
+	}
+}
+//-----------------------------------------------------------------------------------------
 bool OgitorsRoot::AfterLoadScene()
 {
     OgitorsPropertyValueMap params;
