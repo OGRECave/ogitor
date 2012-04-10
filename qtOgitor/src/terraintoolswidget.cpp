@@ -293,7 +293,7 @@ void TerrainToolsWidget::populatePlants()
     {
         Ogitors::PropertyOption opt = (*plantItr);
         Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
-        
+
         QPixmap pixmap;
         if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupPlants")))
             continue;
@@ -310,10 +310,15 @@ void TerrainToolsWidget::populatePlants()
 //----------------------------------------------------------------------------------------
 QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogre::String& resourceGroup)
 {
-        Ogre::Image img;
-        img.load(name,resourceGroup);
+        bool isMaterial = Ogre::StringUtil::match(name, "*.material");
 
-        if (!Ogre::PixelUtil::isAccessible(img.getFormat()))
+        std::cout << name << " " << isMaterial <<  std::endl;
+
+        Ogre::Image img;
+        if (!isMaterial)
+            img.load(name,resourceGroup);
+
+        if (isMaterial || !Ogre::PixelUtil::isAccessible(img.getFormat()))
         {
             /* Some formats aren't possible to get the image data
             just render to a render target so we can generate an image that way */
@@ -323,7 +328,20 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
             mngr->createResourceGroup(resourceGroup+"_renderTarget");
             mngr->initialiseResourceGroup(resourceGroup+"_renderTarget");
 
-            Ogre::TexturePtr terraintex = Ogre::TextureManager::getSingleton().loadImage(name, resourceGroup, img);
+            Ogre::MaterialPtr material;
+
+            if (!isMaterial)
+            {
+                Ogre::TexturePtr terraintex = Ogre::TextureManager::getSingletonPtr()->loadImage(name, resourceGroup, img);
+                // create our material
+                material = Ogre::MaterialManager::getSingletonPtr()->create("terrainMaterial", resourceGroup);
+                Ogre::Technique * technique = material->getTechnique(0);
+                Ogre::Pass* pass = technique->getPass(0);
+                Ogre::TextureUnitState* textureUnit = pass->createTextureUnitState();
+                textureUnit->setTextureName(name);
+            } else {
+                material = Ogre::MaterialManager::getSingletonPtr()->load(name, resourceGroup);
+            }
 
             // create our render texture
             Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual( "RenderTex", 
@@ -340,14 +358,6 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
             Ogre::MeshManager::getSingleton().createPlane("terrain", resourceGroup+"_renderTarget",
                 plane, 100, 100, 10, 10, true, 1, 1, 1, Ogre::Vector3::UNIT_Z);
 
-            // create our material
-            Ogre::MaterialManager& materialManager = Ogre::MaterialManager::getSingleton();
-            Ogre::MaterialPtr material = materialManager.create("terrainMaterial", resourceGroup);
-            Ogre::Technique * technique = material->getTechnique(0);
-            Ogre::Pass* pass = technique->getPass(0);
-            Ogre::TextureUnitState* textureUnit = pass->createTextureUnitState();
-            textureUnit->setTextureName(name);
-
             // attach the plane to the scene manager and rotate it so the camera can see it
             Ogre::Entity* entTerrain = sceneMgrPtr->createEntity("terrainEntity", "terrain");
             Ogre::SceneNode* node = sceneMgrPtr->getRootSceneNode()->createChildSceneNode();
@@ -355,7 +365,7 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
             node->yaw( Ogre::Degree( -90 ) );
             node->roll( Ogre::Degree( -90 ) );
             entTerrain->setCastShadows(false);
-            entTerrain->setMaterialName("terrainMaterial");
+            entTerrain->setMaterialName(material->getName());
 
             Ogre::Camera* RTTCam = sceneMgrPtr->createCamera("EntityCam");
             RTTCam->setNearClipDistance(0.01F);
