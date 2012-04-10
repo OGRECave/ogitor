@@ -179,7 +179,7 @@ bool OgitorAssistant::startOgitorAssistant()
 
 //------------------------------------------------------------------------------
 MainWindow::MainWindow(QString args, QWidget *parent)
-    : QMainWindow(parent), mOgreWidget(0), mLastTime(0), mArgsFile(args), mHasFileArgs(false), mUpdateLastSceneFile1(false), mUpdateLastSceneFile2(false), mPrefManager(0), mSubWindowsVisible(true)
+    : QMainWindow(parent), mOgreWidget(0), mLastTime(0), mArgsFile(args), mHasFileArgs(false), mLastLoadedScene(""), mPrefManager(0), mSubWindowsVisible(true)
 {
     mOgitorMainWindow = this;
 
@@ -496,17 +496,17 @@ void MainWindow::writeSettings(QString filename)
     settings->setValue("FilterInfo", actLogShowInfo->isChecked());
     settings->setValue("FilterDebug", actLogShowDebug->isChecked());
     settings->endGroup();
-    if(mUpdateLastSceneFile1 || mUpdateLastSceneFile2)
-        settings->setValue("preferences/lastLoadedScene", settings->value("recentfiles/entry0",""));
-    else
-        settings->setValue("preferences/lastLoadedScene", "");
+	settings->setValue("preferences/lastLoadedScene", mLastLoadedScene.c_str());
 
     delete settings;
 }
 //------------------------------------------------------------------------------
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    mUpdateLastSceneFile1 = OgitorsRoot::getSingletonPtr()->IsSceneLoaded();
+    if(OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
+	{
+		mLastLoadedScene = OgitorsRoot::getSingletonPtr()->GetSceneName();
+	}
     if(OgitorsRoot::getSingletonPtr()->TerminateScene())
     {
         delete mOgitorAssistant;
