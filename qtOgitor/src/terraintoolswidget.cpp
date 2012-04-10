@@ -205,6 +205,7 @@ void TerrainToolsWidget::switchToolWidget( const unsigned int tool )
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::updateTools()
 {
+    OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
     populateBrushes();
     populateTextures();
     populatePlants();
@@ -256,11 +257,9 @@ void TerrainToolsWidget::populateBrushes()
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populateTextures()
 {
-    std::cout << "TerrainToolsWidget::populateTextures()" << std::endl;
     texturesWidget->clear();
 
     OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
-    ogitorRoot->PrepareTerrainResources();
 
     PropertyOptionsVector* diffuseList = ogitorRoot->GetTerrainDiffuseTextureNames();
 
@@ -279,52 +278,33 @@ void TerrainToolsWidget::populateTextures()
         texturesWidget->addItem(witem);
     }
 
-    texturesWidget->setCurrentItem(texturesWidget->item(0));
+    if(diffuseList->size() > 0)
+        texturesWidget->setCurrentItem(texturesWidget->item(0));
 }
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populatePlants()
 {
-    PropertyOptionsVector *list = OgitorsRoot::GetTerrainPlantMaterialNames();
-
     plantsWidget->clear();
 
-    ComboData items;
-    items.clear();
+    OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
+    PropertyOptionsVector *plantList = OgitorsRoot::GetTerrainPlantMaterialNames();
 
-    for(unsigned int i = 1;i < list->size();i++)
+    for (Ogitors::PropertyOptionsVector::const_iterator plantItr = plantList->begin(); plantItr != plantList->end(); ++plantItr)
     {
-        Ogre::String matName = (*list)[i].mKey;
-        Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingletonPtr()->getByName(matName);
-
-        if(matPtr.isNull())
-            continue;
-
-        Ogre::String texName = matPtr->getTechnique(0)->getPass(0)->getTextureUnitState(0)->getTextureName();
-
-        Ogre::FileInfoListPtr resPtr = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo("Plants", texName);
-        Ogre::FileInfo fInfo = (*(resPtr->begin()));
-
-        if(items.find(QString(fInfo.filename.c_str())) == items.end())
-        {
-            items.insert(ComboData::value_type(QString(fInfo.filename.c_str()), QString(matName.c_str())));
-        }
-
-        resPtr.setNull();
-    }
-
-    for(ComboData::iterator ct = items.begin();ct != items.end();ct++)
-    {
+        Ogitors::PropertyOption opt = (*plantItr);
+        Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
+        
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(getQImageFromOgre(ct->first.toUtf8().constData(), "Plants")))
+        if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupPlants")))
             continue;
 
-        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), ct->second);
-        witem->setWhatsThis(ct->second);
-        witem->setToolTip(ct->second);
+        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
+        witem->setWhatsThis(name.c_str());
+        witem->setToolTip(name.c_str());
         plantsWidget->addItem(witem);
     }
 
-    if(list->size() > 0)
+    if(plantList->size() > 0)
         plantsWidget->setCurrentItem(plantsWidget->item(0));
 }
 //----------------------------------------------------------------------------------------
