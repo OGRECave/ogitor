@@ -933,7 +933,7 @@ void CTerrainGroupEditorFactory::addEditorResources()
         {
             if(fInfo.filename.find("diffusespecular") != -1)
             {
-                newName = Ogre::StringUtil::replaceAll(newName, "_", "");
+                newName = Ogre::StringUtil::replaceAll(newName, "_diffusespecular", "");
                 OgitorsUtils::CopyFileOfs(loc, terrainDir+"/textures/diffusespecular/"+newName);
             }
             
