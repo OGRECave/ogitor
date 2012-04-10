@@ -312,8 +312,6 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
 {
         bool isMaterial = Ogre::StringUtil::match(name, "*.material");
 
-        std::cout << name << " " << isMaterial <<  std::endl;
-
         Ogre::Image img;
         if (!isMaterial)
             img.load(name,resourceGroup);
@@ -354,16 +352,14 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
             sceneMgrPtr->setAmbientLight(Ogre::ColourValue(1,1,1));
 
             // create our plane to set a texture to
-            Ogre::Plane plane(Ogre::Vector3::UNIT_Y, 0);
+            Ogre::Plane plane(Ogre::Vector3::UNIT_Z, 0);
             Ogre::MeshManager::getSingleton().createPlane("terrain", resourceGroup+"_renderTarget",
-                plane, 100, 100, 10, 10, true, 1, 1, 1, Ogre::Vector3::UNIT_Z);
+                plane, 100, 100, 1, 1, true, 1, 1, 1, Ogre::Vector3::UNIT_Y);
 
             // attach the plane to the scene manager and rotate it so the camera can see it
             Ogre::Entity* entTerrain = sceneMgrPtr->createEntity("terrainEntity", "terrain");
             Ogre::SceneNode* node = sceneMgrPtr->getRootSceneNode()->createChildSceneNode();
             node->attachObject(entTerrain);
-            node->yaw( Ogre::Degree( -90 ) );
-            node->roll( Ogre::Degree( -90 ) );
             entTerrain->setCastShadows(false);
             entTerrain->setMaterialName(material->getName());
 
@@ -376,6 +372,7 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
             RTTCam->lookAt(0,0,0);
 
             Ogre::Viewport *v = rttTex->addViewport( RTTCam );
+            v->setBackgroundColour(Ogre::ColourValue(1,1,1));
             v->setClearEveryFrame( true );
             rttTex->update();
 
