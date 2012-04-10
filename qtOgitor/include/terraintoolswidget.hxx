@@ -65,7 +65,7 @@ protected:
     ColourPickerWidget* mPaintColour;
 
     /* Useful for getting images out of Ogre/OFS and into QT */
-    QImage getQImageFromOgre(Ogre::String name, Ogre::String resourceGroup);
+    QImage getQImageFromOgre(const Ogre::String& name, const Ogre::String& resourceGroup);
 
     void resizeEvent(QResizeEvent* evt);
 

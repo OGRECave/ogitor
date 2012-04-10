@@ -163,8 +163,6 @@ void TerrainToolsWidget::resizeEvent(QResizeEvent* evt)
 void TerrainToolsWidget::updateTerrainOptions(ITerrainEditor *terrain)
 {
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-    if (!mngr->resourceGroupExists("TerrainTextures"))
-        return;
 
     OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
     updateTools();
@@ -172,7 +170,7 @@ void TerrainToolsWidget::updateTerrainOptions(ITerrainEditor *terrain)
     if(texturesWidget->currentItem())
     {
         QString str = texturesWidget->currentItem()->whatsThis();
-        terrain->setTexture(str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive).toStdString());
+        terrain->setTexture(str.toStdString());
     }
 
     if(plantsWidget->currentItem())
@@ -258,54 +256,35 @@ void TerrainToolsWidget::populateBrushes()
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populateTextures()
 {
+    std::cout << "TerrainToolsWidget::populateTextures()" << std::endl;
     texturesWidget->clear();
 
-    ComboData items;
-    items.clear();
+    OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
+    ogitorRoot->PrepareTerrainResources();
 
-    Ogre::FileInfoListPtr resList2 = Ogre::ResourceGroupManager::getSingleton().listResourceFileInfo("TerrainTextures");
+    PropertyOptionsVector* diffuseList = ogitorRoot->GetTerrainDiffuseTextureNames();
 
-    Ogre::String fname_diffuse;
-    Ogre::String fname_normal;
-   
-    for (Ogre::FileInfoList::const_iterator it = resList2->begin(); it != resList2->end(); ++it)
+    for (Ogitors::PropertyOptionsVector::const_iterator diffItr = diffuseList->begin(); diffItr != diffuseList->end(); ++diffItr)
     {
-        Ogre::FileInfo fInfo = (*it);
-        if(fInfo.archive->getType() == "Ofs")
-        {
-            if(fInfo.filename.find("_diffuse.png") == -1) continue;
-            fname_diffuse = fInfo.filename;
-            fname_normal = fInfo.filename;
-            fname_normal.erase(fname_normal.length() - 12,12);
-            fname_normal += "_normalheight.dds";
-
-            QString result = fInfo.filename.c_str();
-            if(QFile::exists(QString(Ogre::String(fInfo.archive->getName() + "/" + fname_normal).c_str())))
-            {
-                result += QString(";") + QString(fname_normal.c_str());
-            }
-
-            if(items.find(QString(fname_diffuse.c_str())) == items.end())
-            {
-                items.insert(ComboData::value_type(QString(fname_diffuse.c_str()), result));
-            }
-        }
-    }
-
-    resList2.setNull();
-
-    for(ComboData::iterator ct = items.begin();ct != items.end();ct++)
-    {
-        QString name = ct->second.mid(0, (ct->second.length() / 2) - 3);
-        name.replace("_diffuse.png","");
-
+        Ogitors::PropertyOption opt = (*diffItr);
+        Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
+        
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(getQImageFromOgre(ct->first.toUtf8().constData(), "TerrainTextures")))
+        std::cout << name << std::endl;
+        
+        try {
+            if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupDiffuseSpecular")))
+                continue;
+        }
+        catch(Ogre::Exception& e)
+        {
             continue;
-
-        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name);
-        witem->setWhatsThis(ct->second);
-        witem->setToolTip(name);
+        }
+        
+        
+        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
+        witem->setWhatsThis(name.c_str());
+        witem->setToolTip(name.c_str());
         texturesWidget->addItem(witem);
     }
 
@@ -358,15 +337,22 @@ void TerrainToolsWidget::populatePlants()
         plantsWidget->setCurrentItem(plantsWidget->item(0));
 }
 //----------------------------------------------------------------------------------------
-QImage TerrainToolsWidget::getQImageFromOgre(Ogre::String name, Ogre::String resourceGroup)
+QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogre::String& resourceGroup)
 {
         Ogre::Image img;
         img.load(name,resourceGroup);
 
+        if (!Ogre::PixelUtil::isAccessible(img.getFormat()))
+        {
+            OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_STATE, 
+                "Can not convert this format ",
+                "TerrainToolsWidget::getQImageFromOgre");
+        }
+
         size_t size = Ogre::PixelUtil::getMemorySize(img.getWidth(), img.getHeight(), img.getDepth(), Ogre::PF_A8R8G8B8);
         unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
 
-        Ogre::PixelBox pixbox(128,128,1, Ogre::PF_A8R8G8B8, dataptr);
+        Ogre::PixelBox pixbox(128,128, 1, Ogre::PF_A8R8G8B8, dataptr);
         Ogre::Image::scale(img.getPixelBox(), pixbox);
         pixbox.setConsecutive();
 
