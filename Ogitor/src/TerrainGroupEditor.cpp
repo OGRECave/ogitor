@@ -983,12 +983,6 @@ void CTerrainGroupEditorFactory::addEditorResources()
 CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)
 {
     OgitorsRoot* ogitorsRoot = OgitorsRoot::getSingletonPtr();
-
-    /* A hack for 0.4 and old 0.5 files that still include the Plants and TerrainTextures
-    resource groups in their resources.cfg */
-    ogitorsRoot->DestroyResourceGroup("Plants");
-    ogitorsRoot->DestroyResourceGroup("TerrainTextures");
-
     OgitorsPropertyValueMap::iterator ni;
 
     if ((ni = params.find("init")) != params.end())
