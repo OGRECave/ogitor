@@ -928,7 +928,7 @@ CBaseEditorFactory *CTerrainGroupEditorFactory::duplicate(OgitorsView *view)
     return ret;
 }
 //-----------------------------------------------------------------------------------------
-void CTerrainGroupEditorFactory::addEditorResources()
+void CTerrainGroupEditorFactory::addEditorResources(bool changeDefaultNames)
 {
     OgitorsRoot* ogitorsRoot = OgitorsRoot::getSingletonPtr();
     Ogre::String terrainDir = ogitorsRoot->GetProjectOptions()->TerrainDirectory;
@@ -964,13 +964,20 @@ void CTerrainGroupEditorFactory::addEditorResources()
         {
             if(fInfo.filename.find("diffusespecular") != -1)
             {
-                newName = Ogre::StringUtil::replaceAll(newName, "_diffusespecular", "");
+                /* since we're using different resource groups for the terrain lets
+                remove the naming scheme from the filenames except if the project
+                is being upgraded, in which case leave the name alone. */
+                if (changeDefaultNames) {
+                    newName = Ogre::StringUtil::replaceAll(newName, "_diffusespecular", "");
+                }
                 OgitorsUtils::CopyFileOfs(loc, terrainDir+"/textures/diffusespecular/"+newName);
             }
             
             if(fInfo.filename.find("normalheight") != -1)
             {
-                newName = Ogre::StringUtil::replaceAll(newName, "_normalheight", "");
+                if (changeDefaultNames) {
+                    newName = Ogre::StringUtil::replaceAll(newName, "_normalheight", "");
+                }
                 OgitorsUtils::CopyFileOfs(loc, terrainDir+"/textures/normalheight/"+newName);
             }
         }
@@ -1001,7 +1008,7 @@ CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, Ogit
     {
         // must check the both dirs exist otherwise it could possibly be a new project
         file->moveDirectory((terrainDir).c_str(), (terrainDir+"/terrain/").c_str());
-        addEditorResources();
+        addEditorResources(false);
     }
 
     CTerrainGroupEditor *object = OGRE_NEW CTerrainGroupEditor(this);
