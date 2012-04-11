@@ -1386,8 +1386,6 @@ void OgitorsRoot::ReloadUserResources()
 
 
     mMaterialNames.clear();
-    mTerrainPlantMaterialNames.clear();
-    mTerrainPlantMaterialNames.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
     mSkyboxMaterials.clear();
     mSkyboxMaterials.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
 
@@ -1405,10 +1403,6 @@ void OgitorsRoot::ReloadUserResources()
             Ogre::StringUtil::toLowerCase(matname);
             if(matname.find("sky") != -1 && matname.find("skyboxplane") == -1)
                 mSkyboxMaterials.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
-        }
-        else if(mRes->getGroup() == "Plants")
-        {
-            mTerrainPlantMaterialNames.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
         }
     }
 
@@ -1443,14 +1437,22 @@ void OgitorsRoot::ReloadUserResources()
     }
 
     UpdateMaterialsInScene();
-
+    PrepareTerrainResources();
     SetSceneModified(true);
 }
 //-------------------------------------------------------------------------------------------
 void OgitorsRoot::PrepareTerrainResources()
 {
+    mTerrainDiffuseTextureNames.clear();
+    mTerrainDiffuseTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
     mTerrainDiffuseTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupDiffuseSpecular", "Ofs");
+
+    mTerrainNormalTextureNames.clear();
+    mTerrainNormalTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
     mTerrainNormalTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupNormalHeight", "Ofs");
+
+    mTerrainPlantMaterialNames.clear();
+    mTerrainPlantMaterialNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
     mTerrainPlantMaterialNames = OgitorsUtils::GetResourceFilenames("TerrainGroupPlants", "Ofs");
 }
 //-------------------------------------------------------------------------------------------
@@ -1540,8 +1542,6 @@ void OgitorsRoot::PrepareProjectResources()
         std::sort(++(mModelNames.begin()), mModelNames.end(), PropertyOption::comp_func);
 
         mMaterialNames.clear();
-        mTerrainPlantMaterialNames.clear();
-        mTerrainPlantMaterialNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
         mSkyboxMaterials.clear();
         mSkyboxMaterials.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
 
