@@ -43,32 +43,44 @@
 #include "TerrainPageEditor.h"
 #include "addtemplatedialog.hxx"
 
-CreateTerrainDialog::CreateTerrainDialog(QWidget *parent) :
+CreateTerrainDialog::CreateTerrainDialog(QWidget *parent, Ogre::String lastUsedDiffuse, Ogre::String lastUsedNormal) :
     QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     setupUi(this);
 
-    unsigned int i;
+    unsigned int i, index = 1;
     Ogitors::PropertyOptionsVector *mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
     if(mapDiffuse->size() == 0)
         mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
     for(i = 0;i < mapDiffuse->size();i++)
     {
+        if (lastUsedDiffuse == (*mapDiffuse)[i].mKey)
+            index = i;
         mDiffuseCombo->addItem((*mapDiffuse)[i].mKey.c_str());
     }
-    
-    if(mapDiffuse->size())
-        mDiffuseCombo->setCurrentIndex(1);
 
+    if (lastUsedDiffuse.empty())
+        index = 1;
+
+    if(mapDiffuse->size())
+        mDiffuseCombo->setCurrentIndex(index);
+
+    index = 1;
     Ogitors::PropertyOptionsVector *mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
     if(mapNormal->size() == 0)
         mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
     for(i = 0;i < mapNormal->size();i++)
     {
+        if (lastUsedNormal == (*mapNormal)[i].mKey)
+            index = i;
         mNormalCombo->addItem((*mapNormal)[i].mKey.c_str());
     }
+
+    if (lastUsedNormal.empty())
+        index = 1;
+
     if(mapNormal->size())
-        mNormalCombo->setCurrentIndex(1);
+        mNormalCombo->setCurrentIndex(index);
 }
 
 CreateTerrainDialog::~CreateTerrainDialog()

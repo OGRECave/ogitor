@@ -210,6 +210,10 @@ void MainWindow::addActions()
     actEditCopyToTemplateWithChildren->setStatusTip(tr("Copy Object and Children as a Template"));
     actEditCopyToTemplateWithChildren->setIcon(QIcon(":/icons/editcopy.svg"));
 
+    actFocus = new QAction(tr("Go to"), this);
+    actFocus->setStatusTip(tr("Focus camera on object"));
+    actFocus->setIcon(QIcon(":/icons/search.svg"));
+
     actFullScreen = new QAction(tr("Fullscreen"), this);
     actFullScreen->setStatusTip(tr("Fullscreen"));
     actFullScreen->setIcon(QIcon(":/icons/fullscreen.svg"));
@@ -451,6 +455,7 @@ void MainWindow::addActions()
     connect(actToggleGrid, SIGNAL(triggered()), this, SLOT(toggleGrid()));
     connect(actToggleWorldSpaceGizmo, SIGNAL(triggered()), this, SLOT(toggleWorldSpaceGizmo()));
     connect(actToggleWalkAround, SIGNAL(triggered()), this, SLOT(toggleWalkAround()));
+    connect(actFocus, SIGNAL(triggered()), this, SLOT(onFocusOnObject()));
 
     QMetaObject::connectSlotsByName(this);
 }
@@ -722,14 +727,19 @@ void MainWindow::openRecentFile(const QString& value)
 //------------------------------------------------------------------------------
 void MainWindow::closeScene()
 {
+    ITerrainEditor *terED = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
+    if(terED && terED->isBackgroundProcessActive())
+    {
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Terrain is still making background calculations.") + "\n" + tr("Closing at this time may take much longer and cause temporary freeze.") + "\n" + tr("Do you want to continue?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
+            return;
+    }
+    
     OgitorsRoot::getSingletonPtr()->TerminateScene();
 }
 //------------------------------------------------------------------------------
 void MainWindow::exitApp()
 {
-    mUpdateLastSceneFile2 = OgitorsRoot::getSingletonPtr()->IsSceneLoaded();
-    if(OgitorsRoot::getSingletonPtr()->TerminateScene())
-        close();
+	qApp->closeAllWindows();
 }
 //------------------------------------------------------------------------------
 void MainWindow::saveScene(const QString& exportfile)

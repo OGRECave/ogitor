@@ -41,7 +41,7 @@
 #include "qttreepropertybrowser.h"
 #include "propertiesviewgeneral.hxx"
 #include "propertiesviewcustom.hxx"
-#include "addterraindialog.hxx"
+#include "manageTerrainDialog.hxx"
 #include "importheightmapdialog.hxx"
 #include "eucliddialog.hxx"
 #include "calculateblendmapdialog.hxx"
@@ -88,7 +88,7 @@ void QtOgitorSystem::DummyTranslationFunction()
     dummyStr = tr("Import Blendmap");
     dummyStr = tr("Import Blendmaps");
     dummyStr = tr("Remove Page");
-    dummyStr = tr("Add Page");
+    dummyStr = tr("Manage Terrain Pages");
     dummyStr = tr("Add Row Top");
     dummyStr = tr("Add Row Bottom");
     dummyStr = tr("Add Column Left");
@@ -403,7 +403,12 @@ Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
-    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), QApplication::applicationDirPath()
+    QSettings settings;
+    settings.beginGroup("OgitorSystem");
+    QString oldOpenPath = settings.value("oldOpenPath", mProjectsDirectory).toString();
+    settings.endGroup();
+
+    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), oldOpenPath
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
       , QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
 #else
@@ -411,6 +416,13 @@ Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+
+    if(path != "")
+    {
+        settings.beginGroup("OgitorSystem");
+        settings.setValue("oldOpenPath", path);
+        settings.endGroup();
+    }
 
     return path.toStdString();
 }
@@ -616,10 +628,12 @@ void QtOgitorSystem::ShowMouseCursor(bool bShow)
 bool QtOgitorSystem::DisplayTerrainDialog(Ogre::NameValuePairList &params)
 {
     params.clear();
-    AddTerrainDialog dlg(QApplication::activeWindow(), params);
- 
+    ManageTerrainDialog dlg(QApplication::activeWindow());
+    dlg.setWindowModality(Qt::NonModal);
+    dlg.setModal(false);
     dlg.exec();
-    return Ogre::StringConverter::parseBool(params["init"]);
+
+    return false;
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList &params)
@@ -980,7 +994,7 @@ void QtOgitorSystem::SelectTreeItem(Ogitors::CBaseEditor *object)
     }
 }
 //-------------------------------------------------------------------------------
-void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object,int iconid, unsigned int colour)
+void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object, int iconid, unsigned int colour)
 {
     if(!parent || !object)
         return;
@@ -990,7 +1004,7 @@ void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBase
     item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(object->getName().c_str())));
     object->setSceneTreeItemHandle(item);
     item->setIcon(0, QIcon( mIconList[iconid]));
-    item->setTextColor(0,QColor(GetRED(colour),GetGREEN(colour),GetBLUE(colour)));
+    item->setTextColor(0, QColor(GetRED(colour), GetGREEN(colour), GetBLUE(colour)));
 
     static_cast<QTreeWidgetItem*>(parent->getSceneTreeItemHandle())->addChild(item);
 

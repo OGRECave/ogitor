@@ -33,63 +33,164 @@
 #include <QtGui/QtGui>
 
 #include "uiterrainsquare.hxx"
+
 #include "createterraindialog.hxx"
 
-UITerrainSquare::UITerrainSquare(QWidget *parent, Ogre::NameValuePairList *params)
-{
-    this->parent = parent;
-    this->params = params;
-    setAcceptedMouseButtons(Qt::RightButton);
-}
+#include "OgitorsPrerequisites.h"
+#include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
+#include "BaseEditor.h"
+#include "TerrainEditor.h"
+#include "TerrainPageEditor.h"
+#include "TerrainGroupEditor.h"
 
-void UITerrainSquare::set(const signed int x, const signed int y, const QPen pen, const QBrush brush, const bool selectable)
-{
-    this->x = x;
-    this->y = y;
-    this->setPen(pen);
-    this->setBrush(brush);
-    this->selectable = selectable;
-}
+using namespace Ogitors;
 
+UITerrainSquare::UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent, const int x, const int y, const bool hasTerrain):
+    QObject(view),
+    QGraphicsRectItem()
+{
+    // Set location specific details
+    setRect(x*30, y*30, 30, 30);
+    mPosX = x;
+    mPosY = y;
+    mHasTerrain = hasTerrain;
+
+    // Set square colour
+    QColor green(71, 130, 71);
+    QColor gray(52, 51, 49);
+    QPen pen(Qt::black);
+    QBrush brush(gray);
+
+    if (hasTerrain)
+        brush = QBrush(green);
+
+    setPen(pen);
+    setBrush(brush);
+
+    mView = view;
+    mParent = parent;
+
+//    setFlag(QGraphicsItem::ItemIsPanel);
+//    setPanelModality(QGraphicsItem::SceneModal);
+
+    actAddPage = new QAction(tr("Add Terrain Page"), (QObject*) this);
+    actAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
+    connect(actAddPage, SIGNAL(triggered()), (QObject*) this, SLOT(addPage()));
+
+    actAddNeighbourPage = new QAction(tr("Add Neighbour Pages"), (QObject*) this);
+    actAddNeighbourPage->setStatusTip(tr("Creates terrain pages around this page"));
+    connect(actAddNeighbourPage, SIGNAL(triggered()), (QObject*) this, SLOT(addNeighbourPage()));
+
+    actRemovePage = new QAction(tr("Remove Terrain Page"), (QObject*) this);
+    actRemovePage->setStatusTip(tr("Removes a new page to the terrain group"));
+    connect(actRemovePage, SIGNAL(triggered()), (QObject*) this, SLOT(removePage()));
+
+    mContextMenu.addAction(actAddPage);
+    mContextMenu.addAction(actAddNeighbourPage);
+    mContextMenu.addAction(actRemovePage);
+}
+//-------------------------------------------------------------------------------
+bool UITerrainSquare::hasFreeNeighbour()
+{
+    for(int y = mPosY-1; y < mPosY+2; y++)
+    {
+        for(int x = mPosX-1; x < mPosX+2; x++)
+        {
+            if (y == mPosY && x == mPosX)
+                continue;
+
+            if (!mParent->hasTerrain(x, y))
+                return true;
+        }
+    }
+    return false;
+}
+//-------------------------------------------------------------------------------
 void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (!this->selectable)
-        return;
+    QGraphicsItem::mousePressEvent(event);
+    update();
+    
+    mView->scene()->setActivePanel(0);
 
-    setCursor(Qt::ClosedHandCursor);
-    this->setBrush(QBrush(QColor(173, 81, 44)));
+    QColor green(71, 130, 71);
+    QColor grey(52, 51, 49);
+    QColor orange(173, 81, 44);
 
-    CreateTerrainDialog dlg(QApplication::activeWindow());
-
-    if(dlg.exec() == QDialog::Accepted)
+    if(event->button() == Qt::RightButton)
     {
-        (*this->params)["init"] = "true";
-        (*this->params)["pagex"] = Ogre::StringConverter::toString(this->x);
-        (*this->params)["pagey"] = Ogre::StringConverter::toString(this->y);
-        (*this->params)["diffuse"] = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
-        (*this->params)["normal"] = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
-        this->parent->close();
-    } else {
-        this->setBrush(QBrush(QColor(52, 51, 49)));
+        actAddPage->setEnabled(!mHasTerrain);
+        actAddNeighbourPage->setEnabled(hasFreeNeighbour() && mHasTerrain);
+        actRemovePage->setEnabled(mHasTerrain);
+
+        setBrush(QBrush(orange));
+        QAction* actionSelected = mContextMenu.exec(QCursor::pos());
+        mContextMenu.update();
+        return;
+    }
+    else
+    {
+        setBrush(QBrush(orange)); 
     }
 
-    update();
-    QGraphicsItem::mousePressEvent(event);
+    if (!mHasTerrain)
+        setBrush(QBrush(grey));     
+    else
+        setBrush(QBrush(green));
 }
-
-void UITerrainSquare::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+//-------------------------------------------------------------------------------
+void UITerrainSquare::addPage()
 {
-    if (!this->selectable)
+    CreateTerrainDialog dlg(QApplication::activeWindow(), mParent->getLastUsedDiffuse(), mParent->getLastUsedNormal());
+    if(dlg.exec() == QDialog::Accepted)
+    {
+        mParent->setLastUsedDiffuse(dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString());
+        mParent->setLastUsedNormal(dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString());
+
+        CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor*>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
+        terGroup->addPage(mPosX, mPosY, mParent->getLastUsedDiffuse(), mParent->getLastUsedNormal());
+
+        mParent->requestPageDraw();
+    }
+}
+//-------------------------------------------------------------------------------
+void UITerrainSquare::addNeighbourPage()
+{
+    CreateTerrainDialog dlg(QApplication::activeWindow(), mParent->getLastUsedDiffuse(), mParent->getLastUsedNormal());
+
+    if(dlg.exec() != QDialog::Accepted)
         return;
 
-    QGraphicsItem::mouseMoveEvent(event);
-}
+    mParent->setLastUsedDiffuse(dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString());
+    mParent->setLastUsedNormal(dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString());
 
-void UITerrainSquare::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+    CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor*>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
+
+    for(int y = mPosY-1; y < mPosY+2; y++)
+    {
+        for(int x = mPosX-1; x < mPosX+2; x++)
+        {
+            if (y == mPosY && x == mPosX)
+                continue;
+
+            if (mParent->hasTerrain(x, y))
+                continue;
+
+            terGroup->addPage(x, y, mParent->getLastUsedDiffuse(), mParent->getLastUsedNormal());
+        }
+    }
+
+    mParent->requestPageDraw();
+}
+//-------------------------------------------------------------------------------
+void UITerrainSquare::removePage()
 {
-    if (!this->selectable)
-        return;
+    CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor*>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
+    CTerrainPageEditor* terPage = terGroup->getPage(mPosX, mPosY);
+    terGroup->removePage(mPosX, mPosY);
+    terPage->destroy(true);
 
-    setCursor(Qt::OpenHandCursor);
-    QGraphicsItem::mouseReleaseEvent(event);
+    mParent->requestPageDraw();
 }
+//-------------------------------------------------------------------------------

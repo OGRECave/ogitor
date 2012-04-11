@@ -183,6 +183,7 @@ public:
     QAction*  actDecreaseGizmoScale;
     QAction*  actToggleWorldSpaceGizmo;
     QAction*  actToggleWalkAround;
+    QAction*  actFocus;
 
     QAction*  actEditCopy;
     QAction*  actEditCut;
@@ -316,8 +317,8 @@ public Q_SLOTS:
     void toggleGrid();
     void toggleFullScreen();
     void toggleSuperFullScreen();
-    void snapMultiplierIndexChanged( int index );
-    void viewModeIndexChanged( int index );
+    void snapMultiplierIndexChanged(int index);
+    void viewModeIndexChanged(int index);
     void toggleToolBar(bool b);
     void exportSerializer(const QString& value);
     void importSerializer(const QString& value);
@@ -327,8 +328,8 @@ public Q_SLOTS:
     void decCamera();
     void toggleWorldSpaceGizmo();
     void toggleWalkAround();
-    void cameraSpeedValueChanged ( int value );
-    void fpsValueChanged ( int value );
+    void cameraSpeedValueChanged(int value);
+    void fpsValueChanged(int value);
     void setCameraPolyMode(int value);
     void selectActionTriggered(int value);
     void cameraAction(int id);
@@ -347,6 +348,7 @@ public Q_SLOTS:
     void decreaseGizmoScale();
     void onPlayerRunPause();
     void onPlayerStop();
+    void onFocusOnObject();
 
 private:
     SceneViewWidget                 *mSceneViewWidget;
@@ -381,8 +383,7 @@ private:
     void initHiddenRenderWindow();
     void updateRecentFiles();
     bool mHasFileArgs;
-    bool mUpdateLastSceneFile1;
-    bool mUpdateLastSceneFile2;
+    std::string mLastLoadedScene;
     void addDockWidgets(QMainWindow* parent);
     void createSceneRenderWindow();
     void createHomeTab();

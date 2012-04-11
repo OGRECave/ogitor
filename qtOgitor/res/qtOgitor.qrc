@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>layouts/initial.oglayout</file>
         <file>images/OgitorLogo.png</file>
         <file>images/OgitorLogoSmall.png</file>
         <file>stylesheets/aqua.qss</file>
