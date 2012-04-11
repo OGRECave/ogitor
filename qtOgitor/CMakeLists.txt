@@ -30,8 +30,8 @@ else(NOT QT4_FOUND)
         ./src/addscriptactiondialog.cpp
         ./include/addtemplatedialog.hxx
         ./src/addtemplatedialog.cpp
-        ./include/addterraindialog.hxx
-        ./src/addterraindialog.cpp
+        ./include/manageTerrainDialog.hxx
+        ./src/manageTerrainDialog.cpp
         ./include/calculateblendmapdialog.hxx
         ./src/calculateblendmapdialog.cpp
         ./include/colourpicker.hxx
@@ -101,7 +101,7 @@ else(NOT QT4_FOUND)
         ./include/actiontoolbar.hxx
         ./include/addscriptactiondialog.hxx
         ./include/addtemplatedialog.hxx
-        ./include/addterraindialog.hxx
+        ./include/manageTerrainDialog.hxx
         ./include/calculateblendmapdialog.hxx
         ./include/colourpicker.hxx
         ./include/complexproperties.hxx

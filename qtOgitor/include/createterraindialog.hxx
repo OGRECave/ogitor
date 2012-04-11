@@ -34,14 +34,14 @@
 #define CREATETERRAINDIALOG_HXX
 
 #include <QtGui/QDialog>
-
+#include <Ogre.h>
 #include "ui_createterraindialog.h"
 
 
 class CreateTerrainDialog : public QDialog, public Ui::createterraindialog {
     Q_OBJECT
 public:
-    CreateTerrainDialog(QWidget *parent);
+    CreateTerrainDialog(QWidget *parent, Ogre::String lastUsedDiffuse, Ogre::String lastUsedNormal);
     virtual ~CreateTerrainDialog();
 };
 

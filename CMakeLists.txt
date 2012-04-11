@@ -35,6 +35,7 @@ endif(UNIX AND NOT APPLE)
 message(STATUS "OGITOR_DIST is set to ${OGITOR_DIST}")
 
 # Handle install prefix
+# On Linux can't change global install prefix to anything but /usr/local
 if(WIN32)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/RunPath" CACHE PATH "Ogitor install prefix" FORCE)
@@ -42,6 +43,10 @@ if(WIN32)
 else(WIN32)
     if(NOT OGITOR_DIST)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/RunPath" CACHE PATH "Ogitor install prefix" FORCE)
+    else(NOT OGITOR_DIST)
+        if(NOT CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+            set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Ogitor install prefix" FORCE)
+        endif (NOT CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     endif(NOT OGITOR_DIST)
 endif(WIN32)
 
@@ -214,47 +219,48 @@ file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 if(UNIX)
     set(DBG_POSTFIX "")
     if(OGITOR_DIST)
-        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path")
-        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path")
-        set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor" CACHE PATH "Ogitor resource path")
-        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/languages" CACHE PATH "Ogitor languages path")
-        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Media" CACHE PATH "Ogitor media path")
-        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path")
-        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path")
-        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib/ogitor" CACHE PATH "Ogitor plugins path")
-        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path")
-        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path")
-        set(OGITOR_LIBOGREOFSPLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "libOgreOfsPlugin path")
+        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
+        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
+        set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor" CACHE PATH "Ogitor resource path" FORCE)
+        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/languages" CACHE PATH "Ogitor languages path" FORCE)
+        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Media" CACHE PATH "Ogitor media path" FORCE)
+        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
+        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
+        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib/ogitor" CACHE PATH "Ogitor plugins path" FORCE)
+        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
+        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path" FORCE)
+        set(OGITOR_LIBOGREOFSPLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "libOgreOfsPlugin path" FORCE)
     else(OGITOR_DIST)
         # Doing local install
-        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path")
-        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path")
-        set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path")
-        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/languages" CACHE PATH "Ogitor languages path")
-        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Media" CACHE PATH "Ogitor media path")
-        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path")
-        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path")
-        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path")
-        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path")
-        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path")
-        set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "libOgreOfsPlugin path")
+        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
+        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
+        set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path" FORCE)
+        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/languages" CACHE PATH "Ogitor languages path" FORCE)
+        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Media" CACHE PATH "Ogitor media path" FORCE)
+        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
+        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
+        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path" FORCE)
+        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
+        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path" FORCE)
+        set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "libOgreOfsPlugin path" FORCE)
     endif(OGITOR_DIST)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 else(UNIX)
     # We are on Windows
-    set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path")
-    set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path")
-    set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path")
-    set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages" CACHE PATH "Ogitor languages path")
-    set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media" CACHE PATH "Ogitor media path")
-    set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path")
-    set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts" CACHE PATH "Ogitor scripts path")
-    set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path")
-    set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons" CACHE PATH "Ogitor plugins icon path")
-    set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogre plugins path")
-    set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "libOgreOfsPlugin path")
+    set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
+    set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
+    set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path" FORCE)
+    set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages" CACHE PATH "Ogitor languages path" FORCE)
+    set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media" CACHE PATH "Ogitor media path" FORCE)
+    set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
+    set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
+    set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path" FORCE)
+    set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
+    set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogre plugins path" FORCE)
+    set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "libOgreOfsPlugin path" FORCE)
 endif(UNIX)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 
 # hide advanced options
 mark_as_advanced(
@@ -313,6 +319,7 @@ add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
+#add_subdirectory(Plugins/OgQtExample)
 
 add_subdirectory(OgreOfsPlugin)
 
@@ -322,7 +329,10 @@ add_subdirectory(qtOgitor)
 
 add_subdirectory(qtOfs)
 
-add_subdirectory(SceneLoader)
+# New version of OIS broke our SceneLoader..
+if(NOT UNIX)
+    add_subdirectory(SceneLoader)
+endif(NOT UNIX)
 
 add_subdirectory(RunPath)
 
@@ -336,7 +346,93 @@ add_custom_target(lupdate
 
 
 if(WIN32)
-    install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
+	# SDK : main libs - debug
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug
+		DESTINATION ${PREFIX}/sdk/lib
+		CONFIGURATIONS Debug
+	)
+	# SDK : main libs - release
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Release
+		DESTINATION ${PREFIX}/sdk/lib
+		CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+	)
+	# SDK : Ogitor includes
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include
+		DESTINATION ${PREFIX}/sdk
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK : Dependencies libs
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Dependencies/lib
+		DESTINATION ${PREFIX}/sdk/dependencies
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: OFS headers
+	FILE(GLOB ofs_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
+	install(FILES ${ofs_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/OFS
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: GenericImageEditor headers
+	FILE(GLOB GenericImageEditor_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include/*.hxx")
+	install(FILES ${GenericImageEditor_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/GenericImageEditor
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: GenericTextEditor headers
+	FILE(GLOB GenericTextEditor_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include/*.hxx")
+	install(FILES ${GenericTextEditor_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/GenericTextEditor
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: Hydrax headers
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
+		DESTINATION ${PREFIX}/sdk/dependencies/include
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: SkyX headers
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
+		DESTINATION ${PREFIX}/sdk/dependencies/include
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: PagedGeometry headers
+	FILE(GLOB pg_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
+	install(FILES ${pg_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/OFS
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: Angelscript headers
+	FILE(GLOB angelscript_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include/*.h")
+	install(FILES ${angelscript_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/Angelscript
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
+		DESTINATION ${PREFIX}/sdk/dependencies/include/Angelscript
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "*.dsp" EXCLUDE
+		PATTERN "*.dsw" EXCLUDE
+		PATTERN "*.asm" EXCLUDE
+		PATTERN "*.txt" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+	# SDK: Caelum headers
+	FILE(GLOB caelum_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
+	install(FILES ${caelum_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/Caelum-0.5.0
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	
+	# TODO: MeshMagick
+	# TODO: lua
+	# TODO: PythonQt
+	
+    # Ogre DLLs
+	install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
         ${OGRE_PLUGIN_DIR_REL}/RenderSystem_Direct3D9.dll
         ${OGRE_PLUGIN_DIR_REL}/RenderSystem_GL.dll
         ${OGRE_PLUGIN_DIR_REL}/Plugin_OctreeSceneManager.dll
@@ -380,6 +476,97 @@ if(WIN32)
     ENDIF(OGITOR_DIST)
 
 endif(WIN32)
+
+if(UNIX)
+    # SDK : Ogitor includes
+    FILE(GLOB ogitor_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include/*.h")
+    install(FILES ${ogitor_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    # SDK: OFS headers
+    FILE(GLOB ofs_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
+    install(FILES ${ofs_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/OFS
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    # SDK: GenericImageEditor headers
+    FILE(GLOB GenericImageEditor_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include/*.hxx")
+    install(FILES ${GenericImageEditor_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericImageEditor
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    # SDK: GenericTextEditor headers
+    FILE(GLOB GenericTextEditor_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include/*.hxx")
+    install(FILES ${GenericTextEditor_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericTextEditor
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    # SDK: Hydrax headers
+    install(DIRECTORY
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+        PATTERN "*.cpp" EXCLUDE
+        PATTERN "CMakeLists.txt" EXCLUDE
+    )
+    # SDK: SkyX headers
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+        PATTERN "*.cpp" EXCLUDE
+        PATTERN "CMakeLists.txt" EXCLUDE
+    )
+    # SDK: PagedGeometry headers
+    FILE(GLOB pg_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
+    install(FILES ${pg_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/PagedGeometry
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    # SDK: Angelscript headers
+    FILE(GLOB angelscript_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include/*.h")
+    install(FILES ${angelscript_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    install(DIRECTORY
+${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+        PATTERN "*.cpp" EXCLUDE
+        PATTERN "*.dsp" EXCLUDE
+        PATTERN "*.dsw" EXCLUDE
+        PATTERN "*.asm" EXCLUDE
+        PATTERN "*.txt" EXCLUDE
+        PATTERN "CMakeLists.txt" EXCLUDE
+    )
+    # SDK: Caelum headers
+    FILE(GLOB caelum_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
+    install(FILES ${caelum_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Caelum-0.5.0
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+
+    # TODO: MeshMagick
+    # TODO: lua
+    # TODO: PythonQt
+
+endif(UNIX)
 
 # uninstall target
 configure_file(

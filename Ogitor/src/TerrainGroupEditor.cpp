@@ -145,7 +145,7 @@ bool CTerrainGroupEditor::getObjectContextMenu(UTFStringVector &menuitems)
         hasPages = true;
     
     menuitems.clear();
-    menuitems.push_back(OTR("Add Page") + ";:/icons/additional.svg");
+    menuitems.push_back(OTR("Manage Terrain Pages") + ";:/icons/additional.svg");
     if(hasPages)
         menuitems.push_back(OTR("Scale/Offset Height Values") + ";:/icons/scale.svg");
     
@@ -170,7 +170,7 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
         Ogre::String posval;
 
         int minX = -1, minY = -1, maxX = 1, maxY = 1, PX, PY;
-        for(it = mChildren.begin(); it != mChildren.end();it++)
+        for(it = mChildren.begin(); it != mChildren.end(); it++)
         {
              CTerrainPageEditor *terrain = static_cast<CTerrainPageEditor*>(it->second);
              PX = terrain->getPageX();
@@ -184,9 +184,9 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
         int width = maxX - minX + 1;
         int height = maxY - minY + 1;
 
-        bool *mtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
+        bool *mMtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
         for(int i = 0; i < width * height;++i)
-            mtx[i] = true;
+            mMtx[i] = true;
 
         for(it = mChildren.begin(); it != mChildren.end();it++)
         {
@@ -194,14 +194,14 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
              PX = terrain->getPageX();
              PY = terrain->getPageY();
 
-             mtx[((PY - minY) * width) + (PX - minX)] = false;
+             mMtx[((PY - minY) * width) + (PX - minX)] = false;
         }
 
         for(int Y = 0;Y < height;++Y)
         {
             for(int X = 0;X < width;++X)
             {
-                if(mtx[(Y * width) + X])
+                if(mMtx[(Y * width) + X])
                 {
                     posval = Ogre::StringConverter::toString(X + minX) + "x" + Ogre::StringConverter::toString(Y + minY);
                     params[posval] = posval;
@@ -209,49 +209,13 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
             }
         }
 
-        OGRE_FREE(mtx, Ogre::MEMCATEGORY_GEOMETRY);
+        OGRE_FREE(mMtx, Ogre::MEMCATEGORY_GEOMETRY);
 
         if(mSystem->DisplayTerrainDialog(params))
         {
             int x = Ogre::StringConverter::parseInt(params["pagex"]);
             int y = Ogre::StringConverter::parseInt(params["pagey"]);
-
-            OgitorsPropertyValueMap creationparams;
-            OgitorsPropertyValue pvalue;
-
-            Ogre::String pagename = mPageNamePrefix->get();
-            pagename += Ogre::StringConverter::toString(x);
-            pagename += "x";
-            pagename += Ogre::StringConverter::toString(y);
-
-            creationparams["init"] = EMPTY_PROPERTY_VALUE;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(pagename);
-            creationparams["name"] = pvalue;
-
-            Ogre::Vector3 position;
-            mHandle->convertTerrainSlotToWorldPosition(x, y, &position);
-
-            pvalue.propType = PROP_VECTOR3;
-            pvalue.val = Ogre::Any(position);
-            creationparams["position"] = pvalue;
-            pvalue.propType = PROP_INT;
-            pvalue.val = Ogre::Any(x);
-            creationparams["pagex"] = pvalue;
-            pvalue.propType = PROP_INT;
-            pvalue.val = Ogre::Any(y);
-            creationparams["pagey"] = pvalue;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(params["diffuse"]);
-            creationparams["layer0::diffusespecular"] = pvalue;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(params["normal"]);
-            creationparams["layer0::normalheight"] = pvalue;
-            pvalue.propType = PROP_REAL;
-            pvalue.val = Ogre::Any((Ogre::Real)10.0f);
-            creationparams["layer0::worldsize"] = pvalue;
-
-            CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this,"Terrain Page Object", creationparams, true, true);
+            addPage(x, y, params["diffuse"], params["normal"]);
         }
     }
     else if(menuresult == 1)
@@ -284,17 +248,84 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
     }
 }
 //-----------------------------------------------------------------------------------------
-Ogre::Vector3 CTerrainGroupEditor::getPagePosition(int x, int y)
+bool CTerrainGroupEditor::addPage(const int x, const int y, const Ogre::String diffuse, const Ogre::String normal)
+{
+    if (diffuse.empty() || normal.empty())
+        return false;
+
+    OgitorsPropertyValueMap creationparams;
+    OgitorsPropertyValue pvalue;
+
+    Ogre::String pagename = mPageNamePrefix->get();
+    pagename += Ogre::StringConverter::toString(x);
+    pagename += "x";
+    pagename += Ogre::StringConverter::toString(y);
+
+    creationparams["init"] = EMPTY_PROPERTY_VALUE;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(pagename);
+    creationparams["name"] = pvalue;
+
+    Ogre::Vector3 position;
+    mHandle->convertTerrainSlotToWorldPosition(x, y, &position);
+
+    pvalue.propType = PROP_VECTOR3;
+    pvalue.val = Ogre::Any(position);
+    creationparams["position"] = pvalue;
+    pvalue.propType = PROP_INT;
+    pvalue.val = Ogre::Any(x);
+    creationparams["pagex"] = pvalue;
+    pvalue.propType = PROP_INT;
+    pvalue.val = Ogre::Any(y);
+    creationparams["pagey"] = pvalue;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(diffuse);
+    creationparams["layer0::diffusespecular"] = pvalue;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(normal);
+    creationparams["layer0::normalheight"] = pvalue;
+    pvalue.propType = PROP_REAL;
+    pvalue.val = Ogre::Any((Ogre::Real)10.0f);
+    creationparams["layer0::worldsize"] = pvalue;
+
+    CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page Object", creationparams, true, true);
+
+    return true;
+}
+//-----------------------------------------------------------------------------------------
+Ogre::Vector3 CTerrainGroupEditor::getPagePosition(const int x, const int y)
 {
     Ogre::Vector3 pos;
     mHandle->convertTerrainSlotToWorldPosition(x, y, &pos);
     return pos;
 }
 //-----------------------------------------------------------------------------------------
+CTerrainPageEditor* Ogitors::CTerrainGroupEditor::getPage(const int x, const int y)
+{
+    Ogitors::NameObjectPairList::iterator it;
+    for(it = mChildren.begin(); it != mChildren.end(); it++)
+    {
+        CTerrainPageEditor *terrain = static_cast<CTerrainPageEditor*>(it->second);
+        int PX = terrain->getPageX();
+        int PY = terrain->getPageY();
+        
+        if(x == PX && y == PY)
+            return terrain;
+    }
+
+    return 0;
+}
+//-----------------------------------------------------------------------------------------
 void CTerrainGroupEditor::removePage(CTerrainPageEditor *page)
 {
     if(mHandle)
         mHandle->removeTerrain(page->getPageX(), page->getPageY());
+}
+//-----------------------------------------------------------------------------------------
+void CTerrainGroupEditor::removePage(int x, int y)
+{
+    if(mHandle)
+        mHandle->removeTerrain(x, y);
 }
 //-----------------------------------------------------------------------------------------
 bool CTerrainGroupEditor::isSelected()
@@ -990,3 +1021,4 @@ bool CTerrainGroupEditorFactory::CanInstantiate()
     return (OgitorsRoot::getSingletonPtr()->GetTerrainEditor() == 0);
 }
 //-----------------------------------------------------------------------------------------
+

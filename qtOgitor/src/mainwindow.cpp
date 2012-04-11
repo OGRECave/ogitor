@@ -179,7 +179,7 @@ bool OgitorAssistant::startOgitorAssistant()
 
 //------------------------------------------------------------------------------
 MainWindow::MainWindow(QString args, QWidget *parent)
-    : QMainWindow(parent), mOgreWidget(0), mLastTime(0), mArgsFile(args), mHasFileArgs(false), mUpdateLastSceneFile1(false), mUpdateLastSceneFile2(false), mPrefManager(0), mSubWindowsVisible(true)
+    : QMainWindow(parent), mOgreWidget(0), mLastTime(0), mArgsFile(args), mHasFileArgs(false), mLastLoadedScene(""), mPrefManager(0), mSubWindowsVisible(true)
 {
     mOgitorMainWindow = this;
 
@@ -205,7 +205,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     if(objectName().isEmpty())
         setObjectName(QString::fromUtf8("this"));
-    resize(800, 600);
+    resize(1024, 768);
 
     setDockNestingEnabled(true);
 
@@ -434,16 +434,21 @@ void MainWindow::hideSubWindows()
 void MainWindow::readSettings(QString filename)
 {
     QSettings *settings;
+	bool invalid_win_rect = false;
 
     if(filename.isEmpty())
+	{
         settings = new QSettings();
+	}
     else
         settings = new QSettings(filename, QSettings::IniFormat);
 
     settings->beginGroup("session");
     restoreState(settings->value("Layout").toByteArray());
     bool maximized = settings->value("MainWindowMaximized", false).toBool();
-    QRect rect = settings->value("MainWindowGeometry", QRect(0, 0, 800, 600)).toRect();
+    QRect rect = settings->value("MainWindowGeometry").toRect();
+	if(rect.isEmpty())
+		invalid_win_rect = true;
     settings->endGroup();
 
     settings->beginGroup("messagefilters");
@@ -463,6 +468,9 @@ void MainWindow::readSettings(QString filename)
     }
 
     delete settings;
+
+	if(invalid_win_rect)
+		return readSettings(":/layouts/initial.oglayout");
 }
 //------------------------------------------------------------------------------
 void MainWindow::writeSettings(QString filename)
@@ -488,17 +496,17 @@ void MainWindow::writeSettings(QString filename)
     settings->setValue("FilterInfo", actLogShowInfo->isChecked());
     settings->setValue("FilterDebug", actLogShowDebug->isChecked());
     settings->endGroup();
-    if(mUpdateLastSceneFile1 || mUpdateLastSceneFile2)
-        settings->setValue("preferences/lastLoadedScene", settings->value("recentfiles/entry0",""));
-    else
-        settings->setValue("preferences/lastLoadedScene", "");
+	settings->setValue("preferences/lastLoadedScene", mLastLoadedScene.c_str());
 
     delete settings;
 }
 //------------------------------------------------------------------------------
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    mUpdateLastSceneFile1 = OgitorsRoot::getSingletonPtr()->IsSceneLoaded();
+    if(OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
+	{
+		mLastLoadedScene = OgitorsRoot::getSingletonPtr()->GetSceneName();
+	}
     if(OgitorsRoot::getSingletonPtr()->TerminateScene())
     {
         delete mOgitorAssistant;
@@ -610,6 +618,8 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     parent->tabifyDockWidget(explorerDockWidget, projectFilesDockWidget);
     propertiesDockWidget->raise();
     explorerDockWidget->raise();
+	QSizePolicy size_pol;
+	size_pol.setVerticalPolicy(QSizePolicy::Expanding);
 
     createCustomDockWidgets();
 
@@ -1619,8 +1629,25 @@ void MainWindow::autoSaveScene()
     if(exportfile[0] == '.')
         exportfile = QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectDir.c_str()) + QString("/") + exportfile;
 
-    saveScene(exportfile);
+    OgitorsRoot::getSingletonPtr()->SaveScene(false, exportfile.toStdString());
 
     OgitorsRoot::getSingletonPtr()->SetSceneModified(modified);
+}
+//------------------------------------------------------------------------------------
+void MainWindow::onFocusOnObject()
+{
+    CBaseEditor *target = 0;
+    QTreeWidgetItem *item = mSceneViewWidget->getTreeWidget()->selectedItems().at(0);
+
+    if(item)
+        target = OgitorsRoot::getSingletonPtr()->FindObject(item->text(0).toStdString());
+
+    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
+
+    if(target && ovp && target->supports(CAN_FOCUS))
+    {
+        OgitorsRoot::getSingletonPtr()->GetSelection()->setSelection(target);
+        ovp->FocusSelectedObject();
+    }
 }
 //------------------------------------------------------------------------------------

@@ -1248,19 +1248,19 @@ void OgitorsRoot::RecurseFillTreeView(CBaseEditor *pEditor)
     mymap.clear();
     for (i = children.begin(); i != iend; ++i)
     {
-        mymap.insert(std::map<Ogre::String,CBaseEditor*>::value_type(i->first,i->second));
+        mymap.insert(std::map<Ogre::String,CBaseEditor*>::value_type(i->first, i->second));
     }
 
     std::map<Ogre::String,CBaseEditor*>::const_iterator i2, i2end;
     i2end = mymap.end();
 
-    for(unsigned int z = 0;z < mObjectDisplayOrder.size();z++)
+    for(unsigned int z = 0; z < mObjectDisplayOrder.size(); z++)
     {
       for (i2 = mymap.begin(); i2 != i2end; ++i2)
       {
           if(i2->second->getEditorType() == mObjectDisplayOrder[z])
           {
-              mSystem->InsertTreeItem(pEditor,i2->second,i2->second->getTypeID(),i2->second->getTextColourInt());
+              mSystem->InsertTreeItem(pEditor, i2->second, i2->second->getTypeID(), i2->second->getTextColourInt());
               RecurseFillTreeView(i2->second);
           }
       }
@@ -1517,6 +1517,18 @@ CMultiSelEditor *OgitorsRoot::GetSelection()
     return mMultiSelection;
 }
 //-----------------------------------------------------------------------------------------
+std::string OgitorsRoot::GetSceneName()
+{
+	if(mLoadState == LS_LOADED)
+	{
+		return (*mProjectFile)->getFileSystemName();
+	}
+	else
+	{
+		return "";
+	}
+}
+//-----------------------------------------------------------------------------------------
 bool OgitorsRoot::AfterLoadScene()
 {
     OgitorsPropertyValueMap params;
@@ -1686,7 +1698,7 @@ bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
         {
             /* Since we're saving as a new project, refresh the menu
             controls because we change the names of certain items
-            for example the ogscene file name to match the OFS file  */
+            for example the *.OGSCENE file name to match the OFS file  */
             SetEditorTool(TOOL_SELECT);
             setLoadState(LS_UNLOADED);
             mSystem->ClearTreeItems();

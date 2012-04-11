@@ -11,6 +11,7 @@ if(WIN32)
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
 		PATTERN "languages" EXCLUDE
+		PATTERN "sdk" EXCLUDE
 	)
 
 	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
@@ -21,11 +22,11 @@ if(WIN32)
 		PATTERN "bin" EXCLUDE
 		PATTERN "Debug" EXCLUDE
 		PATTERN "languages" EXCLUDE
-		PATTERN "Plugins/icon_backup" EXCLUDE
+		PATTERN "sdk" EXCLUDE
 	)
 
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/plugins_debug.cfg
-		${CMAKE_CURRENT_SOURCE_DIR}/bin/resources.cfg
+		#${CMAKE_CURRENT_SOURCE_DIR}/bin/resources.cfg
 		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
 		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
 		DESTINATION bin
@@ -43,6 +44,7 @@ if(UNIX)
 		PATTERN "bin" EXCLUDE
 		PATTERN ".xml" EXCLUDE
 		PATTERN "Plugins/icon_backup" EXCLUDE
+        PATTERN "sdk" EXCLUDE
 	)
 
     if(OGITOR_DIST)
