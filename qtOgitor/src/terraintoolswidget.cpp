@@ -257,6 +257,7 @@ void TerrainToolsWidget::populateBrushes()
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populateTextures()
 {
+    IconRenderer iconRenderer;
     texturesWidget->clear();
 
     OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
@@ -269,7 +270,7 @@ void TerrainToolsWidget::populateTextures()
         Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
         
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupDiffuseSpecular")))
+        if (!pixmap.convertFromImage(iconRenderer.fromOgreImage(name, "TerrainGroupDiffuseSpecular")))
             continue;
 
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
@@ -284,6 +285,7 @@ void TerrainToolsWidget::populateTextures()
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populatePlants()
 {
+    IconRenderer iconRenderer;
     plantsWidget->clear();
 
     OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
@@ -299,7 +301,7 @@ void TerrainToolsWidget::populatePlants()
         Ogre::String name = resPtr->getName();
 
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupPlants")))
+        if (!pixmap.convertFromImage(iconRenderer.fromOgreMaterial(name, "TerrainGroupPlants")))
             continue;
         
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
@@ -310,110 +312,6 @@ void TerrainToolsWidget::populatePlants()
 
     if(plantList->size() > 0)
         plantsWidget->setCurrentItem(plantsWidget->item(0));
-}
-//----------------------------------------------------------------------------------------
-QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogre::String& resourceGroup)
-{
-        bool isMaterial = (resourceGroup == "TerrainGroupPlants");
-
-        Ogre::Image img;
-        if (!isMaterial)
-            img.load(name,resourceGroup);
-
-        if (isMaterial || !Ogre::PixelUtil::isAccessible(img.getFormat()))
-        {
-            /* Some formats aren't possible to get the image data
-            just render to a render target so we can generate an image that way */
-
-            // create resources for storing the material
-            Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-            mngr->createResourceGroup(resourceGroup+"_renderTarget");
-            mngr->initialiseResourceGroup(resourceGroup+"_renderTarget");
-
-            Ogre::MaterialPtr material;
-
-            if (!isMaterial)
-            {
-                Ogre::TexturePtr terraintex = Ogre::TextureManager::getSingletonPtr()->loadImage(name, resourceGroup, img);
-                // create our material
-                material = Ogre::MaterialManager::getSingletonPtr()->create("terrainMaterial", resourceGroup);
-                Ogre::Technique * technique = material->getTechnique(0);
-                Ogre::Pass* pass = technique->getPass(0);
-                Ogre::TextureUnitState* textureUnit = pass->createTextureUnitState();
-                textureUnit->setTextureName(name);
-            } else {
-                material = Ogre::MaterialManager::getSingletonPtr()->load(name, resourceGroup);
-            }
-
-            // create our render texture
-            Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual( "RenderTex", 
-                   resourceGroup+"_renderTarget", Ogre::TEX_TYPE_2D, 
-                   128, 128, 0, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET );
-
-            Ogre::RenderTexture *rttTex = texture->getBuffer()->getRenderTarget();
-            Ogre::SceneManager *sceneMgrPtr = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", name);
-
-            sceneMgrPtr->setAmbientLight(Ogre::ColourValue(1,1,1));
-
-            // create our plane to set a texture to
-            Ogre::Plane plane(Ogre::Vector3::UNIT_Z, 0);
-            Ogre::MeshManager::getSingleton().createPlane("terrain", resourceGroup+"_renderTarget",
-                plane, 100, 100, 1, 1, true, 1, 1, 1, Ogre::Vector3::UNIT_Y);
-
-            // attach the plane to the scene manager and rotate it so the camera can see it
-            Ogre::Entity* entTerrain = sceneMgrPtr->createEntity("terrainEntity", "terrain");
-            Ogre::SceneNode* node = sceneMgrPtr->getRootSceneNode()->createChildSceneNode();
-            node->attachObject(entTerrain);
-            entTerrain->setCastShadows(false);
-            entTerrain->setMaterialName(material->getName());
-
-            Ogre::Camera* RTTCam = sceneMgrPtr->createCamera("EntityCam");
-            RTTCam->setNearClipDistance(0.01F);
-            RTTCam->setFarClipDistance(0);
-            RTTCam->setAspectRatio(1);
-            RTTCam->setFOVy(Ogre::Degree(90));
-            RTTCam->setPosition(0,0,50);
-            RTTCam->lookAt(0,0,0);
-
-            Ogre::Viewport *v = rttTex->addViewport( RTTCam );
-            v->setBackgroundColour(Ogre::ColourValue(1,1,1));
-            v->setClearEveryFrame( true );
-            rttTex->update();
-
-            size_t size = Ogre::PixelUtil::getMemorySize(128, 128, 1, Ogre::PF_B8G8R8);
-            unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
-
-            Ogre::PixelBox pb(128,128,1,Ogre::PF_B8G8R8, dataptr);
-            pb.setConsecutive();
-
-            rttTex->copyContentsToMemory(pb, Ogre::RenderTarget::FB_FRONT);
-            QImage qimg(dataptr, pb.getWidth(), pb.getHeight(), QImage::Format_RGB888);
-
-            OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
-            rttTex->removeAllViewports();
-
-            Ogre::TextureManager::getSingletonPtr()->unload(rttTex->getName());
-            Ogre::TextureManager::getSingletonPtr()->remove(rttTex->getName());
-            Ogre::TextureManager::getSingletonPtr()->unload(texture->getName());
-            Ogre::TextureManager::getSingletonPtr()->remove(texture->getName());
-            Ogre::Root::getSingletonPtr()->destroySceneManager(sceneMgrPtr);
-            OgitorsRoot::getSingletonPtr()->DestroyResourceGroup(resourceGroup+"_renderTarget");
-
-            return qimg;
-        }
-
-        size_t size = Ogre::PixelUtil::getMemorySize(img.getWidth(), img.getHeight(), img.getDepth(), Ogre::PF_A8R8G8B8);
-        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
-
-        Ogre::PixelBox pixbox(128,128, 1, Ogre::PF_A8R8G8B8, dataptr);
-        Ogre::Image::scale(img.getPixelBox(), pixbox);
-        pixbox.setConsecutive();
-
-        QImage qimg = QImage(dataptr, pixbox.getWidth(), pixbox.getHeight(), QImage::Format_ARGB32);
-
-        OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
-
-        return qimg;
 }
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)

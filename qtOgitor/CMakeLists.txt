@@ -86,6 +86,8 @@ else(NOT QT4_FOUND)
         ./src/shortcutsettings.cpp
         ./include/templateview.hxx
         ./src/templateview.cpp
+        ./include/iconrenderer.hxx
+        ./src/iconrenderer.cpp
         ./include/terraintoolswidget.hxx
         ./src/terraintoolswidget.cpp
         ./include/uiterrainsquare.hxx
