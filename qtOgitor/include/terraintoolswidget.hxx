@@ -30,6 +30,7 @@
 #include <QtGui/QtGui>
 #include "OgitorsPrerequisites.h"
 #include "TerrainEditor.h"
+#include "iconrenderer.hxx"
 
 class ColourPickerWidget;
 
@@ -63,9 +64,6 @@ protected:
     QLabel*      mBrushIntensityLabel;
     QSlider*     mBrushIntensitySlider;
     ColourPickerWidget* mPaintColour;
-
-    /* Useful for getting images out of Ogre/OFS and into QT */
-    QImage getQImageFromOgre(const Ogre::String& name, const Ogre::String& resourceGroup);
 
     void resizeEvent(QResizeEvent* evt);
 
