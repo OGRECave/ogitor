@@ -289,15 +289,19 @@ void TerrainToolsWidget::populatePlants()
     OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
     PropertyOptionsVector *plantList = OgitorsRoot::GetTerrainPlantMaterialNames();
 
-    for (Ogitors::PropertyOptionsVector::const_iterator plantItr = plantList->begin(); plantItr != plantList->end(); ++plantItr)
+    Ogre::ResourceManager::ResourceMapIterator list = Ogre::MaterialManager::getSingletonPtr()->getResourceIterator();
+    while (list.hasMoreElements())
     {
-        Ogitors::PropertyOption opt = (*plantItr);
-        Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
+        Ogre::ResourcePtr resPtr = list.getNext();
+        if (resPtr->getGroup() != "TerrainGroupPlants")
+            continue;
+
+        Ogre::String name = resPtr->getName();
 
         QPixmap pixmap;
         if (!pixmap.convertFromImage(getQImageFromOgre(name, "TerrainGroupPlants")))
             continue;
-
+        
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
         witem->setWhatsThis(name.c_str());
         witem->setToolTip(name.c_str());
@@ -310,7 +314,7 @@ void TerrainToolsWidget::populatePlants()
 //----------------------------------------------------------------------------------------
 QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogre::String& resourceGroup)
 {
-        bool isMaterial = Ogre::StringUtil::match(name, "*.material");
+        bool isMaterial = (resourceGroup == "TerrainGroupPlants");
 
         Ogre::Image img;
         if (!isMaterial)
@@ -386,7 +390,6 @@ QImage TerrainToolsWidget::getQImageFromOgre(const Ogre::String& name, const Ogr
             QImage qimg(dataptr, pb.getWidth(), pb.getHeight(), QImage::Format_RGB888);
 
             OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
-
             rttTex->removeAllViewports();
 
             Ogre::TextureManager::getSingletonPtr()->unload(rttTex->getName());

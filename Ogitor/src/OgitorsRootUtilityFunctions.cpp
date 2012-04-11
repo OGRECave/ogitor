@@ -1447,7 +1447,7 @@ void OgitorsRoot::PrepareTerrainResources()
 {
     mTerrainDiffuseTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupDiffuseSpecular", "Ofs");
     mTerrainNormalTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupNormalHeight", "Ofs");
-    mTerrainPlantMaterialNames = OgitorsUtils::GetResourceFilenames("TerrainGroupPlants", "Ofs", ".material");
+    mTerrainPlantMaterialNames = OgitorsUtils::GetResourceFilenames("TerrainGroupPlants", "Ofs");
 }
 //-------------------------------------------------------------------------------------------
 void OgitorsRoot::PrepareProjectResources()
