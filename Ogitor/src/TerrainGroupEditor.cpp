@@ -994,8 +994,12 @@ CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, Ogit
     /* Check for old 0.4 and 0.5 files that do not include the terrain textures */
     OFS::OfsPtr& file = ogitorsRoot->GetProjectFile();
     Ogre::String terrainDir = ogitorsRoot->GetProjectOptions()->TerrainDirectory;
-    if (file->exists(terrainDir.c_str()) && !file->exists((terrainDir+"/terrain/").c_str()))
+
+    unsigned int flags;
+    if (file->getDirFlags((terrainDir).c_str(), flags) == OFS::OFS_OK &&
+        file->getDirFlags((terrainDir+"/terrain/").c_str(), flags) != OFS::OFS_OK)
     {
+        // must check the both dirs exist otherwise it could possibly be a new project
         file->moveDirectory((terrainDir).c_str(), (terrainDir+"/terrain/").c_str());
         addEditorResources();
     }
