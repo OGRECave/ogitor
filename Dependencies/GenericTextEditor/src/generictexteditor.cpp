@@ -30,13 +30,14 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include <QtGui/QtGui>
 #include "generictexteditor.hxx"
 #include "xmltexteditorcodec.hxx"
 
-#include "OgitorsDefinitions.h"
+#include <QtGui/QtGui>
+
 #include "DefaultEvents.h"
 #include "EventManager.h"
+
 
 //-----------------------------------------------------------------------------------------
 
@@ -50,11 +51,11 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
 
-    QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-    tabBar->setTabsClosable(true);
+    mTabBar = findChildren<QTabBar*>().at(0);
+    mTabBar->setTabsClosable(true);
 
-    connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    connect(tabBar, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+    connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    connect(mTabBar, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
     connect(this,   SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
 
     mActSave = new QAction(tr("Save"), this);
@@ -90,7 +91,7 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
     mw->addToolBar(Qt::TopToolBarArea, mMainToolBar);
 
-    mLastDocument = 0;
+    mActiveDocument = 0;
 
     connect(mActEditCut,                SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
     connect(mActEditCopy,               SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
@@ -167,8 +168,7 @@ bool GenericTextEditor::displayTextFromFile(QString filePath, QString optionalDa
         addSubWindow(subWindow);
 
         document->showMaximized();
-        QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName()); 
+        mTabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName()); 
 
         QList<QMdiSubWindow*> list = subWindowList();
     }
@@ -218,8 +218,7 @@ bool GenericTextEditor::displayText(QString docName, QString text, QString exten
         addSubWindow(subWindow);
 
         document->showMaximized();
-        QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName); 
+        mTabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName); 
     }
     else
     {
@@ -263,32 +262,85 @@ bool GenericTextEditor::isDocAlreadyShowing(QString docName, GenericTextEditorDo
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabContentChange()
 {
-    if(!mLastDocument->isIntialDisplay())
+    if(!mActiveDocument->isIntialDisplay())
         mActSave->setEnabled(true);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
 {
-    if(mLastDocument)
-    {
-        disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
-        disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
-        disconnect(mActEditCopy, SIGNAL(triggered()), mLastDocument, SLOT(copy()));
-        disconnect(mActEditPaste, SIGNAL(triggered()), mLastDocument, SLOT(paste()));
-        disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
-        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
-        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
-        mLastDocument = 0;
-    }
+    QList<QMdiSubWindow*> list = subWindowList();
+
+    std::cout << "closeTab: " << index << std::endl;
+
+    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
+    if (!document->close())
+        return;
+
+    mTabBar->removeTab(index);
+
+    if (mTabBar->count() == 0)
+        removeActiveDocument();
 
     emit currentChanged(subWindowList().indexOf(activeSubWindow()));
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::switchActiveDocument(GenericTextEditorDocument* newActiveDocument)
+{
+    removeActiveDocument();
+
+    if (mTabBar->count() == 0)
+        return;
+
+    connect(mActSave, SIGNAL(triggered()), newActiveDocument, SLOT(save()));
+    connect(mActEditCut, SIGNAL(triggered()), newActiveDocument, SLOT(cut()));
+    connect(mActEditCopy, SIGNAL(triggered()), newActiveDocument, SLOT(copy()));
+    connect(mActEditPaste, SIGNAL(triggered()), newActiveDocument, SLOT(paste()));
+    connect(newActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+    connect(newActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+    connect(newActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+    mActSave->setEnabled(newActiveDocument->isTextModified());
+    mActEditCut->setEnabled(false);
+    mActEditCopy->setEnabled(false);
+
+    mActiveDocument = newActiveDocument;
+
+    QToolBar *tb = mActiveDocument->getCodec()->getCustomToolBar();
+    if(tb != 0)
+    {
+        QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+        mw->addToolBar(Qt::TopToolBarArea, tb);
+        tb->show();
+    }
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::removeActiveDocument()
+{
+    if (mActiveDocument == 0)
+        return;
+
+    disconnect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
+    disconnect(mActEditCut, SIGNAL(triggered()), mActiveDocument, SLOT(cut()));
+    disconnect(mActEditCopy, SIGNAL(triggered()), mActiveDocument, SLOT(copy()));
+    disconnect(mActEditPaste, SIGNAL(triggered()), mActiveDocument, SLOT(paste()));
+    disconnect(mActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+    disconnect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+    disconnect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+
+    QToolBar *tb = mActiveDocument->getCodec()->getCustomToolBar();
+    if(tb != 0)
+    {
+        QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+        mw->removeToolBar(tb);
+    }
+
+    mActiveDocument = 0;
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeEvent(QCloseEvent *event)
 {
     QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
-        closeTab(0);
+        closeTab(i);
 }
 //-----------------------------------------------------------------------------------------
 ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString extensionOrFileName)
@@ -349,50 +401,13 @@ void GenericTextEditor::saveAll()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabChanged(int index)
 {
-    QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
-
-    if(mLastDocument)
-    {
-        disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
-        disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
-        disconnect(mActEditCopy, SIGNAL(triggered()), mLastDocument, SLOT(copy()));
-        disconnect(mActEditPaste, SIGNAL(triggered()), mLastDocument, SLOT(paste()));
-        disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
-        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
-        disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
-
-        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
-        if(tb != 0)
-            mw->removeToolBar(tb);
-    }
-
-    // -1 means that the last tab was just closed and so there is no one left anymore to switch to
-    if(index != -1)
+    if(mTabBar->count() == 0)
     {
         GenericTextEditorDocument* document;
         QList<QMdiSubWindow*> list = subWindowList();
         document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
         document->getCodec()->onTabChange();
-
-        connect(mActSave, SIGNAL(triggered()), document, SLOT(save()));
-        connect(mActEditCut, SIGNAL(triggered()), document, SLOT(cut()));
-        connect(mActEditCopy, SIGNAL(triggered()), document, SLOT(copy()));
-        connect(mActEditPaste, SIGNAL(triggered()), document, SLOT(paste()));
-        connect(document, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
-        connect(document, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
-        connect(document, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
-        mActSave->setEnabled(document->isTextModified());
-        mActEditCut->setEnabled(false);
-        mActEditCopy->setEnabled(false);
-
-        mLastDocument = document;
-
-        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
-        if(tb != 0)
-        {
-            mw->addToolBar(Qt::TopToolBarArea, tb);
-            tb->show();
-        }
+        switchActiveDocument(document);
     }
     else
     {
@@ -400,7 +415,7 @@ void GenericTextEditor::tabChanged(int index)
         mActEditCut->setEnabled(false);
         mActEditCopy->setEnabled(false);
         mActEditPaste->setEnabled(false);
-        mLastDocument = 0;
+        mActiveDocument = 0;
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -429,25 +444,7 @@ void GenericTextEditor::onLoadStateChanged(Ogitors::IEvent* evt)
 
         if(state == Ogitors::LS_UNLOADED)
         {
-            if(mLastDocument)
-            {
-                disconnect(mActSave, SIGNAL(triggered()), mLastDocument, SLOT(save()));
-                disconnect(mActEditCut, SIGNAL(triggered()), mLastDocument, SLOT(cut()));
-                disconnect(mActEditCopy, SIGNAL(triggered()), mLastDocument, SLOT(copy()));
-                disconnect(mActEditPaste, SIGNAL(triggered()), mLastDocument, SLOT(paste()));
-                disconnect(mLastDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
-                disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
-                disconnect(mLastDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
-
-                QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
-
-                QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
-                if(tb != 0)
-                    mw->removeToolBar(tb);
-            }
-            
-            mLastDocument = 0;
-
+            removeActiveDocument();
             closeAllSubWindows();
         }
     }
@@ -461,442 +458,4 @@ void GenericTextEditor::onClipboardChanged()
     if(mimeData->hasText())
         emit pasteAvailable();
 }
-//-----------------------------------------------------------------------------------------
-GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
-mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false),
-mInitialDisplay(true)
-{
-    QFont fnt = font();
-    fnt.setFamily("Courier New");
-    fnt.setPointSize(10);
-    setFont(fnt);
 
-    setLineWrapMode(QPlainTextEdit::WidgetWidth);
-
-    QFontMetrics fm(fnt);
-    setTabStopWidth(fm.width("abcd"));
-    mLineNumberArea = new LineNumberArea(this);
-
-    connect(this,       SIGNAL(blockCountChanged(int)),             this, SLOT(updateLineNumberAreaWidth(int)));
-    connect(this,       SIGNAL(updateRequest(const QRect &, int)),  this, SLOT(updateLineNumberArea(const QRect &, int)));
-    connect(this,       SIGNAL(cursorPositionChanged()),            this, SLOT(highlightCurrentLine()));
-
-    updateLineNumberAreaWidth(0);
-    highlightCurrentLine();
-}
-//-----------------------------------------------------------------------------------------
-GenericTextEditorDocument::~GenericTextEditorDocument()
-{
-    mOfsPtr.unmount();
-    delete mCodec;
-    mCodec = 0;
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::displayTextFromFile(QString docName, QString filePath, QString optionalData = "")
-{
-    mDocName = docName;
-    mFilePath = filePath;
-    mCodec->setOptionalData(optionalData);
-
-    int pos = filePath.indexOf("::");
-    if(pos > 0)
-    {
-        QString ofsFile = filePath.mid(0, pos);
-        filePath.remove(0, pos + 2);
-        
-        if(mOfsPtr.mount(ofsFile.toStdString().c_str()) != OFS::OFS_OK)
-            return;
-
-        if(mOfsPtr->openFile(mOfsFileHandle, filePath.toStdString().c_str(), OFS::OFS_READ) != OFS::OFS_OK)
-        {
-            mOfsPtr.unmount();
-            return;
-        }
-
-        mIsOfsFile = true;
-
-        unsigned int cont_len = 0;
-        mOfsPtr->getFileSize(mOfsFileHandle, cont_len);
-
-        char* buf = new char[cont_len + 1];
-        buf[cont_len] = 0;
-
-        mOfsPtr->read(mOfsFileHandle, buf, cont_len);
-        mOfsPtr->closeFile(mOfsFileHandle);
-        
-        displayText(filePath, buf, optionalData);
-        delete[] buf;
-    }
-    else
-    {
-        mIsOfsFile = false;
-
-        mFile.setFileName(filePath);
-        mFile.open(QIODevice::ReadOnly);
-        displayText(docName, mFile.readAll(), optionalData);
-    }
-   
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::displayText(QString docName, QString text, QString optionalData = "")
-{
-    mDocName = docName;
-    mCodec->setOptionalData(optionalData);
-
-    setPlainText(mCodec->onBeforeDisplay(text));
-
-    QString tabTitle = docName;
-    if(tabTitle.length() > 25)
-        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
-    setWindowTitle(tabTitle + QString("[*]"));
-
-    mCodec->onAddCompleter();
-    mCodec->onAddHighlighter();
-
-    setWindowModified(false);
-
-    mCodec->onAfterDisplay();
-}
-//-----------------------------------------------------------------------------------------
-int GenericTextEditorDocument::lineNumberAreaWidth()
-{
-    int digits = 1;
-    int max = qMax(1, blockCount());
-    while(max >= 10) 
-    {
-        max /= 10;
-        ++digits;
-    }
-
-    int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
-
-    return space;
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::updateLineNumberAreaWidth(int /* newBlockCount */)
-{
-    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::updateLineNumberArea(const QRect &rect, int dy)
-{
-    if(dy)
-        mLineNumberArea->scroll(0, dy);
-    else
-        mLineNumberArea->update(0, rect.y(), mLineNumberArea->width(), rect.height());
-
-    if (rect.contains(viewport()->rect()))
-        updateLineNumberAreaWidth(0);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::resizeEvent(QResizeEvent *e)
-{
-    QPlainTextEdit::resizeEvent(e);
-
-    QRect cr = contentsRect();
-    mLineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::highlightCurrentLine()
-{
-    QList<QTextEdit::ExtraSelection> extraSelections;
-
-    if(!isReadOnly()) 
-    {
-        QTextEdit::ExtraSelection selection;
-
-        QColor lineColor = QColor(Qt::yellow).lighter(160);
-
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = textCursor();
-        selection.cursor.clearSelection();
-        extraSelections.append(selection);
-    }
-
-    setExtraSelections(extraSelections);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::lineNumberAreaPaintEvent(QPaintEvent *event)
-{
-    QPainter painter(mLineNumberArea);
-    painter.fillRect(event->rect(), Qt::lightGray);
-
-    QTextBlock block = firstVisibleBlock();
-    int blockNumber = block.blockNumber();
-    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
-    int bottom = top + (int) blockBoundingRect(block).height();
-
-    while(block.isValid() && top <= event->rect().bottom()) 
-    {
-        if(block.isVisible() && bottom >= event->rect().top()) 
-        {
-            QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::black);
-            painter.drawText(0, top, mLineNumberArea->width(), fontMetrics().height(),
-                Qt::AlignRight, number);
-        }
-
-        block = block.next();
-        top = bottom;
-        bottom = top + (int) blockBoundingRect(block).height();
-        ++blockNumber;
-    }
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::insertCompletion(const QString& completion)
-{
-    if(mCompleter->widget() != this)
-        return;
-    QTextCursor tc = textCursor();
-    int extra = completion.length() - mCompleter->completionPrefix().length();
-    tc.movePosition(QTextCursor::Left);
-    tc.movePosition(QTextCursor::EndOfWord);
-    tc.insertText(completion.right(extra));
-    setTextCursor(tc);
-}
-//-----------------------------------------------------------------------------------------
-QString GenericTextEditorDocument::textUnderCursor() const
-{
-    QTextCursor tc = textCursor();
-    tc.select(QTextCursor::WordUnderCursor);
-    return tc.selectedText();
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::focusInEvent(QFocusEvent *event)
-{
-    if(mCompleter)
-        mCompleter->setWidget(this);
-    QPlainTextEdit::focusInEvent(event);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::keyPressEvent(QKeyEvent *event)
-{
-    if(mCompleter && mCompleter->popup()->isVisible()) 
-    {
-        switch (event->key()) 
-        {
-        case Qt::Key_Enter:
-        case Qt::Key_Return:
-        case Qt::Key_Escape:
-        case Qt::Key_Tab:
-        case Qt::Key_Backtab:
-            event->ignore();
-            return;
-        default:
-            break;
-        }
-    }
-
-    // Auto start next line with the indentation of previous line...
-    if(event->key() == Qt::Key_Return)
-    {
-        QTextCursor tc = textCursor();
-        int savePos = tc.position();
-        //Get Previous bracket position
-        tc.movePosition(QTextCursor::Start, QTextCursor::KeepAnchor);
-        QString tmpStr = tc.selectedText();
-
-        int count = calculateIndentation(tmpStr);
-
-        tc.setPosition(savePos);
-        QString txt = "\n";
-        for(int z = 0;z < count;z++)
-            txt += " ";
-        tc.insertText(txt);
-        tc.setPosition(savePos + count + 1);
-        setTextCursor(tc);
-        event->accept();
-        return;
-    }
-
-    // Insert 4 spaces instead of tab
-    if(event->key() == Qt::Key_Tab)
-    {
-        QTextCursor tc = textCursor();
-        int savePos = tc.position();
-        QString txt = "    ";
-        tc.insertText(txt);
-        tc.setPosition(savePos + 4);
-        setTextCursor(tc);
-        event->accept();
-        return;
-    }
-
-    bool isShortcut = ((event->modifiers() & Qt::ControlModifier) && event->key() == Qt::Key_Space); 
-    if(!mCompleter || !isShortcut) 
-    {
-        mCodec->onKeyPressEvent(event);
-        QPlainTextEdit::keyPressEvent(event);
-    }
-
-    const bool ctrlOrShift = event->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
-    if(!mCompleter || (ctrlOrShift && event->text().isEmpty()))
-        return;
-
-    static QString eow("~!@#$%^&*()+{}|:\"<>?,./;'[]\\-= "); // end of word
-    bool hasModifier = (event->modifiers() != Qt::NoModifier) && !ctrlOrShift;
-    QString completionPrefix = textUnderCursor();
-
-    if(!isShortcut && (hasModifier || event->text().isEmpty() || completionPrefix.length() < 1
-        || eow.contains(event->text().right(1))))
-    {
-        mCompleter->popup()->hide();
-        return;
-    }
-
-    if(completionPrefix != mCompleter->completionPrefix()) 
-    {
-        mCompleter->setCompletionPrefix(completionPrefix);
-        mCompleter->popup()->setCurrentIndex(mCompleter->completionModel()->index(0, 0));
-    }
-    QRect cr = cursorRect();
-    cr.setWidth(mCompleter->popup()->sizeHintForColumn(0) + mCompleter->popup()->verticalScrollBar()->sizeHint().width());
-    mCompleter->complete(cr);
-
-    mCodec->onKeyPressEvent(event);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
-{
-    mCodec->onContextMenu(event);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::mousePressEvent(QMouseEvent *event)
-{
-    // Rewrite the right click mouse event to a left button event so the cursor is moved to the location of the click
-    if(event->button() == Qt::RightButton)
-        event = new QMouseEvent(QEvent::MouseButtonPress, event->pos(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    QPlainTextEdit::mousePressEvent(event);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::documentWasModified()
-{
-    // Check if the underlying QTextDocument also reports back the modified flag, 
-    // to ignore highlighting changes   
-    if(document()->isModified())
-        setTextModified(true);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::releaseFile()
-{
-    mFile.close();
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::addCompleter(const QString keywordListFilePath)
-{
-    addCompleter(GenericTextEditor::getSingletonPtr()->modelFromFile(keywordListFilePath)->stringList());
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::addCompleter(const QStringList stringList)
-{
-    mCompleter = new QCompleter(stringList, this);
-    mCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
-    mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-    mCompleter->setCompletionMode(QCompleter::PopupCompletion);
-    mCompleter->setWrapAround(false);
-    mCompleter->setWidget(this);
-
-    connect(mCompleter, SIGNAL(activated(const QString&)), this, SLOT(insertCompletion(const QString&)));
-}
-//-----------------------------------------------------------------------------------------
-int GenericTextEditorDocument::calculateIndentation(const QString& str)
-{
-    int indent = 0;
-    int str_len = str.length();
-    char c;
-
-    for(int i = 0; i < str_len; i++)
-    {
-        c = str.at(i).toAscii();
-        
-        if(c == '{')
-            ++indent;
-        else if(c == '}')
-            --indent;
-    }
-
-    if(indent < 0)
-        indent = 0;
-
-    return (indent * 4);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::setTextModified(bool modified)
-{
-    mTextModified = modified; 
-    setWindowModified(modified);
-    Ogitors::OgitorsRoot::getSingletonPtr()->ChangeSceneModified(modified);
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::save()
-{
-    if(isTextModified())
-    {
-        if(!mCodec->isUseDefaultSaveLogic())
-            mCodec->onSave();
-        else
-            if(!saveDefaultLogic())
-                QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("Error saving file %1").arg(mFilePath));                
-
-        mCodec->onAfterSave();
-    }
-
-    setTextModified(false);
-}
-//-----------------------------------------------------------------------------------------
-bool GenericTextEditorDocument::saveDefaultLogic()
-{
-    if(mIsOfsFile)
-    {
-        int pos = mFilePath.indexOf("::");
-        if(pos > 0)
-            mFilePath = mFilePath.remove(0, pos + 2);
-
-        OFS::OfsResult res = mOfsPtr->openFile(mOfsFileHandle, mFilePath.toAscii(), OFS::OFS_WRITE);
-
-        if(res != OFS::OFS_OK)
-            return false;
-
-        QString text = toPlainText();
-        res = mOfsPtr->write(mOfsFileHandle, text.toAscii(), text.toAscii().length());    
-        mOfsPtr->closeFile(mOfsFileHandle);
-
-        if(res != OFS::OFS_OK)
-            return false;
-    }
-    else
-    {
-        // First close it, since it is still open from loading (will never get closed as long as it is
-        // used within Ogitor to prevent manipulation from outside).
-        mFile.close();
-        mFile.open(QIODevice::ReadWrite | QIODevice::Truncate);
-        QString text = toPlainText();
-        if(mFile.write(text.toAscii()) == -1)
-            return false;
-
-        mFile.close();
-        mFile.open(QIODevice::ReadOnly);
-    }
-
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-void GenericTextEditorDocument::closeEvent(QCloseEvent* event)
-{
-    if(isTextModified())
-    {	
-        int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-        switch(result)
-        {
-        case QMessageBox::Yes:      save(); break;
-        case QMessageBox::No:       break;
-        case QMessageBox::Cancel:   return;
-        }
-    }
-
-    getCodec()->onClose();
-    releaseFile();
-    close();
-}
-//-----------------------------------------------------------------------------------------

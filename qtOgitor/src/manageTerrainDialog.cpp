@@ -45,9 +45,12 @@ using namespace Ogitors;
 
 //----------------------------------------------------------------------------------------
 ManageTerrainDialog::ManageTerrainDialog(QWidget *parent) 
-    : QDialog(0, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+    : QDialog(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     setWindowFlags(Qt::Window);
+    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowModality(Qt::NonModal);
+    setModal(false);
     setupUi(this);
 
     QTimer *mTimerDrawPage = new QTimer(this);
@@ -66,7 +69,6 @@ ManageTerrainDialog::ManageTerrainDialog(QWidget *parent)
 //----------------------------------------------------------------------------------------
 ManageTerrainDialog::~ManageTerrainDialog()
 {
-    // TODO: Find out if I need to clean up the UITerrainSquare objects or does QT clean those up?
     OGRE_FREE(mMtx, Ogre::MEMCATEGORY_GEOMETRY);
 }
 //----------------------------------------------------------------------------------------
