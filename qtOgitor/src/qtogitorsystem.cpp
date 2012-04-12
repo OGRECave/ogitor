@@ -628,10 +628,8 @@ void QtOgitorSystem::ShowMouseCursor(bool bShow)
 bool QtOgitorSystem::DisplayTerrainDialog(Ogre::NameValuePairList &params)
 {
     params.clear();
-    ManageTerrainDialog dlg(QApplication::activeWindow());
-    dlg.setWindowModality(Qt::NonModal);
-    dlg.setModal(false);
-    dlg.exec();
+    ManageTerrainDialog* dlg = new ManageTerrainDialog(QApplication::activeWindow());
+    dlg->show();
 
     return false;
 }

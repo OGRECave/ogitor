@@ -33,38 +33,12 @@
 #ifndef GENERIC_TEXT_EDITOR_HXX
 #define GENERIC_TEXT_EDITOR_HXX
 
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
-
-#include <QtGui/QScrollArea>
-#include <QtGui/QWidget>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QScrollBar>
-#include <QtGui/QMdiArea>
-#include <QtGui/QMdiSubWindow>
-#include <QtGui/QToolBar>
-#include <QtGui/QStringListModel>
-#include <QtGui/QCompleter>
-#include <QtGui/QAction>
+#include "generictexteditordocument.hxx"
+#include "generictexteditorcodec.hxx"
 
 #include "Ogitors.h"
 #include "OgreSingleton.h"
-
-#include "generictexteditorcodec.hxx"
-#include "ofs.h"
-
-class QPaintEvent;
-class QResizeEvent;
-class QSize;
-class QWidget;
-class QTextDocument;
-class QTextFormat;
-class QPainter;
-class QRectF;
-class QSizeF;
-
-class GenericTextEditorDocument;
-class LineNumberArea;
+#include "OgitorsDefinitions.h"
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
    #ifdef GENERICTEXTEDITOR_EXPORT
@@ -104,7 +78,7 @@ public:
 
     void                            onModifiedStateChanged(Ogitors::IEvent* evt);
     void                            onLoadStateChanged(Ogitors::IEvent* evt);
-    GenericTextEditorDocument*      getLastDocument() { return mLastDocument; }
+    GenericTextEditorDocument*      getActiveDocument() { return mActiveDocument; }
 
 signals:
     void                            currentChanged(int);
@@ -118,7 +92,7 @@ public slots:
 protected:
     bool                            isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
     bool                            isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
-    void                            closeEvent(QCloseEvent *event);  
+    void                            closeEvent(QCloseEvent *event);
 
 protected slots:
 	void	                        tabChanged(int index);
@@ -127,10 +101,14 @@ private slots:
     void                            closeTab(int index);
 
 private:
+    void removeActiveDocument();
+    void switchActiveDocument(GenericTextEditorDocument* newActiveDocument);
+
      static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;   
      QTabWidget*                            mParentTabWidget;
+     QTabBar*                               mTabBar;
      bool                                   mAllowDoubleDisplay;
-     GenericTextEditorDocument*             mLastDocument;
+     GenericTextEditorDocument*             mActiveDocument;
      QToolBar*                              mMainToolBar;
      QAction*                               mActSave;
      QAction*                               mActEditCut;
@@ -138,94 +116,5 @@ private:
      QAction*                               mActEditPaste;
 };
 
-//-----------------------------------------------------------------------------------------
-
-class GTEExport GenericTextEditorDocument : public QPlainTextEdit
-{
-    Q_OBJECT
-
-public:
-    GenericTextEditorDocument(QWidget *parent = 0);
-    ~GenericTextEditorDocument();
-
-    void lineNumberAreaPaintEvent(QPaintEvent *event);
-    int  lineNumberAreaWidth();
-
-    void displayTextFromFile(QString docName, QString filePath, QString optionalData);
-    void displayText(QString docName, QString text, QString optionalData);
-    bool saveDefaultLogic();
-    void releaseFile();
-    void addCompleter(const QString keywordListFilePath);
-    void addCompleter(const QStringList stringList);
-
-    inline QString getDocName(){return mDocName;}
-    inline QString getFilePath(){return mFilePath;}
-    inline ITextEditorCodec* getCodec(){return mCodec;}
-    inline bool isTextModified(){return mTextModified;}
-    inline void setTextModified(bool modified);
-    inline void setCodec(ITextEditorCodec* codec){mCodec = codec;}
-    inline bool isOfsFile(){return mIsOfsFile;};
-    inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
-    inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
-    inline QFile* getFile(){return &mFile;};
-    inline void setInitialDisplay(bool initial){mInitialDisplay = initial;};
-    inline bool isIntialDisplay(){return mInitialDisplay;};
-
-public slots:
-    void save();
-    void closeEvent(QCloseEvent* event);
-
-protected:
-    void resizeEvent(QResizeEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void focusInEvent(QFocusEvent *event);
-    void contextMenuEvent(QContextMenuEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    QString textUnderCursor() const;
-    int  calculateIndentation(const QString& str);
-
-protected slots:
-    void updateLineNumberAreaWidth(int newBlockCount);
-    void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
-    void insertCompletion(const QString &completion);
-    void documentWasModified();
-
-protected:
-    ITextEditorCodec*   mCodec;
-    bool                mIsOfsFile;
-    QString             mDocName;
-    QString             mFilePath;
-    QFile               mFile;
-    OFS::OfsPtr         mOfsPtr;
-    OFS::OFSHANDLE      mOfsFileHandle;
-    QWidget*            mLineNumberArea;
-    QCompleter*         mCompleter;
-    bool                mTextModified;
-    bool                mInitialDisplay;
-};
-
-//-----------------------------------------------------------------------------------------
-
-class GTEExport LineNumberArea : public QWidget
-{
-public:
-    LineNumberArea(GenericTextEditorDocument *document) : QWidget(document) 
-    {
-        genericTextEditorDocument = document;
-    }
-
-    QSize sizeHint() const {return QSize(genericTextEditorDocument->lineNumberAreaWidth(), 0);}
-
-protected:
-    void paintEvent(QPaintEvent *event){genericTextEditorDocument->lineNumberAreaPaintEvent(event);}
-
-private:
-    GenericTextEditorDocument *genericTextEditorDocument;
-};
-
-//-----------------------------------------------------------------------------------------
-
 #endif
 
-//-----------------------------------------------------------------------------------------
