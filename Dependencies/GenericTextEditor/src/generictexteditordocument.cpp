@@ -118,7 +118,6 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
         mFile.open(QIODevice::ReadOnly);
         displayText(docName, mFile.readAll(), optionalData);
     }
-   
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::displayText(QString docName, QString text, QString optionalData = "")
@@ -342,7 +341,6 @@ void GenericTextEditorDocument::keyPressEvent(QKeyEvent *event)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::contextMenuEvent(QContextMenuEvent *event)
 {
-    std::cout << "GenericTextEditorDocument::contextMenuEvent" << std::endl;
     mCodec->onContextMenu(event);
 }
 //-----------------------------------------------------------------------------------------
@@ -357,7 +355,7 @@ void GenericTextEditorDocument::mousePressEvent(QMouseEvent *event)
 void GenericTextEditorDocument::documentWasModified()
 {
     // Check if the underlying QTextDocument also reports back the modified flag, 
-    // to ignore highlighting changes   
+    // to ignore highlighting changes
     if(document()->isModified())
         setTextModified(true);
 }
@@ -428,11 +426,13 @@ bool GenericTextEditorDocument::saveDefaultLogic()
 {
     if(mIsOfsFile)
     {
-        int pos = mFilePath.indexOf("::");
-        if(pos > 0)
-            mFilePath = mFilePath.remove(0, pos + 2);
+        QString savePath = mFilePath;
 
-        OFS::OfsResult res = mOfsPtr->openFile(mOfsFileHandle, mFilePath.toAscii(), OFS::OFS_WRITE);
+        int pos = savePath.indexOf("::");
+        if(pos > 0)
+            savePath = savePath.remove(0, pos + 2);
+
+        OFS::OfsResult res = mOfsPtr->openFile(mOfsFileHandle, savePath.toAscii(), OFS::OFS_WRITE);
 
         if(res != OFS::OFS_OK)
             return false;
@@ -478,3 +478,11 @@ void GenericTextEditorDocument::closeEvent(QCloseEvent* event)
     getCodec()->onClose();
 }
 //-----------------------------------------------------------------------------------------
+void GenericTextEditorDocument::showEvent(QShowEvent* event)
+{
+    GenericTextEditor* editor = (GenericTextEditor*) ((QMdiSubWindow*)parent())->mdiArea();
+    editor->setActiveDocument(this);
+}
+//-----------------------------------------------------------------------------------------
+
+
