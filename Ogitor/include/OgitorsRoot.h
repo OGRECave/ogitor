@@ -466,6 +466,10 @@ namespace Ogitors
         */
         bool            OptionsReadLayers(TiXmlElement *parent);
         /**
+        * Prepares terrain resource group(s)
+        */        
+        void            PrepareTerrainResources();
+        /**
         * Prepares project resource group(s)
         */
         void            PrepareProjectResources();

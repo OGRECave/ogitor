@@ -423,8 +423,13 @@ namespace Ogitors
         static PropertyOptionsVector *GetMaxBatchSizes() { return &mMaxBatchSizes; }
 
         static PropertyOptionsVector *GetMaterialGeneratorTypes() { return &mMaterialGeneratorTypes; }
+        
+        static PropertyOptionsVector GetNormalHeightFilenames();
+        static PropertyOptionsVector GetDiffuseSpecularFilenames();
 
     private:
+        /* Sets up the project resources for use in Ogitor */
+        void addEditorResources(bool changeDefaultNames = true);
         static PropertyOptionsVector mColourMapSizeOptions;     /** Colour map size options property(ies) */
         static PropertyOptionsVector mMapSizeOptions;           /** Map size options property(ies) */
         static PropertyOptionsVector mMinBatchSizes;

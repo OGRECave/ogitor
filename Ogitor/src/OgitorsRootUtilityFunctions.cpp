@@ -1386,8 +1386,6 @@ void OgitorsRoot::ReloadUserResources()
 
 
     mMaterialNames.clear();
-    mTerrainPlantMaterialNames.clear();
-    mTerrainPlantMaterialNames.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
     mSkyboxMaterials.clear();
     mSkyboxMaterials.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
 
@@ -1405,10 +1403,6 @@ void OgitorsRoot::ReloadUserResources()
             Ogre::StringUtil::toLowerCase(matname);
             if(matname.find("sky") != -1 && matname.find("skyboxplane") == -1)
                 mSkyboxMaterials.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
-        }
-        else if(mRes->getGroup() == "Plants")
-        {
-            mTerrainPlantMaterialNames.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
         }
     }
 
@@ -1443,8 +1437,23 @@ void OgitorsRoot::ReloadUserResources()
     }
 
     UpdateMaterialsInScene();
-
+    PrepareTerrainResources();
     SetSceneModified(true);
+}
+//-------------------------------------------------------------------------------------------
+void OgitorsRoot::PrepareTerrainResources()
+{
+    mTerrainDiffuseTextureNames.clear();
+    mTerrainDiffuseTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
+    mTerrainDiffuseTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupDiffuseSpecular", "Ofs");
+
+    mTerrainNormalTextureNames.clear();
+    mTerrainNormalTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
+    mTerrainNormalTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupNormalHeight", "Ofs");
+
+    mTerrainPlantMaterialNames.clear();
+    mTerrainPlantMaterialNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
+    mTerrainPlantMaterialNames = OgitorsUtils::GetResourceFilenames("TerrainGroupPlants", "Ofs");
 }
 //-------------------------------------------------------------------------------------------
 void OgitorsRoot::PrepareProjectResources()
@@ -1476,7 +1485,7 @@ void OgitorsRoot::PrepareProjectResources()
         {
             OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(e.getFullDescription(), DLGTYPE_OK);
         }
-        
+
         Ogre::MaterialPtr planeMaterial = MaterialManager::getSingletonPtr()->createOrRetrieve("DefaultPlaneMaterial", PROJECT_RESOURCE_GROUP).first;
         planeMaterial->getTechnique(0)->getPass(0)->setAmbient(0.4f, 0.4f, 0.4f);
         planeMaterial->getTechnique(0)->getPass(0)->setDiffuse(0.8f, 0.8f, 0.8f, 0.8f);
@@ -1533,8 +1542,6 @@ void OgitorsRoot::PrepareProjectResources()
         std::sort(++(mModelNames.begin()), mModelNames.end(), PropertyOption::comp_func);
 
         mMaterialNames.clear();
-        mTerrainPlantMaterialNames.clear();
-        mTerrainPlantMaterialNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
         mSkyboxMaterials.clear();
         mSkyboxMaterials.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
 
@@ -1553,45 +1560,10 @@ void OgitorsRoot::PrepareProjectResources()
                 if(matname.find("sky") != -1 && matname.find("skyboxplane") == -1)
                     mSkyboxMaterials.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
             }
-            else if(mRes->getGroup() == "Plants")
-            {
-                mTerrainPlantMaterialNames.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
-            }
         }
 
-        std::sort(mTerrainPlantMaterialNames.begin(), mTerrainPlantMaterialNames.end(), PropertyOption::comp_func);
         std::sort(mMaterialNames.begin(), mMaterialNames.end(), PropertyOption::comp_func);
         std::sort(mSkyboxMaterials.begin(), mSkyboxMaterials.end(), PropertyOption::comp_func);
-
-        mTerrainDiffuseTextureNames.clear();
-        mTerrainDiffuseTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
-        mTerrainNormalTextureNames.clear();
-        mTerrainNormalTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
-
-        Ogre::FileInfoListPtr resList2 = Ogre::ResourceGroupManager::getSingleton().listResourceFileInfo("TerrainTextures");
-
-        Ogre::String fname_diffuse;
-        Ogre::String fname_normal;
-        for (Ogre::FileInfoList::const_iterator it = resList2->begin(); it != resList2->end(); ++it)
-        {
-            Ogre::FileInfo fInfo = (*it);
-            if(fInfo.archive->getType() == "FileSystem")
-            {
-                if(fInfo.filename.find("diffusespecular") != -1)
-                {
-                    mTerrainDiffuseTextureNames.push_back(PropertyOption(fInfo.filename, Ogre::Any(fInfo.filename)));
-                }
-                
-                if(fInfo.filename.find("normalheight") != -1)
-                {
-                    mTerrainNormalTextureNames.push_back(PropertyOption(fInfo.filename, Ogre::Any(fInfo.filename)));
-                }
-            }
-        }
-        resList2.setNull();
-
-        std::sort(++(mTerrainDiffuseTextureNames.begin()), mTerrainDiffuseTextureNames.end(), PropertyOption::comp_func); 
-        std::sort(++(mTerrainNormalTextureNames.begin()), mTerrainNormalTextureNames.end(), PropertyOption::comp_func); 
 
     } catch(...) {
         Ogre::LogManager::getSingleton().getDefaultLog()->logMessage("OGITOR EXCEPTION: Can not prepare project resources!!", Ogre::LML_CRITICAL);

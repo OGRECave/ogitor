@@ -137,12 +137,14 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
 //-----------------------------------------------------------------------------------------
 void CTerrainPageEditor::onSave(bool forced)
 {
+    Ogre::String terrainDir = "/"+mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain/";
+
     if(mHandle)
     {
         if(mHandle->isModified() || mTempModified->get() || forced)
         {
             mOgitorsRoot->GetProjectFile()->deleteFile(mTempFileName.c_str());
-            _saveTerrain("/Terrain/");
+            _saveTerrain(terrainDir);
         }
     }
     else if(mTempModified->get())
@@ -151,7 +153,7 @@ void CTerrainPageEditor::onSave(bool forced)
         Ogre::String filename = terGroup->generateFilename(mPageX->get(), mPageY->get());
 
         Ogre::String pathFrom = mTempFileName;
-        Ogre::String pathTo = "/Terrain/" + filename;
+        Ogre::String pathTo = terrainDir + filename;
 
         mOgitorsRoot->GetProjectFile()->moveFile(pathFrom.c_str(), pathTo.c_str());
     }
@@ -161,7 +163,7 @@ void CTerrainPageEditor::onSave(bool forced)
         if(mPGModified || mTempDensityModified->get() || forced)
         {
             mOgitorsRoot->GetProjectFile()->deleteFile(mTempDensityFileName.c_str());
-            _saveGrass("/Terrain/");
+            _saveGrass(terrainDir);
         }
     }
     else if(mTempDensityModified->get())
@@ -170,7 +172,7 @@ void CTerrainPageEditor::onSave(bool forced)
         Ogre::String filename = terGroup->generateFilename(mPageX->get(), mPageY->get());
 
         Ogre::String pathFrom = mTempDensityFileName;
-        Ogre::String pathTo = "/Terrain/" + filename.substr(0, filename.size() - 4) + "_density.tga";
+        Ogre::String pathTo = terrainDir + filename.substr(0, filename.size() - 4) + "_density.tga";
 
         mOgitorsRoot->GetProjectFile()->moveFile(pathFrom.c_str(), pathTo.c_str());
     }

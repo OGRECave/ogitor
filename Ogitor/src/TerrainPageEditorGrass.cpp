@@ -158,7 +158,8 @@ void CTerrainPageEditor::_loadGrassLayers()
     }
     else
     {
-        denmapname = "/Terrain/" + terGroup->generateFilename(mPageX->get(), mPageY->get());
+        Ogre::String terrainDir = mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain/";
+        denmapname = terrainDir + terGroup->generateFilename(mPageX->get(), mPageY->get());
         denmapname = denmapname.substr(0, denmapname.size() - 4) + "_density.tga";
     }
 

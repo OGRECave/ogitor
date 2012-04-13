@@ -94,8 +94,8 @@ mHandle(0), mBrushData(0), mModificationRect(0,0,0,0)
     mMaxLayersAllowed = 6;
 
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-    Ogre::String value = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/";
-    mngr->addResourceLocation(value,"Ofs","TerrainResources");
+    Ogre::String terrainDir = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain";
+    mngr->addResourceLocation(terrainDir,"Ofs","TerrainResources");
 
     mTerrainGlobalOptions = OGRE_NEW Ogre::TerrainGlobalOptions();
 }
@@ -104,6 +104,9 @@ CTerrainGroupEditor::~CTerrainGroupEditor()
 {
     OGRE_DELETE mTerrainGlobalOptions;
     mOgitorsRoot->DestroyResourceGroup("TerrainResources");
+    mOgitorsRoot->DestroyResourceGroup("TerrainGroupNormalHeight");
+    mOgitorsRoot->DestroyResourceGroup("TerrainGroupDiffuseSpecular");
+    mOgitorsRoot->DestroyResourceGroup("TerrainGroupPlants");
 }
 //-----------------------------------------------------------------------------------------
 PGHeightFunction *CTerrainGroupEditor::getHeightFunction()
@@ -361,6 +364,22 @@ bool CTerrainGroupEditor::load(bool async)
 
     if(!getParent()->load())
         return false;
+
+    Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+    Ogre::String terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
+    terrainDir = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/"+terrainDir+"/";
+
+    mngr->addResourceLocation(terrainDir+"textures/normalheight","Ofs","TerrainGroupNormalHeight");
+    mngr->initialiseResourceGroup("TerrainGroupNormalHeight");
+
+    mngr->addResourceLocation(terrainDir+"textures/diffusespecular","Ofs","TerrainGroupDiffuseSpecular");
+    mngr->initialiseResourceGroup("TerrainGroupDiffuseSpecular");
+
+    mngr->addResourceLocation(terrainDir+"plants","Ofs","TerrainGroupPlants");
+    mngr->initialiseResourceGroup("TerrainGroupPlants");
+
+    OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
+    OgitorsRoot::getSingletonPtr()->ReloadUserResources();
 
     mDecalFrustum = OGRE_NEW Ogre::Frustum();
     mDecalNode = getSceneManager()->getRootSceneNode()->createChildSceneNode("OgitorTerrainDecalNode");
@@ -909,16 +928,87 @@ CBaseEditorFactory *CTerrainGroupEditorFactory::duplicate(OgitorsView *view)
     return ret;
 }
 //-----------------------------------------------------------------------------------------
+void CTerrainGroupEditorFactory::addEditorResources(bool changeDefaultNames)
+{
+    OgitorsRoot* ogitorsRoot = OgitorsRoot::getSingletonPtr();
+    Ogre::String terrainDir = ogitorsRoot->GetProjectOptions()->TerrainDirectory;
+    // create Terrain project folder and folder to hold the terrain
+    ogitorsRoot->GetProjectFile()->createDirectory(terrainDir.c_str());
+    ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/terrain/").c_str());
+
+    // copy default plant textures
+    ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/plants/").c_str());
+    Ogre::String copydir = Ogitors::Globals::MEDIA_PATH + "/plants/";
+    OgitorsUtils::CopyDirOfs(copydir, (terrainDir+"/plants/").c_str());
+
+    // copy default terrain textures sorting them into two different folders
+    ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/textures/").c_str());
+    ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/textures/diffusespecular").c_str());
+    ogitorsRoot->GetProjectFile()->createDirectory((terrainDir+"/textures/normalheight").c_str());
+
+    Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+    copydir = Ogitors::Globals::MEDIA_PATH + "/terrainTextures/";
+    mngr->addResourceLocation(copydir,"FileSystem","CopyTerrain");
+
+    Ogre::FileInfoListPtr resList = mngr->listResourceFileInfo("CopyTerrain");
+
+    // copy the files to the different directories
+    OFS::OfsPtr& file = ogitorsRoot->GetProjectFile();
+    for (Ogre::FileInfoList::const_iterator it = resList->begin(); it != resList->end(); ++it)
+    {
+        Ogre::FileInfo fInfo = (*it);
+        Ogre::String loc = copydir + fInfo.path + fInfo.filename;
+        Ogre::String newName = fInfo.filename;
+        
+        if(fInfo.archive->getType() == "FileSystem")
+        {
+            if(fInfo.filename.find("diffusespecular") != -1)
+            {
+                /* since we're using different resource groups for the terrain lets
+                remove the naming scheme from the filenames except if the project
+                is being upgraded, in which case leave the name alone. */
+                if (changeDefaultNames) {
+                    newName = Ogre::StringUtil::replaceAll(newName, "_diffusespecular", "");
+                }
+                OgitorsUtils::CopyFileOfs(loc, terrainDir+"/textures/diffusespecular/"+newName);
+            }
+            
+            if(fInfo.filename.find("normalheight") != -1)
+            {
+                if (changeDefaultNames) {
+                    newName = Ogre::StringUtil::replaceAll(newName, "_normalheight", "");
+                }
+                OgitorsUtils::CopyFileOfs(loc, terrainDir+"/textures/normalheight/"+newName);
+            }
+        }
+    }
+    resList.setNull();
+    
+    ogitorsRoot->DestroyResourceGroup("CopyTerrain");
+}
+//-----------------------------------------------------------------------------------------
 CBaseEditor *CTerrainGroupEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)
 {
-
+    OgitorsRoot* ogitorsRoot = OgitorsRoot::getSingletonPtr();
     OgitorsPropertyValueMap::iterator ni;
 
     if ((ni = params.find("init")) != params.end())
     {
-        Ogre::String value = "/" + OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
-        OgitorsRoot::getSingletonPtr()->GetProjectFile()->createDirectory(value.c_str());
+        addEditorResources();
         params.erase(ni);
+    }
+
+    /* Check for old 0.4 and 0.5 files that do not include the terrain textures */
+    OFS::OfsPtr& file = ogitorsRoot->GetProjectFile();
+    Ogre::String terrainDir = ogitorsRoot->GetProjectOptions()->TerrainDirectory;
+
+    unsigned int flags;
+    if (file->getDirFlags((terrainDir).c_str(), flags) == OFS::OFS_OK &&
+        file->getDirFlags((terrainDir+"/terrain/").c_str(), flags) != OFS::OFS_OK)
+    {
+        // must check the both dirs exist otherwise it could possibly be a new project
+        file->moveDirectory((terrainDir).c_str(), (terrainDir+"/terrain/").c_str());
+        addEditorResources(false);
     }
 
     CTerrainGroupEditor *object = OGRE_NEW CTerrainGroupEditor(this);
