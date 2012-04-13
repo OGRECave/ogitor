@@ -201,19 +201,27 @@ void ProjectFilesViewWidget::clearView()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
 {
-    if(item != NULL)
-    {
-        QString path = item->whatsThis(0);
+    if(item == 0)
+        return;
 
-        if(!path.endsWith("/"))
-        {
-            path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
-                
-            if(!mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path))
-                mOgitorMainWindow->getGenericImageEditor()->displayImageFromFile(path);
-        }
-        else
-            onRename();
+    QString path = item->whatsThis(0);
+    if(path.endsWith("/"))
+    {
+        onRename();
+        return;
+    }
+
+    path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
+    if(mOgitorMainWindow->getGenericTextEditor()->findMatchingCodecFactory(path) != 0)
+    {
+        mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
+        return;
+    }
+    
+    if(mOgitorMainWindow->getGenericImageEditor()->findMatchingCodecFactory(path) != 0)
+    {
+        mOgitorMainWindow->getGenericImageEditor()->displayImageFromFile(path);
+        return;
     }
 }
 //----------------------------------------------------------------------------------------

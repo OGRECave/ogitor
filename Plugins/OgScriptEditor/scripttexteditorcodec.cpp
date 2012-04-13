@@ -74,7 +74,7 @@ ScriptTextEditorCodecToolBar::~ScriptTextEditorCodecToolBar()
 //-----------------------------------------------------------------------------------------
 void ScriptTextEditorCodecToolBar::onRefresh()
 {
-    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getLastDocument();
+    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getActiveDocument();
     if(document != 0)
     {
         static_cast<ScriptTextEditorCodec*>(document->getCodec())->onRefresh();
@@ -83,7 +83,7 @@ void ScriptTextEditorCodecToolBar::onRefresh()
 //-----------------------------------------------------------------------------------------
 void ScriptTextEditorCodecToolBar::onRun()
 {
-    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getLastDocument();
+    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getActiveDocument();
     if(document != 0)
     {
         static_cast<ScriptTextEditorCodec*>(document->getCodec())->onRun();
