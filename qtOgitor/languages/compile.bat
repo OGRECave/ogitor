@@ -1,0 +1,1 @@
+%QTDIR%/bin/lrelease.exe translate.pro
