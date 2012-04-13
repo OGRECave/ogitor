@@ -62,58 +62,59 @@ public:
     GenericTextEditor(QString editorName, QWidget *parent = 0);
     ~GenericTextEditor();
 
-    bool                            displayTextFromFile(QString filePath, QString optionalData = "");
-    bool                            displayText(QString docName, QString text, QString extension = "", QString optionalData = "");
-    void                            moveToForeground();
-    void                            saveAll();
+    bool displayTextFromFile(QString filePath, QString optionalData = "");
+    bool displayText(QString docName, QString text, QString extension = "", QString optionalData = "");
+    void moveToForeground();
+    void saveAll();
 
-    static void                     registerCodecFactory(QString extension, ITextEditorCodecFactory* codec);
-    static void                     unregisterCodecFactory(QString extension);
+    static void registerCodecFactory(QString extension, ITextEditorCodecFactory* codec);
+    static void unregisterCodecFactory(QString extension);
     static ITextEditorCodecFactory* findMatchingCodecFactory(QString extensionOrFileName);
 
-    static QStringListModel*        modelFromFile(const QString& fileName);
+    static QStringListModel* modelFromFile(const QString& fileName);
 
-    inline void                     setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
-    inline bool                     isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
+    inline void setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
+    inline bool isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
 
-    void                            onModifiedStateChanged(Ogitors::IEvent* evt);
-    void                            onLoadStateChanged(Ogitors::IEvent* evt);
-    GenericTextEditorDocument*      getActiveDocument() { return mActiveDocument; }
+    void onModifiedStateChanged(Ogitors::IEvent* evt);
+    void onLoadStateChanged(Ogitors::IEvent* evt);
+
+    GenericTextEditorDocument* getActiveDocument() { return mActiveDocument; }
+    void setActiveDocument(GenericTextEditorDocument* document);
 
 signals:
-    void                            currentChanged(int);
+    void currentChanged(int);
 
 public slots:
-    void                            tabContentChange();
-    void                            pasteAvailable();
-    void                            onSave();
-    void                            onClipboardChanged();
+    void tabContentChange();
+    void pasteAvailable();
+    void onSave();
+    void onClipboardChanged();
 
 protected:
-    bool                            isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
-    bool                            isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
-    void                            closeEvent(QCloseEvent *event);
-
-protected slots:
-	void	                        tabChanged(int index);
+    bool isPathAlreadyShowing(QString filePath, GenericTextEditorDocument*& document);
+    bool isDocAlreadyShowing(QString docName, GenericTextEditorDocument*& document);
+    void closeEvent(QCloseEvent *event);
 
 private slots:
-    void                            closeTab(int index);
+    void closeTab(int index);
 
 private:
-    void removeActiveDocument();
-    void switchActiveDocument(GenericTextEditorDocument* newActiveDocument);
+    void closeActiveDocument();
+    void addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec);
 
-     static TextCodecExtensionFactoryMap    mRegisteredCodecFactories;   
-     QTabWidget*                            mParentTabWidget;
-     QTabBar*                               mTabBar;
-     bool                                   mAllowDoubleDisplay;
-     GenericTextEditorDocument*             mActiveDocument;
-     QToolBar*                              mMainToolBar;
-     QAction*                               mActSave;
-     QAction*                               mActEditCut;
-     QAction*                               mActEditCopy;
-     QAction*                               mActEditPaste;
+    static TextCodecExtensionFactoryMap mRegisteredCodecFactories;   
+    bool mAllowDoubleDisplay;
+
+    QTabWidget *mParentTabWidget;
+    QTabBar *mTabBar;
+    GenericTextEditorDocument *mActiveDocument;
+
+    QToolBar   *mMainToolBar;
+    QAction    *mActSave;
+    QAction    *mActEditCut;
+    QAction    *mActEditCopy;
+    QAction    *mActEditPaste;
 };
 
 #endif

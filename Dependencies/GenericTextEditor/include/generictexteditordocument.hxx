@@ -105,6 +105,7 @@ public:
 public slots:
     void save();
     void closeEvent(QCloseEvent* event);
+    void showEvent(QShowEvent* event);
 
 protected:
     void resizeEvent(QResizeEvent *event);

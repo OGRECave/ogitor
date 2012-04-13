@@ -55,8 +55,6 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     mTabBar->setTabsClosable(true);
 
     connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    connect(mTabBar, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
-    connect(this,   SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
 
     mActSave = new QAction(tr("Save"), this);
     mActSave->setStatusTip(tr("Save"));
@@ -103,6 +101,7 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     GenericTextEditor::registerCodecFactory("txt",         genCodecFactory);
     GenericTextEditor::registerCodecFactory("cfg",         genCodecFactory);
     GenericTextEditor::registerCodecFactory("log",         genCodecFactory);
+    GenericTextEditor::registerCodecFactory("json",        genCodecFactory);
 
     // Register the XML generic text editor codec extensions
     XMLTextEditorCodecFactory* XMLCodecFactory = new XMLTextEditorCodecFactory();
@@ -151,43 +150,25 @@ bool GenericTextEditor::displayTextFromFile(QString filePath, QString optionalDa
     ITextEditorCodecFactory* codecFactory = GenericTextEditor::findMatchingCodecFactory(filePath);
 
     if(codecFactory == 0)
-       return false;    
+       return false;
     
     GenericTextEditorDocument* document = 0;
     if(!isPathAlreadyShowing(filePath, document) || isAllowDoubleDisplay())
     {
         document = new GenericTextEditorDocument(this);
+
         ITextEditorCodec* codec = codecFactory->create(document, filePath);
         document->setCodec(codec);
         document->displayTextFromFile(QFile(filePath).fileName(), filePath, optionalData);
 
-        QMdiSubWindow* subWindow = new QMdiSubWindow;
-        subWindow->setWidget(document);
-        subWindow->setAttribute(Qt::WA_DeleteOnClose);
-        subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
-        addSubWindow(subWindow);
-
-        document->showMaximized();
-        mTabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName()); 
-
-        QList<QMdiSubWindow*> list = subWindowList();
+        addTab(document, codec);
     }
     else
     {
-        document->getCodec()->setOptionalData(optionalData);
-        document->getCodec()->onDisplayRequest();
-        setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
-        document->setFocus(Qt::ActiveWindowFocusReason);
+        setActiveDocument(document);
     }
 
-    moveToForeground();   
-
-    connect(document, SIGNAL(textChanged()), document, SLOT(documentWasModified()));
-    
-    mActSave->setEnabled(false);
-
-    document->setInitialDisplay(false);
-
+    moveToForeground();
     return true;
 }
 //-----------------------------------------------------------------------------------------
@@ -211,28 +192,14 @@ bool GenericTextEditor::displayText(QString docName, QString text, QString exten
         document->setCodec(codec);
         document->displayText(docName, text, optionalData);
 
-        QMdiSubWindow* subWindow = new QMdiSubWindow;
-        subWindow->setWidget(document);
-        subWindow->setAttribute(Qt::WA_DeleteOnClose);
-        subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
-        addSubWindow(subWindow);
-
-        document->showMaximized();
-        mTabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, docName); 
+        addTab(document, codec);
     }
     else
     {
-        document->getCodec()->setOptionalData(optionalData);
-        document->getCodec()->onDisplayRequest();
-        setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
-        document->setFocus(Qt::ActiveWindowFocusReason);
+        setActiveDocument(document);
     }
 
     moveToForeground();
-
-    connect(document, SIGNAL(textChanged()), document, SLOT(documentWasModified()));
-    mActSave->setEnabled(false);
-
     return true;
 }
 //-----------------------------------------------------------------------------------------
@@ -241,10 +208,11 @@ bool GenericTextEditor::isPathAlreadyShowing(QString filePath, GenericTextEditor
     foreach(QMdiSubWindow *window, subWindowList()) 
     {
         document = qobject_cast<GenericTextEditorDocument*>(window->widget());
-        if(document->getFilePath() == filePath)
+        if(document != 0 && document->getFilePath() == filePath)
             return true;
     }
 
+    document = 0;
     return false;
 }
 //-----------------------------------------------------------------------------------------
@@ -253,67 +221,83 @@ bool GenericTextEditor::isDocAlreadyShowing(QString docName, GenericTextEditorDo
     foreach(QMdiSubWindow *window, subWindowList()) 
     {
         document = qobject_cast<GenericTextEditorDocument*>(window->widget());
-        if(document->getDocName() == docName)
+        if(document != 0 && document->getDocName() == docName)
             return true;
     }
 
+    document = 0;
     return false;
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabContentChange()
 {
-    if(!mActiveDocument->isIntialDisplay())
-        mActSave->setEnabled(true);
+    mActSave->setEnabled(true);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
 {
     QList<QMdiSubWindow*> list = subWindowList();
 
-    std::cout << "closeTab: " << index << std::endl;
-
     GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
-    if (!document->close())
+    setActiveDocument(document);
+
+    if (!list[index]->close())
         return;
-
-    mTabBar->removeTab(index);
-
-    if (mTabBar->count() == 0)
-        removeActiveDocument();
-
-    emit currentChanged(subWindowList().indexOf(activeSubWindow()));
+        
+    if (document == mActiveDocument)
+        closeActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::switchActiveDocument(GenericTextEditorDocument* newActiveDocument)
+void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec)
 {
-    removeActiveDocument();
+    QMdiSubWindow* subWindow = new QMdiSubWindow;
+    subWindow->setWidget(newDocument);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
 
-    if (mTabBar->count() == 0)
-        return;
+    // [*] is special qt thing to show the file as modified
+    QFileInfo pathInfo( newDocument->getDocName()+"[*]" );
 
-    connect(mActSave, SIGNAL(triggered()), newActiveDocument, SLOT(save()));
-    connect(mActEditCut, SIGNAL(triggered()), newActiveDocument, SLOT(cut()));
-    connect(mActEditCopy, SIGNAL(triggered()), newActiveDocument, SLOT(copy()));
-    connect(mActEditPaste, SIGNAL(triggered()), newActiveDocument, SLOT(paste()));
-    connect(newActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
-    connect(newActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
-    connect(newActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
-    mActSave->setEnabled(newActiveDocument->isTextModified());
+    subWindow->setWindowTitle(pathInfo.fileName());
+    addSubWindow(subWindow);
+
+    newDocument->showMaximized();
+}
+//-----------------------------------------------------------------------------------------
+void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
+{
+    closeActiveDocument();
+    
+    mActiveDocument = document;
+
+    connect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
+    connect(mActEditCut, SIGNAL(triggered()), mActiveDocument, SLOT(cut()));
+    connect(mActEditCopy, SIGNAL(triggered()), mActiveDocument, SLOT(copy()));
+    connect(mActEditPaste, SIGNAL(triggered()), mActiveDocument, SLOT(paste()));
+
+    connect(mActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+    connect(mActiveDocument, SIGNAL(textChanged()), mActiveDocument, SLOT(documentWasModified()));
+
+    connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+    connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+
+    
+    mActSave->setEnabled(mActiveDocument->isTextModified());
     mActEditCut->setEnabled(false);
     mActEditCopy->setEnabled(false);
 
-    mActiveDocument = newActiveDocument;
-
-    QToolBar *tb = mActiveDocument->getCodec()->getCustomToolBar();
+    QToolBar *tb = document->getCodec()->getCustomToolBar();
     if(tb != 0)
     {
         QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
         mw->addToolBar(Qt::TopToolBarArea, tb);
         tb->show();
     }
+
+    mActiveDocument->setFocus(Qt::ActiveWindowFocusReason);
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::removeActiveDocument()
+void GenericTextEditor::closeActiveDocument()
 {
     if (mActiveDocument == 0)
         return;
@@ -332,6 +316,11 @@ void GenericTextEditor::removeActiveDocument()
         QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
         mw->removeToolBar(tb);
     }
+    
+    mActSave->setEnabled(false);
+    mActEditCut->setEnabled(false);
+    mActEditCopy->setEnabled(false);
+    mActEditPaste->setEnabled(false);
 
     mActiveDocument = 0;
 }
@@ -399,26 +388,6 @@ void GenericTextEditor::saveAll()
     }
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::tabChanged(int index)
-{
-    if(mTabBar->count() == 0)
-    {
-        GenericTextEditorDocument* document;
-        QList<QMdiSubWindow*> list = subWindowList();
-        document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
-        document->getCodec()->onTabChange();
-        switchActiveDocument(document);
-    }
-    else
-    {
-        mActSave->setEnabled(false);
-        mActEditCut->setEnabled(false);
-        mActEditCopy->setEnabled(false);
-        mActEditPaste->setEnabled(false);
-        mActiveDocument = 0;
-    }
-}
-//-----------------------------------------------------------------------------------------
 void GenericTextEditor::onModifiedStateChanged(Ogitors::IEvent* evt)
 {
     Ogitors::SceneModifiedChangeEvent *change_event = Ogitors::event_cast<Ogitors::SceneModifiedChangeEvent*>(evt);
@@ -444,7 +413,6 @@ void GenericTextEditor::onLoadStateChanged(Ogitors::IEvent* evt)
 
         if(state == Ogitors::LS_UNLOADED)
         {
-            removeActiveDocument();
             closeAllSubWindows();
         }
     }
