@@ -191,6 +191,7 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
         mMaterialEditor->setMaterialPath(materialPath);
 
         Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(fileInfoList.getPointer()->at(0).filename, resourceGroup);
+
         Ogre::String fullPath = fileInfoList.getPointer()->at(0).archive->getName() +  fileInfoList.getPointer()->at(0).filename;
         GenericTextEditor::getSingletonPtr()->displayTextFromFile(fullPath.c_str(), material->getName().c_str());
     }
