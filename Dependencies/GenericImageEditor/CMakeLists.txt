@@ -17,6 +17,7 @@ else(NOT QT4_FOUND)
 
     set(HEADER_FILES
         ./include/genericimageeditor.hxx
+        ./include/genericimageeditordocument.hxx
         ./include/iimageeditorcodec.hxx
         ./include/genericimageeditorcodec.hxx
         ./include/heightimageeditorcodec.hxx
@@ -24,12 +25,14 @@ else(NOT QT4_FOUND)
 
     set(SOURCE_FILES
         ./src/genericimageeditor.cpp
+        ./src/genericimageeditordocument.cpp
         ./src/genericimageeditorcodec.cpp
         ./src/heightimageeditorcodec.cpp
     )
 
     SET(MOC_SRCS2
         ./include/genericimageeditor.hxx
+        ./include/genericimageeditordocument.hxx
         ./include/iimageeditorcodec.hxx
         ./include/genericimageeditorcodec.hxx
         ./include/heightimageeditorcodec.hxx

@@ -131,9 +131,9 @@ public:
     */
     virtual QToolBar*   getCustomToolBar(){return 0;};
 
-    QString         getDocumentIcon(){return mDocumentIcon;}
-    void            setOptionalData(QString optionalData){mOptionalData = optionalData;};
-    bool            isUseDefaultSaveLogic(){return mUseDefaultSaveLogic;};
+    QString getDocumentIcon(){return mDocumentIcon;}
+    void setOptionalData(QString optionalData){mOptionalData = optionalData;};
+    bool isUseDefaultSaveLogic(){return mUseDefaultSaveLogic;};
 
 protected:
     GenericTextEditorDocument*  mGenTexEdDoc;
