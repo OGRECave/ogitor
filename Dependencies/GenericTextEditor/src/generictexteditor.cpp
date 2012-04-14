@@ -392,29 +392,29 @@ void GenericTextEditor::onModifiedStateChanged(Ogitors::IEvent* evt)
 {
     Ogitors::SceneModifiedChangeEvent *change_event = Ogitors::event_cast<Ogitors::SceneModifiedChangeEvent*>(evt);
 
-    if(change_event)
-    {
-        bool state = change_event->getState();
+    if(!change_event)
+        return;
 
-        // If scene is not modified anymore, the user saved it, so we need to save the
-        // documents as well.
-        if(!state)
-            saveAll();
-    }
+    bool state = change_event->getState();
+
+    // If scene is not modified anymore, the user saved it, so we need to save the
+    // documents as well.
+    if(!state)
+        saveAll();
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::onLoadStateChanged(Ogitors::IEvent* evt)
 {
     Ogitors::LoadStateChangeEvent *change_event = Ogitors::event_cast<Ogitors::LoadStateChangeEvent*>(evt);
 
-    if(change_event)
-    {
-        Ogitors::LoadState state = change_event->getType();
+    if(!change_event)
+        return;
+    
+    Ogitors::LoadState state = change_event->getType();
 
-        if(state == Ogitors::LS_UNLOADED)
-        {
-            closeAllSubWindows();
-        }
+    if(state == Ogitors::LS_UNLOADED)
+    {
+        closeAllSubWindows();
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -423,7 +423,7 @@ void GenericTextEditor::onClipboardChanged()
     const QClipboard* clipboard = QApplication::clipboard();
     const QMimeData* mimeData = clipboard->mimeData();
 
-    if(mimeData->hasText())
+    if(mimeData->hasImage())
         emit pasteAvailable();
 }
 

@@ -414,7 +414,7 @@ void GenericTextEditorDocument::save()
             mCodec->onSave();
         else
             if(!saveDefaultLogic())
-                QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("Error saving file %1").arg(mFilePath));                
+                QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("Error saving file %1").arg(mFilePath));
 
         mCodec->onAfterSave();
     }
@@ -464,7 +464,7 @@ bool GenericTextEditorDocument::saveDefaultLogic()
 void GenericTextEditorDocument::closeEvent(QCloseEvent* event)
 {
     if(isTextModified())
-    {	
+    {
         int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         switch(result)
         {
