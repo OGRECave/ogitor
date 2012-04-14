@@ -86,8 +86,6 @@ else(NOT QT4_FOUND)
         ./src/shortcutsettings.cpp
         ./include/templateview.hxx
         ./src/templateview.cpp
-        ./include/iconrenderer.hxx
-        ./src/iconrenderer.cpp
         ./include/terraintoolswidget.hxx
         ./src/terraintoolswidget.cpp
         ./include/uiterrainsquare.hxx
@@ -200,6 +198,7 @@ else(NOT QT4_FOUND)
         add_dependencies(qtOgitor OgModularZone)
         add_dependencies(qtOgitor DotSceneSerializer)
         add_dependencies(qtOgitor OFS)
+        add_dependencies(qtOgitor ImageConverter)
         add_dependencies(qtOgitor GenericTextEditor)
         add_dependencies(qtOgitor GenericImageEditor)
         add_dependencies(qtOgitor OgAngelScript)
@@ -227,7 +226,7 @@ else(NOT QT4_FOUND)
     if(OGITOR_MESHMAGICK_INTERFACE)
         TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ${Boost_REGEX_LIBRARY})
     else(OGITOR_MESHMAGICK_INTERFACE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
+        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     endif(OGITOR_MESHMAGICK_INTERFACE)
     if(UNIX AND NOT APPLE)
         TARGET_LINK_LIBRARIES(qtOgitor optimized QtSolutions_PropertyBrowser ${Boost_LIBRARIES})

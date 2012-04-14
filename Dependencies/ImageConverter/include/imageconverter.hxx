@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+/// Copyright (c) 2012 Andrew Fenn <andrewfenn@gmail.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -30,32 +30,35 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef GENERIC_IMAGE_EDITOR_CODEC_HXX
-#define GENERIC_IMAGE_EDITOR_CODEC_HXX
+#pragma once
 
-#include "iimageeditorcodec.hxx"
+#include "OgitorsPrerequisites.h"
+#include <QtGui/QtGui>
 
-//----------------------------------------------------------------------------------------
+class ImageConverter {
 
-class GenericImageEditorCodec : public IImageEditorCodec
-{
 public:
-    GenericImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon);
+    ImageConverter(const size_t& width=128, const size_t& height=128);
 
-    QPixmap     onBeforeDisplay(Ogre::DataStreamPtr stream);
-    QString     onToolTip(QMouseEvent* event);  
+    virtual ~ImageConverter();
+
+    QImage fromOgreImage(const Ogre::Image& image);
+    QImage fromOgreImageName(const Ogre::String& name, const Ogre::String& resourceGroup);
+    QImage fromOgreMaterialName(const Ogre::String& name, const Ogre::String& resourceGroup);
+
+protected:
+    QImage _getRenderTarget(const Ogre::String& matName);
+    QImage _imageFromRenderTarget(const Ogre::Image& img);
+
+    Ogre::String mResourceGroup;
+    Ogre::ResourceGroupManager *mResourceManager;
+
+    Ogre::RenderTexture *mRttTex;
+
+    Ogre::SceneManager *mSceneMgrPtr;
+    Ogre::Entity* mEntityTerrain;
+
+    size_t mHeight;
+    size_t mWidth;
 };
 
-//----------------------------------------------------------------------------------------
-
-class GenericImageEditorCodecFactory : public IImageEditorCodecFactory
-{
-public:
-    IImageEditorCodec* create(GenericImageEditorDocument* genImgEdDoc, QString docName);
-};
-
-//----------------------------------------------------------------------------------------
-
-#endif
-
-//----------------------------------------------------------------------------------------
