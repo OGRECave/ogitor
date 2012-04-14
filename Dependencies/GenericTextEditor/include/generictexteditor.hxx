@@ -60,7 +60,7 @@ class GTEExport GenericTextEditor : public QMdiArea, public Ogre::Singleton<Gene
 
 public:
     GenericTextEditor(QString editorName, QWidget *parent = 0);
-    ~GenericTextEditor();
+    virtual ~GenericTextEditor();
 
     bool displayTextFromFile(QString filePath, QString optionalData = "");
     bool displayText(QString docName, QString text, QString extension = "", QString optionalData = "");
