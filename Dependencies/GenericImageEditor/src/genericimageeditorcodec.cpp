@@ -44,11 +44,27 @@ QPixmap GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     Ogre::Image image;
     image.load(stream);
 
-    ImageConverter imageConverter(image.getWidth(), image.getHeight());
+    size_t width = image.getWidth();
+    size_t height = image.getHeight();
+    
+    if (width > 256) width = 256;
+    if (height > 256) height = 256;
 
-    if (!mPixmap.convertFromImage(imageConverter.fromOgreImage(image)))
+    /** FIXME: Flaw in the implementation of GenericImageEditor, using pixmaps means
+    that you can not have large images, implementation should be changed to
+    QImageReader so that the full size of the image can be displayed */
+
+    ImageConverter imageConverter(width, height);
+    /* Propper use of this line should be:
+        ImageConverter imageConverter(image.getWidth(), image.getHeight());
+
+       If you use this with a pixmap the image conversion will crash, a pixmap is too small and
+       needs to be changed. */
+
+    if (mPixmap.convertFromImage(imageConverter.fromOgreImage(image)))
         return mPixmap;
 
+    mPixmap = 0;
     return mPixmap;
 }
 //-----------------------------------------------------------------------------------------

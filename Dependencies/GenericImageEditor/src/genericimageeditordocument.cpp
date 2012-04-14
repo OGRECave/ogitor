@@ -100,11 +100,6 @@ void GenericImageEditorDocument::displayImage(QString docName, Ogre::DataStreamP
     mLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     setWidget(mLabel);
-
-    QString tabTitle = docName;
-    if(tabTitle.length() > 25)
-        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
-    setWindowTitle(tabTitle + QString("[*]"));
     setWindowModified(false);
 
     mCodec->onAfterDisplay();
