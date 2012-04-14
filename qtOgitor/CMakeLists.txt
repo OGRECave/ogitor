@@ -366,6 +366,11 @@ else(NOT QT4_FOUND)
         install(TARGETS qtOgitor
             RUNTIME DESTINATION bin
             CONFIGURATIONS Release)
+        
+        if (MSVC)
+            configure_file(${Ogitor_SOURCE_DIR}/CMakeModules/VisualStudioUserFile.vcproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/QtOgitor.vcproj.user @ONLY)
+            configure_file(${Ogitor_SOURCE_DIR}/CMakeModules/VisualStudioUserFile.vcxproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/QtOgitor.vcxproj.user @ONLY)
+  endif ()
     endif(WIN32)
 endif(NOT QT4_FOUND)
 
