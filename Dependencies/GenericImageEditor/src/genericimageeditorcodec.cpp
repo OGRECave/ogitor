@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "genericimageeditorcodec.hxx"
+#include "imageconverter.hxx"
 
 //-----------------------------------------------------------------------------------------
 GenericImageEditorCodec::GenericImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon) : 
@@ -43,16 +44,10 @@ QPixmap GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     Ogre::Image image;
     image.load(stream);
 
-    int w = image.getWidth();
-    int h = image.getHeight();
+    ImageConverter imageConverter(image.getWidth(), image.getHeight());
 
-    mBuffer = new unsigned char[4 * w * h];
-    Ogre::PixelBox pb(w, h, 1, Ogre::PF_A8R8G8B8, mBuffer);
-
-    Ogre::PixelUtil::bulkPixelConversion(image.getPixelBox(), pb);
-
-    QImage tmpImage = QImage(mBuffer, w, h, QImage::Format_ARGB32);
-    mPixmap = QPixmap(QPixmap::fromImage(tmpImage));
+    if (!mPixmap.convertFromImage(imageConverter.fromOgreImage(image)))
+        return mPixmap;
 
     return mPixmap;
 }

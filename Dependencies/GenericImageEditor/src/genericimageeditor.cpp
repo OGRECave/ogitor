@@ -100,6 +100,9 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     GenericImageEditor::registerCodecFactory("xbm",         genCodecFactory);
     GenericImageEditor::registerCodecFactory("xpm",         genCodecFactory);
 
+    // Below are files generated via render target. Perhaps only make these read only.
+    GenericImageEditor::registerCodecFactory("dds",         genCodecFactory);
+
     GenericImageEditor::registerCodecFactory("f32",         heightCodecFactory);
 
     Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::MODIFIED_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericImageEditor, onModifiedStateChanged));
@@ -262,6 +265,11 @@ void GenericImageEditor::closeActiveDocument()
     if (mActiveDocument == 0)
         return;
 
+    /*
+    TODO: I have commented out functionality however it should be implemented later. Keeping it
+    commented out so you can see where you need to implement features.
+     */
+
     //disconnect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
     //disconnect(mActEditCut, SIGNAL(triggered()), mActiveDocument, SLOT(cut()));
     //disconnect(mActEditCopy, SIGNAL(triggered()), mActiveDocument, SLOT(copy()));
@@ -276,8 +284,8 @@ void GenericImageEditor::closeActiveDocument()
         QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
         mw->removeToolBar(tb);
     }
-    
-    mActSave->setEnabled(false);
+
+    //mActSave->setEnabled(false);
     //mActEditCut->setEnabled(false);
     //mActEditCopy->setEnabled(false);
     //mActEditPaste->setEnabled(false);

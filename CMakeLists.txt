@@ -198,6 +198,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/vector3"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/debugger"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
 )
@@ -302,6 +303,7 @@ add_subdirectory(Dependencies/Angelscript)
 #add_subdirectory(Dependencies/lua)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
+add_subdirectory(Dependencies/ImageConverter)
 add_subdirectory(Dependencies/GenericTextEditor)
 add_subdirectory(Dependencies/GenericImageEditor)
 IF(OGITOR_MESHMAGICK_INTERFACE)
@@ -370,6 +372,12 @@ if(WIN32)
 	FILE(GLOB ofs_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
 	install(FILES ${ofs_headers}
 		DESTINATION ${PREFIX}/sdk/dependencies/include/OFS
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: ImageConverter headers
+	FILE(GLOB ImageConverter_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
+	install(FILES ${ImageConverter_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/ImageConverter
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 	)
 	# SDK: GenericImageEditor headers
@@ -492,6 +500,14 @@ ${CMAKE_INSTALL_PREFIX}/include/ogitor
     install(FILES ${ofs_headers}
         DESTINATION
 ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/OFS
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    # SDK: ImageConverter headers
+    FILE(GLOB ImageConverter_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
+    install(FILES ${ImageConverter_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/ImageConverter
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: GenericImageEditor headers
