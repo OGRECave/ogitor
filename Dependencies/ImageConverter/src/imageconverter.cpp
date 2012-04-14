@@ -132,10 +132,10 @@ QImage ImageConverter::fromOgreImageName(const Ogre::String& name, const Ogre::S
 
 QImage ImageConverter::_imageFromRenderTarget(const Ogre::Image& img)
 {
-    Ogre::TextureManager::getSingletonPtr()->loadImage("QTTextureName", mResourceGroup, img);
+    Ogre::TextureManager::getSingletonPtr()->loadImage("QTTextureName", "QTImageConverter", img);
 
     // create our material
-    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("terrainMaterial", mResourceGroup);
+    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("terrainMaterial", "QTImageConverter");
     Ogre::Technique * technique = material->getTechnique(0);
     Ogre::Pass* pass = technique->getPass(0);
     Ogre::TextureUnitState* textureUnit = pass->createTextureUnitState();
@@ -152,16 +152,16 @@ QImage ImageConverter::_getRenderTarget(const Ogre::String& matName)
 
     mRttTex->update();
 
-    size_t size = Ogre::PixelUtil::getMemorySize(mWidth, mHeight, 1, Ogre::PF_B8G8R8);
+    size_t size = Ogre::PixelUtil::getMemorySize(mWidth, mHeight, 1, Ogre::PF_A8R8G8B8);
     unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
-    Ogre::PixelBox pb(mWidth,mHeight,1,Ogre::PF_B8G8R8, dataptr);
+    Ogre::PixelBox pb(mWidth,mHeight,1,Ogre::PF_A8R8G8B8, dataptr);
     pb.setConsecutive();
 
     mRttTex->copyContentsToMemory(pb, Ogre::RenderTarget::FB_FRONT);
-    QImage qimg(dataptr, pb.getWidth(), pb.getHeight(), QImage::Format_RGB888);
+    QImage qimg(dataptr, pb.getWidth(), pb.getHeight(), QImage::Format_ARGB32);
 
     OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
-    
+
     return qimg;
 }
 
