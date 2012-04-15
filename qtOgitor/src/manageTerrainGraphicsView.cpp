@@ -52,7 +52,9 @@
 using namespace Ogitors;
 
 ManageTerrainGraphicsView::ManageTerrainGraphicsView(QWidget *parent, QToolBar *toolbar) 
-    : QGraphicsView(parent), mToolBar(toolbar), mSelectionMode(false), mSelectedTool(TOOL_SELECT), mContextMenu(this)
+    : QGraphicsView(parent), mToolBar(toolbar),
+    mSelectionMode(false), mSelectedTool(TOOL_SELECT), mContextMenu(this), mSelIncTerrain(false),
+    mSelIncEmpty(false)
 {
 
     setDragMode(QGraphicsView::NoDrag);
@@ -89,23 +91,30 @@ ManageTerrainGraphicsView::ManageTerrainGraphicsView(QWidget *parent, QToolBar *
     mActEditPaste->setIcon(QIcon(":/icons/editpaste.svg"));
     mActEditPaste->setEnabled(false);
 
+    actAddPage = new QAction(tr("Add Terrain Page"), this);
+    actAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
+    actAddPage->setIcon(QIcon(":/icons/additional.svg"));
+    actAddPage->setEnabled(false);
+
+    actRemovePage = new QAction(tr("Remove Terrain Page"), this);
+    actRemovePage->setStatusTip(tr("Removes a new page to the terrain group"));
+    actRemovePage->setIcon(QIcon(":/icons/editdelete.svg"));
+    actRemovePage->setEnabled(false);
+
     mToolBar->addAction(mActSelect);
     mToolBar->addAction(mActMove);
+    mToolBar->addSeparator();
+    mToolBar->addAction(actAddPage);
+    mToolBar->addAction(actRemovePage);
     mToolBar->addSeparator();
     mToolBar->addAction(mActEditCut);
     mToolBar->addAction(mActEditCopy);
     mToolBar->addAction(mActEditPaste);
 
+
     connect(mActSelect, SIGNAL(triggered(bool)), this, SLOT(sltSetToolSelect(bool)));
     connect(mActMove, SIGNAL(triggered(bool)), this, SLOT(sltSetToolMove(bool)));
-    
-    // right click context menu
-    actAddPage = new QAction(tr("Add Terrain Page"), (QObject*) this);
-    actAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
     connect(actAddPage, SIGNAL(triggered()), (QObject*) this, SLOT(sltAddPage()));
-
-    actRemovePage = new QAction(tr("Remove Terrain Page"), (QObject*) this);
-    actRemovePage->setStatusTip(tr("Removes a new page to the terrain group"));
     connect(actRemovePage, SIGNAL(triggered()), (QObject*) this, SLOT(sltRemovePage()));
 
     mContextMenu.addAction(actAddPage);
@@ -145,6 +154,9 @@ void ManageTerrainGraphicsView::updateActions()
 
     mActSelect->setChecked(mSelectedTool == TOOL_SELECT);
     mActMove->setChecked(mSelectedTool == TOOL_MOVE);
+    
+    actAddPage->setEnabled(mSelIncEmpty);
+    actRemovePage->setEnabled(mSelIncTerrain);
 /*    actRotate->setChecked(mTool == TOOL_ROTATE);
     actScale->setChecked(mTool == TOOL_SCALE);
     mActSelect->setChecked()*/
@@ -181,9 +193,6 @@ void ManageTerrainGraphicsView::mousePressEvent(QMouseEvent *event)
     QColor grey(52, 51, 49);
     QColor orange(173, 81, 44);
 
-    actAddPage->setEnabled(true);
-    actRemovePage->setEnabled(true);
-
     QAction* actionSelected = mContextMenu.exec(QCursor::pos());
     mContextMenu.update();
 }
@@ -193,8 +202,16 @@ void ManageTerrainGraphicsView::selectTerrainPage(UITerrainSquare *terrainSquare
     if (!mSelectionMode)
         clearSelection();
 
+    if (!mSelIncTerrain && terrainSquare->hasTerrain())
+        mSelIncTerrain = true;
+
+    if (!mSelIncEmpty && !terrainSquare->hasTerrain())
+        mSelIncEmpty = true;
+
     terrainSquare->setSelected(true);
     mSelectedTerrain.push_back(terrainSquare);
+    
+    updateActions();
 }
 
 void ManageTerrainGraphicsView::clearSelection()
@@ -204,6 +221,10 @@ void ManageTerrainGraphicsView::clearSelection()
         page->setSelected(false);
     }
     mSelectedTerrain.clear();
+    mSelIncEmpty = false;
+    mSelIncTerrain = false;
+    
+    updateActions();
 }
 
 void ManageTerrainGraphicsView::sltAddPage()

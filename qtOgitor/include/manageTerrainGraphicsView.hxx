@@ -84,6 +84,8 @@ private:
     QAction* actAddPage;
     QAction* actRemovePage;
 
+    bool mSelIncTerrain;
+    bool mSelIncEmpty;
     bool mSelectionMode;
     QList<UITerrainSquare*> mSelectedTerrain;
     unsigned int mSelectedTool;
