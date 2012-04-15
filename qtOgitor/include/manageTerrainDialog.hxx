@@ -31,14 +31,13 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #pragma once
 
+#include "manageTerrainGraphicsView.hxx"
+
 #include <QtGui/QMainWindow>
 #include <QtGui/QDialog>
 #include <Ogre.h>
 
 #include <QtGui/QWidget>
-
-//#include "ui_manageTerrainDialog.h"
-#include "manageTerrainGraphicsView.hxx"
 
 class ManageTerrainDialog : public QMainWindow//, public Ui::manageTerrainDialog, 
 {
