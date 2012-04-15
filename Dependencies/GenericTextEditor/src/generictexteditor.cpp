@@ -244,7 +244,7 @@ void GenericTextEditor::closeTab(int index)
         return;
         
     if (document == mActiveDocument)
-        closeActiveDocument();
+        disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec)
@@ -265,7 +265,7 @@ void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEdit
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
 {
-    closeActiveDocument();
+    disconnectActiveDocument();
     
     mActiveDocument = document;
 
@@ -279,7 +279,6 @@ void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
 
     connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
     connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
-
     
     mActSave->setEnabled(mActiveDocument->isTextModified());
     mActEditCut->setEnabled(false);
@@ -296,7 +295,7 @@ void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
     mActiveDocument->setFocus(Qt::ActiveWindowFocusReason);
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::closeActiveDocument()
+void GenericTextEditor::disconnectActiveDocument()
 {
     if (mActiveDocument == 0)
         return;
