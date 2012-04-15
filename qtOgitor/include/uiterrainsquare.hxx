@@ -50,28 +50,18 @@ public:
     inline bool isSelected() { return mSelected; };
     /** Sets the terrain page to selected to perform actions against it */
     void setSelected(const bool& selected);
-
-    QAction* actAddPage;
-    QAction* actAddNeighbourPage;
-    QAction* actRemovePage;
-
-public Q_SLOTS:
-    void addPage();
-    void removePage();
-    void addNeighbourPage();
-
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
+    /** returns if the terrain page has terrain already **/
+    inline bool hasTerrain() { return mHasTerrain; };
+    /** returns the X postion of where the terrain page is located **/
+    inline int getPosX() { return mPosX; };
+    /** returns the Y postion of where the terrain page is located **/
+    inline int getPosY() { return mPosY; };
 private:
-    void createPage();
-
-    QMenu mContextMenu;
     QGraphicsView* mView;
     int mPosX;
     int mPosY;
-    ManageTerrainDialog* mParent;
     bool mHasTerrain;
-    bool mSelected;                 
+    bool mSelected;
+    ManageTerrainDialog* mParent;
 };
 

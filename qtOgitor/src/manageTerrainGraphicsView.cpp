@@ -39,11 +39,20 @@
 #include <QtGui/QGraphicsItem>
 #include <QtCore/QtCore>
 
+#include "createterraindialog.hxx"
+#include "OgitorsPrerequisites.h"
+#include "OgitorsRoot.h"
+#include "OgitorsSystem.h"
+#include "BaseEditor.h"
+#include "TerrainEditor.h"
+#include "TerrainPageEditor.h"
+#include "TerrainGroupEditor.h"
+
 
 using namespace Ogitors;
 
 ManageTerrainGraphicsView::ManageTerrainGraphicsView(QWidget *parent, QToolBar *toolbar) 
-    : QGraphicsView(parent), mToolBar(toolbar), mSelectionMode(false), mSelectedTool(TOOL_SELECT)
+    : QGraphicsView(parent), mToolBar(toolbar), mSelectionMode(false), mSelectedTool(TOOL_SELECT), mContextMenu(this)
 {
 
     setDragMode(QGraphicsView::NoDrag);
@@ -51,8 +60,6 @@ ManageTerrainGraphicsView::ManageTerrainGraphicsView(QWidget *parent, QToolBar *
     //setDragMode(QGraphicsView::ScrollHandDrag);
     setRenderHint(QPainter::Antialiasing);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-
-
 
     mActSelect = new QAction(tr("Select"), this);
     mActSelect->setStatusTip(tr("Select"));
@@ -89,8 +96,20 @@ ManageTerrainGraphicsView::ManageTerrainGraphicsView(QWidget *parent, QToolBar *
     mToolBar->addAction(mActEditCopy);
     mToolBar->addAction(mActEditPaste);
 
-    connect(mActSelect, SIGNAL(triggered(bool)), this, SLOT(setToolSelect(bool)));
-    connect(mActMove, SIGNAL(triggered(bool)), this, SLOT(setToolMove(bool)));
+    connect(mActSelect, SIGNAL(triggered(bool)), this, SLOT(sltSetToolSelect(bool)));
+    connect(mActMove, SIGNAL(triggered(bool)), this, SLOT(sltSetToolMove(bool)));
+    
+    // right click context menu
+    actAddPage = new QAction(tr("Add Terrain Page"), (QObject*) this);
+    actAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
+    connect(actAddPage, SIGNAL(triggered()), (QObject*) this, SLOT(sltAddPage()));
+
+    actRemovePage = new QAction(tr("Remove Terrain Page"), (QObject*) this);
+    actRemovePage->setStatusTip(tr("Removes a new page to the terrain group"));
+    connect(actRemovePage, SIGNAL(triggered()), (QObject*) this, SLOT(sltRemovePage()));
+
+    mContextMenu.addAction(actAddPage);
+    mContextMenu.addAction(actRemovePage);
 
 }
 
@@ -99,7 +118,7 @@ ManageTerrainGraphicsView::~ManageTerrainGraphicsView()
     
 }
 
-void ManageTerrainGraphicsView::setToolSelect(bool checked)
+void ManageTerrainGraphicsView::sltSetToolSelect(bool checked)
 {
     if (!checked)
         mActSelect->setChecked(true);
@@ -108,10 +127,10 @@ void ManageTerrainGraphicsView::setToolSelect(bool checked)
     updateActions();
 }
 
-void ManageTerrainGraphicsView::setToolMove(bool checked)
+void ManageTerrainGraphicsView::sltSetToolMove(bool checked)
 {
     if (!mActMove->isChecked()) {
-        setToolSelect(false);
+        sltSetToolSelect(false);
         return;
     }
     mSelectedTool = TOOL_MOVE;
@@ -153,6 +172,22 @@ void ManageTerrainGraphicsView::mouseReleaseEvent(QMouseEvent * event)
     QGraphicsView::mouseReleaseEvent(event);
 }
 
+void ManageTerrainGraphicsView::mousePressEvent(QMouseEvent *event)
+{   
+    if(event->button() != Qt::RightButton)
+        return;
+
+    QColor green(71, 130, 71);
+    QColor grey(52, 51, 49);
+    QColor orange(173, 81, 44);
+
+    actAddPage->setEnabled(true);
+    actRemovePage->setEnabled(true);
+
+    QAction* actionSelected = mContextMenu.exec(QCursor::pos());
+    mContextMenu.update();
+}
+
 void ManageTerrainGraphicsView::selectTerrainPage(UITerrainSquare *terrainSquare)
 {
     if (!mSelectionMode)
@@ -168,6 +203,59 @@ void ManageTerrainGraphicsView::clearSelection()
     {
         page->setSelected(false);
     }
+    mSelectedTerrain.clear();
 }
 
+void ManageTerrainGraphicsView::sltAddPage()
+{
+    QSettings settings(QSettings::UserScope, "preferences/terrainmanager");
+
+    QString lastDiffuseUsed = settings.value("lastDiffuseUsed", "").toString();
+    QString lastNormalUsed = settings.value("lastNormalUsed", "").toString();
+
+    CreateTerrainDialog dlg(QApplication::activeWindow(), lastDiffuseUsed.toStdString(), lastNormalUsed.toStdString());
+    if(dlg.exec() == QDialog::Accepted)
+    {
+        lastDiffuseUsed = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex());
+        lastNormalUsed = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex());
+        settings.setValue("lastDiffuseUsed", lastDiffuseUsed);
+        settings.setValue("lastNormalUsed", lastNormalUsed);
+
+
+        foreach(UITerrainSquare *page, mSelectedTerrain) 
+        {
+            if (page->hasTerrain())
+                continue;
+
+            addTerrainPage(page->getPosX(), page->getPosY(), lastDiffuseUsed.toStdString(), lastNormalUsed.toStdString());
+        }
+        
+        clearSelection();
+        ((ManageTerrainDialog*)parentWidget())->drawPageMap();
+    }
+}
+
+void ManageTerrainGraphicsView::addTerrainPage(const int& x, const int& y, const Ogre::String& diffuse, const Ogre::String& normal)
+{
+    CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor*>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
+    terGroup->addPage(x, y, diffuse, normal);
+}
+
+void ManageTerrainGraphicsView::sltRemovePage()
+{
+    CTerrainGroupEditor *terGroup = static_cast<CTerrainGroupEditor*>(OgitorsRoot::getSingletonPtr()->FindObject("Terrain Group"));
+
+    foreach(UITerrainSquare *page, mSelectedTerrain) 
+    {
+        if (!page->hasTerrain())
+            continue;
+
+        CTerrainPageEditor* terPage = terGroup->getPage(page->getPosX(), page->getPosY());
+        terGroup->removePage(page->getPosX(), page->getPosY());
+        terPage->destroy(true);
+    }
+
+    clearSelection();
+    ((ManageTerrainDialog*)parentWidget())->drawPageMap();
+}
 
