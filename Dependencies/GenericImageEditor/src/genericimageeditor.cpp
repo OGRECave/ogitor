@@ -198,12 +198,12 @@ void GenericImageEditor::tabContentChange()
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::closeTab(int index)
 {
-    QList<QScrollArea*> list = findChildren<QScrollArea*>();
+    QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
 
-    GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(list[index]);
+    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
     setActiveDocument(document);
 
-    if (!list[index]->close())
+    if (!document->close())
         return;
         
     if (document == mActiveDocument)
