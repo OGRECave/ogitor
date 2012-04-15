@@ -231,7 +231,7 @@ void ManageTerrainGraphicsView::sltAddPage()
         }
         
         clearSelection();
-        ((ManageTerrainDialog*)parentWidget())->drawPageMap();
+        ((ManageTerrainDialog*)parentWidget())->redrawMap();
     }
 }
 
@@ -256,6 +256,6 @@ void ManageTerrainGraphicsView::sltRemovePage()
     }
 
     clearSelection();
-    ((ManageTerrainDialog*)parentWidget())->drawPageMap();
+    ((ManageTerrainDialog*)parentWidget())->redrawMap();
 }
 
