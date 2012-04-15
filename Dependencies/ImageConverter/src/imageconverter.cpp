@@ -48,11 +48,11 @@ ImageConverter::ImageConverter(const size_t& width/*=128*/, const size_t& height
     mResourceManager->initialiseResourceGroup("QTImageConverter");
     
     mSceneMgrPtr = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", "QTImageConverterSceneManager");
-    mSceneMgrPtr->setAmbientLight(Ogre::ColourValue(1,1,1));
+    mSceneMgrPtr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
 
-    Ogre::TexturePtr rendertexture = Ogre::TextureManager::getSingleton().createManual( "RenderTex", 
+    Ogre::TexturePtr rendertexture = Ogre::TextureManager::getSingleton().createManual("RenderTex", 
                    "QTImageConverter", Ogre::TEX_TYPE_2D, 
-                   mWidth, mHeight, 0, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET );
+                   mWidth, mHeight, 0, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET);
 
     mRttTex = rendertexture->getBuffer()->getRenderTarget();
 
@@ -72,12 +72,12 @@ ImageConverter::ImageConverter(const size_t& width/*=128*/, const size_t& height
     RTTCam->setFarClipDistance(0);
     RTTCam->setAspectRatio(1);
     RTTCam->setFOVy(Ogre::Degree(90));
-    RTTCam->setPosition(0,0,50);
-    RTTCam->lookAt(0,0,0);
+    RTTCam->setPosition(0, 0, 50);
+    RTTCam->lookAt(0, 0, 0);
     
-    Ogre::Viewport *v = mRttTex->addViewport( RTTCam );
-    v->setBackgroundColour(Ogre::ColourValue(1,1,1));
-    v->setClearEveryFrame( true );
+    Ogre::Viewport *v = mRttTex->addViewport(RTTCam);
+    v->setBackgroundColour(Ogre::ColourValue(1, 1, 1));
+    v->setClearEveryFrame(true);
 }
 //----------------------------------------------------------------------------------------
 ImageConverter::~ImageConverter()

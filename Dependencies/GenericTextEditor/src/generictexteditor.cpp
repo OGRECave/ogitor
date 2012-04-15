@@ -235,9 +235,9 @@ void GenericTextEditor::tabContentChange()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
 {
-    QList<QPlainTextEdit*> list = findChildren<QPlainTextEdit*>();
+    QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
 
-    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]);
+    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
     setActiveDocument(document);
 
     if (!list[index]->close())
