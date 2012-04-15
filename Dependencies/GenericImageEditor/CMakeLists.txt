@@ -73,6 +73,8 @@ else(NOT QT4_FOUND)
     set_target_properties(GenericImageEditor PROPERTIES VERSION ${GenericImageEditor_VERSION} SOVERSION ${GenericImageEditor_VERSION_MAJOR})
     set_target_properties(GenericImageEditor PROPERTIES COMPILE_DEFINITIONS GENERICIMAGEEDITOR_EXPORT)
 
+    set_target_properties(GenericImageEditor PROPERTIES FOLDER Dependencies) 
+    
     if(UNIX AND NOT APPLE)
         add_custom_command(TARGET GenericImageEditor PRE_BUILD
             COMMAND mkdir -p ../../RunPath/lib)
