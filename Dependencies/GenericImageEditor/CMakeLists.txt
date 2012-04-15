@@ -17,6 +17,7 @@ else(NOT QT4_FOUND)
 
     set(HEADER_FILES
         ./include/genericimageeditor.hxx
+        ./include/genericimageeditordocument.hxx
         ./include/iimageeditorcodec.hxx
         ./include/genericimageeditorcodec.hxx
         ./include/heightimageeditorcodec.hxx
@@ -24,12 +25,14 @@ else(NOT QT4_FOUND)
 
     set(SOURCE_FILES
         ./src/genericimageeditor.cpp
+        ./src/genericimageeditordocument.cpp
         ./src/genericimageeditorcodec.cpp
         ./src/heightimageeditorcodec.cpp
     )
 
     SET(MOC_SRCS2
         ./include/genericimageeditor.hxx
+        ./include/genericimageeditordocument.hxx
         ./include/iimageeditorcodec.hxx
         ./include/genericimageeditorcodec.hxx
         ./include/heightimageeditorcodec.hxx
@@ -53,13 +56,15 @@ else(NOT QT4_FOUND)
 
     include_directories(.)
     include_directories(${OGITOR_INCLUDES})
-        include_directories(../OFS/include)
+    include_directories(../OFS/include)
+    include_directories(../ImageConverter/include)
 
-    link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor)
+    link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor ImageConverter)
     add_library(GenericImageEditor SHARED ${SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
-        add_dependencies(GenericImageEditor OFS)
+		add_dependencies(GenericImageEditor OFS)
+		add_dependencies(GenericImageEditor ImageConverter)
 
     if(NOT OGITOR_DIST)
         set_target_properties(GenericImageEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)

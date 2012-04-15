@@ -30,7 +30,6 @@
 #include <QtGui/QtGui>
 #include "OgitorsPrerequisites.h"
 #include "TerrainEditor.h"
-#include "iconrenderer.hxx"
 
 class ColourPickerWidget;
 
