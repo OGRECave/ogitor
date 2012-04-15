@@ -44,21 +44,13 @@ using namespace Ogitors;
 
 //----------------------------------------------------------------------------------------
 ManageTerrainDialog::ManageTerrainDialog(QWidget *parent):
-    QMainWindow(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint),
-    mSelectionMode(false)
+    QMainWindow(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     setWindowFlags(Qt::Window);
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowModality(Qt::NonModal);
     setMinimumSize(480,480);
     setWindowTitle("qtOgitor - Terrain Page Manager");
-    //setModal(false);
-    //setupUi(this);
-
-    QTimer *mTimerDrawPage = new QTimer(this);
-    connect(mTimerDrawPage, SIGNAL(timeout()), this, SLOT(update()));
-    mTimerDrawPage->start(300);
-    mDrawRequested = false;
 
     mToolBar = new QToolBar();
     mToolBar->setObjectName("ManagerTerrainToolbar");
@@ -145,19 +137,10 @@ void ManageTerrainDialog::drawPageMap()
             mScene.addItem(rect);
         }
     }
-}//----------------------------------------------------------------------------------------
-
-void ManageTerrainDialog::requestPageDraw()
-{
-    mDrawRequested = true;
 }
-//----------------------------------------------------------------------------------------
-void ManageTerrainDialog::update()
-{
-    if (!mDrawRequested)
-        return;
 
-    mDrawRequested = false;
+void ManageTerrainDialog::redrawMap()
+{
     OGRE_FREE(mMtx, Ogre::MEMCATEGORY_GEOMETRY);
     drawPageMap();
 }

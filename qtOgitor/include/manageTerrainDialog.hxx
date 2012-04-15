@@ -46,20 +46,14 @@ public:
     ManageTerrainDialog(QWidget *parent);
     virtual ~ManageTerrainDialog();
 
-    void requestPageDraw();
-    bool hasTerrain(int X, int Y);  
-    void drawPageMap();
-
-public slots:
-    void update();
+    bool hasTerrain(int X, int Y);
+    void redrawMap();
 
 private:
+    void drawPageMap();
+
     ManageTerrainGraphicsView *mPageGraphics;
     QToolBar        *mToolBar;
-
-    QTimer*         mTimerDrawPage;
-    bool            mDrawRequested;
-    bool            mSelectionMode;
     
     bool*           mMtx;
     int             mWidth;
