@@ -167,7 +167,9 @@ void ScriptTextEditorCodec::onRefresh()
 void ScriptTextEditorCodec::onRun()
 {
     mGenTexEdDoc->save();
-    Ogitors::OgitorsScriptConsole::getSingletonPtr()->runScript(mDocName.toStdString());
+
+    std::string source = mDocName.toStdString();
+    Ogitors::OgitorsScriptConsole::getSingletonPtr()->runScript(source);
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
