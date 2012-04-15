@@ -55,7 +55,7 @@ else(NOT QT4_FOUND)
     endif(NOT OGITOR_DIST)
     
     set_target_properties(ImageConverter PROPERTIES VERSION ${ImageConverter_VERSION} SOVERSION ${ImageConverter_VERSION_MAJOR})
-    set_target_properties(ImageConverter PROPERTIES COMPILE_DEFINITIONS GENERICIMAGEEDITOR_EXPORT)
+    set_target_properties(ImageConverter PROPERTIES COMPILE_DEFINITIONS IMAGECONVERTER_EXPORT)
 
     if(UNIX AND NOT APPLE)
         add_custom_command(TARGET ImageConverter PRE_BUILD
