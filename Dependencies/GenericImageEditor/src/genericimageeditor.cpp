@@ -198,9 +198,9 @@ void GenericImageEditor::tabContentChange()
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::closeTab(int index)
 {
-    QList<QMdiSubWindow*> list = subWindowList();
+    QList<QScrollArea*> list = findChildren<QScrollArea*>();
 
-    GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
+    GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(list[index]);
     setActiveDocument(document);
 
     if (!list[index]->close())
@@ -218,7 +218,7 @@ void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageE
     subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
 
     // [*] is special Qt thing to show the file as modified
-    QFileInfo pathInfo( newDocument->getDocName()+ "[*]");
+    QFileInfo pathInfo(newDocument->getDocName()+ "[*]");
 
     subWindow->setWindowTitle(pathInfo.fileName());
     addSubWindow(subWindow);
@@ -227,9 +227,7 @@ void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageE
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::setActiveDocument(GenericImageEditorDocument* document)
-{
-    closeActiveDocument();
-    
+{  
     mActiveDocument = document;
 
     //connect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
