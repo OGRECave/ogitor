@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+/// Copyright (c) 2012 Andrew Fenn <andrewfenn@gmail.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -29,52 +29,45 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #pragma once
 
-#include <QtGui/QMainWindow>
 #include <QtGui/QDialog>
+#include <QtGui/QToolBar>
+#include <QtGui/QGraphicsView>
+#include <QtGui/QGraphicsItem>
+#include <QtGui/QLabel>
+#include <QtGui/QToolBar>
+#include <QtGui/QAction>
 #include <Ogre.h>
 
-#include <QtGui/QWidget>
-
-//#include "ui_manageTerrainDialog.h"
-#include "manageTerrainGraphicsView.hxx"
-
-class ManageTerrainDialog : public QMainWindow//, public Ui::manageTerrainDialog, 
+class ManageTerrainGraphicsView: public QGraphicsView
 {
     Q_OBJECT
 public:
-    ManageTerrainDialog(QWidget *parent);
-    virtual ~ManageTerrainDialog();
+    ManageTerrainGraphicsView(QWidget *parent, QToolBar *toolbar);
+    virtual ~ManageTerrainGraphicsView();
 
-    void requestPageDraw();
-    bool hasTerrain(int X, int Y);  
-    void drawPageMap();
-
-    inline Ogre::String getLastUsedDiffuse(){return mLastUsedDiffuse;};
-    inline Ogre::String getLastUsedNormal(){return mLastUsedNormal;};
-
-    void setLastUsedDiffuse(Ogre::String diffuse){mLastUsedDiffuse = diffuse;};
-    void setLastUsedNormal(Ogre::String normal){mLastUsedNormal = normal;};
+    void updateActions();
 
 public slots:
-    void update();
+    void setToolSelect(bool checked);
+    void setToolMove(bool checked);
+
+protected:
+    void mouseReleaseEvent(QMouseEvent * event);
+    void keyReleaseEvent(QKeyEvent * event);
+    void keyPressEvent(QKeyEvent * event);
 
 private:
-    ManageTerrainGraphicsView *mPageGraphics;
-    QToolBar        *mToolBar;
+    QToolBar   *mToolBar;
+    QAction    *mActSelect;
+    QAction    *mActMove;
+    QAction    *mActEditCut;
+    QAction    *mActEditCopy;
+    QAction    *mActEditPaste;
 
-    QTimer*         mTimerDrawPage;
-    bool            mDrawRequested;
-    Ogre::String    mLastUsedDiffuse;
-    Ogre::String    mLastUsedNormal;
-    bool            mSelectionMode;
-    
-    bool*           mMtx;
-    int             mWidth;
-    int             mHeight;
-    int             mMinY;
-    int             mMinX;
-    QGraphicsScene  mScene;
+    bool mSelectionMode;
+    unsigned int mSelectedTool;
 };
 

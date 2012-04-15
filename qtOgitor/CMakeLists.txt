@@ -30,6 +30,8 @@ else(NOT QT4_FOUND)
         ./src/addscriptactiondialog.cpp
         ./include/addtemplatedialog.hxx
         ./src/addtemplatedialog.cpp
+        ./include/manageTerrainGraphicsView.hxx
+        ./src/manageTerrainGraphicsView.cpp
         ./include/manageTerrainDialog.hxx
         ./src/manageTerrainDialog.cpp
         ./include/calculateblendmapdialog.hxx
@@ -101,6 +103,7 @@ else(NOT QT4_FOUND)
         ./include/actiontoolbar.hxx
         ./include/addscriptactiondialog.hxx
         ./include/addtemplatedialog.hxx
+        ./include/manageTerrainGraphicsView.hxx
         ./include/manageTerrainDialog.hxx
         ./include/calculateblendmapdialog.hxx
         ./include/colourpicker.hxx
