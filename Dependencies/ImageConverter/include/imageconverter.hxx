@@ -35,7 +35,17 @@
 #include "OgitorsPrerequisites.h"
 #include <QtGui/QtGui>
 
-class ImageConverter {
+#if defined( __WIN32__ ) || defined( _WIN32 )
+   #ifdef IMAGECONVERTER_EXPORT
+     #define ICExport __declspec (dllexport)
+   #else
+     #define ICExport __declspec (dllimport)
+   #endif
+#else
+   #define ICExport
+#endif
+
+class ICExport ImageConverter {
 
 public:
     ImageConverter(const size_t& width=128, const size_t& height=128);
