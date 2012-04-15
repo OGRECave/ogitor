@@ -207,7 +207,7 @@ void GenericImageEditor::closeTab(int index)
         return;
         
     if (document == mActiveDocument)
-        closeActiveDocument();
+        disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageEditorCodec* codec)
@@ -228,6 +228,8 @@ void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageE
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::setActiveDocument(GenericImageEditorDocument* document)
 {  
+    disconnectActiveDocument();
+    
     mActiveDocument = document;
 
     //connect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
@@ -257,7 +259,7 @@ void GenericImageEditor::setActiveDocument(GenericImageEditorDocument* document)
     mActiveDocument->setFocus(Qt::ActiveWindowFocusReason);
 }
 //-----------------------------------------------------------------------------------------
-void GenericImageEditor::closeActiveDocument()
+void GenericImageEditor::disconnectActiveDocument()
 {
     if (mActiveDocument == 0)
         return;
