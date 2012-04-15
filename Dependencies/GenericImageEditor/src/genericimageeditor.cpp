@@ -79,10 +79,10 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
 
     mActiveDocument = 0;
 
-//    connect(mActEditCut,                SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
-//    connect(mActEditCopy,               SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
-//    connect(mActSave,                   SIGNAL(triggered()),    this, SLOT(onSave()));
-//    connect(QApplication::clipboard(),  SIGNAL(dataChanged()),  this, SLOT(onClipboardChanged()));
+    //connect(mActEditCut,                SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
+    //connect(mActEditCopy,               SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
+    //connect(mActSave,                   SIGNAL(triggered()),    this, SLOT(onSave()));
+    //connect(QApplication::clipboard(),  SIGNAL(dataChanged()),  this, SLOT(onClipboardChanged()));
 
     // Register the standard generic text editor codec extensions
     GenericImageEditorCodecFactory* genCodecFactory = new GenericImageEditorCodecFactory();
@@ -217,8 +217,8 @@ void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageE
     subWindow->setAttribute(Qt::WA_DeleteOnClose);
     subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
 
-    // [*] is special qt thing to show the file as modified
-    QFileInfo pathInfo( newDocument->getDocName()+"[*]" );
+    // [*] is special Qt thing to show the file as modified
+    QFileInfo pathInfo( newDocument->getDocName()+ "[*]");
 
     subWindow->setWindowTitle(pathInfo.fileName());
     addSubWindow(subWindow);
@@ -237,8 +237,8 @@ void GenericImageEditor::setActiveDocument(GenericImageEditorDocument* document)
     //connect(mActEditCopy, SIGNAL(triggered()), mActiveDocument, SLOT(copy()));
     //connect(mActEditPaste, SIGNAL(triggered()), mActiveDocument, SLOT(paste()));
 
-//    connect(mActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
-//    connect(mActiveDocument, SIGNAL(textChanged()), mActiveDocument, SLOT(documentWasModified()));
+    //connect(mActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+    //connect(mActiveDocument, SIGNAL(textChanged()), mActiveDocument, SLOT(documentWasModified()));
 
     //connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
     //connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
@@ -371,5 +371,5 @@ void GenericImageEditor::onLoadStateChanged(Ogitors::IEvent* evt)
 
     if(mimeData->hasText())
         emit pasteAvailable();
-}
-*/
+}*/
+//-----------------------------------------------------------------------------------------

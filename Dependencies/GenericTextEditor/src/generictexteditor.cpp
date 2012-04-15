@@ -38,7 +38,6 @@
 #include "DefaultEvents.h"
 #include "EventManager.h"
 
-
 //-----------------------------------------------------------------------------------------
 
 template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::msSingleton = 0;
@@ -255,8 +254,8 @@ void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEdit
     subWindow->setAttribute(Qt::WA_DeleteOnClose);
     subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
 
-    // [*] is special qt thing to show the file as modified
-    QFileInfo pathInfo( newDocument->getDocName()+"[*]" );
+    // [*] is special Qt thing to show the file as modified
+    QFileInfo pathInfo( newDocument->getDocName() + "[*]");
 
     subWindow->setWindowTitle(pathInfo.fileName());
     addSubWindow(subWindow);
@@ -426,4 +425,4 @@ void GenericTextEditor::onClipboardChanged()
     if(mimeData->hasImage())
         emit pasteAvailable();
 }
-
+//-----------------------------------------------------------------------------------------
