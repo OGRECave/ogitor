@@ -108,32 +108,22 @@ bool UITerrainSquare::hasFreeNeighbour()
 }
 //-------------------------------------------------------------------------------
 void UITerrainSquare::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    QGraphicsItem::mousePressEvent(event);
-    update();
-    
-    mView->scene()->setActivePanel(0);
-
+{   
     QColor green(71, 130, 71);
     QColor grey(52, 51, 49);
     QColor orange(173, 81, 44);
 
-    if(event->button() == Qt::RightButton)
-    {
-        actAddPage->setEnabled(!mHasTerrain);
-        actAddNeighbourPage->setEnabled(hasFreeNeighbour() && mHasTerrain);
-        actRemovePage->setEnabled(mHasTerrain);
-
-        setBrush(QBrush(orange));
-        QAction* actionSelected = mContextMenu.exec(QCursor::pos());
-        mContextMenu.update();
+    if(event->button() != Qt::RightButton)
         return;
-    }
-    else
-    {
-        setBrush(QBrush(orange)); 
-    }
 
+    actAddPage->setEnabled(!mHasTerrain);
+    actAddNeighbourPage->setEnabled(hasFreeNeighbour() && mHasTerrain);
+    actRemovePage->setEnabled(mHasTerrain);
+
+ //   setBrush(QBrush(orange));
+    QAction* actionSelected = mContextMenu.exec(QCursor::pos());
+    mContextMenu.update();
+return;
     if (!mHasTerrain)
         setBrush(QBrush(grey));     
     else

@@ -29,7 +29,6 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#include <../QtGui/qgraphicsitem.h>
 
 #include "manageTerrainDialog.hxx"
 
@@ -45,25 +44,37 @@ using namespace Ogitors;
 
 //----------------------------------------------------------------------------------------
 ManageTerrainDialog::ManageTerrainDialog(QWidget *parent) 
-    : QDialog(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+    : //QDialog(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint),
+    QMainWindow(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint),
+    mSelectionMode(false)
 {
     setWindowFlags(Qt::Window);
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowModality(Qt::NonModal);
-    setModal(false);
-    setupUi(this);
+    setMinimumSize(480,480);
+    setWindowTitle("qtOgitor - Terrain Page Manager");
+    //setModal(false);
+    //setupUi(this);
 
     QTimer *mTimerDrawPage = new QTimer(this);
     connect(mTimerDrawPage, SIGNAL(timeout()), this, SLOT(update()));
     mTimerDrawPage->start(300);
     mDrawRequested = false;
 
+    mToolBar = new QToolBar();
+    mToolBar->setObjectName("ManagerTerrainToolbar");
+    mToolBar->setIconSize(QSize(20, 20));
+    mToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+
+    this->addToolBar(Qt::TopToolBarArea, mToolBar);
+
+    mPageGraphics = new ManageTerrainGraphicsView(this, mToolBar);
+    
     mPageGraphics->setScene(&mScene);
-    mPageGraphics->centerOn(0, 0);
-    mPageGraphics->setDragMode(QGraphicsView::ScrollHandDrag);
-    mPageGraphics->setRenderHint(QPainter::Antialiasing);
-    mPageGraphics->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+
+    setCentralWidget(mPageGraphics);
     mPageGraphics->show();
+
     drawPageMap();
 }
 //----------------------------------------------------------------------------------------
@@ -71,7 +82,8 @@ ManageTerrainDialog::~ManageTerrainDialog()
 {
     OGRE_FREE(mMtx, Ogre::MEMCATEGORY_GEOMETRY);
 }
-//----------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------
 bool ManageTerrainDialog::hasTerrain(int X, int Y)
 {
     X = X - mMinX;
