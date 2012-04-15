@@ -48,7 +48,8 @@ using namespace Ogitors;
 
 UITerrainSquare::UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent, const int x, const int y, const bool hasTerrain):
     QObject(view),
-    QGraphicsRectItem()
+    QGraphicsRectItem(),
+    mSelected(false)
 {
     // Set location specific details
     setRect(x*30, y*30, 30, 30);
@@ -90,7 +91,27 @@ UITerrainSquare::UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *paren
     mContextMenu.addAction(actAddNeighbourPage);
     mContextMenu.addAction(actRemovePage);
 }
-//-------------------------------------------------------------------------------
+
+void UITerrainSquare::setSelected(const bool& selected)
+{
+    QColor green(71, 130, 71);
+    QColor grey(52, 51, 49);
+    QColor orange(173, 81, 44);
+
+    mSelected = selected;
+    
+    if (mSelected)
+    {
+       setBrush(QBrush(orange));
+       return;
+    }
+    
+    if (!mHasTerrain)
+        setBrush(QBrush(grey));     
+    else
+        setBrush(QBrush(green));
+}
+
 bool UITerrainSquare::hasFreeNeighbour()
 {
     for(int y = mPosY-1; y < mPosY+2; y++)

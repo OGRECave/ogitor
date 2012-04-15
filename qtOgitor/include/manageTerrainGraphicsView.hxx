@@ -41,6 +41,8 @@
 #include <QtGui/QAction>
 #include <Ogre.h>
 
+class UITerrainSquare;
+
 class ManageTerrainGraphicsView: public QGraphicsView
 {
     Q_OBJECT
@@ -60,6 +62,10 @@ protected:
     void keyPressEvent(QKeyEvent * event);
 
 private:
+
+    void selectTerrainPage(UITerrainSquare *terrainSquare);
+    void clearSelection();
+
     QToolBar   *mToolBar;
     QAction    *mActSelect;
     QAction    *mActMove;
@@ -68,6 +74,8 @@ private:
     QAction    *mActEditPaste;
 
     bool mSelectionMode;
+    QList<UITerrainSquare*> mSelectedTerrain;
     unsigned int mSelectedTool;
+
 };
 

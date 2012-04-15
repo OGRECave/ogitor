@@ -31,13 +31,19 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "manageTerrainGraphicsView.hxx"
+#include "uiterrainsquare.hxx"
+
 #include "Ogitors.h"
 #include "OgitorsDefinitions.h"
+#include <QtGui/QtGui>
+#include <QtGui/QGraphicsItem>
+#include <QtCore/QtCore>
+
 
 using namespace Ogitors;
 
 ManageTerrainGraphicsView::ManageTerrainGraphicsView(QWidget *parent, QToolBar *toolbar) 
-    : QGraphicsView(parent), mToolBar(toolbar), mSelectionMode(false)
+    : QGraphicsView(parent), mToolBar(toolbar), mSelectionMode(false), mSelectedTool(TOOL_SELECT)
 {
 
     setDragMode(QGraphicsView::NoDrag);
@@ -127,7 +133,8 @@ void ManageTerrainGraphicsView::updateActions()
 
 void ManageTerrainGraphicsView::keyPressEvent(QKeyEvent * event)
 {
-    mSelectionMode = true;
+    if (event->modifiers() & Qt::SHIFT)
+        mSelectionMode = true;
 }
 
 void ManageTerrainGraphicsView::keyReleaseEvent(QKeyEvent * event)
@@ -139,9 +146,28 @@ void ManageTerrainGraphicsView::mouseReleaseEvent(QMouseEvent * event)
 {
     if (mSelectedTool == TOOL_SELECT)
     {
-        itemAt(event.pos());
+        if (QGraphicsItem *item = itemAt(event->pos()))
+            selectTerrainPage((UITerrainSquare*) item);
     }
 
     QGraphicsView::mouseReleaseEvent(event);
 }
+
+void ManageTerrainGraphicsView::selectTerrainPage(UITerrainSquare *terrainSquare)
+{
+    if (!mSelectionMode)
+        clearSelection();
+
+    terrainSquare->setSelected(true);
+    mSelectedTerrain.push_back(terrainSquare);
+}
+
+void ManageTerrainGraphicsView::clearSelection()
+{
+    foreach(UITerrainSquare *page, mSelectedTerrain) 
+    {
+        page->setSelected(false);
+    }
+}
+
 
