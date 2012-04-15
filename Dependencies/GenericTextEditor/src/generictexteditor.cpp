@@ -235,9 +235,9 @@ void GenericTextEditor::tabContentChange()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
 {
-    QList<QMdiSubWindow*> list = subWindowList();
+    QList<QPlainTextEdit*> list = findChildren<QPlainTextEdit*>();
 
-    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
+    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]);
     setActiveDocument(document);
 
     if (!list[index]->close())
@@ -255,7 +255,7 @@ void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEdit
     subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
 
     // [*] is special Qt thing to show the file as modified
-    QFileInfo pathInfo( newDocument->getDocName() + "[*]");
+    QFileInfo pathInfo(newDocument->getDocName() + "[*]");
 
     subWindow->setWindowTitle(pathInfo.fileName());
     addSubWindow(subWindow);
