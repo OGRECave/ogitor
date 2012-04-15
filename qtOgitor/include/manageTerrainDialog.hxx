@@ -39,7 +39,7 @@
 
 #include <QtGui/QWidget>
 
-class ManageTerrainDialog : public QMainWindow//, public Ui::manageTerrainDialog, 
+class ManageTerrainDialog : public QMainWindow
 {
     Q_OBJECT
 public:
@@ -50,12 +50,6 @@ public:
     bool hasTerrain(int X, int Y);  
     void drawPageMap();
 
-    inline Ogre::String getLastUsedDiffuse(){return mLastUsedDiffuse;};
-    inline Ogre::String getLastUsedNormal(){return mLastUsedNormal;};
-
-    void setLastUsedDiffuse(Ogre::String diffuse){mLastUsedDiffuse = diffuse;};
-    void setLastUsedNormal(Ogre::String normal){mLastUsedNormal = normal;};
-
 public slots:
     void update();
 
@@ -65,8 +59,6 @@ private:
 
     QTimer*         mTimerDrawPage;
     bool            mDrawRequested;
-    Ogre::String    mLastUsedDiffuse;
-    Ogre::String    mLastUsedNormal;
     bool            mSelectionMode;
     
     bool*           mMtx;

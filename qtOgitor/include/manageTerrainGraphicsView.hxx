@@ -37,11 +37,13 @@
 #include <QtGui/QGraphicsView>
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QLabel>
+#include <QtGui/QMenu>
 #include <QtGui/QToolBar>
 #include <QtGui/QAction>
 #include <Ogre.h>
 
 class UITerrainSquare;
+class QMenu;
 
 class ManageTerrainGraphicsView: public QGraphicsView
 {
@@ -53,11 +55,15 @@ public:
     void updateActions();
 
 public slots:
-    void setToolSelect(bool checked);
-    void setToolMove(bool checked);
+    void sltSetToolSelect(bool checked);
+    void sltSetToolMove(bool checked);
+
+    void sltAddPage();
+    void sltRemovePage();
 
 protected:
     void mouseReleaseEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent * event);
     void keyReleaseEvent(QKeyEvent * event);
     void keyPressEvent(QKeyEvent * event);
 
@@ -65,6 +71,8 @@ private:
 
     void selectTerrainPage(UITerrainSquare *terrainSquare);
     void clearSelection();
+    /** Added a terrain page to the scene **/
+    void addTerrainPage(const int& x, const int& y, const Ogre::String& diffuse, const Ogre::String& normal);
 
     QToolBar   *mToolBar;
     QAction    *mActSelect;
@@ -73,9 +81,12 @@ private:
     QAction    *mActEditCopy;
     QAction    *mActEditPaste;
 
+    QAction* actAddPage;
+    QAction* actRemovePage;
+
     bool mSelectionMode;
     QList<UITerrainSquare*> mSelectedTerrain;
     unsigned int mSelectedTool;
-
+    QMenu mContextMenu;
 };
 

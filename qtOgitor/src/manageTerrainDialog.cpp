@@ -43,8 +43,7 @@
 using namespace Ogitors;
 
 //----------------------------------------------------------------------------------------
-ManageTerrainDialog::ManageTerrainDialog(QWidget *parent) 
-    : //QDialog(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint),
+ManageTerrainDialog::ManageTerrainDialog(QWidget *parent):
     QMainWindow(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint),
     mSelectionMode(false)
 {
