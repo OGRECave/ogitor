@@ -33,6 +33,7 @@
 #include "mainwindow.hxx"
 #include "terraintoolswidget.hxx"
 #include "colourpicker.hxx"
+#include "imageconverter.hxx"
 
 #include "BaseEditor.h"
 #include "TerrainEditor.h"
@@ -257,7 +258,7 @@ void TerrainToolsWidget::populateBrushes()
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populateTextures()
 {
-    IconRenderer iconRenderer;
+    ImageConverter imageConverter(128,128);
     texturesWidget->clear();
 
     OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
@@ -270,7 +271,7 @@ void TerrainToolsWidget::populateTextures()
         Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
         
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(iconRenderer.fromOgreImage(name, "TerrainGroupDiffuseSpecular")))
+        if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainGroupDiffuseSpecular")))
             continue;
 
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
@@ -285,7 +286,7 @@ void TerrainToolsWidget::populateTextures()
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populatePlants()
 {
-    IconRenderer iconRenderer;
+    ImageConverter imageConverter(128,128);
     plantsWidget->clear();
 
     OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
@@ -301,7 +302,7 @@ void TerrainToolsWidget::populatePlants()
         Ogre::String name = resPtr->getName();
 
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(iconRenderer.fromOgreMaterial(name, "TerrainGroupPlants")))
+        if (!pixmap.convertFromImage(imageConverter.fromOgreMaterialName(name, "TerrainGroupPlants")))
             continue;
         
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());

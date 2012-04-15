@@ -16,6 +16,7 @@ else(NOT QT4_FOUND)
     file(GLOB UI_FILES *.ui)
 
     set(HEADER_FILES
+        ./include/generictexteditordocument.hxx
         ./include/generictexteditor.hxx
         ./include/itexteditorcodec.hxx
         ./include/generictexteditorcodec.hxx
@@ -23,12 +24,14 @@ else(NOT QT4_FOUND)
     )
 
     set(SOURCE_FILES
+        ./src/generictexteditordocument.cpp
         ./src/generictexteditor.cpp
         ./src/generictexteditorcodec.cpp
 	   ./src/xmltexteditorcodec.cpp
     )
 
     SET(MOC_SRCS2
+        ./include/generictexteditordocument.hxx
         ./include/generictexteditor.hxx
         ./include/itexteditorcodec.hxx
         ./include/generictexteditorcodec.hxx

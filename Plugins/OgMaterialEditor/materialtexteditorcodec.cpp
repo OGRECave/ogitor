@@ -82,7 +82,7 @@ MaterialTextEditorCodecToolBar::~MaterialTextEditorCodecToolBar()
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodecToolBar::onRefresh()
 {
-    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getLastDocument();
+    GenericTextEditorDocument* document = GenericTextEditor::getSingletonPtr()->getActiveDocument();
     if(document != 0)
     {
         static_cast<MaterialTextEditorCodec*>(document->getCodec())->onRefresh();

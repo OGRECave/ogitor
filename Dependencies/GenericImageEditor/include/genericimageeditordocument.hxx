@@ -48,7 +48,6 @@
 #include "Ogitors.h"
 
 #include "genericimageeditorcodec.hxx"
-#include "genericimageeditordocument.hxx"
 #include "ofs.h"
 
 class QPaintEvent;
@@ -72,70 +71,70 @@ class ToolTipLabel;
    #define GIEExport
 #endif
 
-typedef std::map<std::string, IImageEditorCodecFactory*> ImageCodecExtensionFactoryMap;
-
-//-----------------------------------------------------------------------------------------
-
-class GIEExport GenericImageEditor : public QMdiArea, public Ogre::Singleton<GenericImageEditor>
+class GIEExport GenericImageEditorDocument : public QScrollArea
 {
     Q_OBJECT
 
 public:
-    GenericImageEditor(QString editorName, QWidget *parent = 0);
-    virtual ~GenericImageEditor();
+    GenericImageEditorDocument(QWidget *parent = 0);
+    virtual ~GenericImageEditorDocument();
 
-    bool displayImageFromFile(QString filePath);
-    void moveToForeground();
-    void saveAll();
-
-    static void registerCodecFactory(QString extension, IImageEditorCodecFactory* codec);
-    static void unregisterCodecFactory(QString extension);
-    static IImageEditorCodecFactory* findMatchingCodecFactory(QString extensionOrFileName);
-
-    inline void setAllowDoubleDisplay(bool allow) {mAllowDoubleDisplay = allow;}
-    inline bool isAllowDoubleDisplay() {return mAllowDoubleDisplay;}
-
-    void onModifiedStateChanged(Ogitors::IEvent* evt);
-    void onLoadStateChanged(Ogitors::IEvent* evt);
-
-    GenericImageEditorDocument* getActiveDocument() { return mActiveDocument; }
-    void setActiveDocument(GenericImageEditorDocument* document);
-
-signals:
-    void currentChanged(int);
+    void displayImageFromFile(QString docName, QString filePath);
+    void displayImage(QString docName, Ogre::DataStreamPtr stream);
+    bool saveDefaultLogic();
+    inline QString getDocName(){return mDocName;}
+    inline QString getFilePath(){return mFilePath;}
+    inline bool isModified(){return mModified;}
+    inline void setModified(bool modified);
+    
+    inline IImageEditorCodec* getCodec(){return mCodec;}
+    inline void setCodec(IImageEditorCodec* codec){mCodec = codec;}
+    inline bool isOfsFile(){return mIsOfsFile;};
+    inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
+    inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
+    ToolTipLabel* getLabel(){return mLabel;};
 
 public slots:
-    void tabContentChange();
-//    void pasteAvailable();
-    void onSave();
-//    void onClipboardChanged();
+    void onZoomIn();
+    void onZoomOut();
+    void save();
+
 
 protected:
-    bool isPathAlreadyShowing(QString filePath, GenericImageEditorDocument*& document);
-    bool isDocAlreadyShowing(QString docName, GenericImageEditorDocument*& document);
-    void closeEvent(QCloseEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
-private slots:
-    void closeTab(int index);
+    void closeEvent(QCloseEvent* event);
+    void showEvent(QShowEvent* event);
+
+    void wheelEvent(QWheelEvent* event);
+
+    void scaleImage(float factor);
+
+protected:
+    IImageEditorCodec*  mCodec;
+    bool                mIsOfsFile;
+    bool                mModified;
+    QString             mDocName;
+    QString             mFilePath;
+    QFile               mFile;
+    OFS::OfsPtr         mOfsPtr;
+    OFS::OFSHANDLE      mOfsFileHandle;
+    ToolTipLabel*       mLabel;
+};
+
+//-----------------------------------------------------------------------------------------
+
+class GIEExport ToolTipLabel : public QLabel
+{
+    Q_OBJECT
+
+public:
+    ToolTipLabel(GenericImageEditorDocument* genImgEdDoc, QWidget *parent = 0);
+
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
-    void closeActiveDocument();
-    void addTab(GenericImageEditorDocument* newDocument, IImageEditorCodec* codec);
-
-    static ImageCodecExtensionFactoryMap mRegisteredCodecFactories;
-
-    QTabWidget *mParentTabWidget;
-    QTabBar *mTabBar;
-    GenericImageEditorDocument *mActiveDocument;    
-    
-    bool mAllowDoubleDisplay;
-    
-    QToolBar   *mMainToolBar;
-    QAction    *mActZoomIn;
-    QAction    *mActZoomOut;
-    QAction    *mActSave;
-//    QAction    *mActEditCut;
-//    QAction    *mActEditCopy;
-//    QAction    *mActEditPaste;
+    GenericImageEditorDocument* mGenImgEdDoc;
 };
 

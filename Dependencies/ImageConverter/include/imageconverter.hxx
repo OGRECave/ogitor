@@ -35,18 +35,20 @@
 #include "OgitorsPrerequisites.h"
 #include <QtGui/QtGui>
 
-class IconRenderer {
+class ImageConverter {
 
 public:
-    IconRenderer();
-    virtual ~IconRenderer();
+    ImageConverter(const size_t& width=128, const size_t& height=128);
 
-    QImage fromOgreImage(const Ogre::String& name, const Ogre::String& resourceGroup);
-    QImage fromOgreMaterial(const Ogre::String& name, const Ogre::String& resourceGroup);
+    virtual ~ImageConverter();
+
+    QImage fromOgreImage(const Ogre::Image& image);
+    QImage fromOgreImageName(const Ogre::String& name, const Ogre::String& resourceGroup);
+    QImage fromOgreMaterialName(const Ogre::String& name, const Ogre::String& resourceGroup);
 
 protected:
     QImage _getRenderTarget(const Ogre::String& matName);
-    QImage _imageFromRenderTarget(const Ogre::String& name, Ogre::Image& img);
+    QImage _imageFromRenderTarget(const Ogre::Image& img);
 
     Ogre::String mResourceGroup;
     Ogre::ResourceGroupManager *mResourceManager;
@@ -55,5 +57,8 @@ protected:
 
     Ogre::SceneManager *mSceneMgrPtr;
     Ogre::Entity* mEntityTerrain;
+
+    size_t mHeight;
+    size_t mWidth;
 };
 

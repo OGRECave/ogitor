@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "genericimageeditorcodec.hxx"
+#include "imageconverter.hxx"
 
 //-----------------------------------------------------------------------------------------
 GenericImageEditorCodec::GenericImageEditorCodec(GenericImageEditorDocument* genImgEdDoc, QString docName, QString documentIcon) : 
@@ -43,17 +44,27 @@ QPixmap GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     Ogre::Image image;
     image.load(stream);
 
-    int w = image.getWidth();
-    int h = image.getHeight();
+    size_t width = image.getWidth();
+    size_t height = image.getHeight();
+    
+    if (width > 256) width = 256;
+    if (height > 256) height = 256;
 
-    mBuffer = new unsigned char[4 * w * h];
-    Ogre::PixelBox pb(w, h, 1, Ogre::PF_A8R8G8B8, mBuffer);
+    /** FIXME: Flaw in the implementation of GenericImageEditor, using pixmaps means
+    that you can not have large images, implementation should be changed to
+    QImageReader so that the full size of the image can be displayed */
 
-    Ogre::PixelUtil::bulkPixelConversion(image.getPixelBox(), pb);
+    ImageConverter imageConverter(width, height);
+    /* Propper use of this line should be:
+        ImageConverter imageConverter(image.getWidth(), image.getHeight());
 
-    QImage tmpImage = QImage(mBuffer, w, h, QImage::Format_ARGB32);
-    mPixmap = QPixmap(QPixmap::fromImage(tmpImage));
+       If you use this with a pixmap the image conversion will crash, a pixmap is too small and
+       needs to be changed. */
 
+    if (mPixmap.convertFromImage(imageConverter.fromOgreImage(image)))
+        return mPixmap;
+
+    mPixmap = 0;
     return mPixmap;
 }
 //-----------------------------------------------------------------------------------------
