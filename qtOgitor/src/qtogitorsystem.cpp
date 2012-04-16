@@ -736,12 +736,13 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
                 continue;
 
             QIcon witem(pixmap);
-            QVariant data(QString(name.c_str()));
-            mCalcBlendmapDlg->tex1->addItem(witem, QString(name.c_str()), data);
-            mCalcBlendmapDlg->tex2->addItem(witem, QString(name.c_str()), data);
-            mCalcBlendmapDlg->tex3->addItem(witem, QString(name.c_str()), data);
-            mCalcBlendmapDlg->tex4->addItem(witem, QString(name.c_str()), data);
-            mCalcBlendmapDlg->tex5->addItem(witem, QString(name.c_str()), data);
+            QString texname(name.c_str());
+            QVariant data(texname);
+            mCalcBlendmapDlg->tex1->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex2->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex3->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex4->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex5->addItem(witem, QString(texname), data);
         }
     }
 
