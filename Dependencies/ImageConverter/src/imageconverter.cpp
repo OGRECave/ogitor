@@ -48,11 +48,11 @@ ImageConverter::ImageConverter(const size_t& width/*=128*/, const size_t& height
     mResourceManager->initialiseResourceGroup("QTImageConverter");
     
     mSceneMgrPtr = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", "QTImageConverterSceneManager");
-    mSceneMgrPtr->setAmbientLight(Ogre::ColourValue(1,1,1));
+    mSceneMgrPtr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
 
-    Ogre::TexturePtr rendertexture = Ogre::TextureManager::getSingleton().createManual( "RenderTex", 
+    Ogre::TexturePtr rendertexture = Ogre::TextureManager::getSingleton().createManual("RenderTex", 
                    "QTImageConverter", Ogre::TEX_TYPE_2D, 
-                   mWidth, mHeight, 0, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET );
+                   mWidth, mHeight, 0, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET);
 
     mRttTex = rendertexture->getBuffer()->getRenderTarget();
 
@@ -65,22 +65,21 @@ ImageConverter::ImageConverter(const size_t& width/*=128*/, const size_t& height
     mEntityTerrain = mSceneMgrPtr->createEntity("terrainEntity", "terrain");
     Ogre::SceneNode* node = mSceneMgrPtr->getRootSceneNode()->createChildSceneNode();
     node->attachObject(mEntityTerrain);
-    mEntityTerrain->setCastShadows(false);
-    
+    mEntityTerrain->setCastShadows(false);    
     
     Ogre::Camera* RTTCam = mSceneMgrPtr->createCamera("QTImageConverterCam");
     RTTCam->setNearClipDistance(0.01F);
     RTTCam->setFarClipDistance(0);
     RTTCam->setAspectRatio(1);
     RTTCam->setFOVy(Ogre::Degree(90));
-    RTTCam->setPosition(0,0,50);
-    RTTCam->lookAt(0,0,0);
+    RTTCam->setPosition(0, 0, 50);
+    RTTCam->lookAt(0, 0, 0);
     
-    Ogre::Viewport *v = mRttTex->addViewport( RTTCam );
-    v->setBackgroundColour(Ogre::ColourValue(1,1,1));
-    v->setClearEveryFrame( true );
+    Ogre::Viewport *v = mRttTex->addViewport(RTTCam);
+    v->setBackgroundColour(Ogre::ColourValue(1, 1, 1));
+    v->setClearEveryFrame(true);
 }
-
+//----------------------------------------------------------------------------------------
 ImageConverter::~ImageConverter()
 {
     mRttTex->removeAllViewports();
@@ -94,14 +93,14 @@ ImageConverter::~ImageConverter()
     Ogre::Root::getSingletonPtr()->destroySceneManager(mSceneMgrPtr);
     mResourceManager->destroyResourceGroup("QTImageConverter");
 }
-
+//----------------------------------------------------------------------------------------
 QImage ImageConverter::fromOgreMaterialName(const Ogre::String& name, const Ogre::String& resourceGroup)
 {
     mResourceGroup = resourceGroup;
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->load(name, mResourceGroup);
     return _getRenderTarget(material->getName());
 }
-
+//----------------------------------------------------------------------------------------
 QImage ImageConverter::fromOgreImage(const Ogre::Image& image)
 {
     if (!Ogre::PixelUtil::isAccessible(image.getFormat()))
@@ -120,7 +119,7 @@ QImage ImageConverter::fromOgreImage(const Ogre::Image& image)
 
     return qimg;
 }
-
+//----------------------------------------------------------------------------------------
 QImage ImageConverter::fromOgreImageName(const Ogre::String& name, const Ogre::String& resourceGroup)
 {
     mResourceGroup = resourceGroup;
@@ -129,7 +128,7 @@ QImage ImageConverter::fromOgreImageName(const Ogre::String& name, const Ogre::S
 
     return fromOgreImage(img);
 }
-
+//----------------------------------------------------------------------------------------
 QImage ImageConverter::_imageFromRenderTarget(const Ogre::Image& img)
 {
     Ogre::TextureManager::getSingletonPtr()->loadImage("QTTextureName", "QTImageConverter", img);
@@ -143,7 +142,7 @@ QImage ImageConverter::_imageFromRenderTarget(const Ogre::Image& img)
 
     return _getRenderTarget(material->getName());
 }
-
+//----------------------------------------------------------------------------------------
 QImage ImageConverter::_getRenderTarget(const Ogre::String& matName)
 {
     /* Some formats aren't possible to get the image data
@@ -164,4 +163,4 @@ QImage ImageConverter::_getRenderTarget(const Ogre::String& matName)
 
     return qimg;
 }
-
+//----------------------------------------------------------------------------------------

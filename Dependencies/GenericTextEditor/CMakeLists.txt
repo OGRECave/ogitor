@@ -15,27 +15,27 @@ else(NOT QT4_FOUND)
 
     file(GLOB UI_FILES *.ui)
 
-    set(HEADER_FILES
-        ./include/generictexteditordocument.hxx
+    set(HEADER_FILES        
         ./include/generictexteditor.hxx
-        ./include/itexteditorcodec.hxx
         ./include/generictexteditorcodec.hxx
-	   ./include/xmltexteditorcodec.hxx
+        ./include/generictexteditordocument.hxx
+        ./include/itexteditorcodec.hxx        
+	    ./include/xmltexteditorcodec.hxx
     )
 
     set(SOURCE_FILES
-        ./src/generictexteditordocument.cpp
         ./src/generictexteditor.cpp
         ./src/generictexteditorcodec.cpp
-	   ./src/xmltexteditorcodec.cpp
+        ./src/generictexteditordocument.cpp        
+	    ./src/xmltexteditorcodec.cpp
     )
 
     SET(MOC_SRCS2
-        ./include/generictexteditordocument.hxx
         ./include/generictexteditor.hxx
-        ./include/itexteditorcodec.hxx
         ./include/generictexteditorcodec.hxx
-	   ./include/xmltexteditorcodec.hxx
+        ./include/generictexteditordocument.hxx
+        ./include/itexteditorcodec.hxx        
+	    ./include/xmltexteditorcodec.hxx
     )
 
     qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})
@@ -58,12 +58,11 @@ else(NOT QT4_FOUND)
     include_directories(${OGITOR_INCLUDES})
         include_directories(../OFS/include)
 
-
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor)
     add_library(GenericTextEditor SHARED ${SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
-        add_dependencies(GenericTextEditor OFS)
+    add_dependencies(GenericTextEditor OFS)
 
     if(NOT OGITOR_DIST)
         set_target_properties(GenericTextEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
@@ -76,8 +75,7 @@ else(NOT QT4_FOUND)
         add_custom_command(TARGET GenericTextEditor PRE_BUILD
             COMMAND mkdir -p ../../RunPath/lib)
         add_custom_command(TARGET GenericTextEditor POST_BUILD
-            COMMAND cp -r ../lib/libGenericTextEditor_Ogitor.*
-../../RunPath/lib/)
+            COMMAND cp -r ../lib/libGenericTextEditor_Ogitor.* ../../RunPath/lib/)
     endif(UNIX AND NOT APPLE)
 
     if(WIN32)
