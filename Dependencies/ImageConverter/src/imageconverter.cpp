@@ -106,7 +106,7 @@ QImage ImageConverter::fromOgreImage(const Ogre::Image& image)
     if (!Ogre::PixelUtil::isAccessible(image.getFormat()))
         return _imageFromRenderTarget(image);
 
-    size_t size = Ogre::PixelUtil::getMemorySize(image.getWidth(), image.getHeight(), image.getDepth(), Ogre::PF_A8R8G8B8);
+    size_t size = Ogre::PixelUtil::getMemorySize(mWidth, mHeight, 1, Ogre::PF_A8R8G8B8);
     unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
 
     Ogre::PixelBox pixbox(mWidth, mHeight, 1, Ogre::PF_A8R8G8B8, dataptr);
