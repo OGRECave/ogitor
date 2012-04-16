@@ -35,6 +35,8 @@
 #include "ogrewidget.hxx"
 #include "sceneview.hxx"
 #include "layerview.hxx"
+#include "imageconverter.hxx"
+#include "OgitorsRoot.h"
 
 #include "qtpropertymanager.h"
 #include "qteditorfactory.h"
@@ -49,6 +51,7 @@
 
 #include "BaseEditor.h"
 #include "MultiSelEditor.h"
+
 //-------------------------------------------------------------------------------
 //---PLACE ALL CORE MESSAGES HERE SO LINGUIST CAN PICK THEM----------------------
 //-------------------------------------------------------------------------------
@@ -717,39 +720,29 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
 {
     if(!mCalcBlendmapDlg)
     {
+        Ogitors::OgitorsRoot *ogitorRoot = Ogitors::OgitorsRoot::getSingletonPtr();
         mCalcBlendmapDlg = new CalculateBlendMapDialog(QApplication::activeWindow());
+        
+        ImageConverter imageConverter(128,128);
+        Ogitors::PropertyOptionsVector* diffuseList = ogitorRoot->GetTerrainDiffuseTextureNames();
 
-        Ogre::FileInfoListPtr resList2 = Ogre::ResourceGroupManager::getSingleton().listResourceFileInfo("TerrainTextures");
-
-        Ogre::String fname_diffuse;
-        Ogre::String fname_normal;
-        for (Ogre::FileInfoList::const_iterator it = resList2->begin(); it != resList2->end(); ++it)
+        for (Ogitors::PropertyOptionsVector::const_iterator diffItr = diffuseList->begin(); diffItr != diffuseList->end(); ++diffItr)
         {
-            Ogre::FileInfo fInfo = (*it);
-            if(fInfo.archive->getType() == "FileSystem")
-            {
-                if(fInfo.filename.find("_diffuse.png") == -1) continue;
-                fname_diffuse = fInfo.archive->getName() + "/";
-                fname_diffuse += fInfo.filename;
-                fname_normal = fInfo.filename;
-                fname_normal.erase(fname_normal.length() - 12,12);
-                fname_normal += "_normalheight.dds";
+            Ogitors::PropertyOption opt = (*diffItr);
+            Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
+            
+            QPixmap pixmap;
+            if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainGroupDiffuseSpecular")))
+                continue;
 
-                QString result = fInfo.filename.c_str();
-                if(QFile::exists(QString(Ogre::String(fInfo.archive->getName() + "/" + fname_normal).c_str())))
-                {
-                    result += QString(";") + QString(fname_normal.c_str());
-                }
-
-                QVariant data(result);
-                mCalcBlendmapDlg->tex1->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex2->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex3->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex4->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex5->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-            }
+            QIcon witem(pixmap);
+            QVariant data(QString(name.c_str()));
+            mCalcBlendmapDlg->tex1->addItem(witem, QString(name.c_str()), data);
+            mCalcBlendmapDlg->tex2->addItem(witem, QString(name.c_str()), data);
+            mCalcBlendmapDlg->tex3->addItem(witem, QString(name.c_str()), data);
+            mCalcBlendmapDlg->tex4->addItem(witem, QString(name.c_str()), data);
+            mCalcBlendmapDlg->tex5->addItem(witem, QString(name.c_str()), data);
         }
-        resList2.setNull();
     }
 
     params.clear();
@@ -764,7 +757,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex1->itemData(mCalcBlendmapDlg->tex1->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs1->text().toStdString();
@@ -783,7 +775,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex2->itemData(mCalcBlendmapDlg->tex2->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs2->text().toStdString();
@@ -802,7 +793,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex3->itemData(mCalcBlendmapDlg->tex3->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs3->text().toStdString();
@@ -821,7 +811,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex4->itemData(mCalcBlendmapDlg->tex4->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs4->text().toStdString();
@@ -840,7 +829,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex5->itemData(mCalcBlendmapDlg->tex5->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs5->text().toStdString();
