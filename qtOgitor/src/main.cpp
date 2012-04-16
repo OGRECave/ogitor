@@ -62,7 +62,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
     Ogre::ConfigFile cf;
     std::string cfPath = resourcePath();
-	cfPath.append(Ogitors::Globals::RESOURCE_PATH + "/resources.cfg");
+	cfPath.append("resources.cfg");
     cf.load(cfPath);
 
     // Go through all sections & settings in the file
