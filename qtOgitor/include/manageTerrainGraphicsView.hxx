@@ -60,6 +60,7 @@ public slots:
 
     void sltAddPage();
     void sltRemovePage();
+    void sltSelectAll();
 
 protected:
     void mouseReleaseEvent(QMouseEvent * event);
@@ -75,14 +76,14 @@ private:
     void addTerrainPage(const int& x, const int& y, const Ogre::String& diffuse, const Ogre::String& normal);
 
     QToolBar   *mToolBar;
+    QAction    *mActSelectAll;
     QAction    *mActSelect;
     QAction    *mActMove;
     QAction    *mActEditCut;
     QAction    *mActEditCopy;
     QAction    *mActEditPaste;
-
-    QAction* actAddPage;
-    QAction* actRemovePage;
+    QAction    *mActAddPage;
+    QAction    *mActRemovePage;
 
     bool mSelIncTerrain;
     bool mSelIncEmpty;

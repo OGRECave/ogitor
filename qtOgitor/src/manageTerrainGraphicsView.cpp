@@ -79,52 +79,75 @@ ManageTerrainGraphicsView::ManageTerrainGraphicsView(QWidget *parent, QToolBar *
     mActEditCopy = new QAction(tr("Copy"), this);
     mActEditCopy->setStatusTip(tr("Copy Selected Terrain"));
     mActEditCopy->setIcon(QIcon(":/icons/editcopy.svg"));
+    mActEditCopy->setShortcut(QKeySequence::Copy);
     mActEditCopy->setEnabled(false);
 
     mActEditCut = new QAction(tr("Cut"), this);
     mActEditCut->setStatusTip(tr("Cut Selected Terrain"));
     mActEditCut->setIcon(QIcon(":/icons/editcut.svg"));
+    mActEditCut->setShortcut(QKeySequence::Cut);
     mActEditCut->setEnabled(false);
 
     mActEditPaste = new QAction(tr("Paste"), this);
     mActEditPaste->setStatusTip(tr("Paste Terrain"));
     mActEditPaste->setIcon(QIcon(":/icons/editpaste.svg"));
+    mActEditPaste->setShortcut(QKeySequence::Paste);
     mActEditPaste->setEnabled(false);
 
-    actAddPage = new QAction(tr("Add Terrain Page"), this);
-    actAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
-    actAddPage->setIcon(QIcon(":/icons/additional.svg"));
-    actAddPage->setEnabled(false);
+    mActAddPage = new QAction(tr("Add Terrain Page"), this);
+    mActAddPage->setStatusTip(tr("Adds a new page to the terrain group"));
+    mActAddPage->setIcon(QIcon(":/icons/additional.svg"));
+    mActAddPage->setEnabled(false);
 
-    actRemovePage = new QAction(tr("Remove Terrain Page"), this);
-    actRemovePage->setStatusTip(tr("Removes a new page to the terrain group"));
-    actRemovePage->setIcon(QIcon(":/icons/editdelete.svg"));
-    actRemovePage->setEnabled(false);
+    mActRemovePage = new QAction(tr("Remove Terrain Page"), this);
+    mActRemovePage->setStatusTip(tr("Removes a new page to the terrain group"));
+    mActRemovePage->setIcon(QIcon(":/icons/editdelete.svg"));
+    mActRemovePage->setEnabled(false);
+    
+    mActSelectAll = new QAction(tr("Select All Terrain Page"), this);
+    mActSelectAll->setStatusTip(tr("Selects all terrain pages"));
+    mActSelectAll->setShortcut(QKeySequence::SelectAll);
+    mActSelectAll->setEnabled(true);
+    addAction(mActSelectAll);
 
     mToolBar->addAction(mActSelect);
     mToolBar->addAction(mActMove);
     mToolBar->addSeparator();
-    mToolBar->addAction(actAddPage);
-    mToolBar->addAction(actRemovePage);
+    mToolBar->addAction(mActAddPage);
+    mToolBar->addAction(mActRemovePage);
     mToolBar->addSeparator();
     mToolBar->addAction(mActEditCut);
     mToolBar->addAction(mActEditCopy);
     mToolBar->addAction(mActEditPaste);
 
 
+
+    connect(mActSelectAll, SIGNAL(triggered()), this, SLOT(sltSelectAll()));
     connect(mActSelect, SIGNAL(triggered(bool)), this, SLOT(sltSetToolSelect(bool)));
     connect(mActMove, SIGNAL(triggered(bool)), this, SLOT(sltSetToolMove(bool)));
-    connect(actAddPage, SIGNAL(triggered()), (QObject*) this, SLOT(sltAddPage()));
-    connect(actRemovePage, SIGNAL(triggered()), (QObject*) this, SLOT(sltRemovePage()));
+    connect(mActAddPage, SIGNAL(triggered()), (QObject*) this, SLOT(sltAddPage()));
+    connect(mActRemovePage, SIGNAL(triggered()), (QObject*) this, SLOT(sltRemovePage()));
 
-    mContextMenu.addAction(actAddPage);
-    mContextMenu.addAction(actRemovePage);
+    mContextMenu.addAction(mActSelectAll);
+    mContextMenu.addAction(mActAddPage);
+    mContextMenu.addAction(mActRemovePage);
 
 }
 
 ManageTerrainGraphicsView::~ManageTerrainGraphicsView()
 {
     
+}
+
+void ManageTerrainGraphicsView::sltSelectAll()
+{
+    clearSelection();
+    mSelectionMode = true;
+    foreach(QGraphicsItem *page, items()) 
+    {
+        selectTerrainPage( (UITerrainSquare*) page );
+    }
+    mSelectionMode = false;
 }
 
 void ManageTerrainGraphicsView::sltSetToolSelect(bool checked)
@@ -155,8 +178,8 @@ void ManageTerrainGraphicsView::updateActions()
     mActSelect->setChecked(mSelectedTool == TOOL_SELECT);
     mActMove->setChecked(mSelectedTool == TOOL_MOVE);
     
-    actAddPage->setEnabled(mSelIncEmpty);
-    actRemovePage->setEnabled(mSelIncTerrain);
+    mActAddPage->setEnabled(mSelIncEmpty);
+    mActRemovePage->setEnabled(mSelIncTerrain);
 /*    actRotate->setChecked(mTool == TOOL_ROTATE);
     actScale->setChecked(mTool == TOOL_SCALE);
     mActSelect->setChecked()*/
@@ -164,30 +187,37 @@ void ManageTerrainGraphicsView::updateActions()
 
 void ManageTerrainGraphicsView::keyPressEvent(QKeyEvent * event)
 {
+    QGraphicsView::keyPressEvent(event);
+
     if (event->modifiers() & Qt::SHIFT)
         mSelectionMode = true;
 }
 
 void ManageTerrainGraphicsView::keyReleaseEvent(QKeyEvent * event)
 {
+    QGraphicsView::keyReleaseEvent(event);
+
     mSelectionMode = false;
 }
 
 void ManageTerrainGraphicsView::mouseReleaseEvent(QMouseEvent * event)
 {
+    QGraphicsView::mouseReleaseEvent(event);
+
     if (mSelectedTool == TOOL_SELECT)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
             selectTerrainPage((UITerrainSquare*) item);
     }
-
-    QGraphicsView::mouseReleaseEvent(event);
 }
 
 void ManageTerrainGraphicsView::mousePressEvent(QMouseEvent *event)
-{   
+{
     if(event->button() != Qt::RightButton)
+    {
+        QGraphicsView::mousePressEvent(event);
         return;
+    }
 
     QColor green(71, 130, 71);
     QColor grey(52, 51, 49);
