@@ -100,7 +100,7 @@ private slots:
     void closeTab(int index);
 
 private:
-    void closeActiveDocument();
+    void disconnectActiveDocument();
     void addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec);
 
     static TextCodecExtensionFactoryMap mRegisteredCodecFactories;   

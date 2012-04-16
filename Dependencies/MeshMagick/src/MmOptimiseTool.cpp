@@ -261,9 +261,9 @@ namespace meshmagick
 
 	}
 	//---------------------------------------------------------------------
-	void OptimiseTool::fixLOD(ProgressiveMesh::LODFaceList lodFaces)
+	void OptimiseTool::fixLOD(SubMesh::LODFaceList lodFaces)
 	{
-		for (ProgressiveMesh::LODFaceList::iterator l = lodFaces.begin();
+		for (SubMesh::LODFaceList::iterator l = lodFaces.begin();
 			l != lodFaces.end(); ++l)
 		{
 			IndexData* idata = *l;

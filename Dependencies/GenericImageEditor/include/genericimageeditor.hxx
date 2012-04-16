@@ -119,7 +119,7 @@ private slots:
     void closeTab(int index);
 
 private:
-    void closeActiveDocument();
+    void disconnectActiveDocument();
     void addTab(GenericImageEditorDocument* newDocument, IImageEditorCodec* codec);
 
     static ImageCodecExtensionFactoryMap mRegisteredCodecFactories;

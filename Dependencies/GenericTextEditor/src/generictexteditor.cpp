@@ -38,7 +38,6 @@
 #include "DefaultEvents.h"
 #include "EventManager.h"
 
-
 //-----------------------------------------------------------------------------------------
 
 template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::msSingleton = 0;
@@ -236,7 +235,7 @@ void GenericTextEditor::tabContentChange()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
 {
-    QList<QMdiSubWindow*> list = subWindowList();
+    QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
 
     GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
     setActiveDocument(document);
@@ -245,7 +244,7 @@ void GenericTextEditor::closeTab(int index)
         return;
         
     if (document == mActiveDocument)
-        closeActiveDocument();
+        disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec)
@@ -255,8 +254,8 @@ void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEdit
     subWindow->setAttribute(Qt::WA_DeleteOnClose);
     subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
 
-    // [*] is special qt thing to show the file as modified
-    QFileInfo pathInfo( newDocument->getDocName()+"[*]" );
+    // [*] is special Qt thing to show the file as modified
+    QFileInfo pathInfo(newDocument->getDocName() + "[*]");
 
     subWindow->setWindowTitle(pathInfo.fileName());
     addSubWindow(subWindow);
@@ -266,7 +265,7 @@ void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEdit
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
 {
-    closeActiveDocument();
+    disconnectActiveDocument();
     
     mActiveDocument = document;
 
@@ -280,7 +279,6 @@ void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
 
     connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
     connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
-
     
     mActSave->setEnabled(mActiveDocument->isTextModified());
     mActEditCut->setEnabled(false);
@@ -297,7 +295,7 @@ void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
     mActiveDocument->setFocus(Qt::ActiveWindowFocusReason);
 }
 //-----------------------------------------------------------------------------------------
-void GenericTextEditor::closeActiveDocument()
+void GenericTextEditor::disconnectActiveDocument()
 {
     if (mActiveDocument == 0)
         return;
@@ -426,4 +424,4 @@ void GenericTextEditor::onClipboardChanged()
     if(mimeData->hasImage())
         emit pasteAvailable();
 }
-
+//-----------------------------------------------------------------------------------------

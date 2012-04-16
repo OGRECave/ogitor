@@ -61,6 +61,8 @@ class QSizeF;
 class GenericImageEditorDocument;
 class ToolTipLabel;
 
+//----------------------------------------------------------------------------------------
+
 #if defined( __WIN32__ ) || defined( _WIN32 )
    #ifdef GENERICIMAGEEDITOR_EXPORT
      #define GIEExport __declspec (dllexport)
@@ -70,6 +72,8 @@ class ToolTipLabel;
 #else
    #define GIEExport
 #endif
+
+//----------------------------------------------------------------------------------------
 
 class GIEExport GenericImageEditorDocument : public QScrollArea
 {
@@ -99,14 +103,11 @@ public slots:
     void onZoomOut();
     void save();
 
-
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
     void mousePressEvent(QMouseEvent *event);
-
     void closeEvent(QCloseEvent* event);
     void showEvent(QShowEvent* event);
-
     void wheelEvent(QWheelEvent* event);
 
     void scaleImage(float factor);
