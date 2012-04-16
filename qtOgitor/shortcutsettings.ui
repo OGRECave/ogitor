@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ShortCutSettings</class>
+ <widget class="QWidget" name="ShortCutSettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>438</width>
+    <height>419</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableView" name="shortcutList">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="changeButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Change</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="clearButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Reset</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="shortcutLabel">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>387</width>
+         <height>26</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QGroupBox" name="groupBoxMouse">
+       <property name="title">
+        <string>Mouse Buttons</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Select : </string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="mSelectMBCombo">
+          <item>
+           <property name="text">
+            <string>Right Mouse Button</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Left Mouse Button</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Middle Mouse Button</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Pan : </string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="mPanMBCombo">
+          <item>
+           <property name="text">
+            <string>Right Mouse Button</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Left Mouse Button</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Middle Mouse Button</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Look : </string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="mLookMBCombo">
+          <item>
+           <property name="text">
+            <string>Right Mouse Button</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Left Mouse Button</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Middle Mouse Button</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxModifiers">
+     <property name="title">
+      <string>Modifier Keys</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Object Mode</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="mObjectModeCombo">
+          <item>
+           <property name="text">
+            <string>SPACE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SHIFT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CTRL</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ALT</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Clone Mode</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="mCloneModeCombo">
+          <item>
+           <property name="text">
+            <string>SPACE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SHIFT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CTRL</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ALT</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Snap to Grid/Angle</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="mSnapGridAngleCombo">
+          <item>
+           <property name="text">
+            <string>SPACE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SHIFT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CTRL</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ALT</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Snap To Ground</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="mSnapGroundCombo">
+          <item>
+           <property name="text">
+            <string>SPACE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SHIFT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CTRL</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ALT</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
