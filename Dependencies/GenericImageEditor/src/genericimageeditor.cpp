@@ -200,7 +200,7 @@ void GenericImageEditor::closeTab(int index)
 {
     QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
 
-    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
+    GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
     setActiveDocument(document);
 
     if (!document->close())
