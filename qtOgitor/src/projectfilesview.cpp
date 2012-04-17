@@ -175,7 +175,7 @@ void ProjectFilesViewWidget::prepareView()
     mVBoxLayout->addWidget(mOfsTreeWidget, 1);
 
     connect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
-    connect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested ( const QPoint &)));
+    connect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested(const QPoint &)));
     connect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
 }
 //----------------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ void ProjectFilesViewWidget::clearView()
     if(mOfsTreeWidget != 0)
     {
         disconnect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
-        disconnect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested ( const QPoint &)));
+        disconnect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested(const QPoint &)));
         disconnect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
         
         delete mOfsTreeWidget;
@@ -291,7 +291,7 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
     mActImportFolder->setEnabled(true);
 
     QPoint globalPos = mOfsTreeWidget->mapToGlobal(pos);
-    mMenu->exec( globalPos );
+    mMenu->exec(globalPos);
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onOfsWidgetBusyState(bool state)
@@ -486,7 +486,7 @@ void ProjectFilesViewWidget::onImportFolder()
 void ProjectFilesViewWidget::onImportFile()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose folder to import"), Ogitors::UTFStringVector());
+    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector());
 
     QStringList files(fileName.c_str());
     if(!files.empty())
@@ -554,4 +554,10 @@ void ProjectFilesViewWidget::onAddFolder()
         mOfsTreeWidget->addEmptyFolder(parentName, newFolderName);
     }
 }
+
+void ProjectFilesViewWidget::triggerRefresh()
+{
+mActRefresh->trigger();
+}
+
 //----------------------------------------------------------------------------------------

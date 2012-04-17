@@ -167,24 +167,27 @@ void CTerrainGroupEditor::setBrushName(const std::string& brush)
     {
         Ogre::Image img;
         img.load(brush,"Brushes");
-        
-        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, img.getWidth() * img.getHeight() * 3, Ogre::MEMCATEGORY_GEOMETRY);
-        Ogre::PixelBox resultbox(img.getWidth(),img.getHeight(),1,Ogre::PF_B8G8R8,dataptr);
-        Ogre::PixelUtil::bulkPixelConversion(img.getPixelBox(), resultbox);
+
+        size_t width  = 256,
+               height = 256;
+
+        unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, width * height * 4, Ogre::MEMCATEGORY_GEOMETRY);
+        Ogre::PixelBox resultbox(width,height,1,Ogre::PF_A8R8G8B8,dataptr);
+        Ogre::Image::scale(img.getPixelBox(), resultbox);
 
         resultbox.setConsecutive();
         int pos = 0;
         Ogre::ColourValue colval;
-        for(unsigned int x = 0;x < img.getHeight() * img.getWidth();x++)
+        for(unsigned int x = 0;x < width * height;x++)
         {
-                dataptr[pos] = 0;
+                dataptr[pos] *= 0.8f;
                 dataptr[pos + 1] = 0;
-                dataptr[pos + 2] *= 0.8f;
-                pos += 3;
+                dataptr[pos + 2] = 0;
+                pos += 4;
         }
 
-        mDecalTexture->setHeight(img.getHeight());
-        mDecalTexture->setWidth(img.getWidth());
+        /* Width, Height and Format must match when copying into mDecalTexture
+           or the decal texture won't show on linux and possibly other platforms. */
         Ogre::HardwarePixelBufferSharedPtr ptr = mDecalTexture->getBuffer();
         ptr->blitFromMemory(resultbox);
         OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GEOMETRY);
@@ -220,7 +223,7 @@ void CTerrainGroupEditor::setBrushSize(unsigned int size)
         mDecalFrustum->setNearClipDistance(ratio);
         mDecalFrustum->setOrthoWindow(ratio, ratio);
         
-        setBrushName(mBrushName);
+        //setBrushName(mBrushName);
     }
 }
 //-----------------------------------------------------------------------------------------

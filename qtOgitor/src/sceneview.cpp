@@ -42,8 +42,6 @@
 #include "OgitorsClipboardManager.h"
 #include "MultiSelEditor.h"
 
-extern QString ConvertToQString(Ogre::UTFString& value);
-
 using namespace Ogitors;
 //----------------------------------------------------------------------------------------
 SceneTreeWidget::SceneTreeWidget(QWidget *parent) : QTreeWidget(parent) 
@@ -185,6 +183,8 @@ void SceneTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
         QSignalMapper *pasteSignalMapper = 0;
 
         contextMenu->addAction(mOgitorMainWindow->actEditRename);
+        if(e->supports(CAN_FOCUS))
+            contextMenu->addAction(mOgitorMainWindow->actFocus);
         contextMenu->addSeparator();
         contextMenu->addAction(mOgitorMainWindow->actEditCopy);
         contextMenu->addAction(mOgitorMainWindow->actEditCut);
@@ -221,37 +221,7 @@ void SceneTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
         UTFStringVector menuList;
         if(e->getObjectContextMenu(menuList))
         {
-            UTFStringVector vList;
-            int counter = 0;
-            int mapslot = 0;
-            signalMapper = new QSignalMapper(this);
-
-            for(unsigned int i = 0;i < menuList.size();i++)
-            {
-                if(i == 0)
-                    contextMenu->addSeparator();
-
-                OgitorsUtils::ParseUTFStringVector(menuList[i], vList);
-                if(vList.size() > 0 && vList[0] != "")
-                {                 
-                    if(vList[0] == "-")
-                    {
-                        contextMenu->addSeparator();
-                        continue;
-                    }
-
-                    QAction *item = contextMenu->addAction(ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
-                    if(vList.size() > 1)
-                        item->setIcon(QIcon(ConvertToQString(vList[1])));
-                    signalMapper->setMapping(item, mapslot);
-                    counter++;
-                }
-                ++mapslot;
-            }
-            if(counter)
-            {
-                connect(signalMapper, SIGNAL(mapped( int )), this, SLOT(contextMenu( int )));
-            }
+            mOgitorMainWindow->parseAndAppendContextMenuList(contextMenu, menuList, this);
         }
         contextMenu->exec(QCursor::pos());
         delete contextMenu;
@@ -359,6 +329,10 @@ void SceneViewWidget::selectionChanged()
                 enableCopyToTemplate = enableCopy;
                 enableRename = true;
             }
+
+            CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
+            if(!curSelection->isTerrainType() && vpe->GetEditorTool() >= TOOL_DEFORM)
+                vpe->SetEditorTool(TOOL_SELECT);
         }
     }
     else

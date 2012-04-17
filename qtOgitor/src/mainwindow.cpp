@@ -205,7 +205,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     if(objectName().isEmpty())
         setObjectName(QString::fromUtf8("this"));
-    resize(800, 600);
+    resize(1024, 768);
 
     setDockNestingEnabled(true);
 
@@ -443,7 +443,7 @@ void MainWindow::readSettings(QString filename)
     settings->beginGroup("session");
     restoreState(settings->value("Layout").toByteArray());
     bool maximized = settings->value("MainWindowMaximized", false).toBool();
-    QRect rect = settings->value("MainWindowGeometry", QRect(0, 0, 800, 600)).toRect();
+    QRect rect = settings->value("MainWindowGeometry", QRect(0, 0, 1024, 768)).toRect();
     settings->endGroup();
 
     settings->beginGroup("messagefilters");
@@ -552,6 +552,7 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     explorerDockWidget = new QDockWidget(parent);
     explorerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+	explorerDockWidget->setMinimumWidth(230);
     explorerDockWidget->setObjectName(QString::fromUtf8("explorerDockWidget"));
     explorerDockWidget->setWidget(mExplorerToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), explorerDockWidget);
@@ -559,6 +560,7 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mLayerViewWidget = new LayerViewWidget(parent);
     layerDockWidget = new QDockWidget(parent);
     layerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+	layerDockWidget->setMinimumWidth(230);
     layerDockWidget->setObjectName(QString::fromUtf8("layerDockWidget"));
     layerDockWidget->setWidget(mLayerViewWidget);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), layerDockWidget);
@@ -572,6 +574,7 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     propertiesDockWidget = new QDockWidget(parent);
     propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+	propertiesDockWidget->setMinimumWidth(230);
     propertiesDockWidget->setObjectName(QString::fromUtf8("propertiesDockWidget"));
     propertiesDockWidget->setWidget(mPropertiesToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), propertiesDockWidget);
@@ -589,6 +592,7 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     resourcesDockWidget = new QDockWidget(parent);
     resourcesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+	resourcesDockWidget->setMinimumWidth(230);
     resourcesDockWidget->setObjectName(QString::fromUtf8("resourcesDockWidget"));
     resourcesDockWidget->setWidget(mResourcesToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), resourcesDockWidget);
@@ -600,6 +604,7 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
 
     projectFilesDockWidget = new QDockWidget(parent);
     projectFilesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+	projectFilesDockWidget->setMinimumWidth(230);
     projectFilesDockWidget->setObjectName(QString::fromUtf8("projectFilesDockWidget"));
     projectFilesDockWidget->setWidget(mProjectFilesViewWidget);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), projectFilesDockWidget);
@@ -610,6 +615,8 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     parent->tabifyDockWidget(explorerDockWidget, projectFilesDockWidget);
     propertiesDockWidget->raise();
     explorerDockWidget->raise();
+	QSizePolicy size_pol;
+	size_pol.setVerticalPolicy(QSizePolicy::Expanding);
 
     createCustomDockWidgets();
 
@@ -669,7 +676,7 @@ void MainWindow::createSceneRenderWindow()
     renderWindowToolBar->addAction(actScale);
     renderWindowToolBar->addSeparator();
 
-    QLabel *snapLabel = new QLabel(QString("  ") + tr("Snap :"));
+    QLabel *snapLabel = new QLabel(QString("  ") + tr("Snap:"));
     renderWindowToolBar->addWidget(snapLabel);
     renderWindowToolBar->addWidget(mSnapMultiplierBox);
     renderWindowToolBar->addSeparator();
@@ -686,7 +693,7 @@ void MainWindow::createSceneRenderWindow()
     mCameraSpeedSlider->setMaximumWidth(100);
 
     QWidgetAction * sliderActionWidget = new QWidgetAction( this );
-    sliderActionWidget->setDefaultWidget( mCameraSpeedSlider );
+    sliderActionWidget->setDefaultWidget(mCameraSpeedSlider);
     sliderActionWidget->setText(tr("Camera Speed"));
     menuCameraPositionMain->addAction(sliderActionWidget);
 
@@ -1007,7 +1014,6 @@ void MainWindow::addMenus()
     menuEdit->addAction(actSceneOptions);
     menuEdit->addAction(actOpenPreferences);
 
-
     menuTools = new QMenu(tr("Tools"), mMenuBar);
     menuTools->setObjectName(QString::fromUtf8("menuTools"));
     mMenuBar->addAction(menuTools->menuAction());
@@ -1022,7 +1028,6 @@ void MainWindow::addMenus()
        menuDefineSelectionList->addAction(mSelectActions[sa]);
        menuSelectSelectionList->addAction(mSelectActions[sa + 10]);
     }
-
 
     menuView = new QMenu(tr("View"),mMenuBar);
     menuView->setObjectName(QString::fromUtf8("menuView"));
@@ -1071,13 +1076,11 @@ void MainWindow::addMenus()
     menuTerrainTools = new QMenu(tr("Terrain Tools"), mMenuBar);
     menuTerrainTools->setObjectName(QString::fromUtf8("menuTerrainTools"));
     mMenuBar->addAction(menuTerrainTools->menuAction());
-    menuTerrainTools->addAction(actSelect);
     menuTerrainTools->addAction(actDeform);
     menuTerrainTools->addAction(actSmooth);
     menuTerrainTools->addAction(actSplat);
     menuTerrainTools->addAction(actPaint);
-    menuTerrainTools->setEnabled(false);
-
+    menuTerrainTools->addAction(actReLight);
 
     menuHelp = new QMenu(tr("Help"), mMenuBar);
     menuHelp->setObjectName(QString::fromUtf8("menuHelp"));
@@ -1563,7 +1566,12 @@ void MainWindow::onTerrainEditorChange(Ogitors::IEvent* evt)
         ITerrainEditor *terED = change_event->getHandle();
 
         actToggleWalkAround->setEnabled(terED);
+        actDeform->setEnabled(terED && terED->canDeform());
+        actSmooth->setEnabled(terED && terED->canDeform());
+        actSplat->setEnabled(terED && terED->canSplat());
+        actSplatGrass->setEnabled(terED && terED->canSplat());
         actPaint->setEnabled(terED && terED->canPaint());
+        actReLight->setEnabled(terED);
     }
 }
 //------------------------------------------------------------------------------------
@@ -1618,8 +1626,25 @@ void MainWindow::autoSaveScene()
     if(exportfile[0] == '.')
         exportfile = QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectDir.c_str()) + QString("/") + exportfile;
 
-    saveScene(exportfile);
+    OgitorsRoot::getSingletonPtr()->SaveScene(false, exportfile.toStdString());
 
     OgitorsRoot::getSingletonPtr()->SetSceneModified(modified);
+}
+//------------------------------------------------------------------------------------
+void MainWindow::onFocusOnObject()
+{
+    CBaseEditor *target = 0;
+    QTreeWidgetItem *item = mSceneViewWidget->getTreeWidget()->selectedItems().at(0);
+
+    if(item)
+        target = OgitorsRoot::getSingletonPtr()->FindObject(item->text(0).toStdString());
+
+    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
+
+    if(target && ovp && target->supports(CAN_FOCUS))
+    {
+        OgitorsRoot::getSingletonPtr()->GetSelection()->setSelection(target);
+        ovp->FocusSelectedObject();
+    }
 }
 //------------------------------------------------------------------------------------

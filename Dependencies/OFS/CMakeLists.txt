@@ -51,7 +51,7 @@ IF(UNIX AND NOT APPLE)
 
     install(TARGETS OFS
         LIBRARY DESTINATION lib
-        CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
 ENDIF(UNIX AND NOT APPLE)
 

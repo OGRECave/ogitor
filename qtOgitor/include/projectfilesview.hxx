@@ -49,6 +49,7 @@ public:
     virtual ~ProjectFilesViewWidget();
     void prepareView();
     void clearView();
+    void triggerRefresh();
 
 public Q_SLOTS:
     void itemDoubleClicked(QTreeWidgetItem* item, int column);
@@ -66,6 +67,9 @@ public Q_SLOTS:
     void onImportFile();
     void onMakeAsset();
     void onAddFolder();
+
+Q_SIGNALS:
+    void needUpdate();
 
 protected:
     std::string     mAddFileFolderPath;

@@ -88,7 +88,7 @@ namespace Ogitors
         */
         static void ParseUTFStringVector(Ogre::UTFString &str, UTFStringVector &list);
         /**
-        * Cleans a path of un-needed characters/symbols
+        * Cleans a path of unneeded characters/symbols
         * @param path to be cleaned
         */
         static void CleanPath(Ogre::String &path);
@@ -133,9 +133,9 @@ namespace Ogitors
         static void GetMeshDataEx(const Ogre::Entity *entity, size_t &vertex_count, size_t &index_count,
                                 const Ogre::Vector3 &position, const Ogre::Quaternion &orient, const Ogre::Vector3 &scale);
         /**
-        * Makes a sphere query at object's origin with a given raidus
+        * Makes a sphere query at object's origin with a given radius
         * @param object the object around which to make sphere query
-        * @param radius raidus of the query
+        * @param radius radius of the query
         * @param results the list of objects returned by query
         */
         static void SphereQuery(CBaseEditor *object, Ogre::Real radius, ObjectVector &results);
@@ -214,53 +214,50 @@ namespace Ogitors
         */
         static Ogre::String GetValueString(OgitorsPropertyValue& value);
         /**
-        * Returns a string containing xml structure ofa custom property set
-        * @param set the set that will be used to create xml structure
+        * Returns a string containing XML structure of a custom property set
+        * @param set the set that will be used to create XML structure
         * @param indentation space to be left at the beginning of each line
         */
         static Ogre::String GetCustomPropertySaveString(OgitorsCustomPropertySet *set, int indentation);
         /**
-        * Returns a string containing xml structure ofa custom property set
-        * @param set the set that will be used to create xml structure
+        * Returns a string containing XML structure of a custom property set
+        * @param set the set that will be used to create XML structure
         * @param indentation space to be left at the beginning of each line
         */
         static void ReadCustomPropertySet(TiXmlElement *element, OgitorsCustomPropertySet *set);
         /**
-        * Returns a string containing xml structure of an object
-        * @param object the object that will be used to create xml structure
+        * Returns a string containing XML structure of an object
+        * @param object the object that will be used to create XML structure
         * @param useobjid will there be a object_id parameter?
-        * @param addparent will there be a parentnode parameter?
-        * @return returns a string containing xml syntax created from the object
+        * @param addparent will there be a parent node parameter?
+        * @return returns a string containing XML syntax created from the object
         */
         static Ogre::String GetObjectSaveStringV2(CBaseEditor *object, int indentation, bool useobjid, bool addparent);
         /**
-        * Returns a string containing xml structure ofa custom property set for DotScene Format
-        * @param set the set that will be used to create xml structure
+        * Returns a string containing XML structure of a custom property set for DotScene Format
+        * @param set the set that will be used to create XML structure
         * @param indentation space to be left at the beginning of each line
         */
         static Ogre::String GetUserDataSaveString(OgitorsCustomPropertySet *set, int indentation);
-
         /**
         * Saves given image to OFS
         * @param image the image file to be saved
         * @param filename the filename to be saved as
         */
         static bool SaveImageOfs(Ogre::Image& image, Ogre::String filename);
-
         /**
         * Saves given stream to OFS
         * @param stream the stream to be saved
         * @param filename the filename to be saved as
         */
         static bool SaveStreamOfs(std::stringstream& stream, Ogre::String filename);
-
         /**
         * Copies a file system directory contents into OFS file system
         * @param dirpath path of the file system directory
         * @param ofs_path path of the OFS directory to copy files into
         */
         static bool CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path);
-
+        
     protected:
         static Ogre::String   mExePath;
         static unsigned int   mVertexBufferSize;

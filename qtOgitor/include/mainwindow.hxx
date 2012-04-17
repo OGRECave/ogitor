@@ -36,6 +36,7 @@
 #include <QtCore/QtCore>
 
 #include "OgitorsPrerequisites.h"
+#include "OgitorsDefinitions.h"
 
 //-----------------------------------------------------------------------------------------
 
@@ -120,7 +121,6 @@ public:
     QToolBar*    mHelpToolBar;
     QToolBar*    mEditToolBar;
     QToolBar*    mViewToolBar;
-    QToolBar*    mCameraToolBar;
     ActionToolbar* mScriptActionsBar;
     QToolBar*    mPlayerToolbar;
     QAction*     actPlayerRunPause;
@@ -183,6 +183,7 @@ public:
     QAction*  actDecreaseGizmoScale;
     QAction*  actToggleWorldSpaceGizmo;
     QAction*  actToggleWalkAround;
+    QAction*  actFocus;
 
     QAction*  actEditCopy;
     QAction*  actEditCut;
@@ -269,6 +270,22 @@ public:
     void _removeScriptAction(QAction *action);
     void _editScriptAction(QAction *action);
 
+    /**
+    * Parses the contents of a menu list and appends them to a QMenu. Also a signal mapper
+    * is set up and connected.
+    * @param contextMenu the menu to which the new menu options will be added
+    * @param menuList a list of menu options that should be added. Each string in that vector
+    *        consists of a the text to be displayed followed by an optional ";" and an 
+    *        optional icon resource path. 
+    *        If a string starts with a ">" it is considered a
+    *        sub menu. All following entries starting with a "#" will then be considered 
+    *        elements of that submenu.
+    *        The third string element is an int (0 or 1) indicting whether this context 
+    *        menu element should be enabled or not.
+    * @param receiver the object to which the signal mapper will be connected to
+    */
+    static void parseAndAppendContextMenuList(QMenu* contextMenu, Ogitors::UTFStringVector menuList, QObject* receiver);
+
 public Q_SLOTS:
     void onAddScriptAction();
     void onExecuteScriptAction(int index);
@@ -300,8 +317,8 @@ public Q_SLOTS:
     void toggleGrid();
     void toggleFullScreen();
     void toggleSuperFullScreen();
-    void snapMultiplierIndexChanged( int index );
-    void viewModeIndexChanged( int index );
+    void snapMultiplierIndexChanged(int index);
+    void viewModeIndexChanged(int index);
     void toggleToolBar(bool b);
     void exportSerializer(const QString& value);
     void importSerializer(const QString& value);
@@ -311,8 +328,8 @@ public Q_SLOTS:
     void decCamera();
     void toggleWorldSpaceGizmo();
     void toggleWalkAround();
-    void cameraSpeedValueChanged ( int value );
-    void fpsValueChanged ( int value );
+    void cameraSpeedValueChanged(int value);
+    void fpsValueChanged(int value);
     void setCameraPolyMode(int value);
     void selectActionTriggered(int value);
     void cameraAction(int id);
@@ -331,6 +348,7 @@ public Q_SLOTS:
     void decreaseGizmoScale();
     void onPlayerRunPause();
     void onPlayerStop();
+    void onFocusOnObject();
 
 private:
     SceneViewWidget                 *mSceneViewWidget;

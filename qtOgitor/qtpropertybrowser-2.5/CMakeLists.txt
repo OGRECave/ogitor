@@ -179,11 +179,9 @@ ELSE(NOT QT4_FOUND)
         set_target_properties( QtSolutions_PropertyBrowser PROPERTIES OUTPUT_NAME "QtSolutions_PropertyBrowser_Ogitor" VERSION
         ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
-        if(OGITOR_DIST)
-            install(TARGETS QtSolutions_PropertyBrowser
-                LIBRARY DESTINATION lib
-                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        endif(OGITOR_DIST)
+	install(TARGETS QtSolutions_PropertyBrowser
+	    LIBRARY DESTINATION lib
+	    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
     ENDIF(UNIX AND NOT APPLE)
 

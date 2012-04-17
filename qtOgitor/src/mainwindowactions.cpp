@@ -59,6 +59,10 @@
 #include "generictexteditor.hxx"
 #include "genericimageeditor.hxx"
 
+//------------------------------------------------------------------------------
+
+extern QString ConvertToQString(Ogre::UTFString& value);
+
 using namespace Ogitors;
 
 //------------------------------------------------------------------------------
@@ -66,146 +70,149 @@ void MainWindow::addActions()
 {
     actSaveLayout = new QAction(tr("Save Layout"), this);
     actSaveLayout->setStatusTip(tr("Save Current Layout to File"));
-    actSaveLayout->setIcon( QIcon( ":/icons/filesave.svg" ));
+    actSaveLayout->setIcon(QIcon(":/icons/filesave.svg"));
 
     actLoadLayout = new QAction(tr("Load Layout"), this);
     actLoadLayout->setStatusTip(tr("Load Layout from File"));
-    actLoadLayout->setIcon( QIcon( ":/icons/fileopen.svg" ));
+    actLoadLayout->setIcon(QIcon(":/icons/fileopen.svg"));
 
     actNew = new QAction(tr("New"), this);
     actNew->setStatusTip(tr("Create a new Ogitor scene"));
-    actNew->setIcon( QIcon( ":/icons/ogscene.png" ));
+    actNew->setIcon(QIcon(":/icons/ogscene.png"));
     actNew->setShortcut(QKeySequence::New);
 
     actOpen = new QAction(tr("Open"), this);
     actOpen->setStatusTip(tr("Open an Ogitor scene"));
-    actOpen->setIcon( QIcon( ":/icons/fileopen.svg" ));
+    actOpen->setIcon( QIcon( ":/icons/fileopen.svg"));
     actOpen->setShortcut(QKeySequence::Open);
 
     actClose = new QAction(tr("Close"), this);
     actClose->setStatusTip(tr("Close Ogitor scene"));
-    actClose->setIcon( QIcon( ":/icons/fileclose.svg" ));
+    actClose->setIcon(QIcon(":/icons/fileclose.svg"));
 
     actSave = new QAction(tr("Save"), this);
     actSave->setStatusTip(tr("Save Ogitor scene"));
-    actSave->setIcon( QIcon( ":/icons/filesave.svg" ));
+    actSave->setIcon(QIcon(":/icons/filesave.svg"));
     actSave->setShortcut(QKeySequence::Save);
 
     actSaveAs = new QAction(tr("Save As"), this);
     actSaveAs->setStatusTip(tr("Save Ogitor scene As"));
-    actSaveAs->setIcon( QIcon( ":/icons/filesaveas.svg" ));
+    actSaveAs->setIcon(QIcon(":/icons/filesaveas.svg"));
     actSaveAs->setShortcut(QKeySequence::SaveAs);
 
     actSceneOptions = new QAction(tr("Settings"), this);
     actSceneOptions->setStatusTip(tr("Ogitor scene Settings"));
-    actSceneOptions->setIcon( QIcon( ":/icons/settings.svg" ));
+    actSceneOptions->setIcon(QIcon(":/icons/settings.svg"));
 
     actExit = new QAction(tr("Exit"), this);
     actExit->setStatusTip(tr("Exit Application"));
-    actExit->setIcon( QIcon( ":/icons/exit.svg" ));
+    actExit->setIcon(QIcon(":/icons/exit.svg"));
     actExit->setShortcut(QKeySequence::Close);
 
     actSelect = new QAction(tr("Select"), this);
     actSelect->setStatusTip(tr("Select"));
-    actSelect->setIcon( QIcon( ":/icons/select.svg"));
+    actSelect->setIcon(QIcon(":/icons/select.svg"));
     actSelect->setShortcut(QKeySequence("Alt+T"));
     actSelect->setCheckable(true);
 
     actMove = new QAction(tr("Move"), this);
     actMove->setStatusTip(tr("Move"));
-    actMove->setIcon( QIcon( ":/icons/translate.svg"));
+    actMove->setIcon(QIcon(":/icons/translate.svg"));
     actMove->setShortcut(QKeySequence("Alt+M"));
     actMove->setCheckable(true);
 
     actRotate = new QAction(tr("Rotate"), this);
     actRotate->setStatusTip(tr("Rotate"));
-    actRotate->setIcon( QIcon( ":/icons/rotate.svg"));
+    actRotate->setIcon(QIcon(":/icons/rotate.svg"));
     actRotate->setShortcut(QKeySequence("Alt+R"));
     actRotate->setCheckable(true);
 
     actScale = new QAction(tr("Scale"), this);
     actScale->setStatusTip(tr("Scale"));
-    actScale->setIcon( QIcon( ":/icons/scale.svg"));
+    actScale->setIcon(QIcon(":/icons/scale.svg"));
     actScale->setShortcut(QKeySequence("Alt+S"));
     actScale->setCheckable(true);
 
     actDeform = new QAction(tr("Deform"), this);
     actDeform->setStatusTip(tr("Deform"));
-    actDeform->setIcon( QIcon( ":/icons/deform.svg"));
+    actDeform->setIcon(QIcon(":/icons/deform.svg"));
     actDeform->setCheckable(true);
 
     actSmooth = new QAction(tr("Smooth"), this);
     actSmooth->setStatusTip(tr("Smooth"));
-    actSmooth->setIcon( QIcon( ":/icons/smooth.svg"));
+    actSmooth->setIcon(QIcon(":/icons/smooth.svg"));
     actSmooth->setCheckable(true);
 
     actSplat = new QAction(tr("Splat"), this);
     actSplat->setStatusTip(tr("Splat"));
-    actSplat->setIcon( QIcon( ":/icons/splat.svg"));
+    actSplat->setIcon(QIcon(":/icons/splat.svg"));
     actSplat->setCheckable(true);
 
     actSplatGrass = new QAction(tr("Splat Grass"), this);
     actSplatGrass->setStatusTip(tr("Splat Grass"));
-    actSplatGrass->setIcon( QIcon( ":/icons/splatgrass.svg"));
+    actSplatGrass->setIcon(QIcon(":/icons/splatgrass.svg"));
     actSplatGrass->setCheckable(true);
 
     actPaint = new QAction(tr("Paint"), this);
     actPaint->setStatusTip(tr("Paint"));
-    actPaint->setIcon( QIcon( ":/icons/paint.svg"));
+    actPaint->setIcon(QIcon(":/icons/paint.svg"));
     actPaint->setCheckable(true);
 
     actReLight = new QAction(tr("Re-Light"), this);
     actReLight->setStatusTip(tr("Re-Calculate Lighting"));
-    actReLight->setIcon( QIcon( ":/icons/relight.svg"));
-    actReLight->setCheckable(false);
+    actReLight->setIcon(QIcon(":/icons/relight.svg"));
 
     actAbout = new QAction(tr("About"), this);
     actAbout->setStatusTip(tr("About qtOgitor"));
-    actAbout->setIcon( QIcon( ":/icons/about.svg"));
+    actAbout->setIcon(QIcon(":/icons/about.svg"));
 
     actHelp = new QAction(tr("Help"), this);
     actHelp->setStatusTip(tr("qtOgitor Help"));
-    actHelp->setIcon( QIcon( ":/icons/help.svg"));
+    actHelp->setIcon(QIcon(":/icons/help.svg"));
     actHelp->setShortcut(QKeySequence::HelpContents);
 
     actUndo = new QAction(tr("Undo"), this);
     actUndo->setStatusTip(tr("Undo"));
-    actUndo->setIcon( QIcon( ":/icons/undo.svg"));
+    actUndo->setIcon(QIcon(":/icons/undo.svg"));
     actUndo->setShortcut(QKeySequence::Undo);
 
     actRedo = new QAction(tr("Redo"), this);
     actRedo->setStatusTip(tr("Redo"));
-    actRedo->setIcon( QIcon( ":/icons/redo.svg"));
+    actRedo->setIcon(QIcon(":/icons/redo.svg"));
     actRedo->setShortcut(QKeySequence::Redo);
 
     actEditCopy = new QAction(tr("Copy"), this);
     actEditCopy->setStatusTip(tr("Copy Selected Object"));
-    actEditCopy->setIcon( QIcon( ":/icons/editcopy.svg"));
+    actEditCopy->setIcon(QIcon(":/icons/editcopy.svg"));
 
     actEditCut = new QAction(tr("Cut"), this);
     actEditCut->setStatusTip(tr("Cut Selected Object"));
-    actEditCut->setIcon( QIcon( ":/icons/editcut.svg"));
+    actEditCut->setIcon(QIcon(":/icons/editcut.svg"));
 
     actEditDelete = new QAction(tr("Delete"), this);
     actEditDelete->setStatusTip(tr("Delete Selected Object"));
-    actEditDelete->setIcon( QIcon( ":/icons/trash.svg"));
+    actEditDelete->setIcon(QIcon(":/icons/trash.svg"));
 
     actEditRename = new QAction(tr("Rename"), this);
     actEditRename->setStatusTip(tr("Rename Selected Object"));
-    actEditRename->setIcon( QIcon( ":/icons/editrename.svg"));
+    actEditRename->setIcon(QIcon(":/icons/editrename.svg"));
     actEditRename->setShortcut(QKeySequence("F2"));
 
     actEditPaste = new QAction(tr("Paste"), this);
     actEditPaste->setStatusTip(tr("Paste Object From Clipboard"));
-    actEditPaste->setIcon( QIcon( ":/icons/editpaste.svg"));
+    actEditPaste->setIcon(QIcon(":/icons/editpaste.svg"));
 
     actEditCopyToTemplate = new QAction(tr("Copy to Template"), this);
     actEditCopyToTemplate->setStatusTip(tr("Copy Object as a Template"));
-    actEditCopyToTemplate->setIcon( QIcon( ":/icons/editcopy.svg"));
+    actEditCopyToTemplate->setIcon(QIcon(":/icons/editcopy.svg"));
 
     actEditCopyToTemplateWithChildren = new QAction(tr("Copy to Template with Children"), this);
     actEditCopyToTemplateWithChildren->setStatusTip(tr("Copy Object and Children as a Template"));
-    actEditCopyToTemplateWithChildren->setIcon( QIcon( ":/icons/editcopy.svg"));
+    actEditCopyToTemplateWithChildren->setIcon(QIcon(":/icons/editcopy.svg"));
+
+    actFocus = new QAction(tr("Go to"), this);
+    actFocus->setStatusTip(tr("Focus camera on object"));
+    actFocus->setIcon(QIcon(":/icons/search.svg"));
 
     actFullScreen = new QAction(tr("Fullscreen"), this);
     actFullScreen->setStatusTip(tr("Fullscreen"));
@@ -236,9 +243,12 @@ void MainWindow::addActions()
     actToggleWorldSpaceGizmo->setStatusTip(tr("Toggle World Space Gizmo"));
 
     QString orient_icon = "";
-    if(style == ":/stylesheets/dark.qss") {
+    if(style == ":/stylesheets/dark.qss") 
+    {
         orient_icon = QString::fromLatin1(":/icons/orient_obj_dark_style.svg");
-    } else {
+    } 
+    else 
+    {
         orient_icon = QString::fromLatin1(":/icons/orient_obj.svg");
     }
     actToggleWorldSpaceGizmo->setIcon(QIcon(orient_icon));
@@ -248,9 +258,12 @@ void MainWindow::addActions()
     actToggleWalkAround->setStatusTip(tr("Toggle Walk Around Mode"));
 
     QString fly_icon = "";
-    if(style == ":/stylesheets/dark.qss") {
+    if(style == ":/stylesheets/dark.qss") 
+    {
         fly_icon = QString::fromLatin1(":/icons/mode_fly_dark_style.svg");
-    } else {
+    } 
+    else 
+    {
         fly_icon = QString::fromLatin1(":/icons/mode_fly.svg");
     }
 
@@ -344,39 +357,39 @@ void MainWindow::addActions()
 
     actCamSave = new QAction(tr("Save\nPosition"), this);
     actCamSave->setStatusTip(tr("Save Camera Position"));
-    actCamSave->setIcon( QIcon( ":/icons/camsave.svg" ));
+    actCamSave->setIcon(QIcon(":/icons/camsave.svg"));
 
     actCamSpeedMinus = new QAction(tr("Speed-"), this);
     actCamSpeedMinus->setStatusTip(tr("Decrease Camera Speed"));
-    actCamSpeedMinus->setIcon( QIcon( ":/icons/camspeedminus.svg" ));
+    actCamSpeedMinus->setIcon(QIcon(":/icons/camspeedminus.svg"));
 
     actCamSpeedPlus = new QAction(tr("Speed+"), this);
     actCamSpeedPlus->setStatusTip(tr("Increase Camera Speed"));
-    actCamSpeedPlus->setIcon( QIcon( ":/icons/camspeedplus.svg" ));
+    actCamSpeedPlus->setIcon(QIcon(":/icons/camspeedplus.svg"));
 
     menuCamPolyMode = new QMenu(tr("Polygon\nMode"), this);
     menuCamPolyMode->setStatusTip(tr("Change Camera Polygon Mode"));
-    menuCamPolyMode->setIcon( QIcon( ":/icons/polymode.svg" ));
+    menuCamPolyMode->setIcon(QIcon(":/icons/polymode.svg"));
 
     QSignalMapper *polymapper = new QSignalMapper(this);
 
     actCamModeSolid = menuCamPolyMode->addAction(tr("Solid"));
     actCamModeSolid->setStatusTip(tr("Set Polygon Mode to Solid"));
-    actCamModeSolid->setIcon( QIcon( ":icons/pmsolid.svg" ));
+    actCamModeSolid->setIcon(QIcon(":icons/pmsolid.svg"));
     actCamModeSolid->setCheckable(true);
     connect(actCamModeSolid, SIGNAL(triggered()), polymapper, SLOT(map()));
     polymapper->setMapping(actCamModeSolid, (int)0 );
 
     actCamModeWireframe = menuCamPolyMode->addAction(tr("Wireframe"));
     actCamModeWireframe->setStatusTip(tr("Set Polygon Mode to Wireframe"));
-    actCamModeWireframe->setIcon( QIcon( ":icons/pmwireframe.svg" ));
+    actCamModeWireframe->setIcon(QIcon(":icons/pmwireframe.svg"));
     actCamModeWireframe->setCheckable(true);
     connect(actCamModeWireframe, SIGNAL(triggered()), polymapper, SLOT(map()));
     polymapper->setMapping(actCamModeWireframe, (int)1 );
 
     actCamModePoints = menuCamPolyMode->addAction(tr("Points"));
     actCamModePoints->setStatusTip(tr("Set Polygon Mode to Points"));
-    actCamModePoints->setIcon( QIcon( ":icons/pmpoints.svg" ));
+    actCamModePoints->setIcon(QIcon(":icons/pmpoints.svg"));
     actCamModePoints->setCheckable(true);
     connect(actCamModePoints, SIGNAL(triggered()), polymapper, SLOT(map()));
     polymapper->setMapping(actCamModePoints, (int)2 );
@@ -384,7 +397,6 @@ void MainWindow::addActions()
     connect(polymapper, SIGNAL(mapped( int )), this, SLOT(setCameraPolyMode( int )));
 
     QSignalMapper *selmapper = new QSignalMapper(this);
-
     for(unsigned int sa = 0;sa < 10;sa++)
     {
         mSelectActions[sa] = new QAction(tr("Define Selection List") + QString::number(sa), this);
@@ -400,8 +412,6 @@ void MainWindow::addActions()
     }
 
     connect(selmapper, SIGNAL(mapped( int )), this, SLOT(selectActionTriggered( int )));
-
-
 
     connect(actSaveLayout, SIGNAL(triggered()), this, SLOT(saveLayout()));
     connect(actLoadLayout, SIGNAL(triggered()), this, SLOT(loadLayout()));
@@ -445,6 +455,7 @@ void MainWindow::addActions()
     connect(actToggleGrid, SIGNAL(triggered()), this, SLOT(toggleGrid()));
     connect(actToggleWorldSpaceGizmo, SIGNAL(triggered()), this, SLOT(toggleWorldSpaceGizmo()));
     connect(actToggleWalkAround, SIGNAL(triggered()), this, SLOT(toggleWalkAround()));
+    connect(actFocus, SIGNAL(triggered()), this, SLOT(onFocusOnObject()));
 
     QMetaObject::connectSlotsByName(this);
 }
@@ -480,6 +491,15 @@ void MainWindow::updateLoadTerminateActions(bool loaded)
         actUndo->setEnabled(false);
         actRedo->setEnabled(false);
         actToggleWalkAround->setEnabled(false);
+        actScale->setEnabled(false);
+        actDeform->setEnabled(false);
+        actSmooth->setEnabled(false);
+        actSplat->setEnabled(false);
+        actSplatGrass->setEnabled(false);
+        actPaint->setEnabled(false);
+        actReLight->setEnabled(false);
+        mSnapMultiplierBox->setEnabled(false);
+        menuCameraPositionMain->setEnabled(false);
 
         for(int i = 0;i < 10;i++)
             menuCameraPositions[i]->setEnabled(false);
@@ -549,9 +569,12 @@ void MainWindow::updateLoadTerminateActions(bool loaded)
         fly_icon = QString::fromLatin1(":/icons/mode_fly.svg");
     }
     actToggleWalkAround->setIcon(QIcon(fly_icon));
+    actCamSave->setEnabled(loaded);
     actCamSpeedMinus->setEnabled(loaded);
     actCamSpeedPlus->setEnabled(loaded);
     menuCamPolyMode->setEnabled(loaded);
+    mSnapMultiplierBox->setEnabled(loaded);
+    menuCameraPositionMain->setEnabled(loaded);
 
     actEditCopy->setEnabled(loaded);
     actEditPaste->setEnabled(loaded);
@@ -704,6 +727,13 @@ void MainWindow::openRecentFile(const QString& value)
 //------------------------------------------------------------------------------
 void MainWindow::closeScene()
 {
+    ITerrainEditor *terED = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
+    if(terED && terED->isBackgroundProcessActive())
+    {
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Terrain is still making background calculations.") + "\n" + tr("Closing at this time may take much longer and cause temporary freeze.") + "\n" + tr("Do you want to continue?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
+            return;
+    }
+    
     OgitorsRoot::getSingletonPtr()->TerminateScene();
 }
 //------------------------------------------------------------------------------
@@ -735,6 +765,9 @@ void MainWindow::saveSceneAs()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSelect()
 {
+    if (!actSelect->isChecked()) {
+        actSelect->setChecked(true);
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SELECT);
@@ -744,6 +777,10 @@ void MainWindow::setToolSelect()
 //------------------------------------------------------------------------------
 void MainWindow::setToolMove()
 {
+    if (!actMove->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_MOVE);
@@ -753,6 +790,10 @@ void MainWindow::setToolMove()
 //------------------------------------------------------------------------------
 void MainWindow::setToolRotate()
 {
+    if (!actRotate->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_ROTATE);
@@ -762,6 +803,10 @@ void MainWindow::setToolRotate()
 //------------------------------------------------------------------------------
 void MainWindow::setToolScale()
 {
+    if (!actScale->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SCALE);
@@ -771,6 +816,10 @@ void MainWindow::setToolScale()
 //------------------------------------------------------------------------------
 void MainWindow::setToolDeform()
 {
+    if (!actDeform->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_DEFORM);
@@ -779,6 +828,10 @@ void MainWindow::setToolDeform()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSmooth()
 {
+    if (!actSmooth->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SMOOTH);
@@ -787,6 +840,10 @@ void MainWindow::setToolSmooth()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSplat()
 {
+    if (!actSplat->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SPLAT);
@@ -795,6 +852,10 @@ void MainWindow::setToolSplat()
 //------------------------------------------------------------------------------
 void MainWindow::setToolSplatGrass()
 {
+    if (!actSplatGrass->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_SPLATGRASS);
@@ -803,6 +864,10 @@ void MainWindow::setToolSplatGrass()
 //------------------------------------------------------------------------------
 void MainWindow::setToolPaint()
 {
+    if (!actPaint->isChecked()) {
+        setToolSelect();
+        return;
+    }
     CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
     if(vpe)
         vpe->SetEditorTool(TOOL_PAINT);
@@ -1668,5 +1733,70 @@ void MainWindow::onPlayerRunPause()
 void MainWindow::onPlayerStop()
 {
     OgitorsRoot::getSingletonPtr()->SetRunState(RS_STOPPED);
+}
+//------------------------------------------------------------------------------
+void MainWindow::parseAndAppendContextMenuList(QMenu* contextMenu, Ogitors::UTFStringVector menuList, QObject* receiver)
+{
+    UTFStringVector vList;
+    UTFStringVector vTmpList;
+    int counter = 0;
+    int mapslot = 0;
+    QSignalMapper* signalMapper = new QSignalMapper(receiver);
+    QMenu* subMenu = 0;
+    bool inSubMenu = false;
+    QAction* item = 0;
+
+    for(unsigned int i = 0; i < menuList.size(); i++)
+    {
+        if(i == 0)
+            contextMenu->addSeparator();
+
+        OgitorsUtils::ParseUTFStringVector(menuList[i], vList);
+
+        // Look ahead
+        if(i+1 < menuList.size())
+            OgitorsUtils::ParseUTFStringVector(menuList[i+1], vTmpList);
+
+        if(vList.size() > 0 && vList[0] != "")
+        {                 
+            if(vList[0] == "-" || vList[0] == "--" || vList[0] == "---")
+            {
+                contextMenu->addSeparator();
+                continue;
+            }
+
+            if(vList[0].substr(0, 1) == ">" && vTmpList[0].substr(0, 1) == "#")
+            {
+                inSubMenu = true;
+                subMenu = contextMenu->addMenu(QIcon(ConvertToQString(vList[1])), ConvertToQString(vList[0]).remove(0, 1));
+            }
+            else
+            {
+                if(vList[0].substr(0, 1) == "#")
+                {
+                    item = subMenu->addAction(ConvertToQString(vList[0]).remove(0, 1), signalMapper, SLOT(map()), 0);
+                }
+                else
+                {
+                    inSubMenu = false;
+                    item = contextMenu->addAction(ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
+                }
+                
+                if(vList.size() > 1)
+                    item->setIcon(QIcon(ConvertToQString(vList[1])));
+                if(vList.size() > 2 && ConvertToQString(vList[2]).toInt() == 0)
+                    item->setEnabled(false);
+                signalMapper->setMapping(item, mapslot);
+            }
+            
+            counter++;
+        }
+        vTmpList.clear();
+        ++mapslot;
+    }
+    if(counter)
+    {
+        connect(signalMapper, SIGNAL(mapped(int)), receiver, SLOT(contextMenu(int)));
+    }
 }
 //------------------------------------------------------------------------------

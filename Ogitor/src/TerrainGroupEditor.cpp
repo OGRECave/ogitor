@@ -137,12 +137,23 @@ void CTerrainGroupEditor::prepareBeforePresentProperties()
 //-----------------------------------------------------------------------------------------
 bool CTerrainGroupEditor::getObjectContextMenu(UTFStringVector &menuitems)
 {
+    bool hasPages = false;
+    if(mHandle->getTerrainIterator().begin() != mHandle->getTerrainIterator().end())
+        hasPages = true;
+    
     menuitems.clear();
-    menuitems.push_back(OTR("Add Page") + ";:/icons/additional.svg");
-    menuitems.push_back(OTR("Scale/Offset Height Values"));
-    menuitems.push_back(OTR("Import Terrain From Heightmap"));
-    menuitems.push_back(OTR("Export Heightmaps"));
-    menuitems.push_back(OTR("Export Compositemaps"));
+    menuitems.push_back(OTR("Manage Terrain Pages") + ";:/icons/additional.svg");
+    if(hasPages)
+        menuitems.push_back(OTR("Scale/Offset Height Values") + ";:/icons/scale.svg");
+    
+    menuitems.push_back("---");
+    menuitems.push_back(OTR("Import Terrain From Heightmap")+ ";:/icons/import.svg");
+    menuitems.push_back("---");
+    if(hasPages)
+    {
+        menuitems.push_back(OTR("Export Heightmaps") + ";:/icons/export.svg");
+        menuitems.push_back(OTR("Export Compositemaps") + ";:/icons/export.svg");
+    }    
 
     return true;
 }
@@ -201,43 +212,7 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
         {
             int x = Ogre::StringConverter::parseInt(params["pagex"]);
             int y = Ogre::StringConverter::parseInt(params["pagey"]);
-
-            OgitorsPropertyValueMap creationparams;
-            OgitorsPropertyValue pvalue;
-
-            Ogre::String pagename = mPageNamePrefix->get();
-            pagename += Ogre::StringConverter::toString(x);
-            pagename += "x";
-            pagename += Ogre::StringConverter::toString(y);
-
-            creationparams["init"] = EMPTY_PROPERTY_VALUE;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(pagename);
-            creationparams["name"] = pvalue;
-
-            Ogre::Vector3 position;
-            mHandle->convertTerrainSlotToWorldPosition(x, y, &position);
-
-            pvalue.propType = PROP_VECTOR3;
-            pvalue.val = Ogre::Any(position);
-            creationparams["position"] = pvalue;
-            pvalue.propType = PROP_INT;
-            pvalue.val = Ogre::Any(x);
-            creationparams["pagex"] = pvalue;
-            pvalue.propType = PROP_INT;
-            pvalue.val = Ogre::Any(y);
-            creationparams["pagey"] = pvalue;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(params["diffuse"]);
-            creationparams["layer0::diffusespecular"] = pvalue;
-            pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(params["normal"]);
-            creationparams["layer0::normalheight"] = pvalue;
-            pvalue.propType = PROP_REAL;
-            pvalue.val = Ogre::Any((Ogre::Real)10.0f);
-            creationparams["layer0::worldsize"] = pvalue;
-
-            CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this,"Terrain Page Object", creationparams, true, true);
+            addPage(x, y, params["diffuse"], params["normal"]);
         }
     }
     else if(menuresult == 1)
@@ -270,7 +245,50 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
     }
 }
 //-----------------------------------------------------------------------------------------
-Ogre::Vector3 CTerrainGroupEditor::getPagePosition(int x, int y)
+bool CTerrainGroupEditor::addPage(const int x, const int y, const Ogre::String diffuse, const Ogre::String normal)
+{
+    if (diffuse.empty() || normal.empty())
+        return false;
+
+    OgitorsPropertyValueMap creationparams;
+    OgitorsPropertyValue pvalue;
+
+    Ogre::String pagename = mPageNamePrefix->get();
+    pagename += Ogre::StringConverter::toString(x);
+    pagename += "x";
+    pagename += Ogre::StringConverter::toString(y);
+
+    creationparams["init"] = EMPTY_PROPERTY_VALUE;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(pagename);
+    creationparams["name"] = pvalue;
+
+    Ogre::Vector3 position;
+    mHandle->convertTerrainSlotToWorldPosition(x, y, &position);
+
+    pvalue.propType = PROP_VECTOR3;
+    pvalue.val = Ogre::Any(position);
+    creationparams["position"] = pvalue;
+    pvalue.propType = PROP_INT;
+    pvalue.val = Ogre::Any(x);
+    creationparams["pagex"] = pvalue;
+    pvalue.propType = PROP_INT;
+    pvalue.val = Ogre::Any(y);
+    creationparams["pagey"] = pvalue;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(diffuse);
+    creationparams["layer0::diffusespecular"] = pvalue;
+    pvalue.propType = PROP_STRING;
+    pvalue.val = Ogre::Any(normal);
+    creationparams["layer0::normalheight"] = pvalue;
+    pvalue.propType = PROP_REAL;
+    pvalue.val = Ogre::Any((Ogre::Real)10.0f);
+    creationparams["layer0::worldsize"] = pvalue;
+
+    CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page Object", creationparams, true, true);
+}
+//-----------------------------------------------------------------------------------------
+Ogre::Vector3 CTerrainGroupEditor::getPagePosition(const int x, const int y)
 {
     Ogre::Vector3 pos;
     mHandle->convertTerrainSlotToWorldPosition(x, y, &pos);
@@ -378,8 +396,8 @@ bool CTerrainGroupEditor::load(bool async)
         }
     }
 
-    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::enabled", CTerrainGroupEditor, OnShadowsChange, mShadowsConnection[0]);
-    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::technique", CTerrainGroupEditor, OnShadowsTechniqueChange, mShadowsConnection[1]);
+    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::enabled", CTerrainGroupEditor, onShadowsChange, mShadowsConnection[0]);
+    CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::technique", CTerrainGroupEditor, onShadowsTechniqueChange, mShadowsConnection[1]);
 
     mHandle = OGRE_NEW Ogre::TerrainGroup(mOgitorsRoot->GetSceneManager() ,Ogre::Terrain::ALIGN_X_Z, mMapSize->get(), mWorldSize->get());
     mHandle->setOrigin(Ogre::Vector3::ZERO);
@@ -733,7 +751,7 @@ TiXmlElement* CTerrainGroupEditor::exportDotScene(TiXmlElement *pParent)
     return pTerrain;
 }
 //-----------------------------------------------------------------------------------------
-void CTerrainGroupEditor::OnShadowsChange(const OgitorsPropertyBase* property, Ogre::Any value)
+void CTerrainGroupEditor::onShadowsChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
     bool newstate = Ogre::any_cast<bool>(value);
 
@@ -760,7 +778,7 @@ void CTerrainGroupEditor::OnShadowsChange(const OgitorsPropertyBase* property, O
     }
 }
 //-----------------------------------------------------------------------------------------
-void CTerrainGroupEditor::OnShadowsTechniqueChange(const OgitorsPropertyBase* property, Ogre::Any value)
+void CTerrainGroupEditor::onShadowsTechniqueChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
 
     CSceneManagerEditor *mSceneMgr = static_cast<CSceneManagerEditor*>(mOgitorsRoot->GetSceneManagerEditor());

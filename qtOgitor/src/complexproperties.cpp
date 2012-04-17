@@ -190,9 +190,9 @@ void QuaternionManager::setMaximum(QtProperty *property, const QVariant &val)
         if (d.y)
             d.y->setAttribute("maximum", p.y());
         if (d.z)
-            d.z->setAttribute("minimum", p.width());
+            d.z->setAttribute("maximum", p.width());
         if (d.w)
-            d.w->setAttribute("minimum", p.height());
+            d.w->setAttribute("maximum", p.height());
         propertyToData[property] = d;
         emit propertyChanged(property);
         return;
@@ -426,9 +426,9 @@ void Vector4Manager::setMaximum(QtProperty *property, const QVariant &val)
         if (d.y)
             d.y->setAttribute("maximum", p.y());
         if (d.z)
-            d.z->setAttribute("minimum", p.width());
+            d.z->setAttribute("maximum", p.width());
         if (d.w)
-            d.w->setAttribute("minimum", p.height());
+            d.w->setAttribute("maximum", p.height());
         propertyToData[property] = d;
         emit propertyChanged(property);
         return;
@@ -659,7 +659,7 @@ void Vector3Manager::setMaximum(QtProperty *property, const QVariant &val)
         if (d.y)
             d.y->setAttribute("maximum", p.y());
         if (d.z)
-            d.z->setAttribute("minimum", p.width());
+            d.z->setAttribute("maximum", p.width());
         propertyToData[property] = d;
         emit propertyChanged(property);
         return;
