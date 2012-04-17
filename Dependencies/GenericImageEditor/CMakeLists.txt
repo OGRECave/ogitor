@@ -16,23 +16,26 @@ else(NOT QT4_FOUND)
     file(GLOB UI_FILES *.ui)
 
     set(HEADER_FILES
-        ./include/genericimageeditor.hxx
-        ./include/iimageeditorcodec.hxx
+        ./include/genericimageeditor.hxx       
         ./include/genericimageeditorcodec.hxx
+        ./include/genericimageeditordocument.hxx
         ./include/heightimageeditorcodec.hxx
+        ./include/iimageeditorcodec.hxx
     )
 
     set(SOURCE_FILES
-        ./src/genericimageeditor.cpp
+        ./src/genericimageeditor.cpp        
         ./src/genericimageeditorcodec.cpp
+        ./src/genericimageeditordocument.cpp
         ./src/heightimageeditorcodec.cpp
     )
 
     SET(MOC_SRCS2
-        ./include/genericimageeditor.hxx
-        ./include/iimageeditorcodec.hxx
+        ./include/genericimageeditor.hxx       
         ./include/genericimageeditorcodec.hxx
+        ./include/genericimageeditordocument.hxx
         ./include/heightimageeditorcodec.hxx
+        ./include/iimageeditorcodec.hxx
     )
 
     qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})
@@ -53,13 +56,15 @@ else(NOT QT4_FOUND)
 
     include_directories(.)
     include_directories(${OGITOR_INCLUDES})
-        include_directories(../OFS/include)
+    include_directories(../OFS/include)
+    include_directories(../ImageConverter/include)
 
-    link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor)
+    link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor ImageConverter)
     add_library(GenericImageEditor SHARED ${SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
-        add_dependencies(GenericImageEditor OFS)
+	add_dependencies(GenericImageEditor OFS)
+	add_dependencies(GenericImageEditor ImageConverter)
 
     if(NOT OGITOR_DIST)
         set_target_properties(GenericImageEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
@@ -72,8 +77,7 @@ else(NOT QT4_FOUND)
         add_custom_command(TARGET GenericImageEditor PRE_BUILD
             COMMAND mkdir -p ../../RunPath/lib)
         add_custom_command(TARGET GenericImageEditor POST_BUILD
-            COMMAND cp -r ../lib/libGenericImageEditor_Ogitor.*
-../../RunPath/lib/)
+            COMMAND cp -r ../lib/libGenericImageEditor_Ogitor.* ../../RunPath/lib/)
     endif(UNIX AND NOT APPLE)
 
     if(WIN32)

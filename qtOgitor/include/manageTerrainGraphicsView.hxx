@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+/// Copyright (c) 2012 Andrew Fenn <andrewfenn@gmail.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -29,37 +29,67 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #pragma once
 
-#include "manageTerrainGraphicsView.hxx"
-
-#include <QtGui/QMainWindow>
 #include <QtGui/QDialog>
+#include <QtGui/QToolBar>
+#include <QtGui/QGraphicsView>
+#include <QtGui/QGraphicsItem>
+#include <QtGui/QLabel>
+#include <QtGui/QMenu>
+#include <QtGui/QToolBar>
+#include <QtGui/QAction>
 #include <Ogre.h>
 
-#include <QtGui/QWidget>
+class UITerrainSquare;
+class QMenu;
 
-class ManageTerrainDialog : public QMainWindow
+class ManageTerrainGraphicsView: public QGraphicsView
 {
     Q_OBJECT
 public:
-    ManageTerrainDialog(QWidget *parent);
-    virtual ~ManageTerrainDialog();
+    ManageTerrainGraphicsView(QWidget *parent, QToolBar *toolbar);
+    virtual ~ManageTerrainGraphicsView();
 
-    bool hasTerrain(int X, int Y);
-    void redrawMap();
+    void updateActions();
+
+public slots:
+    void sltSetToolSelect(bool checked);
+    void sltSetToolMove(bool checked);
+
+    void sltAddPage();
+    void sltRemovePage();
+    void sltSelectAll();
+
+protected:
+    void mouseReleaseEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent * event);
+    void keyReleaseEvent(QKeyEvent * event);
+    void keyPressEvent(QKeyEvent * event);
 
 private:
-    void drawPageMap();
 
-    ManageTerrainGraphicsView *mPageGraphics;
-    QToolBar        *mToolBar;
-    
-    bool*           mMtx;
-    int             mWidth;
-    int             mHeight;
-    int             mMinY;
-    int             mMinX;
-    QGraphicsScene  mScene;
+    void selectTerrainPage(UITerrainSquare *terrainSquare);
+    void clearSelection();
+    /** Added a terrain page to the scene **/
+    void addTerrainPage(const int& x, const int& y, const Ogre::String& diffuse, const Ogre::String& normal);
+
+    QToolBar   *mToolBar;
+    QAction    *mActSelectAll;
+    QAction    *mActSelect;
+    QAction    *mActMove;
+    QAction    *mActEditCut;
+    QAction    *mActEditCopy;
+    QAction    *mActEditPaste;
+    QAction    *mActAddPage;
+    QAction    *mActRemovePage;
+
+    bool mSelIncTerrain;
+    bool mSelIncEmpty;
+    bool mSelectionMode;
+    QList<UITerrainSquare*> mSelectedTerrain;
+    unsigned int mSelectedTool;
+    QMenu mContextMenu;
 };
 

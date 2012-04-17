@@ -52,12 +52,10 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
     
-    QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-    tabBar->setTabsClosable(true);
+    mTabBar = findChildren<QTabBar*>().at(0);
+    mTabBar->setTabsClosable(true);
 
-    connect(tabBar,         SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    connect(tabBar,         SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
-    connect(this,           SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+    connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
     mActZoomIn = new QAction(tr("Zoom In"), this);
     mActZoomIn->setStatusTip(tr("Zoom In"));
@@ -79,7 +77,12 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
     mw->addToolBar(Qt::TopToolBarArea, mMainToolBar);
 
-    mLastDocument = 0;
+    mActiveDocument = 0;
+
+    //connect(mActEditCut,                SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
+    //connect(mActEditCopy,               SIGNAL(triggered()),    this, SLOT(pasteAvailable()));
+    //connect(mActSave,                   SIGNAL(triggered()),    this, SLOT(onSave()));
+    //connect(QApplication::clipboard(),  SIGNAL(dataChanged()),  this, SLOT(onClipboardChanged()));
 
     // Register the standard generic text editor codec extensions
     GenericImageEditorCodecFactory* genCodecFactory = new GenericImageEditorCodecFactory();
@@ -96,10 +99,29 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     GenericImageEditor::registerCodecFactory("tiff",        genCodecFactory);
     GenericImageEditor::registerCodecFactory("xbm",         genCodecFactory);
     GenericImageEditor::registerCodecFactory("xpm",         genCodecFactory);
-
     GenericImageEditor::registerCodecFactory("f32",         heightCodecFactory);
 
+    // Below are files generated via render target. Perhaps only make these read only.
+    GenericImageEditor::registerCodecFactory("dds",         genCodecFactory);
+
+    Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::MODIFIED_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericImageEditor, onModifiedStateChanged));
     Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(GenericImageEditor, onLoadStateChanged));
+}
+//-----------------------------------------------------------------------------------------
+GenericImageEditor::~GenericImageEditor()
+{
+    Ogitors::EventManager::getSingletonPtr()->disconnectEvent(Ogitors::EventManager::MODIFIED_STATE_CHANGE, this);
+    Ogitors::EventManager::getSingletonPtr()->disconnectEvent(Ogitors::EventManager::LOAD_STATE_CHANGE, this);
+}
+//-----------------------------------------------------------------------------------------
+/*void GenericImageEditor::pasteAvailable()
+{
+    mActEditPaste->setEnabled(true);
+}*/
+//-----------------------------------------------------------------------------------------
+void GenericImageEditor::onSave()
+{
+  //  mActSave->setEnabled(false);
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::registerCodecFactory(QString extension, IImageEditorCodecFactory* codec)
@@ -130,22 +152,12 @@ bool GenericImageEditor::displayImageFromFile(QString filePath)
         IImageEditorCodec* codec = codecFactory->create(document, filePath);
         document->setCodec(codec);
         document->displayImageFromFile(QFile(filePath).fileName(), filePath);
-
-        QMdiSubWindow* subWindow = new QMdiSubWindow;
-        subWindow->setWidget(document);
-        subWindow->setAttribute(Qt::WA_DeleteOnClose);
-        subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
-        addSubWindow(subWindow);
-
-        document->showMaximized();
-        QTabBar* tabBar = findChildren<QTabBar*>().at(0);
-        tabBar->setTabToolTip(findChildren<QMdiSubWindow*>().size() - 1, QFile(filePath).fileName());
+    
+        addTab(document, codec);
     }
     else
     {
-        document->getCodec()->onDisplayRequest();
-        setActiveSubWindow(qobject_cast<QMdiSubWindow*>(document->window()));
-        document->setFocus(Qt::ActiveWindowFocusReason);
+        setActiveDocument(document);
     }
 
     moveToForeground();
@@ -158,10 +170,11 @@ bool GenericImageEditor::isPathAlreadyShowing(QString filePath, GenericImageEdit
     foreach(QMdiSubWindow *window, subWindowList()) 
     {
         document = qobject_cast<GenericImageEditorDocument*>(window->widget());
-        if(document->getFilePath() == filePath)
+        if(document != 0 && document->getFilePath() == filePath)
             return true;
     }
 
+    document = 0;
     return false;
 }
 //-----------------------------------------------------------------------------------------
@@ -170,23 +183,113 @@ bool GenericImageEditor::isDocAlreadyShowing(QString docName, GenericImageEditor
     foreach(QMdiSubWindow *window, subWindowList()) 
     {
         document = qobject_cast<GenericImageEditorDocument*>(window->widget());
-        if(document->getDocName() == docName)
+        if(document != 0 && document->getDocName() == docName)
             return true;
     }
 
+    document = 0;
     return false;
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditor::tabContentChange()
+{
+  //  mActSave->setEnabled(true);
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::closeTab(int index)
 {
-    if(mLastDocument)
-    {
-        disconnect(mActZoomIn,  SIGNAL(triggered()), mLastDocument, SLOT(onZoomIn()));
-        disconnect(mActZoomOut, SIGNAL(triggered()), mLastDocument, SLOT(onZoomOut()));
-        mLastDocument = 0;
-    }
+    QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
+
+    GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
+    setActiveDocument(document);
+
+    if (!document->close())
+        return;
+        
+    if (document == mActiveDocument)
+        disconnectActiveDocument();
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageEditorCodec* codec)
+{
+    QMdiSubWindow* subWindow = new QMdiSubWindow;
+    subWindow->setWidget(newDocument);
+    subWindow->setAttribute(Qt::WA_DeleteOnClose);
+    subWindow->setWindowIcon(QIcon(codec->getDocumentIcon()));
+
+    // [*] is special Qt thing to show the file as modified
+    QFileInfo pathInfo(newDocument->getDocName()+ "[*]");
+
+    subWindow->setWindowTitle(pathInfo.fileName());
+    addSubWindow(subWindow);
+
+    newDocument->showMaximized();
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditor::setActiveDocument(GenericImageEditorDocument* document)
+{  
+    disconnectActiveDocument();
     
-    emit currentChanged(subWindowList().indexOf(activeSubWindow()));
+    mActiveDocument = document;
+
+    //connect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
+    //connect(mActEditCut, SIGNAL(triggered()), mActiveDocument, SLOT(cut()));
+    //connect(mActEditCopy, SIGNAL(triggered()), mActiveDocument, SLOT(copy()));
+    //connect(mActEditPaste, SIGNAL(triggered()), mActiveDocument, SLOT(paste()));
+
+    //connect(mActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+    //connect(mActiveDocument, SIGNAL(textChanged()), mActiveDocument, SLOT(documentWasModified()));
+
+    //connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+    //connect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+
+    
+    //mActSave->setEnabled(mActiveDocument->isModified());
+    //mActEditCut->setEnabled(false);
+    //mActEditCopy->setEnabled(false);
+
+    QToolBar *tb = document->getCodec()->getCustomToolBar();
+    if(tb != 0)
+    {
+        QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+        mw->addToolBar(Qt::TopToolBarArea, tb);
+        tb->show();
+    }
+
+    mActiveDocument->setFocus(Qt::ActiveWindowFocusReason);
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditor::disconnectActiveDocument()
+{
+    if (mActiveDocument == 0)
+        return;
+
+    /*
+    TODO: I have commented out functionality however it should be implemented later. Keeping it
+    commented out so you can see where you need to implement features.
+     */
+
+    //disconnect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
+    //disconnect(mActEditCut, SIGNAL(triggered()), mActiveDocument, SLOT(cut()));
+    //disconnect(mActEditCopy, SIGNAL(triggered()), mActiveDocument, SLOT(copy()));
+    //disconnect(mActEditPaste, SIGNAL(triggered()), mActiveDocument, SLOT(paste()));
+    //disconnect(mActiveDocument, SIGNAL(textChanged()), this, SLOT(tabContentChange()));
+    //disconnect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCopy, SLOT(setEnabled(bool)));
+    //disconnect(mActiveDocument, SIGNAL(copyAvailable(bool)), mActEditCut, SLOT(setEnabled(bool)));
+
+    QToolBar *tb = mActiveDocument->getCodec()->getCustomToolBar();
+    if(tb != 0)
+    {
+        QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
+        mw->removeToolBar(tb);
+    }
+
+    //mActSave->setEnabled(false);
+    //mActEditCut->setEnabled(false);
+    //mActEditCopy->setEnabled(false);
+    //mActEditPaste->setEnabled(false);
+
+    mActiveDocument = 0;
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::closeEvent(QCloseEvent *event)
@@ -220,214 +323,53 @@ void GenericImageEditor::moveToForeground()
     mParentTabWidget->setCurrentIndex(mParentTabWidget->indexOf(this->parentWidget()));
 }
 //-----------------------------------------------------------------------------------------
-void GenericImageEditor::tabChanged(int index)
+void GenericImageEditor::saveAll()
 {
-    QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
-
-    if(mLastDocument)
-    {
-        disconnect(mActZoomIn,  SIGNAL(triggered()), mLastDocument, SLOT(onZoomIn()));
-        disconnect(mActZoomOut, SIGNAL(triggered()), mLastDocument, SLOT(onZoomOut()));
-
-        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
-        if(tb != 0)
-            mw->removeToolBar(tb);
+    GenericImageEditorDocument* document;
+    QList<QMdiSubWindow*> list = subWindowList();
+    for(int i = 0; i < list.size(); i++)
+    { 
+        document = static_cast<GenericImageEditorDocument*>(list[i]->widget());
+        document->save();
     }
-    
-    // -1 means that the last tab was just closed and so there is no one left anymore to switch to
-    if(index != -1)
-    {
-        GenericImageEditorDocument* document;
-        QList<QMdiSubWindow*> list = subWindowList();
-        document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
-        document->getCodec()->onTabChange();
+}
+//-----------------------------------------------------------------------------------------
+void GenericImageEditor::onModifiedStateChanged(Ogitors::IEvent* evt)
+{
+    Ogitors::SceneModifiedChangeEvent *change_event = Ogitors::event_cast<Ogitors::SceneModifiedChangeEvent*>(evt);
 
-        connect(mActZoomIn,  SIGNAL(triggered()), document, SLOT(onZoomIn()));
-        connect(mActZoomOut, SIGNAL(triggered()), document, SLOT(onZoomOut()));
-        mActZoomIn->setEnabled(true);
-        mActZoomOut->setEnabled(true);
-        
-        mLastDocument = document;
+    if(!change_event)
+        return;
 
-        QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
-        if(tb != 0)
-        {
-            mw->addToolBar(Qt::TopToolBarArea, tb);
-            tb->show();
-        }
-    }
-    else
-    {
-        mActZoomIn->setEnabled(false);
-        mActZoomOut->setEnabled(false);
-        mLastDocument = 0;
-    }
+    bool state = change_event->getState();
+
+    // If scene is not modified anymore, the user saved it, so we need to save the
+    // documents as well.
+    if(!state)
+        saveAll();
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::onLoadStateChanged(Ogitors::IEvent* evt)
 {
     Ogitors::LoadStateChangeEvent *change_event = Ogitors::event_cast<Ogitors::LoadStateChangeEvent*>(evt);
 
-    if(change_event)
+    if(!change_event)
+        return;
+    
+    Ogitors::LoadState state = change_event->getType();
+
+    if(state == Ogitors::LS_UNLOADED)
     {
-        Ogitors::LoadState state = change_event->getType();
-
-        if(state == Ogitors::LS_UNLOADED)
-        {
-            if(mLastDocument)
-            {
-                disconnect(mActZoomIn,  SIGNAL(triggered()), mLastDocument, SLOT(onZoomIn()));
-                disconnect(mActZoomOut, SIGNAL(triggered()), mLastDocument, SLOT(onZoomOut()));
-
-                QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
-
-                QToolBar *tb = mLastDocument->getCodec()->getCustomToolBar();
-                if(tb != 0)
-                    mw->removeToolBar(tb);
-            }
-
-            mLastDocument = 0;
-
-            closeAllSubWindows();
-        }
-    }
-}
-/************************************************************************/
-GenericImageEditorDocument::GenericImageEditorDocument(QWidget *parent) : QScrollArea(parent), 
-mCodec(0), mDocName(""), mFilePath(""), mFile(0), mIsOfsFile(false)
-{
-    mLabel = new ToolTipLabel(this);
-    mLabel->setScaledContents(true);
-}
-//-----------------------------------------------------------------------------------------
-GenericImageEditorDocument::~GenericImageEditorDocument()
-{
-    mOfsPtr.unmount();
-    delete mCodec;
-    mCodec = 0;
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::displayImageFromFile(QString docName, QString filePath)
-{
-    mDocName = docName;
-    mFilePath = filePath;
-
-    int pos = filePath.indexOf("::");
-    if(pos > 0)
-    {
-        QString ofsFile = filePath.mid(0, pos);
-        filePath.remove(0, pos + 2);
-        
-        if(mOfsPtr.mount(ofsFile.toStdString().c_str()) != OFS::OFS_OK)
-            return;
-
-        OFS::OFSHANDLE *handle = new OFS::OFSHANDLE();
-
-        if(mOfsPtr->openFile(*handle, filePath.toStdString().c_str(), OFS::OFS_READ) != OFS::OFS_OK)
-        {
-            mOfsPtr.unmount();
-            return;
-        }
-
-        mIsOfsFile = true;
-
-        Ogre::DataStreamPtr stream(new Ogitors::OfsDataStream(mOfsPtr, handle));
-        
-        displayImage(docName, stream);
-    }
-    else
-    {
-        mIsOfsFile = false;
-
-        std::ifstream inpstr(filePath.toStdString().c_str());
-        Ogre::DataStreamPtr stream(new Ogre::FileStreamDataStream(&inpstr, false));
-
-        displayImage(docName, stream);
-    }   
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::displayImage(QString docName, Ogre::DataStreamPtr stream)
-{
-    mLabel->setMouseTracking(true);
-    mLabel->setPixmap(mCodec->onBeforeDisplay(stream));
-    mLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-    setWidget(mLabel);
-
-    QString tabTitle = docName;
-    if(tabTitle.length() > 25)
-        tabTitle = tabTitle.left(12) + "..." + tabTitle.right(10);
-    setWindowTitle(tabTitle + QString("[*]"));
-    setWindowModified(false);
-
-    mCodec->onAfterDisplay();
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::contextMenuEvent(QContextMenuEvent *event)
-{
-    mCodec->onContextMenu(event);
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::mousePressEvent(QMouseEvent *event)
-{
-    // Rewrite the right click mouse event to a left button event so the cursor is moved to the location of the click
-    if(event->button() == Qt::RightButton)
-        event = new QMouseEvent(QEvent::MouseButtonPress, event->pos(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    QScrollArea::mousePressEvent(event);
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::releaseFile()
-{
-    mFile.close();
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::closeEvent(QCloseEvent* event)
-{
-    getCodec()->onClose();
-    releaseFile();
-    close();
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::wheelEvent(QWheelEvent* event)
-{
-    int numDegrees = event->delta() / 8;
-    float numSteps = numDegrees / 15;
-
-    scaleImage(1 + (float)(numSteps / 10));
-    event->accept();
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::scaleImage(float factor)
-{  
-    // Currently limited to 5120px to prevent huge slowdowns when trying to zoom in any further.
-    // Changing the logic to only deal with the part of the image / pixmap that is actually displayed 
-    // might help to reduce the load in future revisions.
-    if(getCodec()->getScaleFactor() * factor * mLabel->pixmap()->size().height() < 5120)
-    {
-        QPixmap map = getCodec()->onScaleImage(factor);
-        qDebug(QString::number(map.height()).toAscii());
-        mLabel->resize(getCodec()->onScaleImage(factor).size());
+        closeAllSubWindows();
     }
 }
 //-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::onZoomIn()
+/*void GenericImageEditor::onClipboardChanged()
 {
-    scaleImage(1.1f);
-}
-//-----------------------------------------------------------------------------------------
-void GenericImageEditorDocument::onZoomOut()
-{
-    scaleImage(0.9f);
-}
-/************************************************************************/
-ToolTipLabel::ToolTipLabel(GenericImageEditorDocument* genImgEdDoc, QWidget *parent) : QLabel(parent),
-mGenImgEdDoc(genImgEdDoc)
-{
-    setMouseTracking(true);
-}
-//-----------------------------------------------------------------------------------------
-void ToolTipLabel::mouseMoveEvent(QMouseEvent *event)
-{
-    QToolTip::showText(event->globalPos(), mGenImgEdDoc->getCodec()->onToolTip(event), this);
-}
+    const QClipboard* clipboard = QApplication::clipboard();
+    const QMimeData* mimeData = clipboard->mimeData();
+
+    if(mimeData->hasText())
+        emit pasteAvailable();
+}*/
 //-----------------------------------------------------------------------------------------

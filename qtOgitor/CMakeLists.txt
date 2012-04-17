@@ -30,6 +30,8 @@ else(NOT QT4_FOUND)
         ./src/addscriptactiondialog.cpp
         ./include/addtemplatedialog.hxx
         ./src/addtemplatedialog.cpp
+        ./include/manageTerrainGraphicsView.hxx
+        ./src/manageTerrainGraphicsView.cpp
         ./include/manageTerrainDialog.hxx
         ./src/manageTerrainDialog.cpp
         ./include/calculateblendmapdialog.hxx
@@ -101,6 +103,7 @@ else(NOT QT4_FOUND)
         ./include/actiontoolbar.hxx
         ./include/addscriptactiondialog.hxx
         ./include/addtemplatedialog.hxx
+        ./include/manageTerrainGraphicsView.hxx
         ./include/manageTerrainDialog.hxx
         ./include/calculateblendmapdialog.hxx
         ./include/colourpicker.hxx
@@ -197,7 +200,7 @@ else(NOT QT4_FOUND)
         add_dependencies(qtOgitor OgModularZone)
         add_dependencies(qtOgitor DotSceneSerializer)
         add_dependencies(qtOgitor OFS)
-        add_dependencies(qtOgitor OgreOFSPlugin)
+        add_dependencies(qtOgitor ImageConverter)
         add_dependencies(qtOgitor GenericTextEditor)
         add_dependencies(qtOgitor GenericImageEditor)
         add_dependencies(qtOgitor OgAngelScript)
@@ -223,9 +226,9 @@ else(NOT QT4_FOUND)
     endif(WIN32)
 
     if(OGITOR_MESHMAGICK_INTERFACE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ${Boost_REGEX_LIBRARY})
+        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     else(OGITOR_MESHMAGICK_INTERFACE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
+        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     endif(OGITOR_MESHMAGICK_INTERFACE)
 
     if(UNIX AND NOT APPLE)
@@ -358,6 +361,11 @@ else(NOT QT4_FOUND)
         install(TARGETS qtOgitor
             RUNTIME DESTINATION bin
             CONFIGURATIONS Release)
+        
+        if (MSVC)
+            configure_file(${Ogitor_SOURCE_DIR}/CMakeModules/VisualStudioUserFile.vcproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/QtOgitor.vcproj.user @ONLY)
+            configure_file(${Ogitor_SOURCE_DIR}/CMakeModules/VisualStudioUserFile.vcxproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/QtOgitor.vcxproj.user @ONLY)
+  endif ()
     endif(WIN32)
 endif(NOT QT4_FOUND)
 

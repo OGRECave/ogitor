@@ -45,6 +45,7 @@
 #include "qteditorfactory.h"
 #include "complexproperties.hxx"
 #include "OgitorsPrerequisites.h"
+#include "OgitorsSystem.h"
 #include "entityview.hxx"
 
 using namespace Ogitors;
@@ -260,7 +261,7 @@ void MagickWidget::openMesh()
     extension.push_back(ext.toStdString());
     extension.push_back("*.mesh");
 
-    QString path = QtOgitorSystem::getSingletonPtr()->DisplayOpenDialog(title.toStdString(), extension).c_str();
+    QString path = OgitorsSystem::getSingletonPtr()->DisplayOpenDialog(title.toStdString(), extension).c_str();
 
     if(path != "")
     {

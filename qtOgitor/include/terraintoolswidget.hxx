@@ -64,7 +64,6 @@ protected:
     QSlider*     mBrushIntensitySlider;
     ColourPickerWidget* mPaintColour;
 
-
     void resizeEvent(QResizeEvent* evt);
 
     void populateBrushes();
