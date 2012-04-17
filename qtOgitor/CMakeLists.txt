@@ -158,9 +158,9 @@ else(NOT QT4_FOUND)
         ./qtpropertybrowser-2.5/src
     )
 
-    if(WIN32)
+    #if(WIN32)
         file(GLOB qtOgitor_res ./res/*.rc)
-    endif(WIN32)
+    #endif(WIN32)
 
     if(NOT APPLE)
         add_executable(qtOgitor WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOgitor_res})
@@ -197,6 +197,7 @@ else(NOT QT4_FOUND)
         add_dependencies(qtOgitor OgModularZone)
         add_dependencies(qtOgitor DotSceneSerializer)
         add_dependencies(qtOgitor OFS)
+        add_dependencies(qtOgitor OgreOFSPlugin)
         add_dependencies(qtOgitor GenericTextEditor)
         add_dependencies(qtOgitor GenericImageEditor)
         add_dependencies(qtOgitor OgAngelScript)
@@ -207,7 +208,7 @@ else(NOT QT4_FOUND)
             cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_LIBRARIES}/../../libOgreTerrain*.dylib ${OGRE_LIBRARIES}/../../libOgrePaging*.dylib ${qtOgitorLocationAppdir}/Contents/Components && 
             cp ${OGRE_LIBRARIES}/../../libRenderSystem_GL*.dylib ${OGRE_LIBRARIES}/../../libPlugin_OctreeSceneManager*.dylib ${OGRE_LIBRARIES}/../../libPlugin_ParticleFX*.dylib ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
             cp -r ${OGRE_LIBRARY} ${qtOgitorLocationAppdir}/Contents/Frameworks && 
-            cp -r ../lib/${CMAKE_CFG_INTDIR}/Ogitor.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
+            cp -r ../lib/${CMAKE_CFG_INTDIR}/Ogitor.framework ../lib/${CMAKE_CFG_INTDIR}/OgreOFSPlugin.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
             cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ../Dependencies/lib/libGenericTextEditor*.dylib ../Dependencies/lib/libGenericImageEditor*.dylib ../Dependencies/lib/libOFS*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
             cp -r ../../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
             cp -r ../../RunPath/Plugins/Icons ${qtOgitorLocationAppdir}/Contents/Plugins && 

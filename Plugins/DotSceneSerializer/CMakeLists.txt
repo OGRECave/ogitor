@@ -68,4 +68,11 @@ IF(UNIX AND NOT APPLE)
     endif(OGITOR_DIST)
 ENDIF(UNIX AND NOT APPLE)
 
+if (APPLE)
+	install(TARGETS DotSceneSerializer
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+endif(APPLE)
+
+
 # vim: set sw=2 ts=2 noet:
