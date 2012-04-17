@@ -58,5 +58,11 @@ IF(UNIX AND NOT APPLE)
 
 ENDIF(UNIX AND NOT APPLE)
 
+if (APPLE)
+	install(TARGETS OgreOfsPlugin
+            LIBRARY DESTINATION lib
+            FRAMEWORK DESTINATION "~/Library/Frameworks"
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+endif(APPLE)
 
 # vim: set sw=2 ts=2 noet:

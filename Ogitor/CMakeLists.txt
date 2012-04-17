@@ -1,6 +1,5 @@
 include_directories(${DEPENDENCIES_INCLUDES})
 include_directories(include)
-
 set(Ogitor_hdrs
 	./include/AxisGizmo.h
 	./include/BaseEditor.h
@@ -149,8 +148,10 @@ target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Pagi
 
 if(APPLE)
         find_package(Cocoa REQUIRED)
-	message(STATUS ${Cocoa_LIBRARIES})
-	target_link_libraries(Ogitor ${Cocoa_LIBRARIES})
+        if (NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
+            message(FATAL_ERROR "OGRE Paging and Terrain Components are required dependencies. If you are sure you have them, make sure to set OGRE_SDK to the correct path.")
+        endif(NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
+	target_link_libraries(Ogitor ${Cocoa_LIBRARIES} ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
 	# Setup to be a framework
 	set_target_properties(Ogitor PROPERTIES FRAMEWORK TRUE)
 	set_target_properties(Ogitor PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
@@ -161,7 +162,7 @@ if(APPLE)
 	set_target_properties(Ogitor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Frameworks")
 endif(APPLE)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
   set_target_properties( Ogitor PROPERTIES OUTPUT_NAME "Ogitor" VERSION
 ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 endif()
