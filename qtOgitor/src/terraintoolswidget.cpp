@@ -33,12 +33,14 @@
 #include "mainwindow.hxx"
 #include "terraintoolswidget.hxx"
 #include "colourpicker.hxx"
+#include "imageconverter.hxx"
 
 #include "BaseEditor.h"
 #include "TerrainEditor.h"
 #include "OgitorsRoot.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
+#include "ofs.h"
 
 #define GRID_SIZE_X 52
 #define GRID_SIZE_Y 64
@@ -161,10 +163,15 @@ void TerrainToolsWidget::resizeEvent(QResizeEvent* evt)
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::updateTerrainOptions(ITerrainEditor *terrain)
 {
+    Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+
+    OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
+    updateTools();
+
     if(texturesWidget->currentItem())
     {
         QString str = texturesWidget->currentItem()->whatsThis();
-        terrain->setTexture(str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive).toStdString());
+        terrain->setTexture(str.toStdString());
     }
 
     if(plantsWidget->currentItem())
@@ -199,6 +206,7 @@ void TerrainToolsWidget::switchToolWidget( const unsigned int tool )
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::updateTools()
 {
+    OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
     populateBrushes();
     populateTextures();
     populatePlants();
@@ -250,97 +258,60 @@ void TerrainToolsWidget::populateBrushes()
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populateTextures()
 {
+    ImageConverter imageConverter(128,128);
     texturesWidget->clear();
 
-    ComboData items;
-    items.clear();
+    OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
 
-    Ogre::FileInfoListPtr resList2 = Ogre::ResourceGroupManager::getSingleton().listResourceFileInfo("TerrainTextures");
+    PropertyOptionsVector* diffuseList = ogitorRoot->GetTerrainDiffuseTextureNames();
 
-    Ogre::String fname_diffuse;
-    Ogre::String fname_normal;
-    for (Ogre::FileInfoList::const_iterator it = resList2->begin(); it != resList2->end(); ++it)
+    for (Ogitors::PropertyOptionsVector::const_iterator diffItr = diffuseList->begin(); diffItr != diffuseList->end(); ++diffItr)
     {
-        Ogre::FileInfo fInfo = (*it);
-        if(fInfo.archive->getType() == "FileSystem")
-        {
-            if(fInfo.filename.find("_diffuse.png") == -1) continue;
-            fname_diffuse = fInfo.archive->getName() + "/";
-            fname_diffuse += fInfo.filename;
-            fname_normal = fInfo.filename;
-            fname_normal.erase(fname_normal.length() - 12,12);
-            fname_normal += "_normalheight.dds";
+        Ogitors::PropertyOption opt = (*diffItr);
+        Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
+        
+        QPixmap pixmap;
+        if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainGroupDiffuseSpecular")))
+            continue;
 
-            QString result = fInfo.filename.c_str();
-            if(QFile::exists(QString(Ogre::String(fInfo.archive->getName() + "/" + fname_normal).c_str())))
-            {
-                result += QString(";") + QString(fname_normal.c_str());
-            }
-
-            if(items.find(QString(fname_diffuse.c_str())) == items.end())
-            {
-                items.insert(ComboData::value_type(QString(fname_diffuse.c_str()), result));
-            }
-        }
-    }
-
-    resList2.setNull();
-
-    for(ComboData::iterator ct = items.begin();ct != items.end();ct++)
-    {
-        QString name = ct->second.mid(0, (ct->second.length() / 2) - 3);
-        name.replace("_diffuse.png","");
-        QListWidgetItem *witem = new QListWidgetItem(QIcon(ct->first), name);
-        witem->setWhatsThis(ct->second);
-        witem->setToolTip(name);
+        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
+        witem->setWhatsThis(name.c_str());
+        witem->setToolTip(name.c_str());
         texturesWidget->addItem(witem);
     }
 
-    texturesWidget->setCurrentItem(texturesWidget->item(0));
+    if(diffuseList->size() > 0)
+        texturesWidget->setCurrentItem(texturesWidget->item(0));
 }
 //----------------------------------------------------------------------------------------
 void TerrainToolsWidget::populatePlants()
 {
-    PropertyOptionsVector *list = OgitorsRoot::GetTerrainPlantMaterialNames();
-
+    ImageConverter imageConverter(128,128);
     plantsWidget->clear();
 
-    ComboData items;
-    items.clear();
+    OgitorsRoot *ogitorRoot = OgitorsRoot::getSingletonPtr();
+    PropertyOptionsVector *plantList = OgitorsRoot::GetTerrainPlantMaterialNames();
 
-    for(unsigned int i = 1;i < list->size();i++)
+    Ogre::ResourceManager::ResourceMapIterator list = Ogre::MaterialManager::getSingletonPtr()->getResourceIterator();
+    while (list.hasMoreElements())
     {
-        Ogre::String matName = (*list)[i].mKey;
-        Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingletonPtr()->getByName(matName);
-
-        if(matPtr.isNull())
+        Ogre::ResourcePtr resPtr = list.getNext();
+        if (resPtr->getGroup() != "TerrainGroupPlants")
             continue;
 
-        Ogre::String texName = matPtr->getTechnique(0)->getPass(0)->getTextureUnitState(0)->getTextureName();
+        Ogre::String name = resPtr->getName();
 
-        Ogre::FileInfoListPtr resPtr = Ogre::ResourceGroupManager::getSingletonPtr()->findResourceFileInfo("Plants", texName);
-        Ogre::FileInfo fInfo = (*(resPtr->begin()));
-
-        Ogre::String fname = fInfo.archive->getName() + "/";
-        fname += fInfo.filename;
-
-        if(items.find(QString(fname.c_str())) == items.end())
-        {
-            items.insert(ComboData::value_type(QString(fname.c_str()), QString(matName.c_str())));
-        }
-
-        resPtr.setNull();
-    }
-
-    for(ComboData::iterator ct = items.begin();ct != items.end();ct++)
-    {
-        QListWidgetItem *witem = new QListWidgetItem(QIcon(ct->first), ct->second);
-        witem->setWhatsThis(ct->second);
-        witem->setToolTip(ct->second);
+        QPixmap pixmap;
+        if (!pixmap.convertFromImage(imageConverter.fromOgreMaterialName(name, "TerrainGroupPlants")))
+            continue;
+        
+        QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
+        witem->setWhatsThis(name.c_str());
+        witem->setToolTip(name.c_str());
         plantsWidget->addItem(witem);
     }
 
-    if(list->size() > 0)
+    if(plantList->size() > 0)
         plantsWidget->setCurrentItem(plantsWidget->item(0));
 }
 //----------------------------------------------------------------------------------------
@@ -355,8 +326,6 @@ void TerrainToolsWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 
         if(state == LS_LOADED)
         {
-            updateTools();
-
             ITerrainEditor *terrain = OgitorsRoot::getSingletonPtr()->GetTerrainEditor();
             if(terrain)
                 updateTerrainOptions(terrain);
@@ -381,7 +350,7 @@ void TerrainToolsWidget::textureIndexChanged()
     QString str = texturesWidget->currentItem()->whatsThis();
 
     if(OgitorsRoot::getSingletonPtr()->GetTerrainEditor())
-        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setTexture(str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive).toStdString());
+        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setTexture(str.toStdString());
 }
 //------------------------------------------------------------------------------
 void TerrainToolsWidget::plantIndexChanged()

@@ -417,6 +417,11 @@ namespace Ogitors
         * @see SCENEFILERESULT
         */
         int             LoadScene(Ogre::String Filename);
+		
+        /**
+        * Returns the filename of the currently loaded scene
+        */
+		std::string         GetSceneName();
         /**
         * Saves current scene into a file
         * @param SaveAs flag to save scene at different location as specified by user in SaveAs dialog 
@@ -460,6 +465,10 @@ namespace Ogitors
         * @return true if options were read successfully, otherwise false
         */
         bool            OptionsReadLayers(TiXmlElement *parent);
+        /**
+        * Prepares terrain resource group(s)
+        */        
+        void            PrepareTerrainResources();
         /**
         * Prepares project resource group(s)
         */

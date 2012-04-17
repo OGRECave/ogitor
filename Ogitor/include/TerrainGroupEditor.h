@@ -73,10 +73,15 @@ namespace Ogitors
         virtual bool     unLoad();
         virtual TiXmlElement* exportDotScene(TiXmlElement *pParent);
         /**
-        * Removes a page from group
+        * Removes a page from the group
         * @param page handle to terrain page editor to be removed
         */
         void                         removePage(CTerrainPageEditor *page);
+        /**
+        * Removes a page from the group
+        * @param x,y coordinates of the terrain slot relative to the center slot (signed) 
+        */
+        void                         removePage(int x, int y);
         /** @copydoc CBaseEditor::update(float) */
         virtual bool                 update(float timePassed);
         /** @copydoc CBaseEditor::getObjectContextMenu(UTFStringVector &) */
@@ -110,6 +115,7 @@ namespace Ogitors
         Ogre::Real                   getHeightAt(Ogre::Real x, Ogre::Real z);
         inline Ogre::String          getPageNamePrefix() { return mPageNamePrefix->get(); }
         Ogre::Vector3                getPagePosition(const int x, const int y);
+        CTerrainPageEditor*          getPage(const int x, const int y);
         bool                         addPage(const int x, const int y, const Ogre::String diffuse, const Ogre::String normal);
         /**
         * Fetches terrain editor handle
@@ -417,8 +423,13 @@ namespace Ogitors
         static PropertyOptionsVector *GetMaxBatchSizes() { return &mMaxBatchSizes; }
 
         static PropertyOptionsVector *GetMaterialGeneratorTypes() { return &mMaterialGeneratorTypes; }
+        
+        static PropertyOptionsVector GetNormalHeightFilenames();
+        static PropertyOptionsVector GetDiffuseSpecularFilenames();
 
     private:
+        /* Sets up the project resources for use in Ogitor */
+        void addEditorResources(bool changeDefaultNames = true);
         static PropertyOptionsVector mColourMapSizeOptions;     /** Colour map size options property(ies) */
         static PropertyOptionsVector mMapSizeOptions;           /** Map size options property(ies) */
         static PropertyOptionsVector mMinBatchSizes;

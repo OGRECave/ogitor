@@ -7,7 +7,7 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2011 Andrew Fenn <andrewfenn@gmail.com> and the Ogitor Team
+/// Copyright (c) 2012 Andrew Fenn <andrewfenn@gmail.com> and the Ogitor Team
 //
 /// The MIT License
 ///
@@ -30,70 +30,50 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
+#pragma once
+
+#include "OgitorsPrerequisites.h"
 #include <QtGui/QtGui>
-#include "uiterrainsquare.hxx"
 
-UITerrainSquare::UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent, const int x, const int y, const bool hasTerrain):
-    QObject(view),
-    QGraphicsRectItem(),
-    mSelected(false)
+//----------------------------------------------------------------------------------------
+
+#if defined( __WIN32__ ) || defined( _WIN32 )
+   #ifdef IMAGECONVERTER_EXPORT
+     #define ICExport __declspec (dllexport)
+   #else
+     #define ICExport __declspec (dllimport)
+   #endif
+#else
+   #define ICExport
+#endif
+
+//----------------------------------------------------------------------------------------
+
+class ICExport ImageConverter 
 {
-    // Set location specific details
-    setRect(x*30, y*30, 30, 30);
-    mPosX = x;
-    mPosY = y;
-    mHasTerrain = hasTerrain;
+public:
+    ImageConverter(const size_t& width=128, const size_t& height=128);
 
-    // Set square colour
-    QColor green(71, 130, 71);
-    QColor gray(52, 51, 49);
-    QPen pen(Qt::black);
-    QBrush brush(gray);
+    virtual ~ImageConverter();
 
-    if (hasTerrain)
-        brush = QBrush(green);
+    QImage fromOgreImage(const Ogre::Image& image);
+    QImage fromOgreImageName(const Ogre::String& name, const Ogre::String& resourceGroup);
+    QImage fromOgreMaterialName(const Ogre::String& name, const Ogre::String& resourceGroup);
 
-    setPen(pen);
-    setBrush(brush);
+protected:
+    QImage _getRenderTarget(const Ogre::String& matName);
+    QImage _imageFromRenderTarget(const Ogre::Image& img);
 
-    mView = view;
-    mParent = parent;
-}
+    Ogre::String mResourceGroup;
+    Ogre::ResourceGroupManager *mResourceManager;
 
-void UITerrainSquare::setSelected(const bool& selected)
-{
-    QColor green(71, 130, 71);
-    QColor grey(52, 51, 49);
-    QColor orange(173, 81, 44);
+    Ogre::RenderTexture *mRttTex;
 
-    mSelected = selected;
+    Ogre::SceneManager *mSceneMgrPtr;
+    Ogre::Entity* mEntityTerrain;
 
-    if (mSelected)
-    {
-       setBrush(QBrush(orange));
-       return;
-    }
+    size_t mHeight;
+    size_t mWidth;
+};
 
-    if (!mHasTerrain) {
-        setBrush(QBrush(grey));     
-    } else {
-        setBrush(QBrush(green));
-    }
-}
-
-bool UITerrainSquare::hasFreeNeighbour()
-{
-    for(int y = mPosY-1; y < mPosY+2; y++)
-    {
-        for(int x = mPosX-1; x < mPosX+2; x++)
-        {
-            if (y == mPosY && x == mPosX)
-                continue;
-
-            if (!mParent->hasTerrain(x, y))
-                return true;
-        }
-    }
-    return false;
-}
-
+//----------------------------------------------------------------------------------------

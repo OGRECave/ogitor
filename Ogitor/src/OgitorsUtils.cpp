@@ -906,6 +906,35 @@ void OgitorsUtils::SphereQuery(const Ogre::Vector3& pos, Ogre::Real radius, Obje
     }
 }
 //----------------------------------------------------------------------------------------
+Ogitors::PropertyOptionsVector OgitorsUtils::GetResourceFilenames(const Ogre::String& resourceName, const Ogre::String resourceType, const Ogre::String match)
+{
+    Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+    Ogre::FileInfoListPtr resList = mngr->listResourceFileInfo(resourceName);
+
+    PropertyOptionsVector resourceList;
+    
+    if (resList->size() == 0)
+        return resourceList;
+
+    Ogre::String fname;
+    for (Ogre::FileInfoList::const_iterator it = resList->begin(); it != resList->end(); ++it)
+    {
+        Ogre::FileInfo fInfo = (*it);
+
+        if(!resourceType.empty() && fInfo.archive->getType() != resourceType)
+            continue;
+
+        if (!match.empty() && fInfo.filename.find(match) == -1)
+            continue;
+
+        resourceList.push_back(PropertyOption(fInfo.filename, Ogre::Any(fInfo.filename)));
+    }
+    resList.setNull();
+
+    std::sort(++(resourceList.begin()), resourceList.end(), PropertyOption::comp_func); 
+    return resourceList;
+}
+//----------------------------------------------------------------------------------------
 Ogre::String OgitorsUtils::GetValueString(OgitorsPropertyValue& value)
 {
     switch(value.propType)
@@ -1158,7 +1187,7 @@ bool OgitorsUtils::SaveImageOfs(Ogre::Image& image, Ogre::String filename)
 
     Ogre::DataStreamPtr imgDataPtr = image.encode(extension);
 
-    OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+    OFS::OfsPtr& filePtr = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     unsigned int file_size = imgDataPtr->size();
     
@@ -1171,8 +1200,8 @@ bool OgitorsUtils::SaveImageOfs(Ogre::Image& image, Ogre::String filename)
 
     try
     {
-        mFile->createFile(handle, filename.c_str(), file_size, file_size, data);
-        mFile->closeFile(handle);
+        filePtr->createFile(handle, filename.c_str(), file_size, file_size, data);
+        filePtr->closeFile(handle);
     }
     catch(...)
     {
@@ -1189,16 +1218,16 @@ bool OgitorsUtils::SaveStreamOfs(std::stringstream& stream, Ogre::String filenam
 {
         OFS::OFSHANDLE handle;
 
-        OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+        OFS::OfsPtr& filePtr = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
         unsigned int file_size = stream.str().size();
 
-        OFS::OfsResult ret = mFile->createFile(handle, filename.c_str(), file_size, file_size, stream.str().c_str());
+        OFS::OfsResult ret = filePtr->createFile(handle, filename.c_str(), file_size, file_size, stream.str().c_str());
 
         if(ret != OFS::OFS_OK)
             return false;
         
-        mFile->closeFile(handle);
+        filePtr->closeFile(handle);
 
         return true;
 }
@@ -1207,7 +1236,7 @@ bool OgitorsUtils::SaveStreamOfs(std::stringstream& stream, Ogre::String filenam
 
 bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
 {
-    OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+    OFS::OfsPtr& filePtr = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     OFS::OFSHANDLE fhandle;
 
@@ -1241,7 +1270,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
                 stream.read(tmp_buffer, MAX_BUFFER_SIZE);
                 try
                 {
-                    if(mFile->createFile(fhandle, file_ofs_path.c_str(), MAX_BUFFER_SIZE, MAX_BUFFER_SIZE, tmp_buffer) != OFS::OFS_OK)
+                    if(filePtr->createFile(fhandle, file_ofs_path.c_str(), MAX_BUFFER_SIZE, MAX_BUFFER_SIZE, tmp_buffer) != OFS::OFS_OK)
                     {
                         stream.close();
                         continue;
@@ -1262,13 +1291,13 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
                         if(stream_size >= MAX_BUFFER_SIZE)
                         {
                             stream.read(tmp_buffer, MAX_BUFFER_SIZE);
-                            mFile->write(fhandle, tmp_buffer, MAX_BUFFER_SIZE);
+                            filePtr->write(fhandle, tmp_buffer, MAX_BUFFER_SIZE);
                             stream_size -= MAX_BUFFER_SIZE;
                         }
                         else
                         {
                             stream.read(tmp_buffer, stream_size);
-                            mFile->write(fhandle, tmp_buffer, stream_size);
+                            filePtr->write(fhandle, tmp_buffer, stream_size);
                             stream_size = 0;
                         }
                     }
@@ -1278,7 +1307,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
                 }
 
                 stream.close();
-                mFile->closeFile(fhandle);
+                filePtr->closeFile(fhandle);
             }
             else
             {
@@ -1288,7 +1317,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
                 {
                     // CreateFile accepts initial data to be written during allocation
                     // It's an optimization, that's why we don't have to call Ofs:write after createFile
-                    if(mFile->createFile(fhandle, file_ofs_path.c_str(), stream_size, stream_size, tmp_buffer) != OFS::OFS_OK)
+                    if(filePtr->createFile(fhandle, file_ofs_path.c_str(), stream_size, stream_size, tmp_buffer) != OFS::OFS_OK)
                     {
                         stream.close();
                         continue;
@@ -1299,7 +1328,7 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
                 }
 
                 stream.close();
-                mFile->closeFile(fhandle);
+                filePtr->closeFile(fhandle);
             }
         }
     }
@@ -1313,10 +1342,24 @@ bool OgitorsUtils::CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path)
     for(unsigned int i = 0; i < filelist.size(); i++)
     {
         Ogre::String dir_name = ofs_path + filelist[i] + "/"; 
-        mFile->createDirectory(dir_name.c_str());
+        filePtr->createDirectory(dir_name.c_str());
         CopyDirOfs(dirpath + "/" + filelist[i], dir_name);
     }
 
     return true;
 }
 //----------------------------------------------------------------------------------------
+bool OgitorsUtils::CopyFileOfs(Ogre::String filepath, Ogre::String ofs_dest)
+{
+    std::ifstream fileStream;
+    fileStream.open(filepath.c_str(), std::fstream::in | std::fstream::binary);
+
+    if(!fileStream.is_open())
+        return false;
+
+    std::stringstream stream;
+    stream << fileStream.rdbuf();
+    fileStream.close();
+
+    return OgitorsUtils::SaveStreamOfs(stream, ofs_dest);
+}

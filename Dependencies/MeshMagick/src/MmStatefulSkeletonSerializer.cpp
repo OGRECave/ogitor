@@ -73,7 +73,7 @@ namespace meshmagick
         }
 
         Endian endianMode = keepEndianess ? mSkeletonFileEndian : ENDIAN_NATIVE;
-        exportSkeleton(mSkeleton.getPointer(), name, endianMode);
+        exportSkeleton(mSkeleton.getPointer(), name, SKELETON_VERSION_LATEST, endianMode);
     }
 
     void StatefulSkeletonSerializer::clear()

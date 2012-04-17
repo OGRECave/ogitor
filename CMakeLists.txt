@@ -198,6 +198,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/vector3"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/debugger"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
 )
@@ -245,7 +246,6 @@ if(UNIX)
         set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "libOgreOfsPlugin path" FORCE)
     endif(OGITOR_DIST)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 else(UNIX)
     # We are on Windows
     set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
@@ -260,6 +260,8 @@ else(UNIX)
     set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogre plugins path" FORCE)
     set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "libOgreOfsPlugin path" FORCE)
 endif(UNIX)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 
 # hide advanced options
 mark_as_advanced(
@@ -301,6 +303,7 @@ add_subdirectory(Dependencies/Angelscript)
 #add_subdirectory(Dependencies/lua)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
+add_subdirectory(Dependencies/ImageConverter)
 add_subdirectory(Dependencies/GenericTextEditor)
 add_subdirectory(Dependencies/GenericImageEditor)
 IF(OGITOR_MESHMAGICK_INTERFACE)
@@ -369,6 +372,12 @@ if(WIN32)
 	FILE(GLOB ofs_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
 	install(FILES ${ofs_headers}
 		DESTINATION ${PREFIX}/sdk/dependencies/include/OFS
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+	)
+	# SDK: ImageConverter headers
+	FILE(GLOB ImageConverter_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
+	install(FILES ${ImageConverter_headers}
+		DESTINATION ${PREFIX}/sdk/dependencies/include/ImageConverter
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 	)
 	# SDK: GenericImageEditor headers
@@ -491,6 +500,14 @@ ${CMAKE_INSTALL_PREFIX}/include/ogitor
     install(FILES ${ofs_headers}
         DESTINATION
 ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/OFS
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+    # SDK: ImageConverter headers
+    FILE(GLOB ImageConverter_headers
+"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
+    install(FILES ${ImageConverter_headers}
+        DESTINATION
+${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/ImageConverter
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: GenericImageEditor headers

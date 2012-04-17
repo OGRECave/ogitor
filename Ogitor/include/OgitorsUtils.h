@@ -196,6 +196,13 @@ namespace Ogitors
             *IndexBuffer = mIndexBuffer;
         }
         /**
+        * Get's a list of files in an OGRE resource
+        * @param resourceName the name of the OGRE resource to get the name list from
+        * @param resourceType optional parameter, whether the resource is from Ofs or FileSystem
+        * @param searchName optional parameter, will only return files that match this string
+        */
+        static Ogitors::PropertyOptionsVector GetResourceFilenames(const Ogre::String &resourceName, const Ogre::String resourceType="", const Ogre::String match="");
+        /**
         * Frees internal vertex and index buffers
         */
         static void FreeBuffers()
@@ -257,6 +264,12 @@ namespace Ogitors
         * @param ofs_path path of the OFS directory to copy files into
         */
         static bool CopyDirOfs(Ogre::String dirpath, Ogre::String ofs_path);
+        /**
+        * Copies a file into OFS file system
+        * @param filepath path of the file in a system directory
+        * @param ofs_dest path of the OFS file to write to
+        */
+        static bool CopyFileOfs(Ogre::String filepath, Ogre::String ofs_dest);
         
     protected:
         static Ogre::String   mExePath;

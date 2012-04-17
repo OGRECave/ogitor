@@ -739,9 +739,7 @@ void MainWindow::closeScene()
 //------------------------------------------------------------------------------
 void MainWindow::exitApp()
 {
-    mUpdateLastSceneFile2 = OgitorsRoot::getSingletonPtr()->IsSceneLoaded();
-    if(OgitorsRoot::getSingletonPtr()->TerminateScene())
-        close();
+	qApp->closeAllWindows();
 }
 //------------------------------------------------------------------------------
 void MainWindow::saveScene(const QString& exportfile)

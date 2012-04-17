@@ -46,27 +46,22 @@ public:
     UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *parent, const int x, const int y, const bool hasTerrain);
     /** Returns true if the terrain page has no neighbour terrain pages next to it **/
     bool hasFreeNeighbour();
-
-    QAction* actAddPage;
-    QAction* actAddNeighbourPage;
-    QAction* actRemovePage;
-
-public Q_SLOTS:
-    void addPage();
-    void removePage();
-    void addNeighbourPage();
-
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
+    /** If the terrain page was click selected by the user */
+    inline bool isSelected() { return mSelected; };
+    /** Sets the terrain page to selected to perform actions against it */
+    void setSelected(const bool& selected);
+    /** returns if the terrain page has terrain already **/
+    inline bool hasTerrain() { return mHasTerrain; };
+    /** returns the X postion of where the terrain page is located **/
+    inline int getPosX() { return mPosX; };
+    /** returns the Y postion of where the terrain page is located **/
+    inline int getPosY() { return mPosY; };
 private:
-    void createPage();
-
-    QMenu mContextMenu;
     QGraphicsView* mView;
     int mPosX;
     int mPosY;
-    ManageTerrainDialog *mParent;
     bool mHasTerrain;
+    bool mSelected;
+    ManageTerrainDialog* mParent;
 };
 

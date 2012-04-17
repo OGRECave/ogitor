@@ -26,7 +26,7 @@ if(WIN32)
 	)
 
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/plugins_debug.cfg
-		${CMAKE_CURRENT_SOURCE_DIR}/bin/resources.cfg
+		#${CMAKE_CURRENT_SOURCE_DIR}/bin/resources.cfg
 		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
 		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
 		DESTINATION bin

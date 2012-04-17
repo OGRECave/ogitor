@@ -78,6 +78,18 @@ public:
     virtual void        onAfterDisplay(){};
 
     /**
+    * Called when a save request was issued, but only if the member variable mUseDefaultSaveLogic
+    * was set to false. Otherwise the default saving logic of the generic text editor will be used.
+    */
+    virtual void        onSave(){};
+
+    /**
+    * Called after each successful save, regardless of whether it was executed by the codec's save
+    * logic or whether the default save logic from the editor was used.
+    */
+    virtual void        onAfterSave(){};
+
+    /**
     * Called when a context menu request was triggered.
     */
     virtual void        onContextMenu(QContextMenuEvent* event){};
@@ -119,17 +131,19 @@ public:
     */
     virtual QToolBar*   getCustomToolBar(){return 0;};
 
-    QPixmap             getPixmap(){return mPixmap;}
-    QString             getDocumentIcon(){return mDocumentIcon;}
-    float               getScaleFactor(){return mScaleFactor;}
+    QPixmap getPixmap(){return mPixmap;}
+    QString getDocumentIcon(){return mDocumentIcon;}
+    bool isUseDefaultSaveLogic(){return mUseDefaultSaveLogic;};
+    float getScaleFactor(){return mScaleFactor;}
 
 protected:
     GenericImageEditorDocument*     mGenImgEdDoc;
-    unsigned char*                  mBuffer;
+    unsigned char*                 mBuffer;
     QPixmap                         mPixmap;
     QString                         mDocName;
     QString                         mDocumentIcon;
     float                           mScaleFactor;
+    bool                            mUseDefaultSaveLogic;
 };
 
 //----------------------------------------------------------------------------------------
