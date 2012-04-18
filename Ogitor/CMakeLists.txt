@@ -151,10 +151,10 @@ message(STATUS ${OGRE_LIBRARY})
 target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
 
 # specify a precompiled header to use
-#use_precompiled_header(Ogitor 
-#  "${CMAKE_CURRENT_SOURCE_DIR}/include/OgitorsPrerequisites.h"
-#  "${CMAKE_CURRENT_SOURCE_DIR}/src/PrecompiledHeaders.cpp"
-#)
+use_precompiled_header(Ogitor 
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/OgitorsPrerequisites.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/PrecompiledHeaders.cpp"
+)
 
 if(APPLE)
         find_package(Cocoa REQUIRED)
