@@ -30,8 +30,8 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "tinyxml.h"
 #include "OgitorsPrerequisites.h"
+#include "tinyxml.h"
 #include "OgitorsClipboardManager.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
