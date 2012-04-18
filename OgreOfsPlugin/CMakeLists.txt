@@ -12,7 +12,7 @@ set(OgreOfsPlugin_srcs
 	./src/Plugin.cpp
 )
 
-add_library(OgreOfsPlugin SHARED ${OgreOfsPlugin_hdrs} ${OgreOfsPlugin_srcs})
+ogitor_add_library(OgreOfsPlugin SHARED ${OgreOfsPlugin_hdrs} ${OgreOfsPlugin_srcs})
 set(LIBRARY_OUTPUT_PATH ../lib)
 
 

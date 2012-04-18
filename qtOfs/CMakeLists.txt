@@ -46,7 +46,7 @@ else(NOT QT4_FOUND)
 		file(GLOB qtOfs_res ./res/*.rc)
 	endif(WIN32)
 
-        add_executable(qtOfs WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
+        ogitor_add_executable(qtOfs WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
 
 	if(WIN32)
 		set_target_properties(qtOfs PROPERTIES DEBUG_POSTFIX _d)

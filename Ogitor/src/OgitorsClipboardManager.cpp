@@ -42,7 +42,7 @@
 
 using namespace Ogitors;
 
-template<> OgitorsClipboardManager* Singleton<OgitorsClipboardManager>::ms_Singleton = 0;
+template<> OgitorsClipboardManager* Ogitors::Singleton<OgitorsClipboardManager>::ms_Singleton = 0;
 unsigned int OgitorsClipboardManager::mClipboardMaxSize = 10;
 
 //----------------------------------------------------------------------------------

@@ -44,7 +44,7 @@ if(UNIX)
 	set(CMAKE_CXX_FLAGS -fPIC)
 endif(UNIX)
 
-add_library(PagedGeometry ${HEADER_FILES} ${SOURCE_FILES}  )
+ogitor_add_library(PagedGeometry ${HEADER_FILES} ${SOURCE_FILES}  )
 set(LIBRARY_OUTPUT_PATH  ../lib)
 
 set_target_properties(PagedGeometry PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)

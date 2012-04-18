@@ -36,11 +36,6 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include <string>
 using namespace Ogre;
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-
 namespace Forests {
 
 //-------------------------------------------------------------------------------------
@@ -360,7 +355,7 @@ void BatchedGeometry::_notifyCurrentCamera(Camera *cam)
 		//Calculate camera distance
 		Vector3 camVec = _convertToLocal(cam->getDerivedPosition()) - center;
 		Real centerDistanceSquared = camVec.squaredLength();
-		minDistanceSquared = max(0.0f, centerDistanceSquared - (radius * radius));
+		minDistanceSquared = std::max(0.0f, centerDistanceSquared - (radius * radius));
 		//Note: centerDistanceSquared measures the distance between the camera and the center of the GeomBatch,
 		//while minDistanceSquared measures the closest distance between the camera and the closest edge of the
 		//geometry's bounding sphere.

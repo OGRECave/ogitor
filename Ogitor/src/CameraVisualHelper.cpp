@@ -43,10 +43,10 @@ using namespace Ogitors;
 
 
 // number of indices we will use
-const size_t         gEstimateIndexCount     = 0;
+const size_t         gCameraEstimateIndexCount     = 0;
 
 // number of vertices we will draw (2 quads and 4 conecting lines)
-const size_t         gEstimatedVertexCount   = 2 * 4 + 4 * 2;
+const size_t         gCameraEstimatedVertexCount   = 2 * 4 + 4 * 2;
 
 // constructor
 CCameraVisualHelper::CCameraVisualHelper(CBaseEditor *parent)
@@ -75,8 +75,8 @@ CCameraVisualHelper::CCameraVisualHelper(CBaseEditor *parent)
     mSceneManager = parent->getSceneManager();
     // create our manual object and set initial values
     mVisualHelperObject =  mSceneManager->createManualObject("CVH" + parent->getName());
-    mVisualHelperObject->estimateIndexCount(gEstimateIndexCount);
-    mVisualHelperObject->estimateVertexCount(gEstimatedVertexCount);
+    mVisualHelperObject->estimateIndexCount(gCameraEstimateIndexCount);
+    mVisualHelperObject->estimateVertexCount(gCameraEstimatedVertexCount);
     mVisualHelperObject->setDynamic(true);
 
     // create a material for the visual representation

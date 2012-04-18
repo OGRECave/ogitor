@@ -53,9 +53,9 @@ else(NOT OIS_FOUND)
 	endif(WIN32)
 
 	if(NOT APPLE)
-		add_executable(SampleLoadApp WIN32 ${SRCS} ${SampleLoadApp_res})
+		ogitor_add_executable(SampleLoadApp WIN32 ${SRCS} ${SampleLoadApp_res})
 	else()
-		add_executable(SampleLoadApp MACOSX_BUNDLE 
+		ogitor_add_executable(SampleLoadApp MACOSX_BUNDLE 
 			${SRCS} 
 			${SampleLoadApp_res})
 	endif(NOT APPLE)

@@ -225,6 +225,12 @@ set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 
+# Unity build options
+# A Unity build includes all sources files in just a few actual compilation units
+# to potentially speed up the compilation.
+option(OGITOR_UNITY_BUILD "Enable unity build for Ogitor." FALSE)
+set(OGITOR_UNITY_FILES_PER_UNIT "50" CACHE STRING "Number of files per compilation unit in Unity build.")
+
 # configure global paths for OgitorsGlobals
 if(UNIX)
     set(DBG_POSTFIX "")
