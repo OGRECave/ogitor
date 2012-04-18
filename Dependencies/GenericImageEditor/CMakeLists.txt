@@ -60,7 +60,7 @@ else(NOT QT4_FOUND)
     include_directories(../ImageConverter/include)
 
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor ImageConverter)
-    add_library(GenericImageEditor SHARED ${SRCS})
+    ogitor_add_library(GenericImageEditor SHARED ${SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
 	add_dependencies(GenericImageEditor OFS)

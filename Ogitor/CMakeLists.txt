@@ -2,6 +2,7 @@ include_directories(${DEPENDENCIES_INCLUDES})
 include_directories(include)
 
 include(PrecompiledHeader)
+include(OgreAddTargets)
 
 set(Ogitor_hdrs
 	./include/AxisGizmo.h
@@ -135,7 +136,8 @@ set(Ogitor_srcs
 	${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp	
 )
 
-add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
+#add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
+ogitor_add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
 set(LIBRARY_OUTPUT_PATH ../lib)
 
 

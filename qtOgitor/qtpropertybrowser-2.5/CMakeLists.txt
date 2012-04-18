@@ -152,7 +152,7 @@ ELSE(NOT QT4_FOUND)
     ${qtpropertyeditor_HDRS}
     )
 
-    ADD_LIBRARY(QtSolutions_PropertyBrowser SHARED ${SRCS})
+    add_library(QtSolutions_PropertyBrowser SHARED ${SRCS})
 
     TARGET_LINK_LIBRARIES(QtSolutions_PropertyBrowser ${QT_LIBRARIES})
 

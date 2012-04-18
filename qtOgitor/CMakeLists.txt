@@ -166,7 +166,7 @@ else(NOT QT4_FOUND)
     endif(WIN32)
 
     if(NOT APPLE)
-        add_executable(qtOgitor WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOgitor_res})
+        ogitor_add_executable(qtOgitor WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOgitor_res})
     else()
         # The first time we build Ogitor.framework will not exist so create a dummy file if necessary
         find_file(OGITOR_FRAMEWORK_FILE Ogitor.framework "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/" NO_SYSTEM_ENVIRONMENT_PATH)

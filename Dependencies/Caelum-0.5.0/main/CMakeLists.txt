@@ -70,7 +70,7 @@ include_directories(include)
 #include_directories ( ${OGITOR_SM_INCLUDES} )
 link_libraries(Caelum  ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(Caelum SHARED ${HEADER_FILES} ${SOURCE_FILES})
+ogitor_add_library(Caelum SHARED ${HEADER_FILES} ${SOURCE_FILES})
 set(LIBRARY_OUTPUT_PATH  ../../lib)
 
 set_target_properties(Caelum PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
