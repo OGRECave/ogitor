@@ -20,18 +20,6 @@ set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPOR
 
 target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARY} OFS ${Boost_LIBRARIES})
 
-if(APPLE)
-
-	# Setup to be a framework
-	set_target_properties(OgreOfsPlugin PROPERTIES FRAMEWORK TRUE)
-	set_target_properties(OgreOfsPlugin PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
-
-	# Framework is called 'OgreOfsPlugin'
-	set_target_properties(OgreOfsPlugin PROPERTIES OUTPUT_NAME OgreOfsPlugin)
-	# Set the INSTALL_PATH so that Frameworks can be local
-	set_target_properties(OgreOfsPlugin PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Frameworks")
-endif(APPLE)
-
 if(WIN32)
 	add_custom_command(TARGET OgreOfsPlugin PRE_BUILD
 		COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
@@ -61,7 +49,6 @@ ENDIF(UNIX AND NOT APPLE)
 if (APPLE)
 	install(TARGETS OgreOfsPlugin
             LIBRARY DESTINATION lib
-            FRAMEWORK DESTINATION "~/Library/Frameworks"
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif(APPLE)
 

@@ -65,4 +65,7 @@ if(UNIX)
     endif(OGITOR_DIST)
 endif(UNIX)
 
+if (APPLE)
+	file(COPY Plugins/Icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Plugins)
+endif(APPLE)
 # vim: set sw=2 ts=2 noet:
