@@ -47,7 +47,7 @@ else(NOT QT4_FOUND)
     include_directories(${OGITOR_INCLUDES})
 
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} Ogitor)
-    add_library(ImageConverter SHARED ${SRCS})
+    ogitor_add_library(ImageConverter SHARED ${SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
     if(NOT OGITOR_DIST)

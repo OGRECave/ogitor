@@ -75,7 +75,7 @@ else(NOT QT4_FOUND)
 	link_directories(${DEPENDENCIES_LIBPATH})
 
 	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
-	add_library(OgModularZone SHARED ${SRCS})
+	ogitor_add_library(OgModularZone SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
 
     if(NOT OGITOR_DIST)

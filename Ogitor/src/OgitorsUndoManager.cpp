@@ -41,7 +41,7 @@
 
 using namespace Ogitors;
 
-template<> OgitorsUndoManager* Singleton<OgitorsUndoManager>::ms_Singleton = 0;
+template<> OgitorsUndoManager* Ogitors::Singleton<OgitorsUndoManager>::ms_Singleton = 0;
 
 
 //----------------------------------------------------------------------------------
