@@ -71,7 +71,7 @@ set(MESHMAGICK_HEADERS
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${OGRE_INCLUDE_DIRS})
 
-add_library(meshmagick_shared_lib SHARED ${MESHMAGICK_SOURCE} ${MESHMAGICK_HEADERS})
+ogitor_add_library(meshmagick_shared_lib SHARED ${MESHMAGICK_SOURCE} ${MESHMAGICK_HEADERS})
 set(LIBRARY_OUTPUT_PATH  ../lib)
 set_target_properties(meshmagick_shared_lib PROPERTIES
 	OUTPUT_NAME meshmagick

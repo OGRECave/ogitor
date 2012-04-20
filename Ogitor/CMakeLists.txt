@@ -1,5 +1,9 @@
 include_directories(${DEPENDENCIES_INCLUDES})
 include_directories(include)
+
+include(PrecompiledHeader)
+include(OgreAddTargets)
+
 set(Ogitor_hdrs
 	./include/AxisGizmo.h
 	./include/BaseEditor.h
@@ -103,6 +107,7 @@ set(Ogitor_srcs
 	./src/OgitorsUtils.cpp
 	./src/OgitorsPaging.cpp
 	./src/OgitorsPagedWorldSection.cpp
+	./src/PrecompiledHeaders.cpp
 	./src/TerrainGroupEditor.cpp
 	./src/TerrainGroupEditorEditing.cpp
 	./src/TerrainGroupEditorUpdate.cpp
@@ -128,10 +133,11 @@ set(Ogitor_srcs
 	./src/tinyxml.cpp
 	./src/tinyxmlerror.cpp
 	./src/tinyxmlparser.cpp
-	${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp
+	${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp	
 )
 
-add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
+#add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
+ogitor_add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
 set(LIBRARY_OUTPUT_PATH ../lib)
 
 
@@ -145,6 +151,12 @@ message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 
 message(STATUS ${OGRE_LIBRARY})
 target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
+
+# specify a precompiled header to use
+use_precompiled_header(Ogitor 
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/OgitorsPrerequisites.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/PrecompiledHeaders.cpp"
+)
 
 if(APPLE)
         find_package(Cocoa REQUIRED)

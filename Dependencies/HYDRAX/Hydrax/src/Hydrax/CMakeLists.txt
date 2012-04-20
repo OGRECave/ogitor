@@ -59,7 +59,7 @@ include_directories (.)
 # Terrain Scene Manager
 #include_directories ( ${OGITOR_SM_INCLUDES} )
 
-add_library(Hydrax SHARED ${HEADER_FILES} ${SOURCE_FILES}  )
+ogitor_add_library(Hydrax SHARED ${HEADER_FILES} ${SOURCE_FILES}  )
 SET(LIBRARY_OUTPUT_PATH  ../../../../lib)
 
 set_target_properties(PROPERTIES
