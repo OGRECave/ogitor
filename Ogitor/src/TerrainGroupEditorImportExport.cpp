@@ -61,9 +61,14 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
     extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
     extlist.push_back(OTR("PNG Grayscale"));
     extlist.push_back("*.png");
-    Ogre::String filename = mSystem->DisplayOpenDialog(OTR("Import Heightmap"),extlist);
+
+    Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
+
+    Ogre::String filename = mSystem->DisplayOpenDialog(OTR("Import Heightmap"), extlist, defaultPath);
     if(filename == "") 
         return;
+
+    mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
 
     Ogre::NameValuePairList params;
     params["check1"] = "true";
@@ -204,10 +209,13 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
 //-----------------------------------------------------------------------------------------
 void CTerrainGroupEditor::exportHeightMaps()
 {
-    Ogre::String directory = mSystem->DisplayDirectorySelector(OTR("Select a Directory to Export"));
+    Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
+    Ogre::String directory = mSystem->DisplayDirectorySelector(OTR("Select a Directory to Export"), defaultPath);
 
     if(directory.empty())
         return;
+
+    mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(directory));
 
     NameObjectPairList::iterator it = mChildren.begin();
 
@@ -221,10 +229,13 @@ void CTerrainGroupEditor::exportHeightMaps()
 //-----------------------------------------------------------------------------------------
 void CTerrainGroupEditor::exportCompositeMaps()
 {
-    Ogre::String directory = mSystem->DisplayDirectorySelector(OTR("Select a Directory to Export"));
+    Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
+    Ogre::String directory = mSystem->DisplayDirectorySelector(OTR("Select a Directory to Export"), defaultPath);
 
     if(directory.empty())
         return;
+
+    mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(directory));
 
     NameObjectPairList::iterator it = mChildren.begin();
 

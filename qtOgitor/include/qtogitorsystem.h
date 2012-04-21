@@ -74,12 +74,14 @@ public:
     void RenameFile(const Ogre::String &oldname, const Ogre::String &newname);
     void GetFileList(Ogre::String path, Ogre::StringVector &list);
     void GetDirList(Ogre::String path, Ogre::StringVector &list);
-    Ogre::String DisplayDirectorySelector(Ogre::UTFString title);
     void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value);
     void HideProgressDialog();
     void UpdateProgressDialog(int value);
-    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
-    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
+
+    Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath);
+    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
+    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
+
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
     void DisplayTerrainDialog();
     bool DisplayImportHeightMapDialog(Ogre::NameValuePairList &params);

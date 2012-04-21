@@ -48,7 +48,6 @@
 #include "TerrainGroupEditor.h"
 #include "tinyxml.h"
 #include "OgitorsUndoManager.h"
-#include "ofs.h"
 
 using namespace Ogitors;
 
@@ -111,9 +110,14 @@ bool CTerrainPageEditor::importHeightMap(Ogre::String filename, Ogre::Real fBias
         extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
         extlist.push_back(OTR("PNG Grayscale"));
         extlist.push_back("*.png");
-        filename = mSystem->DisplayOpenDialog(OTR("Import Heightmap"),extlist);
+
+        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
+
+        filename = mSystem->DisplayOpenDialog(OTR("Import Heightmap"), extlist, defaultPath);
         if(filename == "") 
             return false;
+
+        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
     }
 
     bool flipV = false;
@@ -234,9 +238,14 @@ bool CTerrainPageEditor::importBlendMap(int layerID, Ogre::String filename)
         UTFStringVector extlist;
         extlist.push_back(OTR("Image Files"));
         extlist.push_back("*.png;*.jpg;*.tga");
-        filename = mSystem->DisplayOpenDialog(OTR("Import Blendmap"),extlist);
+
+        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
+
+        filename = mSystem->DisplayOpenDialog(OTR("Import Blendmap"), extlist, defaultPath);
         if(filename == "") 
             return false;
+
+        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
     }
 
     OgitorsUndoManager::getSingletonPtr()->BeginCollection("Import Blendmap");
@@ -296,9 +305,14 @@ bool CTerrainPageEditor::importBlendMap(Ogre::String filename)
         UTFStringVector extlist;
         extlist.push_back(OTR("Image Files"));
         extlist.push_back("*.png;*.jpg;*.tga");
-        filename = mSystem->DisplayOpenDialog(OTR("Import Blendmap"),extlist);
+
+        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
+
+        filename = mSystem->DisplayOpenDialog(OTR("Import Blendmap"), extlist, defaultPath);
         if(filename == "") 
             return false;
+
+        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
     }
 
     std::fstream fstr(filename.c_str(), std::ios::in|std::ios::binary);
@@ -603,14 +617,13 @@ bool CTerrainPageEditor::exportHeightMap(Ogre::String path, Ogre::String filenam
         extlist.push_back(OTR("PNG Grayscale"));
         extlist.push_back("*.png");
 
-        Ogre::String projectLocation = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName();
-        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
+        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
         
         filename = mSystem->DisplaySaveDialog(OTR("Export Heightmap"), extlist, defaultPath);
         if(filename == "") 
             return false;
 
-        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
+        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
     }
     else
     {
@@ -702,14 +715,13 @@ bool CTerrainPageEditor::exportCompositeMap(Ogre::String path, Ogre::String file
         extlist.push_back(OTR("PNG"));
         extlist.push_back("*.png");
 
-        Ogre::String projectLocation = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName();
-        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
+        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", "");
         
         filename = mSystem->DisplaySaveDialog(OTR("Export Compositemap"), extlist, defaultPath);
         if(filename == "") 
             return false;
 
-        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
+        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
     }
     else
     {
