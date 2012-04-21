@@ -53,6 +53,21 @@ namespace Ogitors
         */
         virtual ~OgitorsSystem();
         /**
+        * Retrieves a global application saved setting
+        * @param name Name of the setting
+        * @param defaultValue A default value is the setting does not exist
+        * @return Ogre::UTFString
+        */
+        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) = 0;
+        /**
+        * Sets a global application saved setting
+        * @param group Name of the settings group
+        * @param name Name of the setting
+        * @param value The value to save
+        * @return true if successful
+        */
+        virtual bool SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value) = 0;
+        /**
         * Checks if a file exists
         * @param filename source filename
         * @return true if file exists
@@ -133,16 +148,18 @@ namespace Ogitors
         * Displays "Open File" dialog
         * @param title title of the dialog
         * @param extensionlist the list of extensions to filter out
+        * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of selected file
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList) = 0;
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Save File" dialog
         * @param title title of the dialog
         * @param extensionlist the list of extensions to filter out
+        * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of the file to be saved
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList) = 0;
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Yes/No/Cancel" or "Okay/Cancel" dialog
         * @param msg message to convey to the user
@@ -296,6 +313,14 @@ namespace Ogitors
         */
         virtual ~OgitorsDummySystem() {};
         /**
+        * @copydoc OgitorsSystem::GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue)
+        */
+        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) { };
+        /**
+        * @copydoc OgitorsSystem::SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value)
+        */
+        virtual bool SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value) {return false;};
+        /**
         * @copydoc OgitorsSystem::FileExists(const Ogre::String&)
         */
         virtual bool FileExists(const Ogre::String& filename) {return false;};
@@ -354,11 +379,11 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::DisplayOpenDialog(Ogre::UTFString, Ogre::UTFStringVector&)
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList) {return "";};
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") {return "";};
         /**
         * @copydoc OgitorsSystem::DisplaySaveDialog(Ogre::UTFString, Ogre::UTFStringVector&)
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList) {return "";};
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") {return "";};
         /**
         * @copydoc OgitorsSystem::DisplayMessageDialog(Ogre::UTFString, DIALOGTYPE)
         */

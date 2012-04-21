@@ -53,14 +53,19 @@
 #include "MultiSelEditor.h"
 
 //-------------------------------------------------------------------------------
-//---PLACE ALL CORE MESSAGES HERE SO LINGUIST CAN PICK THEM----------------------
-//-------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
 {
     QByteArray encodedString((const char*)value.data(), value.size() * 2);
     QTextCodec *codec = QTextCodec::codecForName("UTF-16");
     return codec->toUnicode(encodedString);
 }
+//-------------------------------------------------------------------------------
+Ogre::UTFString ConvertFromQString(QString& value)
+{
+    return Ogre::UTFString(value.toUtf8().constData());
+}
+//-------------------------------------------------------------------------------
+//---PLACE ALL CORE MESSAGES HERE SO LINGUIST CAN PICK THEM----------------------
 //-------------------------------------------------------------------------------
 void QtOgitorSystem::DummyTranslationFunction()
 {
@@ -311,6 +316,26 @@ bool QtOgitorSystem::CopyFile(Ogre::String source, Ogre::String destination)
     return QFile::copy(fname, fdest);
 }
 //-------------------------------------------------------------------------------
+Ogre::UTFString QtOgitorSystem::GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue)
+{
+    QSettings settings;
+    settings.beginGroup(ConvertToQString(group));
+    QString value = settings.value(ConvertToQString(name), ConvertToQString(defaultValue)).toString();
+
+    return ConvertFromQString(value);
+}
+//-------------------------------------------------------------------------------
+bool QtOgitorSystem::SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value)
+{
+    QSettings settings;
+    settings.beginGroup(ConvertToQString(group));
+    settings.setValue(ConvertToQString(name), ConvertToQString(value));
+    
+    settings.sync();
+
+    return settings.status() == QSettings::NoError;
+}
+//-------------------------------------------------------------------------------
 bool QtOgitorSystem::FileExists(const Ogre::String& filename)
 {
     return QFile(QString(filename.c_str())).exists();
@@ -463,14 +488,14 @@ void QtOgitorSystem::UpdateProgressDialog(int value)
     mProgressDialog->setValue(value);
 }
 //-------------------------------------------------------------------------------
-Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
+Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath/* = ""*/)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
     QSettings settings;
     QString theList;
     QString selectedFilter;
-    QString oldOpenPath;
+    QString oldOpenPath = ConvertToQString(defaultPath);
     for(unsigned int i = 0; i < ExtensionList.size(); i+=2)
     {
         if(i)
@@ -481,12 +506,16 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
     settings.beginGroup("OgitorSystem");
     if( theList.contains("xml", Qt::CaseInsensitive) || theList.contains(".scene", Qt::CaseInsensitive) )
     {
-        oldOpenPath = settings.value("oldDotsceneOpenPath", mProjectsDirectory).toString();
+        if (oldOpenPath.isEmpty()) {
+            oldOpenPath = settings.value("oldDotsceneOpenPath", mProjectsDirectory).toString();
+        }
         selectedFilter = settings.value("selectedDotsceneOpenFilter", "").toString();
     }
     else
     {
-        oldOpenPath = settings.value("oldOpenPath", mProjectsDirectory).toString();
+        if (oldOpenPath.isEmpty()) {
+            oldOpenPath = settings.value("oldOpenPath", mProjectsDirectory).toString();
+        }
     }
     settings.endGroup();
 
@@ -517,14 +546,14 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
-Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
+Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath/* = ""*/)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
     QSettings settings;
     QString theList;
     QString selectedFilter;
-    QString oldSavePath;
+    QString oldSavePath = ConvertToQString(defaultPath);
 
     for(unsigned int i = 0; i < ExtensionList.size(); i+=2)
     {
@@ -536,12 +565,16 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
     settings.beginGroup("OgitorSystem");
     if(theList.contains("xml", Qt::CaseInsensitive))
     {
-        oldSavePath = settings.value("oldDotsceneSavePath", mProjectsDirectory).toString();
+        if (oldSavePath.isEmpty()) {
+            oldSavePath = settings.value("oldDotsceneSavePath", mProjectsDirectory).toString();
+        }
         selectedFilter = settings.value("selectedDotsceneFilter", "").toString();
     }
     else
     {
-        oldSavePath = settings.value("oldSavePath", mProjectsDirectory).toString();
+        if (oldSavePath.isEmpty()) {
+            oldSavePath = settings.value("oldSavePath", mProjectsDirectory).toString();
+        }
         selectedFilter = settings.value("selectedFilter", "").toString();
     }
     settings.endGroup();
