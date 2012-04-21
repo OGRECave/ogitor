@@ -1,6 +1,6 @@
 /*
 This file is part of MeshMagick - An Ogre mesh file manipulation tool.
-Copyright (C) 2007-2010 Daniel Wickert
+Copyright (C) 2010 Steve Streeting
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,51 +21,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef __MM__MESHMAGICK_H__
-#define __MM__MESHMAGICK_H__
+#ifndef __MM__TOOTLETOOL_H__
+#define __MM__TOOTLETOOL_H__
 
 #include "MeshMagickPrerequisites.h"
 
-#include <OgreLog.h>
-#include <OgreSingleton.h>
-
-#include "MmOgreEnvironment.h"
 #include "MmTool.h"
-#include "MmToolManager.h"
 
-#include "MmInfoTool.h"
-#include "MmMeshMergeTool.h"
-#include "MmOptimiseTool.h"
-#include "MmRenameTool.h"
-#include "MmTransformTool.h"
+#include <OgreCommon.h>
 
 namespace meshmagick
 {
-	/** This class provides the entry point for MeshMagick usage.
-	@par
-		In order to use MeshMagick's tools from your program,
-		create a MeshMagick instance. Call the getXxxTool() member function
-		in order to retrieve a tool. Use the tool as desired.
-		Delete this class when done with the tools. Don't delete a Tool,
-		it gets destroyed when MeshMagick gets destroyed.
-	*/
-	class _MeshMagickExport MeshMagick : public Ogre::Singleton<MeshMagick>
+
+	class _MeshMagickExport TootleTool : public Tool
 	{
 	public:
-		MeshMagick(Ogre::Log* log = NULL);
-		~MeshMagick();
+		TootleTool();
+		~TootleTool();
 
-		InfoTool* getInfoTool();
-		MeshMergeTool* getMeshMergeTool();
-		TransformTool* getTransformTool();
+		Ogre::String getName() const;
+
+		void processMeshFile(Ogre::String file, Ogre::String outFile);
+		void processMesh(Ogre::MeshPtr mesh);
+		void processMesh(Ogre::Mesh* mesh);
+
+		unsigned int getVCacheSize() const { return mVCacheSize; }
+		void setVCacheSize(unsigned int sz) { mVCacheSize = sz; }
+
+		Ogre::CullingMode getCullingMode() const { return mClockwise ? Ogre::CULL_ANTICLOCKWISE : Ogre::CULL_CLOCKWISE; }
+		void setCullingMode(Ogre::CullingMode md) { mClockwise = (md == Ogre::CULL_ANTICLOCKWISE); }
+
+		unsigned int getClusters() const { return mClusters; }
+		void setClusters(unsigned int sz) { mClusters = sz; }
+	protected:
+		virtual void doInvoke(const OptionList& toolOptions,
+			const Ogre::StringVector& inFileNames,
+			const Ogre::StringVector& outFileNames);
 
 	private:
-		InfoTool* mInfoTool;
-		MeshMergeTool* mMeshMergeTool;
-		TransformTool* mTransformTool;
+		unsigned int mVCacheSize;
+		bool mClockwise;
+		unsigned int mClusters;
+		typedef std::vector<Ogre::Vector3> ViewpointList;
+		ViewpointList mViewpointList;
 
-		ToolManager* mToolManager;
-		OgreEnvironment* mOgreEnvironment;
+		void setOptions(const OptionList& options);
 	};
+
 }
-#endif
+
+#endif // __MM__TOOTLETOOL_H__

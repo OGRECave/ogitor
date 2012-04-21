@@ -31,27 +31,17 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #ifdef OGITOR_MESHMAGICK_INTERFACE
 
-#include <QtGui/QPainter>
-#include <QtCore/QEvent>
-#include <QtCore/QTime>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QDesktopServices>
+#include "qtogitorsystem.h"
 #include "magickwidget.hxx"
 #include "mainwindow.hxx"
-#include "qtpropertymanager.h"
-#include "qteditorfactory.h"
-#include "complexproperties.hxx"
 #include "OgitorsPrerequisites.h"
 #include "OgitorsSystem.h"
 #include "entityview.hxx"
 
 using namespace Ogitors;
 
-MagickDisplayWidget::MagickDisplayWidget(QWidget *parent): QWidget( parent ),
-mImage(0)
+//-------------------------------------------------------------------------------------------
+MagickDisplayWidget::MagickDisplayWidget(QWidget *parent): QWidget(parent), mImage(0)
 {
     setAcceptDrops(true);
 }
@@ -129,18 +119,17 @@ void MagickDisplayWidget::dropEvent(QDropEvent *evt)
     }
 }
 //-------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
-MagickWidget::MagickWidget(QWidget *parent): QWidget( parent ),
-mDisplayWidget(0), mMeshFileName("")
+//-------------------------------------------------------------------------------------------
+MagickWidget::MagickWidget(QWidget *parent): QWidget(parent), mDisplayWidget(0), mMeshFileName("")
 {
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setMargin(0);
     QHBoxLayout *layout2 = new QHBoxLayout();
     layout2->setMargin(0);
 
-    groupManager = new QtGroupPropertyManager(this);
+    /*groupManager = new QtGroupPropertyManager(this);
     boolManager = new QtBoolPropertyManager(this);
     intManager = new QtIntPropertyManager(this);
     doubleManager = new QtDoublePropertyManager(this);
@@ -175,7 +164,7 @@ mDisplayWidget(0), mMeshFileName("")
     propertiesWidget->setFactoryForManager(varMan1, variantEditFactory);
     propertiesWidget->setFactoryForManager(varMan2, variantEditFactory);
     propertiesWidget->setFactoryForManager(varMan3, variantEditFactory);
-    propertiesWidget->setFactoryForManager(varMan4, variantEditFactory);
+    propertiesWidget->setFactoryForManager(varMan4, variantEditFactory);*/
 
     mDisplayWidget = new MagickDisplayWidget(this);
     mToolBar = new QToolBar(this);
@@ -186,15 +175,15 @@ mDisplayWidget(0), mMeshFileName("")
     
     createActions();
 
-    layout2->addWidget(propertiesWidget);
+    /*layout2->addWidget(propertiesWidget);*/
     layout2->addWidget(mDisplayWidget);
-    layout2->setStretch(0,0);
-    layout2->setStretch(1,1);
+    layout2->setStretch(0, 0);
+    layout2->setStretch(1, 1);
 
     layout->addWidget(mToolBar);
     layout->addLayout(layout2);
-    layout->setStretch(0,0);
-    layout->setStretch(1,1);
+    layout->setStretch(0, 0);
+    layout->setStretch(1, 1);
     setLayout(layout);
 }
 //----------------------------------------------------------------------------------------
@@ -206,29 +195,29 @@ void MagickWidget::createActions()
 {
     actOpen = new QAction(tr("Open"), this);
     actOpen->setStatusTip(tr("Open a mesh file"));
-    actOpen->setIcon( QIcon( ":/icons/fileopen.svg" ));
+    actOpen->setIcon(QIcon(":/icons/fileopen.svg"));
     
     actSave = new QAction(tr("Save"), this);
     actSave->setStatusTip(tr("Save mesh file"));
-    actSave->setIcon( QIcon( ":/icons/filesave.svg" ));
+    actSave->setIcon(QIcon(":/icons/filesave.svg"));
     
     actSaveAs = new QAction(tr("Save As"), this);
     actSaveAs->setStatusTip(tr("Save mesh file as"));
-    actSaveAs->setIcon( QIcon( ":/icons/filesaveas.svg" ));
+    actSaveAs->setIcon(QIcon(":/icons/filesaveas.svg"));
 
     actMove = new QAction(tr("Move"), this);
     actMove->setStatusTip(tr("Move Mesh"));
-    actMove->setIcon( QIcon( ":/icons/translate.svg"));
+    actMove->setIcon(QIcon(":/icons/translate.svg"));
     actMove->setCheckable(true);
 
     actRotate = new QAction(tr("Rotate"), this);
     actRotate->setStatusTip(tr("Rotate Mesh"));
-    actRotate->setIcon( QIcon( ":/icons/rotate.svg"));
+    actRotate->setIcon(QIcon(":/icons/rotate.svg"));
     actRotate->setCheckable(true);
 
     actScale = new QAction(tr("Scale"), this);
     actScale->setStatusTip(tr("Scale Mesh"));
-    actScale->setIcon( QIcon( ":/icons/scale.svg"));
+    actScale->setIcon(QIcon(":/icons/scale.svg"));
     actScale->setCheckable(true);
 
     mToolBar->addAction(actOpen);
@@ -239,12 +228,12 @@ void MagickWidget::createActions()
     mToolBar->addAction(actRotate);
     mToolBar->addAction(actScale);
 
-    connect(actOpen, SIGNAL(triggered()), this, SLOT(openMesh()));
-    connect(actSave, SIGNAL(triggered()), this, SLOT(saveMesh()));
-    connect(actSaveAs, SIGNAL(triggered()), this, SLOT(saveMeshAs()));
-    connect(actMove, SIGNAL(triggered()), this, SLOT(toolTransform()));
-    connect(actRotate, SIGNAL(triggered()), this, SLOT(toolRotate()));
-    connect(actScale, SIGNAL(triggered()), this, SLOT(toolScale()));
+    connect(actOpen,    SIGNAL(triggered()), this, SLOT(openMesh()));
+    connect(actSave,    SIGNAL(triggered()), this, SLOT(saveMesh()));
+    connect(actSaveAs,  SIGNAL(triggered()), this, SLOT(saveMeshAs()));
+    connect(actMove,    SIGNAL(triggered()), this, SLOT(toolTransform()));
+    connect(actRotate,  SIGNAL(triggered()), this, SLOT(toolRotate()));
+    connect(actScale,   SIGNAL(triggered()), this, SLOT(toolScale()));
 
     actSave->setEnabled(false);
     actSaveAs->setEnabled(false);
@@ -255,13 +244,13 @@ void MagickWidget::createActions()
 //-------------------------------------------------------------------------------------------
 void MagickWidget::openMesh()
 {
-    QString title = tr("Open mesh file");
     UTFStringVector extension;
     QString ext = tr("Mesh Files ");
     extension.push_back(ext.toStdString());
     extension.push_back("*.mesh");
 
-    QString path = OgitorsSystem::getSingletonPtr()->DisplayOpenDialog(title.toStdString(), extension).c_str();
+    Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
+    QString path = mSystem->DisplayOpenDialog(OTR("Open mesh file"), extension).c_str();
 
     if(path != "")
     {
@@ -272,7 +261,7 @@ void MagickWidget::openMesh()
 
         Ogre::String meshpath = path.toStdString();
         meshpath = OgitorsUtils::ExtractFilePath(meshpath);
-        Ogre::ResourceGroupManager::getSingletonPtr()->addResourceLocation(meshpath,"FileSystem","MeshMagickGroup");
+        Ogre::ResourceGroupManager::getSingletonPtr()->addResourceLocation(meshpath, "FileSystem", "MeshMagickGroup");
         
         Ogre::MeshPtr pmesh = Ogre::MeshManager::getSingletonPtr()->load(path.toStdString(), "MeshMagickGroup");
         loadMesh(pmesh);
@@ -307,7 +296,7 @@ void MagickWidget::loadMesh(Ogre::MeshPtr pMesh)
 
     QDir(directory).mkpath("entitycache");
 
-    Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual( "MeshMagickTex", 
+    Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual("MeshMagickTex", 
                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, 
                    512, 512, 0, Ogre::PF_R8G8B8A8 , Ogre::TU_RENDERTARGET );
 
@@ -324,12 +313,12 @@ void MagickWidget::loadMesh(Ogre::MeshPtr pMesh)
     RTTCam->setFarClipDistance(0);
     RTTCam->setAspectRatio(1);
     RTTCam->setFOVy(Ogre::Degree(90));
-    RTTCam->setPosition(0,0,1);
-    RTTCam->lookAt(0,0,0);
+    RTTCam->setPosition(0, 0, 1);
+    RTTCam->lookAt(0, 0, 0);
 
     Ogre::Viewport *v = rttTex->addViewport( RTTCam );
     v->setClearEveryFrame( true );
-    v->setBackgroundColour(Ogre::ColourValue(0,0,0));
+    v->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
 
     Ogre::Entity *mEntity;
 
@@ -341,12 +330,12 @@ void MagickWidget::loadMesh(Ogre::MeshPtr pMesh)
     
     vSize += Ogre::Vector3(vSize.z, vSize.z, vSize.z);
 
-    float maxsize = std::max(std::max(vSize.x,vSize.y),vSize.z);
+    float maxsize = std::max(std::max(vSize.x, vSize.y), vSize.z);
     
     vSize = Ogre::Vector3(0, 0, maxsize * 1.15f) + vCenter;
     
-    RTTCam->setPosition(vSize.x,vSize.y,vSize.z);
-    RTTCam->lookAt(vCenter.x,vCenter.y,vCenter.z);
+    RTTCam->setPosition(vSize.x, vSize.y, vSize.z);
+    RTTCam->lookAt(vCenter.x, vCenter.y, vCenter.z);
 
     rttTex->update();
     Ogre::String imagefile = OgitorsUtils::QualifyPath(directory.toStdString() + "/entitycache/meshmagick.png");
@@ -357,6 +346,12 @@ void MagickWidget::loadMesh(Ogre::MeshPtr pMesh)
     rttTex->removeAllViewports();
     Ogre::Root::getSingletonPtr()->destroySceneManager(mSceneMgr);
     mDisplayWidget->setImage(QString(imagefile.c_str()));
+
+    actSave->setEnabled(true);
+    actSaveAs->setEnabled(true);
+    actMove->setEnabled(true);
+    actScale->setEnabled(true);
+    actRotate->setEnabled(true);
 }
 //-------------------------------------------------------------------------------------------
 #endif

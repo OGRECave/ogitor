@@ -50,14 +50,15 @@ struct DRAGDATA
 {
     Ogitors::CBaseEditor            *Object;                /** Pointer to Dragged Object */
     Ogre::String                     ObjectType;            /** Type of an object being dragged */
-    Ogitors::OgitorsPropertyValueMap Parameters; /** Information about the object */
+    Ogitors::OgitorsPropertyValueMap Parameters;            /** Information about the object */
 };
 
-typedef std::map<QString, unsigned char *> ImageMap;
+typedef std::map<QString, unsigned char*> ImageMap;
 
 class EntityViewWidget : public QWidget, public Ogitors::DragDropHandler
 {
     Q_OBJECT;
+
 public:
     explicit EntityViewWidget(QWidget *parent = 0);
     virtual ~EntityViewWidget();
@@ -66,15 +67,14 @@ public:
     QListWidget *getListWidget() {return listWidget;};
 
 public Q_SLOTS:
-        void filterBoxTextChanged(QString text);
+    void filterBoxTextChanged(QString text);
         
 protected:
     QListWidget *listWidget;
     QLineEdit   *filterBox;
     QToolButton *clearFilterButton;
     ImageMap     mIcons;
-    DRAGDATA     mDragData; 
-    
+    DRAGDATA     mDragData;     
     
     void resizeEvent(QResizeEvent* evt);
     void _createImages(ImageMap& retlist);

@@ -41,6 +41,8 @@
 
 class QListWidget;
 
+//-------------------------------------------------------------------------------------------
+
 //! Drag'n'drop structure
 /*!  
     A structure that is used to track object state after initiating dragging
@@ -49,8 +51,10 @@ struct OBJECTSDRAGDATA
 {
     Ogitors::CBaseEditor            *Object;                /** Pointer to Dragged Object */
     Ogre::String                     ObjectType;            /** Type of an object being dragged */
-    Ogitors::OgitorsPropertyValueMap Parameters; /** Information about the object */
+    Ogitors::OgitorsPropertyValueMap Parameters;            /** Information about the object */
 };
+
+//-------------------------------------------------------------------------------------------
 
 class ObjectsViewWidget : public QWidget, public Ogitors::DragDropHandler 
 {
@@ -77,5 +81,7 @@ protected:
     virtual void OnDragDropped(Ogre::Viewport *vp, Ogre::Vector2& position);
     virtual void OnDragWheel(Ogre::Viewport *vp, float delta);
 };
+
+//-------------------------------------------------------------------------------------------
 
 #endif // OBJECTSVIEW_HXX

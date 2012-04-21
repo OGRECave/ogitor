@@ -1,6 +1,6 @@
 /*
 This file is part of MeshMagick - An Ogre mesh file manipulation tool.
-Copyright (C) 2007-2010 Steve Streeting
+Copyright (C) 2010 Steve Streeting
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef __MM_OPTIMISE_TOOL_FACTORY_H__
-#define __MM_OPTIMISE_TOOL_FACTORY_H__
+#ifndef __MM_TOOTLE_TOOL_FACTORY_H__
+#define __MM_TOOTLE_TOOL_FACTORY_H__
 
 #include "MeshMagickPrerequisites.h"
 
@@ -30,9 +30,13 @@ THE SOFTWARE.
 
 namespace meshmagick
 {
-	class _MeshMagickExport OptimiseToolFactory : public ToolFactory
+
+	class _MeshMagickExport TootleToolFactory : public ToolFactory
 	{
 	public:
+		TootleToolFactory();
+		~TootleToolFactory();
+
 		virtual Tool* createTool();
 		virtual void destroyTool(Tool* tool);
 
@@ -45,6 +49,9 @@ namespace meshmagick
 		virtual Ogre::String getToolDescription() const;
 
 		virtual void printToolHelp(std::ostream& out) const;
+
 	};
+
 }
-#endif
+
+#endif // __MM_TOOTLE_TOOL_FACTORY_H__

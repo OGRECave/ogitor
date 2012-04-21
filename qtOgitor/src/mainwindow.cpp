@@ -589,6 +589,7 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mEntityViewWidget->setObjectName(QString::fromUtf8("entityViewWidget"));
     mTemplatesViewWidget = new TemplateViewWidget(parent);
     mProjectFilesViewWidget = new ProjectFilesViewWidget(parent);
+    mMeshMagickViewWidget = new MagickWidget(parent);
 
     mResourcesToolBox = new QToolBox(parent);
     mResourcesToolBox->addItem(mObjectsViewWidget, QIcon(":/icons/objects.svg"), tr("Objects"));
@@ -601,9 +602,13 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     resourcesDockWidget->setWidget(mResourcesToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), resourcesDockWidget);
 
+    mToolsToolBox = new QToolBox(parent);
+    mToolsToolBox->addItem(mMeshMagickViewWidget, QIcon(":/icons/objects.svg"), tr("Mesh Magick"));
+ 
     toolsDockWidget = new QDockWidget(parent);
     toolsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
     toolsDockWidget->setObjectName(QString::fromUtf8("toolsDockWidget"));
+    toolsDockWidget->setWidget(mToolsToolBox);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), toolsDockWidget);
 
     projectFilesDockWidget = new QDockWidget(parent);

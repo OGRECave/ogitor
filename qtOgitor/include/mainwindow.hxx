@@ -57,6 +57,7 @@ class TerrainToolsWidget;
 class GenericTextEditor;
 class ProjectFilesViewWidget;
 class GenericImageEditor;
+class MagickWidget;
 
 extern int FPSLIST[12];
 extern int BrushValueTable[25];
@@ -102,6 +103,7 @@ public:
     QToolBox*    mPropertiesToolBox;
     QToolBox*    mExplorerToolBox;
     QToolBox*    mResourcesToolBox;
+    QToolBox*    mToolsToolBox;
     QWidget*     mTerrainTab;
     QListWidget* logWidget;
     QWidget*     mScriptConsoleWidget;
@@ -248,6 +250,7 @@ public:
     OgreWidget                      *getOgreWidget() {return mOgreWidget;};
     TerrainToolsWidget              *getTerrainToolsWidget() {return mTerrainToolsWidget;};
     ProjectFilesViewWidget          *getProjectFilesViewWidget() {return mProjectFilesViewWidget;};
+    MagickWidget                    *getMeshMagickViewWidget() {return mMeshMagickViewWidget;};
     GenericTextEditor               *getGenericTextEditor() {return mGenericTextEditor;};
     GenericImageEditor              *getGenericImageEditor() {return mGenericImageEditor;};
     QTimer                          *getAutoBackupTimer() {return mAutoBackupTimer;};
@@ -279,7 +282,7 @@ public:
     *        optional icon resource path. 
     *        If a string starts with a ">" it is considered a
     *        sub menu. All following entries starting with a "#" will then be considered 
-    *        elements of that submenu.
+    *        elements of that sub menu.
     *        The third string element is an int (0 or 1) indicting whether this context 
     *        menu element should be enabled or not.
     * @param receiver the object to which the signal mapper will be connected to
@@ -359,6 +362,7 @@ private:
     ObjectsViewWidget               *mObjectsViewWidget;
     TemplateViewWidget              *mTemplatesViewWidget;
     ProjectFilesViewWidget          *mProjectFilesViewWidget;
+    MagickWidget                    *mMeshMagickViewWidget;
     PreferencesManager              *mPrefManager;
     OgitorAssistant                 *mOgitorAssistant;
     GenericTextEditor               *mGenericTextEditor;
@@ -397,12 +401,11 @@ private:
     void updateActions();
     void setupLog();
     
-    //Keeping the old version for compatibility
+    // Keeping the old version for compatibility
     void messageLogged (const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName);
     void messageLogged (const Ogre::String &message, Ogre::LogMessageLevel lml, bool maskDebug, const Ogre::String &logName, bool &skipThisMessage);
     
-    void onSceneRunStateChange(Ogitors::IEvent* evt);
-    
+    void onSceneRunStateChange(Ogitors::IEvent* evt);    
     void onSceneEditorToolChange(Ogitors::IEvent* evt);
     void onSceneModifiedChange(Ogitors::IEvent* evt);
     void onUndoManagerNotification(Ogitors::IEvent* evt);
@@ -410,7 +413,6 @@ private:
 
 private Q_SLOTS:
     void autoSaveScene();
-    //void toggleLogMessages();
 };
 
 //-----------------------------------------------------------------------------------------
