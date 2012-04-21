@@ -628,13 +628,10 @@ void QtOgitorSystem::ShowMouseCursor(bool bShow)
     mRenderViewWidget->showCursorEx(bShow);
 }
 //-------------------------------------------------------------------------------
-bool QtOgitorSystem::DisplayTerrainDialog(Ogre::NameValuePairList &params)
+void QtOgitorSystem::DisplayTerrainDialog()
 {
-    params.clear();
     ManageTerrainDialog* dlg = new ManageTerrainDialog(QApplication::activeWindow());
     dlg->show();
-
-    return false;
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList &params)

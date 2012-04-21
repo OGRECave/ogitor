@@ -79,7 +79,7 @@ public:
     Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
     Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
-    bool DisplayTerrainDialog(Ogre::NameValuePairList &params);
+    void DisplayTerrainDialog();
     bool DisplayImportHeightMapDialog(Ogre::NameValuePairList &params);
     bool DisplayEuclidDialog(Ogre::NameValuePairList &params);
     bool DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &params);
