@@ -74,7 +74,7 @@ void QtOgitorSystem::DummyTranslationFunction()
     QString dummyStr;
     dummyStr = tr("Parsing Scene File");
     dummyStr = tr("Applying Post Load Updates");
-    dummyStr = tr("Can not delete the main viewport!!");
+    dummyStr = tr("Cannot delete the main viewport!!");
     dummyStr = tr("Do you want to save your current project?");
     dummyStr = tr("Do you want to remove %s?");
     dummyStr = tr("No free slots to create a page. Please increase rows or columns.");
@@ -228,10 +228,8 @@ bool CopyDir(const QString& src, const QString& target, const QString& targetRoo
     if (!QDir(from).exists())
         return false;
 
-
-    if (!QDir(to).exists()) {
+    if (!QDir(to).exists())
         Mkdir(to);
-    }
 
     QString filename;
     QDirIterator it(from, QDir::AllDirs | QDir::Files, QDirIterator::NoIteratorFlags);
@@ -510,8 +508,8 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
         theList += ConvertToQString(ExtensionList[i]) + QString(" (") + ConvertToQString(ExtensionList[i + 1]) + QString(")");
     }
 
-
-    if( theList.contains("xml", Qt::CaseInsensitive) || theList.contains(".scene", Qt::CaseInsensitive) )
+    settings.beginGroup("system");
+    if(theList.contains("xml", Qt::CaseInsensitive) || theList.contains(".scene", Qt::CaseInsensitive))
     {
         QSettings settings;
         settings.beginGroup("OgitorSystem");
@@ -530,6 +528,22 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+
+    if(path != "")
+    {
+        settings.beginGroup("system");
+        if((theList.contains("xml", Qt::CaseInsensitive))&&(theList.contains(".scene", Qt::CaseInsensitive)))
+        {
+            settings.setValue("oldDotsceneOpenPath", path);
+            settings.setValue("selectedDotsceneOpenFilter", selectedFilter);
+        }
+        else
+        {
+            settings.setValue("oldOpenPath", path);
+        }
+        settings.endGroup();
+    }
+
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
@@ -557,6 +571,7 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
         theList += ConvertToQString(ExtensionList[i]) + QString(" (") + ConvertToQString(ExtensionList[i + 1]) + QString(")");
     }
 
+    settings.beginGroup("system");
     if(theList.contains("xml", Qt::CaseInsensitive))
     {
         QSettings settings;
@@ -575,6 +590,22 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+
+    if(path != "")
+    {
+        settings.beginGroup("system");
+        if(theList.contains("xml", Qt::CaseInsensitive))
+        {
+            settings.setValue("oldDotsceneSavePath", path);
+            settings.setValue("selectedDotsceneFilter", selectedFilter);
+        }
+        else
+        {
+            settings.setValue("oldSavePath", path);
+            settings.setValue("selectedFilter", selectedFilter);
+        }
+        settings.endGroup();
+    }
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
