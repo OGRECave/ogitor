@@ -354,16 +354,16 @@ void ProjectFilesViewWidget::onDefrag()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onDelete()
 {
-    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
+    QStringList selItems = mOfsTreeWidget->getSelectedItems();
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     if(selItems.size() > 0 && ofsFile.valid())
     {
-        if(QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Are you sure you want to delete selected files?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Are you sure you want to delete selected files/folders?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
         {
             for(int i = 0;i < selItems.size();i++)
             {
-                QString name = selItems[i]->whatsThis(0);
+                QString name = selItems.at(i);
 
                 if(name.endsWith("/"))
                     ofsFile->deleteDirectory(name.toStdString().c_str(), true);
@@ -551,8 +551,17 @@ void ProjectFilesViewWidget::onMakeAsset()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onAddFolder()
 {
-    QString selectItemName = mOfsTreeWidget->getSelected().c_str();
+    QString selectedItemName;
     QString newFolderName;
+    
+    QStringList selectItemList = mOfsTreeWidget->getSelectedItems();
+    if(selectItemList.size() > 1)
+    {
+        QMessageBox::information(QApplication::activeWindow(), "Ogitor", tr("Only select one parent folder!"));
+        return;
+    }
+    else
+        selectedItemName = selectItemList.at(0);
 
     // Search until a yet unused name has been found.
     bool nameFound = false;
@@ -566,21 +575,20 @@ void ProjectFilesViewWidget::onAddFolder()
             i++;
     }    
     
-    // If current selected item is a folder, create a subfolder. Otherwise create
+    // If current selected item is a folder, create a sub folder. Otherwise create
     // the new folder as a sibling of the selected item.
-    if(selectItemName.right(1) == "/")
-        mOfsTreeWidget->addEmptyFolder(selectItemName, newFolderName);
+    if(selectedItemName.right(1) == "/")
+        mOfsTreeWidget->addEmptyFolder(selectedItemName, newFolderName);
     else
     {
-        selectItemName = selectItemName.right(selectItemName.size() - (selectItemName.lastIndexOf("/") + 1));
-        QString parentName = mOfsTreeWidget->findItems(selectItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
+        selectedItemName = selectedItemName.right(selectedItemName.size() - (selectedItemName.lastIndexOf("/") + 1));
+        QString parentName = mOfsTreeWidget->findItems(selectedItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
         mOfsTreeWidget->addEmptyFolder(parentName, newFolderName);
     }
 }
-
+//----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::triggerRefresh()
 {
-mActRefresh->trigger();
+    mActRefresh->trigger();
 }
-
 //----------------------------------------------------------------------------------------

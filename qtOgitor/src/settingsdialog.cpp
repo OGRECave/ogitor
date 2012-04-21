@@ -238,13 +238,13 @@ void SettingsDialog::onAddDirectory()
    else
       path = lastDirPath;
 
-   OfsTreeWidget *treeWidget = new OfsTreeWidget(0, OfsTreeWidget::CAP_SHOW_DIRS, lastDirPath.toStdString());
+   OfsTreeWidget *ofsTreeWidget = new OfsTreeWidget(0, OfsTreeWidget::CAP_SHOW_DIRS, QStringList(lastDirPath));
    QGridLayout *layout = new QGridLayout();
 
    QPushButton *butOk = new QPushButton(QString("OK"));
    QPushButton *butCancel = new QPushButton(QString("Cancel"));
 
-   layout->addWidget(treeWidget, 0, 0, 1, 3);
+   layout->addWidget(ofsTreeWidget, 0, 0, 1, 3);
    layout->addWidget(butOk, 1, 0);
    layout->addWidget(butCancel, 1, 2);
 
@@ -263,7 +263,7 @@ void SettingsDialog::onAddDirectory()
 
    if(dlg.exec() == QDialog::Accepted)
    {
-       path = treeWidget->getSelected().c_str();
+       path = ofsTreeWidget->getSelectedItems().at(0);
        if(!path.isEmpty())
        {
           addResourceLocation(RES_LOC_DIR, path);
