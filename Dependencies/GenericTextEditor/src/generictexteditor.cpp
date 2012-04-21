@@ -245,8 +245,7 @@ void GenericTextEditor::closeTab(int index)
     if (!list[index]->close())
         return;
         
-    if (document == mActiveDocument)
-        disconnectActiveDocument();
+    disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec)
@@ -286,7 +285,7 @@ void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
     mActEditCut->setEnabled(false);
     mActEditCopy->setEnabled(false);
 
-    QToolBar *tb = document->getCodec()->getCustomToolBar();
+    QToolBar *tb = mActiveDocument->getCodec()->getCustomToolBar();
     if(tb != 0)
     {
         QMainWindow *mw = static_cast<QMainWindow*>(this->parentWidget());
