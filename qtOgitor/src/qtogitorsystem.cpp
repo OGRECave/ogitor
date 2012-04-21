@@ -168,12 +168,12 @@ QtOgitorSystem::~QtOgitorSystem(void)
 
 }
 //-------------------------------------------------------------------------------
-Ogre::String QtOgitorSystem::getProjectsDirectory()
+Ogre::String QtOgitorSystem::GetProjectsDirectory()
 {
     return mProjectsDirectory.toStdString();
 }
 //-------------------------------------------------------------------------------
-void QtOgitorSystem::initTreeIcons()
+void QtOgitorSystem::InitTreeIcons()
 {
     Ogitors::EditorObjectFactoryMap objects = Ogitors::OgitorsRoot::getSingletonPtr()->GetEditorObjectFactories();
     Ogitors::EditorObjectFactoryMap::iterator it = objects.begin();
@@ -466,10 +466,10 @@ Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title, Ogr
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
     // Is default path is empty then use the project location directory    
-    if (defaultPath.empty())
+    if(defaultPath.empty())
     {
-        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath( getProjectsDirectory() );
-        defaultPath = GetSetting("OgitorSystem", "oldOpenPath", defaultPath);
+        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath(GetProjectsDirectory());
+        defaultPath = GetSetting("system", "oldOpenPath", defaultPath);
     }
     
     QString oldOpenPath = ConvertToQString(defaultPath);
@@ -493,10 +493,10 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
     QString selectedFilter;
 
     // Is default path is empty then use the project location directory    
-    if (defaultPath.empty())
+    if(defaultPath.empty())
     {
-        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath( getProjectsDirectory() );
-        defaultPath = GetSetting("OgitorSystem", "oldOpenPath", defaultPath);
+        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath(GetProjectsDirectory());
+        defaultPath = GetSetting("system", "oldOpenPath", defaultPath);
     }
     
     QString oldOpenPath = ConvertToQString(defaultPath);
@@ -505,17 +505,17 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
     {
         if(i)
             theList += QString(";;");
+
         theList += ConvertToQString(ExtensionList[i]) + QString(" (") + ConvertToQString(ExtensionList[i + 1]) + QString(")");
     }
 
-    settings.beginGroup("system");
     if(theList.contains("xml", Qt::CaseInsensitive) || theList.contains(".scene", Qt::CaseInsensitive))
     {
         QSettings settings;
-        settings.beginGroup("OgitorSystem");
-        if (oldOpenPath.isEmpty()) {
+        settings.beginGroup("system");
+        if (oldOpenPath.isEmpty()) 
             oldOpenPath = settings.value("oldDotsceneOpenPath", mProjectsDirectory).toString();
-        }
+
         selectedFilter = settings.value("selectedDotsceneOpenFilter", "").toString();
         settings.endGroup();
     }
@@ -528,22 +528,6 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
-
-    if(path != "")
-    {
-        settings.beginGroup("system");
-        if((theList.contains("xml", Qt::CaseInsensitive))&&(theList.contains(".scene", Qt::CaseInsensitive)))
-        {
-            settings.setValue("oldDotsceneOpenPath", path);
-            settings.setValue("selectedDotsceneOpenFilter", selectedFilter);
-        }
-        else
-        {
-            settings.setValue("oldOpenPath", path);
-        }
-        settings.endGroup();
-    }
-
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
@@ -555,30 +539,29 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
     QString selectedFilter = "";
 
     // Is default path is empty then use the project location directory    
-    if (defaultPath.empty())
+    if(defaultPath.empty())
     {
-        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath( getProjectsDirectory() );
-        defaultPath = GetSetting("OgitorSystem", "oldOpenPath", defaultPath);
+        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath(GetProjectsDirectory());
+        defaultPath = GetSetting("system", "oldOpenPath", defaultPath);
     }
     
     QString oldSavePath = ConvertToQString(defaultPath);
 
     for(unsigned int i = 0; i < ExtensionList.size(); i+=2)
     {
-        if(i) {
+        if(i) 
             theList += QString(";;");
-        }
+
         theList += ConvertToQString(ExtensionList[i]) + QString(" (") + ConvertToQString(ExtensionList[i + 1]) + QString(")");
     }
 
-    settings.beginGroup("system");
     if(theList.contains("xml", Qt::CaseInsensitive))
     {
         QSettings settings;
-        settings.beginGroup("OgitorSystem");
-        if (oldSavePath.isEmpty()) {
+        settings.beginGroup("system");
+        if (oldSavePath.isEmpty())
             oldSavePath = settings.value("oldDotsceneSavePath", mProjectsDirectory).toString();
-        }
+
         settings.endGroup();
     }
 
@@ -590,22 +573,6 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
-
-    if(path != "")
-    {
-        settings.beginGroup("system");
-        if(theList.contains("xml", Qt::CaseInsensitive))
-        {
-            settings.setValue("oldDotsceneSavePath", path);
-            settings.setValue("selectedDotsceneFilter", selectedFilter);
-        }
-        else
-        {
-            settings.setValue("oldSavePath", path);
-            settings.setValue("selectedFilter", selectedFilter);
-        }
-        settings.endGroup();
-    }
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------

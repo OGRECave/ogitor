@@ -78,7 +78,7 @@ void CHydraxEditor::onObjectContextMenu(int menuresult)
                 return;
 
             mConfigFile->set( filename );
-            mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(filename));
+            mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(filename));
 
         break;
     }

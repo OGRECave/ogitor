@@ -61,9 +61,9 @@ public:
 
     void DummyTranslationFunction();
 
-    void initTreeIcons();
+    void InitTreeIcons();
 
-    Ogre::String getProjectsDirectory();
+    Ogre::String GetProjectsDirectory();
     Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue);
     bool SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value);
     bool FileExists(const Ogre::String& filename);

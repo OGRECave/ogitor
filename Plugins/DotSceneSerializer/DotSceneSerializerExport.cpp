@@ -153,7 +153,7 @@ int CDotSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     if(fileName == "") 
         return SCF_CANCEL;
 
-    mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileName));
+    mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileName));
 
     Ogre::String newDir = OgitorsUtils::ExtractFilePath(fileName);
 

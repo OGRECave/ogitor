@@ -1325,7 +1325,7 @@ PROJECTOPTIONS OgitorsRoot::CreateDefaultProjectOptions()
     Ogitors::PROJECTOPTIONS opt;
     opt.IsNewProject = true;
     opt.ProjectName = "";
-    opt.ProjectDir = mSystem->getProjectsDirectory();
+    opt.ProjectDir = mSystem->GetProjectsDirectory();
     opt.SceneManagerName = "OctreeSceneManager";
     opt.TerrainDirectory = "Terrain";
     opt.HydraxDirectory = "Hydrax";
@@ -1549,7 +1549,7 @@ bool OgitorsRoot::AfterLoadScene()
 
     Ogre::StringVector templateList;
 
-    Ogre::String generaltemplates = OgitorsUtils::QualifyPath(OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates/*.otl");
+    Ogre::String generaltemplates = OgitorsUtils::QualifyPath(OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates/*.otl");
     mSystem->GetFileList(generaltemplates, templateList);
     mClipboardManager->addTemplatesFromFiles(templateList, true);
     templateList.clear();
