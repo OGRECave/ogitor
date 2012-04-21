@@ -157,10 +157,10 @@ public:
         CAP_FULL_FUNCTIONS   = 0xFFFF
     };
 
-    OfsTreeWidget(QWidget *parent = 0, unsigned int capabilities = CAP_SHOW_DIRS, std::string initialSelection = "/");
+    OfsTreeWidget(QWidget *parent = 0, unsigned int capabilities = CAP_SHOW_DIRS, QStringList initialSelection = QStringList("/"));
     virtual ~OfsTreeWidget();
 
-    const std::string& getSelected() { return mSelected; }
+    const QStringList& getSelectedItems() { return mSelectedItems; }
     void refreshWidget();
     void extractFiles();
     void addFiles(QString rootDir, QStringList list);
@@ -181,7 +181,7 @@ protected:
     typedef std::map<std::string, QTreeWidgetItem*> NameTreeWidgetMap;
 
     OFS::OfsPtr       mFile;
-    std::string       mSelected;
+    QStringList       mSelectedItems;
     NameTreeWidgetMap mItemMap;
     unsigned int      mCapabilities;
     QIcon             mUnknownFileIcon;
