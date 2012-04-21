@@ -550,34 +550,27 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
-    QSettings settings;
     QString theList;
-    QString selectedFilter;
+    QString selectedFilter = "";
     QString oldSavePath = ConvertToQString(defaultPath);
 
     for(unsigned int i = 0; i < ExtensionList.size(); i+=2)
     {
-        if(i)
+        if(i) {
             theList += QString(";;");
+        }
         theList += ConvertToQString(ExtensionList[i]) + QString(" (") + ConvertToQString(ExtensionList[i + 1]) + QString(")");
     }
 
-    settings.beginGroup("OgitorSystem");
     if(theList.contains("xml", Qt::CaseInsensitive))
     {
+        QSettings settings;
+        settings.beginGroup("OgitorSystem");
         if (oldSavePath.isEmpty()) {
             oldSavePath = settings.value("oldDotsceneSavePath", mProjectsDirectory).toString();
         }
-        selectedFilter = settings.value("selectedDotsceneFilter", "").toString();
+        settings.endGroup();
     }
-    else
-    {
-        if (oldSavePath.isEmpty()) {
-            oldSavePath = settings.value("oldSavePath", mProjectsDirectory).toString();
-        }
-        selectedFilter = settings.value("selectedFilter", "").toString();
-    }
-    settings.endGroup();
 
     QString path = QFileDialog::getSaveFileName(QApplication::activeWindow(), ConvertToQString(title), oldSavePath, theList, &selectedFilter
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -587,22 +580,6 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
-
-    if(path != "")
-    {
-        settings.beginGroup("OgitorSystem");
-        if(theList.contains("xml", Qt::CaseInsensitive))
-        {
-            settings.setValue("oldDotsceneSavePath", path);
-            settings.setValue("selectedDotsceneFilter", selectedFilter);
-        }
-        else
-        {
-            settings.setValue("oldSavePath", path);
-            settings.setValue("selectedFilter", selectedFilter);
-        }
-        settings.endGroup();
-    }
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
