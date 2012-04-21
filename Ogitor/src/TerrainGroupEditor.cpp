@@ -165,58 +165,7 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
 {
     if(menuresult == 0)
     {
-        Ogitors::NameObjectPairList::iterator it;
-        Ogre::NameValuePairList params;
-        Ogre::String posval;
-
-        int minX = -1, minY = -1, maxX = 1, maxY = 1, PX, PY;
-        for(it = mChildren.begin(); it != mChildren.end(); it++)
-        {
-             CTerrainPageEditor *terrain = static_cast<CTerrainPageEditor*>(it->second);
-             PX = terrain->getPageX();
-             PY = terrain->getPageY();
-             minX = std::min(minX, PX - 1);
-             minY = std::min(minY, PY - 1);
-             maxX = std::max(maxX, PX + 1);
-             maxY = std::max(maxY, PY + 1);
-        }
-
-        int width = maxX - minX + 1;
-        int height = maxY - minY + 1;
-
-        bool *mMtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
-        for(int i = 0; i < width * height;++i)
-            mMtx[i] = true;
-
-        for(it = mChildren.begin(); it != mChildren.end();it++)
-        {
-             CTerrainPageEditor *terrain = static_cast<CTerrainPageEditor*>(it->second);
-             PX = terrain->getPageX();
-             PY = terrain->getPageY();
-
-             mMtx[((PY - minY) * width) + (PX - minX)] = false;
-        }
-
-        for(int Y = 0;Y < height;++Y)
-        {
-            for(int X = 0;X < width;++X)
-            {
-                if(mMtx[(Y * width) + X])
-                {
-                    posval = Ogre::StringConverter::toString(X + minX) + "x" + Ogre::StringConverter::toString(Y + minY);
-                    params[posval] = posval;
-                }
-            }
-        }
-
-        OGRE_FREE(mMtx, Ogre::MEMCATEGORY_GEOMETRY);
-
-        if(mSystem->DisplayTerrainDialog(params))
-        {
-            int x = Ogre::StringConverter::parseInt(params["pagex"]);
-            int y = Ogre::StringConverter::parseInt(params["pagey"]);
-            addPage(x, y, params["diffuse"], params["normal"]);
-        }
+        mSystem->DisplayTerrainDialog();
     }
     else if(menuresult == 1)
     {
