@@ -39,7 +39,7 @@ UITerrainSquare::UITerrainSquare(QGraphicsView* view, ManageTerrainDialog *paren
     mSelected(false)
 {
     // Set location specific details
-    setRect(x*30, y*30, 30, 30);
+    setRect(x*30, y*-30, 30, 30);
     mPosX = x;
     mPosY = y;
     mHasTerrain = hasTerrain;
