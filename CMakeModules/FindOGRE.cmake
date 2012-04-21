@@ -54,6 +54,7 @@ findpkg_begin(OGRE)
 
 
 # Get path, convert backslashes as ${ENV_${var}}
+getenv_path(OGRE_BYATIS)
 getenv_path(OGRE_HOME)
 getenv_path(OGRE_SDK)
 getenv_path(OGRE_SOURCE)
@@ -96,7 +97,7 @@ elseif (UNIX)
   )
 endif ()
 set(OGRE_PREFIX_PATH
-  ${OGRE_HOME} ${OGRE_SDK} ${ENV_OGRE_HOME} ${ENV_OGRE_SDK}
+  ${OGRE_HOME} ${OGRE_SDK} ${ENV_OGRE_HOME} ${ENV_OGRE_SDK} ${ENV_OGRE_BYATIS}
   ${OGRE_PREFIX_GUESSES}
 )
 create_search_paths(OGRE)
