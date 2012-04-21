@@ -72,9 +72,14 @@ void CHydraxEditor::onObjectContextMenu(int menuresult)
             UTFStringVector extlist;
             extlist.push_back(OTR("Hydrax Config File"));
             extlist.push_back("*.hdx");
-            Ogre::String filePath = mSystem->DisplayOpenDialog(OTR("Open"),extlist);
-            if( filePath.size() > 0 )
-                mConfigFile->set( filePath );
+
+            Ogre::String filename = mSystem->DisplayOpenDialog(OTR("Open"), extlist, "");
+            if(filename == "") 
+                return;
+
+            mConfigFile->set( filename );
+            mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(filename));
+
         break;
     }
 }

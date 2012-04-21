@@ -41,6 +41,7 @@
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
+#include "OgitorsUtils.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
 
@@ -484,7 +485,14 @@ void ProjectFilesViewWidget::onHidden()
 void ProjectFilesViewWidget::onImportFolder()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    Ogre::String folderName = mSystem->DisplayDirectorySelector(OTR("Choose folder to import"));
+
+    Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "importOpenPath", "");
+    Ogre::String folderName = mSystem->DisplayDirectorySelector(OTR("Choose folder to import"), defaultPath);
+
+    if (folderName == "")
+        return;
+
+    mSystem->SetSetting("OgitorSystem", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(folderName));
 
     QStringList folders(folderName.c_str());
     if(!folders.empty())
@@ -494,7 +502,14 @@ void ProjectFilesViewWidget::onImportFolder()
 void ProjectFilesViewWidget::onImportFile()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector());
+    
+    Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "importOpenPath", "");
+    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector(), defaultPath);
+
+    if (fileName == "")
+        return;
+
+    mSystem->SetSetting("OgitorSystem", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(fileName));
 
     QStringList files(fileName.c_str());
     if(!files.empty())

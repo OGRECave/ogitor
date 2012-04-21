@@ -122,12 +122,6 @@ namespace Ogitors
         */
         virtual void GetDirList(Ogre::String path, Ogre::StringVector &list) = 0;
         /**
-        * Displays "Select Directory" dialog
-        * @param title title of the dialog
-        * @return name of selected directory
-        */
-        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title) = 0;
-        /**
         * Displays Progress dialog
         * @param title title of the dialog
         * @param min minimum value of progress bar
@@ -145,13 +139,19 @@ namespace Ogitors
         */
         virtual void UpdateProgressDialog(int value) = 0;
         /**
+        * Displays "Select Directory" dialog
+        * @param title title of the dialog
+        * @return name of selected directory
+        */
+        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath) = 0;
+        /**
         * Displays "Open File" dialog
         * @param title title of the dialog
         * @param extensionlist the list of extensions to filter out
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of selected file
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
         /**
         * Displays "Save File" dialog
         * @param title title of the dialog
@@ -159,7 +159,7 @@ namespace Ogitors
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of the file to be saved
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
         /**
         * Displays "Yes/No/Cancel" or "Okay/Cancel" dialog
         * @param msg message to convey to the user
@@ -361,10 +361,6 @@ namespace Ogitors
         */
         virtual void GetDirList(Ogre::String path, Ogre::StringVector &list) {list.clear();};
         /**
-        * @copydoc OgitorsSystem::DisplayDirectorySelector(Ogre::UTFString)
-        */
-        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title) {return "";};
-        /**
         * @copydoc OgitorsSystem::DisplayProgressDialog(Ogre::UTFString, int, int, int)
         */
         virtual void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value) {};
@@ -376,6 +372,10 @@ namespace Ogitors
         * @copydoc OgitorsSystem::UpdateProgressDialog(int)
         */
         virtual void UpdateProgressDialog(int value) {};
+        /**
+        * @copydoc OgitorsSystem::DisplayDirectorySelector(Ogre::UTFString)
+        */
+        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath = "") {return "";};
         /**
         * @copydoc OgitorsSystem::DisplayOpenDialog(Ogre::UTFString, Ogre::UTFStringVector&)
         */
