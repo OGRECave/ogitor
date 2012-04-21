@@ -29,7 +29,6 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifdef OGITOR_MESHMAGICK_INTERFACE
 
 #include "qtogitorsystem.h"
 #include "magickwidget.hxx"
@@ -354,4 +353,3 @@ void MagickWidget::loadMesh(Ogre::MeshPtr pMesh)
     actRotate->setEnabled(true);
 }
 //-------------------------------------------------------------------------------------------
-#endif
