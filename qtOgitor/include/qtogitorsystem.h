@@ -64,6 +64,8 @@ public:
     void initTreeIcons();
 
     Ogre::String getProjectsDirectory();
+    Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue);
+    bool SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value);
     bool FileExists(const Ogre::String& filename);
     bool CopyFile(Ogre::String source, Ogre::String destination);
     bool CopyFilesEx(Ogre::String source, Ogre::String destination);
@@ -76,8 +78,8 @@ public:
     void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value);
     void HideProgressDialog();
     void UpdateProgressDialog(int value);
-    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
-    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
+    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
+    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
     void DisplayTerrainDialog();
     bool DisplayImportHeightMapDialog(Ogre::NameValuePairList &params);
