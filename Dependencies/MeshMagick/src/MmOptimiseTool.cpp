@@ -1,20 +1,24 @@
 /*
 This file is part of MeshMagick - An Ogre mesh file manipulation tool.
-Copyright (C) 2007-2009 Daniel Wickert
+Copyright (C) 2007-2010 Steve Streeting
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
 
 #include "MmOptimiseTool.h"
@@ -158,6 +162,11 @@ namespace meshmagick
 	//---------------------------------------------------------------------
 	void OptimiseTool::processMesh(Ogre::MeshPtr mesh)
 	{
+		processMesh(mesh.get());
+	}
+	//---------------------------------------------------------------------
+	void OptimiseTool::processMesh(Ogre::Mesh* mesh)
+	{
 		bool rebuildEdgeList = false;
 		// Shared geometry
 		if (mesh->sharedVertexData)
@@ -170,7 +179,7 @@ namespace meshmagick
 				SubMesh* sm = mesh->getSubMesh(i);
 				if (sm->useSharedVertices)
 				{
-					addIndexData(sm->indexData);
+					addIndexData(sm->indexData, sm->operationType);
 				}
 			}
 
@@ -227,7 +236,7 @@ namespace meshmagick
 				print("Optimising submesh " +
 					StringConverter::toString(i) + " dedicated vertex data ");
 				setTargetVertexData(sm->vertexData);
-				addIndexData(sm->indexData);
+				addIndexData(sm->indexData, sm->operationType);
 				if (optimiseGeometry())
 				{
 					if (mesh->getSkeletonName() != StringUtil::BLANK)
@@ -261,15 +270,15 @@ namespace meshmagick
 
 	}
 	//---------------------------------------------------------------------
-	void OptimiseTool::fixLOD(SubMesh::LODFaceList lodFaces)
+	void OptimiseTool::fixLOD(Ogre::vector<Ogre::IndexData*>::type lodFaces)
 	{
-		for (SubMesh::LODFaceList::iterator l = lodFaces.begin();
-			l != lodFaces.end(); ++l)
-		{
-			IndexData* idata = *l;
-			print("    fixing LOD...");
-			remapIndexes(idata);
-		}
+        for (Ogre::vector<Ogre::IndexData*>::type::iterator l = lodFaces.begin();
+            l != lodFaces.end(); ++l)
+        {
+            IndexData* idata = *l;
+            print("    fixing LOD...");
+            remapIndexes(idata);
+        }
 
 	}
 	//---------------------------------------------------------------------
@@ -302,6 +311,11 @@ namespace meshmagick
 	//---------------------------------------------------------------------
 	void OptimiseTool::processSkeleton(Ogre::SkeletonPtr skeleton)
 	{
+		processSkeleton(skeleton.get());
+	}
+	//---------------------------------------------------------------------
+	void OptimiseTool::processSkeleton(Ogre::Skeleton* skeleton)
+	{
 		skeleton->optimiseAllAnimations(mKeepIdentityTracks);
 	}
 	//---------------------------------------------------------------------
@@ -314,13 +328,14 @@ namespace meshmagick
 		mIndexRemap.clear();
 	}
 	//---------------------------------------------------------------------
-	void OptimiseTool::addIndexData(Ogre::IndexData* id)
+	void OptimiseTool::addIndexData(Ogre::IndexData* id, RenderOperation::OperationType ot)
 	{
-		mIndexDataList.push_back(id);
+		mIndexDataList.push_back(IndexDataWithOpType(id, ot));
 	}
 	//---------------------------------------------------------------------
 	bool OptimiseTool::optimiseGeometry()
 	{
+		bool verticesChanged = false;
 		if (calculateDuplicateVertices())
 		{
 			size_t numDupes = mTargetVertexData->vertexCount -
@@ -336,18 +351,21 @@ namespace meshmagick
 			print("    re-indexing faces...");
 			remapIndexDataList();
 			print("    done.");
-			return true;
+			verticesChanged = true;
 		}
-		else
-		{
-			print("    no optimisation required.");
-			return false;
-		}
+
+		removeDegenerateFaces();
+
+		return verticesChanged;
 	}
 	//---------------------------------------------------------------------
 	bool OptimiseTool::calculateDuplicateVertices()
 	{
 		bool duplicates = false;
+
+		// Can't remove duplicates on unindexed geometry, needs to use duplicates
+		if (mIndexDataList.empty())
+			return false;
 
 		// Lock all the buffers first
 		typedef std::vector<char*> BufferLocks;
@@ -564,7 +582,7 @@ namespace meshmagick
 	{
 		for (IndexDataList::iterator i = mIndexDataList.begin(); i != mIndexDataList.end(); ++i)
 		{
-			IndexData* idata = *i;
+			IndexData* idata = i->indexData;
 			remapIndexes(idata);
 
 		}
@@ -606,6 +624,145 @@ namespace meshmagick
 		}
 
 		idata->indexBuffer->unlock();
+
+	}
+	//---------------------------------------------------------------------
+	void OptimiseTool::removeDegenerateFaces()
+	{
+		for (IndexDataList::iterator i = mIndexDataList.begin(); i != mIndexDataList.end(); ++i)
+		{
+			// Only remove degenerate faces from triangle lists, strips & fans need them
+			if (i->operationType == RenderOperation::OT_TRIANGLE_LIST)
+			{
+				IndexData* idata = i->indexData;
+				removeDegenerateFaces(idata);
+			}
+
+		}
+
+	}
+	//---------------------------------------------------------------------
+	void OptimiseTool::removeDegenerateFaces(Ogre::IndexData* idata)
+	{
+		// Remove any faces that do not include 3 unique positions
+
+		// Only for triangle lists
+		uint16* p16 = 0;
+		uint32* p32 = 0;
+		uint16* pnewbuf16 = 0;
+		uint32* pnewbuf32 = 0;
+		uint16* pdest16 = 0;
+		uint32* pdest32 = 0;
+
+		// Lock for read only, we'll build another list
+		if (idata->indexBuffer->getType() == HardwareIndexBuffer::IT_32BIT)
+		{
+			p32 = static_cast<uint32*>(idata->indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY));
+			pnewbuf32 = pdest32 = OGRE_ALLOC_T(uint32, idata->indexCount, MEMCATEGORY_GENERAL);
+		}
+		else
+		{
+			p16 = static_cast<uint16*>(idata->indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY));
+			pnewbuf16 = pdest16 = OGRE_ALLOC_T(uint16, idata->indexCount, MEMCATEGORY_GENERAL);
+		}
+
+
+		const VertexElement* posElem = 
+			mTargetVertexData->vertexDeclaration->findElementBySemantic(VES_POSITION);
+		HardwareVertexBufferSharedPtr posBuf = mTargetVertexData->vertexBufferBinding->getBuffer(posElem->getSource());
+		unsigned char *pVertBase = static_cast<unsigned char*>(posBuf->lock(HardwareBuffer::HBL_READ_ONLY));
+		size_t vsize = posBuf->getVertexSize();
+
+		size_t newIndexCount = 0;
+		for (size_t j = 0; j < idata->indexCount; j += 3)
+		{
+			uint32 i0 = p32? *p32++ : *p16++;
+			uint32 i1 = p32? *p32++ : *p16++;
+			uint32 i2 = p32? *p32++ : *p16++;
+
+			unsigned char *pVert;
+			float* pPosVert;
+			Vector3 v0, v1, v2;
+			pVert = pVertBase + (i0 * vsize);
+			posElem->baseVertexPointerToElement(pVert, &pPosVert);
+			v0 = Vector3(pPosVert[0], pPosVert[1], pPosVert[2]);
+			pVert = pVertBase + (i1 * vsize);
+			posElem->baseVertexPointerToElement(pVert, &pPosVert);
+			v1 = Vector3(pPosVert[0], pPosVert[1], pPosVert[2]);
+			pVert = pVertBase + (i2 * vsize);
+			posElem->baseVertexPointerToElement(pVert, &pPosVert);
+			v2 = Vector3(pPosVert[0], pPosVert[1], pPosVert[2]);
+
+			// No double-indexing
+			bool validTri = i0 != i1 && i1 != i2 && i0 != i2;
+			// no equal positions
+			validTri = validTri &&
+				!v0.positionEquals(v1, mPosTolerance) && 
+				!v1.positionEquals(v2, mPosTolerance) && 
+				!v0.positionEquals(v2, mPosTolerance);
+			if (validTri)
+			{
+				// Make sure triangle has some area
+				Vector3 vec1 = v1 - v0;
+				Vector3 vec2 = v2 - v0;
+				// triangle area is 1/2 magnitude of the cross-product of 2 sides
+				// if zero, not a valid triangle
+				validTri = !Math::RealEqual((Real)0.0f, (Real)(0.5f * vec1.crossProduct(vec2).length()), 1e-04f);
+			}
+
+			if (validTri)
+			{
+				if (pdest32)
+				{
+					*pdest32++ = i0;
+					*pdest32++ = i1;
+					*pdest32++ = i2;
+				}
+				else
+				{
+					*pdest16++ = static_cast<uint16>(i0);
+					*pdest16++ = static_cast<uint16>(i1);
+					*pdest16++ = static_cast<uint16>(i2);
+				}
+				newIndexCount += 3;
+			}
+		}
+
+		idata->indexBuffer->unlock();
+		posBuf->unlock();
+
+		if (newIndexCount != idata->indexCount)
+		{
+			print("    " + StringConverter::toString(idata->indexCount - newIndexCount) +
+				" degenerate faces removed.");
+
+			// Did we remove all the faces? (really bad data only, but I've seen it happen)
+			if (newIndexCount > 0)
+			{
+				// we eliminated one or more faces
+				HardwareIndexBufferSharedPtr newIBuf = HardwareBufferManager::getSingleton().createIndexBuffer(
+					idata->indexBuffer->getType(), newIndexCount, 
+					idata->indexBuffer->getUsage());
+				if (pdest32)
+				{
+					newIBuf->writeData(0, sizeof(uint32) * newIndexCount, pnewbuf32, true);
+				}
+				else
+				{
+					newIBuf->writeData(0, sizeof(uint16) * newIndexCount, pnewbuf16, true);
+				}
+				idata->indexBuffer = newIBuf;
+			}
+			else
+			{
+				idata->indexBuffer.setNull();
+			}
+			idata->indexCount = newIndexCount;
+
+		}
+
+		OGRE_FREE(pnewbuf16, MEMCATEGORY_GENERAL);
+		OGRE_FREE(pnewbuf32, MEMCATEGORY_GENERAL);
 
 	}
 	//---------------------------------------------------------------------

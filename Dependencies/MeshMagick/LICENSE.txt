@@ -1,6 +1,4 @@
-/*
-This file is part of MeshMagick - An Ogre mesh file manipulation tool.
-Copyright (C) 2007-2010 Steve Streeting
+Copyright (c) 2010 Daniel Wickert, Henrik Hinrichs, Sascha Kolewa, Steve Streeting
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,32 +17,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
-
-#ifndef __MM_OPTIMISE_TOOL_FACTORY_H__
-#define __MM_OPTIMISE_TOOL_FACTORY_H__
-
-#include "MeshMagickPrerequisites.h"
-
-#include "MmToolFactory.h"
-
-namespace meshmagick
-{
-	class _MeshMagickExport OptimiseToolFactory : public ToolFactory
-	{
-	public:
-		virtual Tool* createTool();
-		virtual void destroyTool(Tool* tool);
-
-		virtual OptionDefinitionSet getOptionDefinitions() const;
-
-		// Returns the name of the tool this factory creates.
-		virtual Ogre::String getToolName() const;
-
-		// Returns a short description of the tool this factory creates.
-		virtual Ogre::String getToolDescription() const;
-
-		virtual void printToolHelp(std::ostream& out) const;
-	};
-}
-#endif

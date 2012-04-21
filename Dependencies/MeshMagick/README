@@ -3,6 +3,6 @@ It currently supports the three operations info, meshmerge, optimise, rename and
 
 For help call meshmagick with the -help command line option.
 
-MeshMagick is free open source software released under the LGPL license, which can be found in the COPYING.txt file.
+MeshMagick is free open source software released under the MIT license, which can be found in the LICENSE.txt file.
 
 Full source code is available via SVN in https://ogreaddons.svn.sourceforge.net/svnroot/ogreaddons/trunk/meshmagick

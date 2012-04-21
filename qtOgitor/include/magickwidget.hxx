@@ -34,41 +34,45 @@
 #ifndef __MAGICKWIDGET_HXX__
 #define __MAGICKWIDGET_HXX__
 
-#include <QtGui/QApplication>
 #include <QtGui/QWidget>
-#include <QtGui/QToolBar>
-#include <QtGui/QAction>
-#include <QtGui/QPixmap>
-#include <QtCore/QSettings>
-#include <Ogre.h>
-#include "qttreepropertybrowser.h"
+#include "OgitorsPrerequisites.h"
+#include "OgitorsRoot.h"
+#include "OgitorsProperty.h"
 
-class QtTreePropertyBrowser;
-class QtGroupPropertyManager;
-class QtBoolPropertyManager;
-class QtIntPropertyManager;
-class QtDoublePropertyManager;
-class QtStringPropertyManager;
-class QtEnumPropertyManager;
-class QtColorPropertyManager;
-class QuaternionManager;
-class Vector2Manager;
-class Vector3Manager;
-class Vector4Manager;
-class QtProperty;
-class TiXmlElement;
+//-------------------------------------------------------------------------------------------
+
+//class QtTreePropertyBrowser;
+//class QtGroupPropertyManager;
+//class QtBoolPropertyManager;
+//class QtIntPropertyManager;
+//class QtDoublePropertyManager;
+//class QtStringPropertyManager;
+//class QtEnumPropertyManager;
+//class QtColorPropertyManager;
+//class QuaternionManager;
+//class Vector2Manager;
+//class Vector3Manager;
+//class Vector4Manager;
+//class QtProperty;
+//class TiXmlElement;
+
+class QToolBar;
+class QAction;
+
+//-------------------------------------------------------------------------------------------
 
 #if defined(Q_WS_X11)
 #include <QtGui/QX11Info>
 #endif
 
-class MagickDisplayWidget : public QWidget
+//-------------------------------------------------------------------------------------------
+
+class MagickDisplayWidget : public QWidget/*, public Ogitors::DragDropHandler*/
 {
     Q_OBJECT;
 
 public:
     MagickDisplayWidget(QWidget *parent=0);
-
     virtual ~MagickDisplayWidget();
 
     void setImage(const QString& file);
@@ -81,8 +85,9 @@ protected:
     void dropEvent(QDropEvent *evt);
 };
 
+//-------------------------------------------------------------------------------------------
 
-class MagickWidget : public QWidget
+class MagickWidget : public QWidget/*, public Ogitors::DragDropHandler*/
 {
     Q_OBJECT;
     friend class MagickDisplayWidget;
@@ -110,7 +115,7 @@ protected:
     QAction                 *actRotate;
     QAction                 *actScale;
 
-    QtTreePropertyBrowser   *propertiesWidget;
+ /*   QtTreePropertyBrowser   *propertiesWidget;
     QtGroupPropertyManager  *groupManager;
     QtBoolPropertyManager   *boolManager;
     QtColorPropertyManager  *colourManager;
@@ -121,13 +126,15 @@ protected:
     QuaternionManager       *quaternionManager;
     Vector2Manager          *vector2Manager;
     Vector3Manager          *vector3Manager;
-    Vector4Manager          *vector4Manager;
+    Vector4Manager          *vector4Manager;*/
 
     QString                  mMeshFileName;
 
     void createActions();
     void loadMesh(Ogre::MeshPtr pMesh);
 };
+
+//-------------------------------------------------------------------------------------------
 
 #endif // __MAGICKWIDGET_HXX__
 
