@@ -48,6 +48,7 @@
 #include "TerrainGroupEditor.h"
 #include "tinyxml.h"
 #include "OgitorsUndoManager.h"
+#include "ofs.h"
 
 using namespace Ogitors;
 
@@ -601,9 +602,15 @@ bool CTerrainPageEditor::exportHeightMap(Ogre::String path, Ogre::String filenam
         extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
         extlist.push_back(OTR("PNG Grayscale"));
         extlist.push_back("*.png");
-        filename = mSystem->DisplaySaveDialog(OTR("Export Heightmap"),extlist);
+
+        Ogre::String projectLocation = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName();
+        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
+        
+        filename = mSystem->DisplaySaveDialog(OTR("Export Heightmap"), extlist, defaultPath);
         if(filename == "") 
             return false;
+
+        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
     }
     else
     {
@@ -694,9 +701,15 @@ bool CTerrainPageEditor::exportCompositeMap(Ogre::String path, Ogre::String file
         UTFStringVector extlist;
         extlist.push_back(OTR("PNG"));
         extlist.push_back("*.png");
-        filename = mSystem->DisplaySaveDialog(OTR("Export Compositemap"),extlist);
+
+        Ogre::String projectLocation = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName();
+        Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
+        
+        filename = mSystem->DisplaySaveDialog(OTR("Export Compositemap"), extlist, defaultPath);
         if(filename == "") 
             return false;
+
+        mSystem->SetSetting("OgitorSystem", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(projectLocation));
     }
     else
     {
