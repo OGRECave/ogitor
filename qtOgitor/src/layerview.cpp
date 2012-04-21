@@ -652,7 +652,7 @@ bool LayerViewWidget::removeLayer(int index)
 {
     if(mLayerRootItems[index]->childCount())
     {
-        QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Can not delete layer : Layer is not empty!!"));
+        QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Cannot delete layer : Layer is not empty!!"));
         return false;
     }
 

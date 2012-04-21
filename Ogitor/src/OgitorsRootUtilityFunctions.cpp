@@ -1566,7 +1566,7 @@ void OgitorsRoot::PrepareProjectResources()
         std::sort(mSkyboxMaterials.begin(), mSkyboxMaterials.end(), PropertyOption::comp_func);
 
     } catch(...) {
-        Ogre::LogManager::getSingleton().getDefaultLog()->logMessage("OGITOR EXCEPTION: Can not prepare project resources!!", Ogre::LML_CRITICAL);
+        Ogre::LogManager::getSingleton().getDefaultLog()->logMessage("OGITOR EXCEPTION: Cannot prepare project resources!!", Ogre::LML_CRITICAL);
     }
 }
 //-----------------------------------------------------------------------------------------
