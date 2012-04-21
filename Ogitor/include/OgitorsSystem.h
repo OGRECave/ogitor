@@ -151,11 +151,10 @@ namespace Ogitors
         */
         virtual DIALOGRET    DisplayMessageDialog(Ogre::UTFString msg, DIALOGTYPE dlgType) = 0;
         /**
-        * Displays terrain creation dialog
-        * @param params additional terrain parameters needed for its creation
+        * Displays manage terrain dialog
         * @return true if dialog' result was accepted, otherwise false
         */
-        virtual bool         DisplayTerrainDialog(Ogre::NameValuePairList &params) = 0;
+        virtual void         DisplayTerrainDialog() = 0;
         /**
         * Displays heightmap import dialog
         * @param params additional heightmap parameters needed for its import
@@ -365,9 +364,9 @@ namespace Ogitors
         */
         virtual DIALOGRET    DisplayMessageDialog(Ogre::UTFString msg, DIALOGTYPE dlgType) {return DLGRET_CANCEL;};
         /**
-        * @copydoc OgitorsSystem::DisplayTerrainDialog(Ogre::NameValuePairList&)
+        * @copydoc OgitorsSystem::DisplayTerrainDialog(void)
         */
-        virtual bool         DisplayTerrainDialog(Ogre::NameValuePairList &params) {return false;};
+        virtual void         DisplayTerrainDialog() {};
         /**
         * @copydoc OgitorsSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList)
         */
