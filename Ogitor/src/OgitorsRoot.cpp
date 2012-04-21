@@ -519,15 +519,15 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("/debug/*Script_d.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/debug/*Script_d.dll", ScriptPluginList);
 #else
-    mSystem->GetFileList("../Plugins/*Script.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/*Script.dll", ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so", ScriptPluginList);
 #else
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so", ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -560,15 +560,15 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("../Plugins/debug/*_d.dll",PluginList);
+    mSystem->GetFileList("../Plugins/debug/*_d.dll", PluginList);
 #else
-    mSystem->GetFileList("../Plugins/*.dll",PluginList);
+    mSystem->GetFileList("../Plugins/*.dll", PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so", PluginList);
 #else
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so", PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -1130,7 +1130,7 @@ void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreeli
 
         if(viewport->getViewportIndex() == 1)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Can not delete the main viewport!!"), DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Cannot delete the main viewport!!"), DLGTYPE_OK);
             return;
         }
 
