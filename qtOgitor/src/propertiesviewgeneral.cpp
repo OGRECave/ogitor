@@ -50,11 +50,14 @@
 
 using namespace Ogitors;
 
+//----------------------------------------------------------------------------------------
+
 QString              LastPropertyName = "";
 OgitorsPropertyBase* LastProperty;
 
 extern QString ConvertToQString(Ogre::UTFString& value);
 
+//----------------------------------------------------------------------------------------
 void GeneralTreeBrowser::contextMenuEvent(QContextMenuEvent *evt)
 {
     QtBrowserItem *citem = currentItem();
@@ -74,7 +77,7 @@ void GeneralTreeBrowser::contextMenuEvent(QContextMenuEvent *evt)
     {
         UTFStringVector menuList;
         e->getPropertyContextMenu(LastPropertyName.toStdString(), menuList);
-        
+
         if(menuList.size() > 0)
         {
             UTFStringVector vList;
@@ -87,7 +90,7 @@ void GeneralTreeBrowser::contextMenuEvent(QContextMenuEvent *evt)
                 OgitorsUtils::ParseUTFStringVector(menuList[i], vList);
                 if(vList.size() > 0 && vList[0] != "")
                 {                 
-                    QAction *item = contextMenu->addAction( ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
+                    QAction *item = contextMenu->addAction(ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
                     if(vList.size() > 1)
                         item->setIcon(QIcon(ConvertToQString(vList[1])));
                     signalMapper->setMapping(item, i);
@@ -154,10 +157,10 @@ QWidget(parent), mLastObject(0), BLOCKSETFUNCTIONS(0)
     propertiesWidget->setResizeMode(QtTreePropertyBrowser::Interactive);
 
     descLabel = new QLabel(this);
-    descLabel->setFixedHeight(48);
     descLabel->setWordWrap(true);
     descLabel->setMargin(4);
     descLabel->setObjectName(QString::fromUtf8("descLabel"));
+    descLabel->setHidden(true);
     QVBoxLayout *boxlayout = new QVBoxLayout();
     boxlayout->setMargin(0);
     boxlayout->addWidget(propertiesWidget);
@@ -188,10 +191,17 @@ void GeneralPropertiesViewWidget::itemChanged(QtBrowserItem *item)
     if(item)
     {
         QtProperty *prop = item->property();
-        descLabel->setText(prop->whatsThis());
+        QString descr = prop->whatsThis();
+        if(descr.isEmpty())
+            descLabel->setHidden(true);
+        else
+        {
+            descLabel->setText(descr);
+            descLabel->setHidden(false);
+        }        
     }
     else
-        descLabel->setText("");
+        descLabel->setHidden(true);
 
 }
 //----------------------------------------------------------------------------------------
@@ -239,10 +249,10 @@ void GeneralPropertiesViewWidget::PresentPropertiesView(CBaseEditor* object)
         delete mPropertyConnections[pidx];
 
     mPropertyConnections.clear();
-    
+
     if(mLastObject)
         mLastObject->getProperties()->removeListener(this);
-    
+
     if(object != 0)
     {
         DisplayObjectProperties(object);
@@ -292,7 +302,7 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
 
         QStringList choices;
 
-        for(unsigned int i = 0;i < (*options).size();i++)
+        for(unsigned int i = 0; i < (*options).size(); i++)
         {
             if((*options)[i].mKey == currentValue)
                 currentValuePos = i;
@@ -311,8 +321,7 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
         case PROP_BOOL:
             newProp = boolManager->addProperty(name);
             boolManager->setValue(newProp, static_cast<OgitorsProperty<bool>*>(property)->get());
-            break;   
-        
+            break;           
         case PROP_SHORT:
             newProp = intManager->addProperty(name);
             if(!(any = propDef->getMinValue()).isEmpty())
@@ -373,7 +382,6 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
                 intManager->setSingleStep(newProp, Ogre::any_cast<unsigned long>(any));
             intManager->setValue(newProp, static_cast<OgitorsProperty<unsigned long>*>(property)->get());
             break;
-
         case PROP_REAL:
             newProp = doubleManager->addProperty(name);
             if(!(any = propDef->getMinValue()).isEmpty()) 
@@ -384,12 +392,10 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
                 doubleManager->setSingleStep(newProp, Ogre::any_cast<Ogre::Real>(any));
             doubleManager->setValue(newProp, static_cast<OgitorsProperty<Ogre::Real>*>(property)->get());
             break;
-
         case PROP_STRING:
             newProp = stringManager->addProperty(name);
             stringManager->setValue(newProp, static_cast<OgitorsProperty<Ogre::String>*>(property)->get().c_str());
             break;
-
         case PROP_VECTOR2:
             newProp = vector2Manager->addProperty(QVariant::PointF, name);
             fieldX = propDef->getFieldName(0).c_str();
@@ -498,7 +504,6 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
             vrf = QRectF(valQ.x, valQ.y, valQ.z, valQ.w);
             quaternionManager->setValue(newProp, vrf);
             break;
-
         case PROP_COLOUR:
             newProp = colourManager->addProperty(name);
             valc = static_cast<OgitorsProperty<Ogre::ColourValue>*>(property)->get();
@@ -512,13 +517,13 @@ void GeneralPropertiesViewWidget::createProperty(QtProperty *group, QString name
     {
         mQtToOgitorPropertyMap.insert(QtToOgitorPropertyMap::value_type(newProp, property));
         mOgitorToQtPropertyMap.insert(OgitorToQtPropertyMap::value_type(property, newProp));
-        
+
         OgitorsScopedConnection *connection = new OgitorsScopedConnection();
         property->connect(OgitorsSignalFunction::from_method<GeneralPropertiesViewWidget, &GeneralPropertiesViewWidget::propertyChangeTracker>(this), *connection);
         mPropertyConnections.push_back(connection);
         newProp->setWhatsThis(propDef->getDescription().c_str());
         newProp->setEnabled(propDef->canWrite());
-        
+
         if(group)
             group->addSubProperty(newProp);
         else
@@ -533,7 +538,7 @@ QtProperty *GeneralPropertiesViewWidget::getPropertyGroup(Ogre::String& name, Qt
     int position = name.find_last_of("::");
     if(position == -1)
         return defaultGroup;
- 
+
     Ogre::String groupName = name.substr(0, position + 1);
     Ogre::String groupNameCopy = name.substr(0, position - 1);
     name.erase(0, position + 1);
@@ -549,9 +554,9 @@ QtProperty *GeneralPropertiesViewWidget::getPropertyGroup(Ogre::String& name, Qt
         QString tmpName = groupName.substr(0, position).c_str();
         groupName.erase(0, position + 2);
         lastGroupName += tmpName.toStdString() + "::";
-        
+
         QtProperty* newGroup = 0;
-        
+
         QList<QtProperty*> subProperties;
 
         if(lastGroup)
@@ -563,8 +568,8 @@ QtProperty *GeneralPropertiesViewWidget::getPropertyGroup(Ogre::String& name, Qt
         {
             if(subProperties[i]->propertyName() == tmpName)
             {
-                 newGroup = subProperties[i];
-                 break;
+                newGroup = subProperties[i];
+                break;
             }
         }
 
@@ -583,7 +588,7 @@ QtProperty *GeneralPropertiesViewWidget::getPropertyGroup(Ogre::String& name, Qt
         }
         lastGroup = newGroup;
     }
-    
+
     return lastGroup;
 }
 //----------------------------------------------------------------------------------------
@@ -591,7 +596,7 @@ void GeneralPropertiesViewWidget::deleteGroups(Ogre::String& name)
 {
     if(name == "")
         return;
-    
+
     Ogre::String namecopy = name;
     QtProperty *group = getPropertyGroup(namecopy, 0);
 
@@ -640,9 +645,9 @@ void GeneralPropertiesViewWidget::DisplayObjectProperties(CBaseEditor* object)
 {
     lastGroup = 0;
     lastGroupName = "";
-    
+
     OgitorsPropertyVector props = object->getProperties()->getPropertyVector();
-    
+
     PropertySetType propsetType = object->getProperties()->getType();
 
     Ogre::String strDisplayName;
@@ -680,7 +685,7 @@ void GeneralPropertiesViewWidget::enumValueChanged(QtProperty *property, int val
 
         Ogre::String prevVal;
         prevVal = ogProperty->getOptionName();
-        
+
         OgitorsUndoManager *undoMgr = OgitorsUndoManager::getSingletonPtr();
         undoMgr->BeginCollection(mLastObject->getName() + "'s " + ogProperty->getDefinition()->getDisplayName() + " change");
         ogProperty->setByOptionValue(ogreStr);
@@ -699,10 +704,10 @@ void GeneralPropertiesViewWidget::enumValueChanged(QtProperty *property, int val
                     found = true;
                     break;
                 }
-            if(!found)
-                enumManager->setValue(property, -1);
+                if(!found)
+                    enumManager->setValue(property, -1);
 
-            BLOCKSETFUNCTIONS--;
+                BLOCKSETFUNCTIONS--;
         }
     }
 }
@@ -1057,8 +1062,8 @@ void GeneralPropertiesViewWidget::propertyChangeTracker(const OgitorsPropertyBas
                     found = true;
                     break;
                 }
-            if(!found)
-                enumManager->setValue(it->second, -1);
+                if(!found)
+                    enumManager->setValue(it->second, -1);
         }
         else
         {
