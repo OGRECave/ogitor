@@ -29,7 +29,6 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifdef OGITOR_MESHMAGICK_INTERFACE
 
 #ifndef __MAGICKWIDGET_HXX__
 #define __MAGICKWIDGET_HXX__
@@ -137,5 +136,3 @@ protected:
 //-------------------------------------------------------------------------------------------
 
 #endif // __MAGICKWIDGET_HXX__
-
-#endif // OGITOR_MESHMAGICK_INTERFACE
