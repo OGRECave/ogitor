@@ -50,10 +50,12 @@ GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdi
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
 
-    mTabBar = findChildren<QTabBar*>().at(0);
-    mTabBar->setTabsClosable(true);
-
-    connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    if(!findChildren<QTabBar*>().isEmpty())
+    {
+        mTabBar = findChildren<QTabBar*>().at(0);
+        mTabBar->setTabsClosable(true);
+        connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    }    
 
     mActSave = new QAction(tr("Save"), this);
     mActSave->setStatusTip(tr("Save"));
