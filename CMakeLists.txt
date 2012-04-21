@@ -50,12 +50,9 @@ else(WIN32)
     endif(NOT OGITOR_DIST)
 endif(WIN32)
 
-option(OGITOR_MESHMAGICK_INTERFACE "Use MeshMagick widget" FALSE)
-
 set(OGITOR_PREPROCESSOR "OGITOR_EXPORT")
 
 set(OGITOR_QT_PREPROCESSOR "")
-
 
 # Find Boost
 # Prefer static linking in all cases
