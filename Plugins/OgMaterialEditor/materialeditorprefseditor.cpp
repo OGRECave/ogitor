@@ -41,8 +41,7 @@ MaterialEditorPrefsEditor::MaterialEditorPrefsEditor(QWidget *parent) : QWidget(
 {
     setupUi(this);
 
-    connect(fontSizeSpinBox,    SIGNAL(valueChanged(int)),  this,   SLOT(setDirty()));
-    connect(lineBreakCheckBox,  SIGNAL(stateChanged(int)),  this,   SLOT(setDirty()));
+    connect(syntaxHighlightingCheckBox,    SIGNAL(stateChanged(int)),  this,   SLOT(setDirty()));
 }
 //----------------------------------------------------------------------------------------
 MaterialEditorPrefsEditor::~MaterialEditorPrefsEditor()
@@ -51,11 +50,8 @@ MaterialEditorPrefsEditor::~MaterialEditorPrefsEditor()
 //----------------------------------------------------------------------------------------
 void MaterialEditorPrefsEditor::getPreferences(Ogre::NameValuePairList& preferences)
 {
-    preferences.insert(Ogre::NameValuePairList::value_type("fontSize",
-        Ogre::StringConverter::toString(fontSizeSpinBox->value())));
-
-    preferences.insert(Ogre::NameValuePairList::value_type("lineWrapping",
-        Ogre::StringConverter::toString(lineBreakCheckBox->isChecked())));
+    preferences.insert(Ogre::NameValuePairList::value_type("enableSyntaxHighlighting",
+        Ogre::StringConverter::toString(syntaxHighlightingCheckBox->isChecked())));
 }
 //----------------------------------------------------------------------------------------
 void* MaterialEditorPrefsEditor::getPreferencesWidget()
@@ -63,8 +59,7 @@ void* MaterialEditorPrefsEditor::getPreferencesWidget()
     QSettings settings;
     settings.beginGroup(getPrefsSectionName().c_str());
 
-    fontSizeSpinBox->setValue(settings.value("fontSize", 10).toUInt());
-    lineBreakCheckBox->setChecked(settings.value("lineWrapping", false).toBool());
+    syntaxHighlightingCheckBox->setChecked(settings.value("enableSyntaxHighlighting", true).toBool());
 
     settings.endGroup();
     
@@ -73,24 +68,6 @@ void* MaterialEditorPrefsEditor::getPreferencesWidget()
 //----------------------------------------------------------------------------------------
 bool MaterialEditorPrefsEditor::applyPreferences()
 {
-    //if(mMaterialTextEditor->findChildren<QPlainTextEdit*>().size() != 0)
-    //{
-    //    // Change font size
-    //    QFont font = static_cast<QPlainTextEdit*>(mMaterialTextEditor->findChildren<QPlainTextEdit*>().at(0))->font();
-    //    font.setPointSize(fontSizeSpinBox->value());
-    //    foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
-    //        pEdit->setFont(font);
-
-    //    // Change line wrapping
-    //    if(lineBreakCheckBox->isChecked())
-    //        foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
-    //            pEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
-    //    else
-    //        foreach(QPlainTextEdit* pEdit, mMaterialTextEditor->findChildren<QPlainTextEdit*>())
-    //            pEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
-    //}
-
-    //return true;
     return true;
 }
 //----------------------------------------------------------------------------------------

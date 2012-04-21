@@ -47,13 +47,22 @@ GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTe
 mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false),
 mInitialDisplay(true)
 {
+    QSettings settings;
+
     QFont fnt = font();
     fnt.setFamily("Courier New");
-    fnt.setPointSize(10);
-    setFont(fnt);
+    fnt.setPointSize(settings.value("preferences/fontSize").toUInt());
+    setFont(fnt);   
 
+    QPlainTextEdit::LineWrapMode mode;
+
+    if(settings.value("preferences/lineWrapping").toBool())
+        mode = QPlainTextEdit::WidgetWidth;
+    else
+        mode = QPlainTextEdit::NoWrap;
+
+    setLineWrapMode(mode);
     setAttribute(Qt::WA_DeleteOnClose);
-    setLineWrapMode(QPlainTextEdit::WidgetWidth);
 
     QFontMetrics fm(fnt);
     setTabStopWidth(fm.width("abcd"));
