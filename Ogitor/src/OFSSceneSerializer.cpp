@@ -59,7 +59,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         if(importfile == "") 
             return SCF_CANCEL;
 
-        mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(importfile));
+        mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(importfile));
     }
 
     importfile = OgitorsUtils::QualifyPath(importfile);
@@ -295,7 +295,7 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
         if(fileLocation == "") 
             return SCF_CANCEL;
 
-        mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileLocation));
+        mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileLocation));
         forceSave = true;
     }
 

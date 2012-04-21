@@ -260,7 +260,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     QtOgitorSystem *system = static_cast<QtOgitorSystem*>(OgitorsSystem::getSingletonPtr());
     system->SetWindows(mOgreWidget, mSceneViewWidget, mLayerViewWidget, mGeneralPropertiesViewWidget, mCustomPropertiesViewWidget);
-    system->initTreeIcons();
+    system->InitTreeIcons();
 
     mTimer = new QTimer(this);
     mTimer->setInterval(0);

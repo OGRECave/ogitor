@@ -150,7 +150,7 @@ bool OgitorsClipboardManager::copyToTemplate(CBaseEditor *object, const Ogre::St
     
     if(isGeneralScope)
     {
-        filename = OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates";
+        filename = OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates";
         filename = OgitorsUtils::QualifyPath(filename);
         OgitorsSystem::getSingletonPtr()->MakeDirectory(filename);
     }
@@ -211,7 +211,7 @@ bool OgitorsClipboardManager::copyToTemplateWithChildren(CBaseEditor *object, co
     
     if(isGeneralScope)
     {
-        filename = OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates";
+        filename = OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates";
         filename = OgitorsUtils::QualifyPath(filename);
         OgitorsSystem::getSingletonPtr()->MakeDirectory(filename);
     }
@@ -304,7 +304,7 @@ bool OgitorsClipboardManager::copyToTemplateMulti(CMultiSelEditor *object, const
 
     if(isGeneralScope)
     {
-        filename = OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates";
+        filename = OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates";
         filename = OgitorsUtils::QualifyPath(filename) + "/";
         OgitorsSystem::getSingletonPtr()->MakeDirectory(filename);
     }

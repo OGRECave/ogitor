@@ -142,7 +142,7 @@ int CDotSceneSerializer::Import(Ogre::String importfile)
         importfile = mSystem->DisplayOpenDialog(OTR("Import DotScene File"), extlist, "");
         if(importfile == "") return SCF_CANCEL;
 
-        mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(importfile));
+        mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(importfile));
     }
 
     ogRoot->ClearProjectOptions();

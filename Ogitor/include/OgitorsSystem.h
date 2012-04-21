@@ -97,7 +97,7 @@ namespace Ogitors
         * Fetches full path to the Ogitor' Projects directory
         * @return full path to the Ogitor' Projects directory
         */
-        virtual Ogre::String getProjectsDirectory() = 0;
+        virtual Ogre::String GetProjectsDirectory() = 0;
         /**
         * Deletes specified file
         * @param file full path to the file, including file name
@@ -315,7 +315,7 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue)
         */
-        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) { };
+        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) {return defaultValue;};
         /**
         * @copydoc OgitorsSystem::SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value)
         */
@@ -343,7 +343,7 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::getProjectsDirectory()
         */
-        virtual Ogre::String getProjectsDirectory() {return "./";};
+        virtual Ogre::String GetProjectsDirectory() {return "./";};
         /**
         * @copydoc OgitorsSystem::DeleteFile(const Ogre::String&)
         */

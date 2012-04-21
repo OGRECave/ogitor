@@ -52,7 +52,7 @@ namespace Ogitors
         r = engine->RegisterObjectMethod("OgitorsSystem", "bool copyFile(string, string)", asMETHOD(OgitorsSystem, CopyFile), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsSystem", "bool copyFilesEx(string, string)", asMETHOD(OgitorsSystem, CopyFilesEx), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsSystem", "bool makeDirectory(string)", asMETHOD(OgitorsSystem, MakeDirectory), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("OgitorsSystem", "string getProjectsDirectory()", asMETHOD(OgitorsSystem, getProjectsDirectory), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("OgitorsSystem", "string getProjectsDirectory()", asMETHOD(OgitorsSystem, GetProjectsDirectory), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsSystem", "void deleteFile(const string &in)", asMETHOD(OgitorsSystem, DeleteFile), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsSystem", "void renameFile(const string &in, const string &in)", asMETHOD(OgitorsSystem, RenameFile), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsSystem", "void getFileList(string, StringVector &out)", asMETHOD(OgitorsSystem, GetFileList), asCALL_THISCALL);assert(r >= 0);
