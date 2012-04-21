@@ -52,11 +52,13 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
     
-    mTabBar = findChildren<QTabBar*>().at(0);
-    mTabBar->setTabsClosable(true);
-
-    connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-
+    if(!findChildren<QTabBar*>().isEmpty())
+    {
+        mTabBar = findChildren<QTabBar*>().at(0);
+        mTabBar->setTabsClosable(true);
+        connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    }
+    
     mActZoomIn = new QAction(tr("Zoom In"), this);
     mActZoomIn->setStatusTip(tr("Zoom In"));
     mActZoomIn->setIcon(QIcon(":/icons/zoom_in.svg"));
