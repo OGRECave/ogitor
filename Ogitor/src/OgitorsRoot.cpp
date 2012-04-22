@@ -1999,6 +1999,11 @@ void OgitorsRoot::SetRunState(RunState state)
     if(state == RS_STOPPED)
     {
         UndoCollection* coll = mUndoManager->EndCollection();
+		if( coll != NULL )
+		{
+		    coll->apply();
+		    delete coll;
+		}
 
         mUpdateScriptList.clear();
     }

@@ -566,7 +566,7 @@ Ogre::StringVector AngelScriptInterpreter::listFunctions(std::string &section)
     for( n = 0; n < (asUINT)mEngine->GetGlobalFunctionCount(); n++ )
     {
         int id = mEngine->GetGlobalFunctionIdByIndex(n);
-        asIScriptFunction *func = mEngine->GetFunctionDescriptorById(id);
+		asIScriptFunction *func = mEngine->GetFunctionById(id);
 
         // Skip the functions that start with _ as these are not meant to be called explicitly by the user
         if( func->GetName()[0] != '_' )
@@ -582,7 +582,7 @@ Ogre::StringVector AngelScriptInterpreter::listFunctions(std::string &section)
         ret.push_back("User functions:");
         for( n = 0; n < mod->GetFunctionCount(); n++ )
         {
-            asIScriptFunction *func = mod->GetFunctionDescriptorByIndex(n);
+            asIScriptFunction *func = mod->GetFunctionByIndex(n);
             ret.push_back(func->GetDeclaration());
         }
     }
@@ -655,7 +655,7 @@ void LineCallback(asIScriptContext *ctx, void *param)
 	int indent = ctx->GetCallstackSize();
 	for( int n = 0; n < indent; n++ )
 		sprintf(tmp+n," ");
-	const asIScriptFunction *function = engine->GetFunctionDescriptorById(funcID);
+	const asIScriptFunction *function = engine->GetFunctionById(funcID);
 	sprintf(tmp+indent,"%s:%s:%d,%d", function->GetModuleName(),
 	                    function->GetDeclaration(),
 	                    line, col);
@@ -708,8 +708,7 @@ void PrintVariables(asIScriptContext *ctx, int stackLevel)
 void ExceptionCallback(asIScriptContext *ctx, void *param)
 {
 	asIScriptEngine *engine = ctx->GetEngine();
-	int funcID = ctx->GetExceptionFunction();
-	const asIScriptFunction *function = engine->GetFunctionDescriptorById(funcID);
+	const asIScriptFunction *function = ctx->GetExceptionFunction();
 	LogManager::getSingleton().logMessage("--- exception ---");
 	LogManager::getSingleton().logMessage("desc: " + String(ctx->GetExceptionString()));
 	LogManager::getSingleton().logMessage("func: " + String(function->GetDeclaration()));
