@@ -507,7 +507,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		mLastLoadedScene = OgitorsRoot::getSingletonPtr()->GetSceneName();
 	}
-    if(OgitorsRoot::getSingletonPtr()->TerminateScene())
+
+	if(OgitorsRoot::getSingletonPtr()->TerminateScene())
     {
         delete mOgitorAssistant;
 

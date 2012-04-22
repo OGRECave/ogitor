@@ -186,7 +186,7 @@ namespace Ogitors
         // Register the singleton's address that the script will use to access it
         r = engine->RegisterGlobalProperty("OgitorsRoot root", root);assert(r >= 0);
         r = engine->RegisterGlobalProperty("OgitorsSystem system", OgitorsSystem::getSingletonPtr());assert(r >= 0);
-        r = engine->RegisterGlobalProperty("OgitorsUtils utils", 0);assert(r >= 0);
+		r = engine->RegisterGlobalProperty("OgitorsUtils utils", (void*)0xDEADBEEF);assert(r >= 0);
 
         // Register BaseEditor since all others need it
         r = engine->RegisterObjectType("BaseEditor", 0, asOBJ_REF);assert(r >= 0);

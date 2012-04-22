@@ -1591,7 +1591,7 @@ void MainWindow::runScriptClicked()
     }
     else
     {
-        OgitorsScriptConsole::getSingletonPtr()->execString(commandString);
+		OgitorsScriptConsole::getSingletonPtr()->insertLine(commandString);
     }
     txtScriptInput->StoreLine();
     txtScriptInput->clear();
