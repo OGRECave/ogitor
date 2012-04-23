@@ -1,0 +1,5 @@
+[patterns]
+** = native
+
+[repository]
+native = LF
