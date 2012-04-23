@@ -106,7 +106,6 @@ class AddFilesThread : public QThread
 public:
 
     void addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list);
-    void addEmptyFolder(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _name);
 
     float getCurrentPos()
     {
@@ -164,7 +163,6 @@ public:
     void refreshWidget();
     void extractFiles();
     void addFiles(QString rootDir, QStringList list);
-    void addEmptyFolder(QString rootDir, QString name);
 
     static void triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2);
 

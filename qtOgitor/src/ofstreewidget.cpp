@@ -274,7 +274,10 @@ void OfsTreeWidget::refreshWidget()
         it = mItemMap.find(string.toStdString());
 
         if(it != mItemMap.end())
+        {
             it->second->setExpanded(true);
+            onItemExpanded( it->second );
+        }
     }
 }
 //----------------------------------------------------------------------------------------
@@ -446,17 +449,6 @@ void OfsTreeWidget::addFiles(QString rootDir, QStringList list)
     {
         emit busyState(true);
         mAddFilesThread->addFiles(mFile, rootDir.toStdString(), list);
-    }
-}
-//----------------------------------------------------------------------------------------
-void OfsTreeWidget::addEmptyFolder(QString rootDir, QString name)
-{
-    if(!mAddFilesThread->isRunning())
-    {
-        emit busyState(true);
-        mAddFilesThread->addEmptyFolder(mFile, rootDir.toStdString(), name);
-        clearSelection();
-        mSelectedItems = QStringList(rootDir + name + "/");
     }
 }
 //----------------------------------------------------------------------------------------
@@ -698,21 +690,6 @@ void AddFilesThread::addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _c
         data.isDir = false;
         mlist.push_back(data);
     }
-
-    currentDir = _currentDir;
-    ofsFileName = _ofsFile->getFileSystemName();
-
-    start();
-}
-//------------------------------------------------------------------------------------
-void AddFilesThread::addEmptyFolder(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _name)
-{
-    mlist.clear();
-    AddFilesData data;
-    data.fileName = _name;
-    data.onFS = false;
-    data.isDir = true;
-    mlist.push_back(data);
 
     currentDir = _currentDir;
     ofsFileName = _ofsFile->getFileSystemName();
