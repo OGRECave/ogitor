@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "tinyxml.h"
+
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
@@ -42,7 +43,6 @@
 using namespace Ogitors;
 
 template<> OgitorsUndoManager* Ogitors::Singleton<OgitorsUndoManager>::ms_Singleton = 0;
-
 
 //----------------------------------------------------------------------------------
 PropertyUndo::PropertyUndo(OgitorsPropertySet *set, OgitorsPropertyBase *property)
