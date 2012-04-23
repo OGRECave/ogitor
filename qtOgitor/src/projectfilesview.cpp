@@ -575,15 +575,23 @@ void ProjectFilesViewWidget::onAddFolder()
             i++;
     }    
     
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
     // If current selected item is a folder, create a sub folder. Otherwise create
     // the new folder as a sibling of the selected item.
     if(selectedItemName.right(1) == "/")
-        mOfsTreeWidget->addEmptyFolder(selectedItemName, newFolderName);
+    {
+        QString sName = selectedItemName + newFolderName;
+        ofsFile->createDirectory( sName.toStdString().c_str() );
+        mOfsTreeWidget->refreshWidget();
+    }
     else
     {
         selectedItemName = selectedItemName.right(selectedItemName.size() - (selectedItemName.lastIndexOf("/") + 1));
         QString parentName = mOfsTreeWidget->findItems(selectedItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
-        mOfsTreeWidget->addEmptyFolder(parentName, newFolderName);
+        
+        QString sName = parentName + newFolderName;
+        ofsFile->createDirectory( sName.toStdString().c_str() );
+        mOfsTreeWidget->refreshWidget();
     }
 }
 //----------------------------------------------------------------------------------------
