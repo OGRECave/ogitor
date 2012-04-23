@@ -119,6 +119,7 @@ namespace Ogitors
         static const event_id_type TERRAIN_EDITOR_CHANGE;
         static const event_id_type AFTER_SCENE_EXPORT;
         static const event_id_type GLOBAL_PREPARE_VIEW;
+        static const event_id_type SELECTION_CHANGE;
 
         typedef std::map<void *, listener_data> listener_map;
         typedef std::map<event_id_type, listener_map> event_handler_map;
