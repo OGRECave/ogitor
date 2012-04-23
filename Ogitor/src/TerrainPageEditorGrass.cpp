@@ -67,11 +67,11 @@ void CTerrainPageEditor::_saveGrass(Ogre::String pathPrefix)
     Ogre::TerrainGroup *terGroup = static_cast<Ogre::TerrainGroup*>(mParentEditor->get()->getHandle());
     Ogre::String filename = pathPrefix + terGroup->generateFilename(mPageX->get(), mPageY->get());
 
-    Ogre::String denmapname = filename.substr(0, filename.size() - 4) + "_density.tga";
+    Ogre::String denmapname = filename.substr(0, filename.size() - 4) + "_density.png";
 
     if(pathPrefix == "/Temp/tmp")
     {
-        mTempDensityFileName = pathPrefix + Ogre::StringConverter::toString(mObjectID->get()) + "_density.tga";
+        mTempDensityFileName = pathPrefix + Ogre::StringConverter::toString(mObjectID->get()) + "_density.png";
         denmapname = mTempDensityFileName;
     }
 
@@ -151,7 +151,7 @@ void CTerrainPageEditor::_loadGrassLayers()
     {
         if(mTempDensityFileName.empty())
         {
-            mTempDensityFileName = "/Temp/tmp" + Ogre::StringConverter::toString(mObjectID->get()) + "_density.tga";
+            mTempDensityFileName = "/Temp/tmp" + Ogre::StringConverter::toString(mObjectID->get()) + "_density.png";
         }
 
         denmapname = mTempDensityFileName;
@@ -160,7 +160,7 @@ void CTerrainPageEditor::_loadGrassLayers()
     {
         Ogre::String terrainDir = mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain/";
         denmapname = terrainDir + terGroup->generateFilename(mPageX->get(), mPageY->get());
-        denmapname = denmapname.substr(0, denmapname.size() - 4) + "_density.tga";
+        denmapname = denmapname.substr(0, denmapname.size() - 4) + "_density.png";
     }
 
     OFS::OFSHANDLE *denmapHandle = new OFS::OFSHANDLE();

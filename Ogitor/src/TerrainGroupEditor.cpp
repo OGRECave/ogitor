@@ -55,6 +55,7 @@
 #include "MultiSelEditor.h"
 #include "tinyxml.h"
 #include "ofs.h"
+#include "OfsDataStream.h"
 
 #include "PagedGeometry.h"
 #include "GrassLoader.h"
@@ -427,6 +428,34 @@ bool CTerrainGroupEditor::load(bool async)
     mTerrainGlobalOptions->setLightMapDirection(vDir);
     mTerrainGlobalOptions->setCompositeMapAmbient(mOgitorsRoot->GetSceneManager()->getAmbientLight());
     mTerrainGlobalOptions->setCompositeMapDiffuse(cDiffuse);
+
+    terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory + "/terrain/";
+
+    OFS::FileList TGAList = mOgitorsRoot->GetProjectFile()->listFiles( terrainDir.c_str(), OFS::OFS_FILE );
+
+    for( unsigned int t = 0; t < TGAList.size(); t++ )
+    {
+        int pos = TGAList[t].name.find("_density.tga");
+        if( pos > 0 )
+        {
+            Ogre::Image _img;
+            Ogre::String sLoc = terrainDir + TGAList[t].name;
+
+            // Block to ensure streams are freed when exiting the block
+            {
+                OFS::OFSHANDLE *iHandle = new OFS::OFSHANDLE();
+                mOgitorsRoot->GetProjectFile()->openFile( *iHandle, sLoc.c_str() );
+                Ogre::DataStreamPtr img_stream = Ogre::DataStreamPtr( OGRE_NEW OfsDataStream( mOgitorsRoot->GetProjectFile(), iHandle ) );
+                _img.load(img_stream);
+            }
+
+            Ogre::String nLoc = terrainDir + TGAList[t].name.substr(0, pos);
+            nLoc += "_density.png";
+
+            OgitorsUtils::SaveImageOfs( _img, nLoc );
+            mOgitorsRoot->GetProjectFile()->deleteFile( sLoc.c_str() );
+        }
+    }
 
     registerForUpdates();
 
