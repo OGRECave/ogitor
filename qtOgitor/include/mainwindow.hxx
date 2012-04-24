@@ -129,6 +129,7 @@ public:
     QCheckBox*   moveX;
     QCheckBox*   moveY;
     QCheckBox*   moveZ;
+    QCheckBox*   mSnapGround;
     QComboBox*   mSnapMultiplierBox;
     QComboBox*   mCameraViewModeBox;
 
@@ -319,6 +320,7 @@ public Q_SLOTS:
     void toggleFullScreen();
     void toggleSuperFullScreen();
     void snapMultiplierIndexChanged(int index);
+    void snapGroundChanged(int state);
     void viewModeIndexChanged(int index);
     void toggleToolBar(bool b);
     void exportSerializer(const QString& value);

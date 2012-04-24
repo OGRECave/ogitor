@@ -131,7 +131,8 @@ mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO),
 mTerrainEditor(0), mTerrainEditorObject(0), mPagingEditor(0), mPagingEditorObject(0), mIsSceneModified(false),
 mGlobalLightVisiblity(true), mGlobalCameraVisiblity(true), mSelRect(0), mSelectionNode(0),
 mMouseListener(0), mKeyboardListener(0),
-mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), mWorldSpaceGizmoOrientation(false),
+mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), 
+mAlwaysSnapGround(false), mWorldSpaceGizmoOrientation(false),
 mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSource(0)
 {
     unsigned int i;

@@ -722,6 +722,10 @@ void MainWindow::createSceneRenderWindow()
     renderWindowToolBar->addWidget(viewModeLabel);
     renderWindowToolBar->addWidget(mCameraViewModeBox);
 
+    mSnapGround = new QCheckBox(tr("Always Snap Ground"));
+    renderWindowToolBar->addSeparator();
+    renderWindowToolBar->addWidget(mSnapGround);
+
     mOgreWidget = new OgreWidget(renderWindowWidget, mHasFileArgs);
 
     QVBoxLayout *renderWindowLayout = new QVBoxLayout();
@@ -737,6 +741,7 @@ void MainWindow::createSceneRenderWindow()
     connect(mSnapMultiplierBox, SIGNAL( currentIndexChanged( int )), this, SLOT( snapMultiplierIndexChanged( int )));
     connect(mCameraViewModeBox, SIGNAL( currentIndexChanged( int )), this, SLOT( viewModeIndexChanged( int )));
     connect(mCameraSpeedSlider, SIGNAL( valueChanged( int )), this, SLOT( cameraSpeedValueChanged( int )));
+    connect(mSnapGround, SIGNAL( stateChanged( int )), this, SLOT( snapGroundChanged( int )));
 }
 //------------------------------------------------------------------------------
 void MainWindow::createHomeTab()
