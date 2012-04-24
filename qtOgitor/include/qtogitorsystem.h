@@ -78,9 +78,9 @@ public:
     void HideProgressDialog();
     void UpdateProgressDialog(int value);
 
-    Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath);
-    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
-    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
+    Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath = "");
+    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
+    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
 
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
     void DisplayTerrainDialog();
