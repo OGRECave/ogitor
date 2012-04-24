@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2012 Andreas Jonsson
+   Copyright (c) 2003-2011 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -48,7 +48,7 @@ int DetectCallingConvention(bool isMethod, const asSFuncPtr &ptr, int callConv, 
 {
 	memset(internal, 0, sizeof(asSSystemFunctionInterface));
 
-	internal->func = ptr.ptr.f.func;
+	internal->func = (size_t)ptr.ptr.f.func;
 
 	// Was a compatible calling convention specified?
 	if( internal->func )
@@ -156,7 +156,7 @@ int PrepareSystemFunction(asCScriptFunction *func, asSSystemFunctionInterface *i
 			asCString str;
 			str.Format(TXT_CANNOT_RET_TYPE_s_BY_VAL, func->returnType.GetObjectType()->name.AddressOf());
 			engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
-			engine->ConfigError(asINVALID_CONFIGURATION, 0, 0, 0);
+			engine->ConfigError(asINVALID_CONFIGURATION);
 		}
 		else if( objType & asOBJ_APP_CLASS )
 		{
@@ -181,10 +181,6 @@ int PrepareSystemFunction(asCScriptFunction *func, asSSystemFunctionInterface *i
 				{
 					internal->hostReturnInMemory = false;
 					internal->hostReturnSize     = func->returnType.GetSizeInMemoryDWords();
-#ifdef SPLIT_OBJS_BY_MEMBER_TYPES
-					if( func->returnType.GetObjectType()->flags & asOBJ_APP_CLASS_ALLFLOATS )
-						internal->hostReturnFloat = true;
-#endif
 				}
 
 #ifdef THISCALL_RETURN_SIMPLE_IN_MEMORY
@@ -215,24 +211,6 @@ int PrepareSystemFunction(asCScriptFunction *func, asSSystemFunctionInterface *i
 				}
 #endif
 			}
-
-#ifdef SPLIT_OBJS_BY_MEMBER_TYPES
-			// It's not safe to return objects by value because different registers
-			// will be used depending on the memory layout of the object.
-			// Ref: http://www.x86-64.org/documentation/abi.pdf
-			// Ref: http://www.agner.org/optimize/calling_conventions.pdf
-			// If the application informs that the class should be treated as all integers, then we allow it
-			if( !internal->hostReturnInMemory &&
-			    !(func->returnType.GetObjectType()->flags & (asOBJ_APP_CLASS_ALLINTS | asOBJ_APP_CLASS_ALLFLOATS)) )	
-			{
-				engine->WriteMessage("", 0, 0, asMSGTYPE_INFORMATION, func->GetDeclarationStr().AddressOf());
-
-				asCString str;
-				str.Format(TXT_DONT_SUPPORT_RET_TYPE_s_BY_VAL, func->returnType.Format().AddressOf());
-				engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
-				engine->ConfigError(asINVALID_CONFIGURATION, 0, 0, 0);
-			}
-#endif
 		}
 		else if( objType & asOBJ_APP_PRIMITIVE )
 		{
@@ -306,30 +284,23 @@ int PrepareSystemFunction(asCScriptFunction *func, asSSystemFunctionInterface *i
 				asCString str;
 				str.Format(TXT_CANNOT_PASS_TYPE_s_BY_VAL, func->parameterTypes[n].GetObjectType()->name.AddressOf());
 				engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
-				engine->ConfigError(asINVALID_CONFIGURATION, 0, 0, 0);
+				engine->ConfigError(asINVALID_CONFIGURATION);
 			}
 
 
 #ifdef SPLIT_OBJS_BY_MEMBER_TYPES
 			// It's not safe to pass objects by value because different registers
 			// will be used depending on the memory layout of the object
-			// Ref: http://www.x86-64.org/documentation/abi.pdf
-			// Ref: http://www.agner.org/optimize/calling_conventions.pdf
-			if( 
 #ifdef COMPLEX_OBJS_PASSED_BY_REF
-			    !(func->parameterTypes[n].GetObjectType()->flags & COMPLEX_MASK) &&	
+			if( !(func->parameterTypes[n].GetObjectType()->flags & COMPLEX_MASK) )	
 #endif
-#ifdef LARGE_OBJS_PASS_BY_REF
-			    func->parameterTypes[n].GetSizeInMemoryDWords() < AS_LARGE_OBJ_MIN_SIZE &&
-#endif
-			    !(func->parameterTypes[n].GetObjectType()->flags & (asOBJ_APP_CLASS_ALLINTS | asOBJ_APP_CLASS_ALLFLOATS)) )
 			{
 				engine->WriteMessage("", 0, 0, asMSGTYPE_INFORMATION, func->GetDeclarationStr().AddressOf());
 
 				asCString str;
 				str.Format(TXT_DONT_SUPPORT_TYPE_s_BY_VAL, func->parameterTypes[n].GetObjectType()->name.AddressOf());
 				engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
-				engine->ConfigError(asINVALID_CONFIGURATION, 0, 0, 0);
+				engine->ConfigError(asINVALID_CONFIGURATION);
 			}
 #endif
 			break;
@@ -407,6 +378,13 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 	void    *obj               = 0;
 	int      popSize           = sysFunc->paramSize;
 
+	context->regs.objectType = descr->returnType.GetObjectType();
+	if( descr->returnType.IsObject() && !descr->returnType.IsReference() && !descr->returnType.IsObjectHandle() )
+	{
+		// Allocate the memory for the object
+		retPointer = engine->CallAlloc(descr->returnType.GetObjectType());
+	}
+
 	if( callConv >= ICC_THISCALL )
 	{
 		if( objectPointer )
@@ -419,7 +397,7 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 			popSize += AS_PTR_SIZE;
 
 			// Check for null pointer
-			obj = (void*)*(asPWORD*)(args);
+			obj = (void*)*(size_t*)(args);
 			if( obj == 0 )
 			{
 				context->SetInternalException(TXT_NULL_POINTER_ACCESS);
@@ -433,9 +411,9 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 			// On GNUC + ARM the lsb of the offset is used to indicate a virtual function
 			// and the whole offset is thus shifted one bit left to keep the original
 			// offset resolution
-			obj = (void*)(asPWORD(obj) + (sysFunc->baseOffset>>1));
+			obj = (void*)(size_t(obj) + (sysFunc->baseOffset>>1));
 #else
-			obj = (void*)(asPWORD(obj) + sysFunc->baseOffset);
+			obj = (void*)(size_t(obj) + sysFunc->baseOffset);
 #endif
 
 			// Skip the object pointer
@@ -443,22 +421,7 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 		}
 	}
 
-	context->regs.objectType = descr->returnType.GetObjectType();
-	if( descr->returnType.IsObject() && !descr->returnType.IsReference() && !descr->returnType.IsObjectHandle() )
-	{
-		// Get the address of the location for the return value from the stack
-		retPointer = (void*)*(asPWORD*)(args);
-		popSize += AS_PTR_SIZE;
-		args += AS_PTR_SIZE;
-
-		// When returning the value on the location allocated by the called we shouldn't set the object type in the register
-		context->regs.objectType = 0;
-	}
-
-
-	context->callingSystemFunction = descr;
 	retQW = CallSystemFunctionNative(context, descr, obj, args, sysFunc->hostReturnInMemory ? retPointer : 0, retQW2);
-	context->callingSystemFunction = 0;
 
 #if defined(COMPLEX_OBJS_PASSED_BY_REF) || defined(AS_LARGE_OBJS_PASSED_BY_REF)
 	if( sysFunc->takesObjByVal )
@@ -472,25 +435,23 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 		int spos = 0;
 		for( asUINT n = 0; n < descr->parameterTypes.GetLength(); n++ )
 		{
-			bool needFree = false;
-			asCDataType &dt = descr->parameterTypes[n];
+			if( descr->parameterTypes[n].IsObject() &&
+				!descr->parameterTypes[n].IsObjectHandle() && 
+				!descr->parameterTypes[n].IsReference() && (
 #ifdef COMPLEX_OBJS_PASSED_BY_REF				
-			if( dt.GetObjectType() && dt.GetObjectType()->flags & COMPLEX_MASK ) needFree = true;
-#endif
+				(descr->parameterTypes[n].GetObjectType()->flags & COMPLEX_MASK) ||
+#endif				
 #ifdef AS_LARGE_OBJS_PASSED_BY_REF
-			if( dt.GetSizeInMemoryDWords() >= AS_LARGE_OBJ_MIN_SIZE ) needFree = true;
+				(descr->parameterTypes[n].GetSizeInMemoryDWords() >= AS_LARGE_OBJ_MIN_SIZE) ||
 #endif
-			if( needFree &&
-				dt.IsObject() &&
-				!dt.IsObjectHandle() && 
-				!dt.IsReference() )
+				0) )
 			{
-				void *obj = (void*)*(asPWORD*)&args[spos];
+				void *obj = (void*)*(size_t*)&args[spos];
 				spos += AS_PTR_SIZE;
 
 #ifndef AS_CALLEE_DESTROY_OBJ_BY_VAL
 				// If the called function doesn't destroy objects passed by value we must do so here
-				asSTypeBehaviour *beh = &dt.GetObjectType()->beh;
+				asSTypeBehaviour *beh = &descr->parameterTypes[n].GetObjectType()->beh;
 				if( beh->destruct )
 					engine->CallObjectMethod(obj, beh->destruct);
 #endif
@@ -498,7 +459,7 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 				engine->CallFree(obj);
 			}
 			else
-				spos += dt.GetSizeOnStackDWords();
+				spos += descr->parameterTypes[n].GetSizeOnStackDWords();
 		}
 	}
 #endif
@@ -514,13 +475,10 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 			retQW >>= 32;
 #endif
 
-			context->regs.objectRegister = (void*)(asPWORD)retQW;
+			context->regs.objectRegister = (void*)(size_t)retQW;
 
 			if( sysFunc->returnAutoHandle && context->regs.objectRegister )
-			{
-				asASSERT( !(descr->returnType.GetObjectType()->flags & asOBJ_NOCOUNT) );
 				engine->CallObjectMethod(context->regs.objectRegister, descr->returnType.GetObjectType()->beh.addref);
-			}
 		}
 		else
 		{
@@ -553,22 +511,6 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 
 			// Store the object in the register
 			context->regs.objectRegister = retPointer;
-
-			// If the value is returned on the stack we shouldn't update the object register
-			if( descr->DoesReturnOnStack() )
-			{
-				context->regs.objectRegister = 0;
-
-				if( context->status == asEXECUTION_EXCEPTION )
-				{
-					// If the function raised a script exception it really shouldn't have 
-					// initialized the object. However, as it is a soft exception there is 
-					// no way for the application to not return a value, so instead we simply
-					// destroy it here, to pretend it was never created.
-					if( descr->returnType.GetObjectType()->beh.destruct )
-						engine->CallObjectMethod(retPointer, descr->returnType.GetObjectType()->beh.destruct);
-				}
-			}
 		}
 	}
 	else
@@ -638,11 +580,11 @@ int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 		int spos = 0;
 		for( asUINT n = 0; n < descr->parameterTypes.GetLength(); n++ )
 		{
-			if( sysFunc->paramAutoHandles[n] && *(asPWORD*)&args[spos] != 0 )
+			if( sysFunc->paramAutoHandles[n] && *(size_t*)&args[spos] != 0 )
 			{
 				// Call the release method on the type
-				engine->CallObjectMethod((void*)*(asPWORD*)&args[spos], descr->parameterTypes[n].GetObjectType()->beh.release);
-				*(asPWORD*)&args[spos] = 0;
+				engine->CallObjectMethod((void*)*(size_t*)&args[spos], descr->parameterTypes[n].GetObjectType()->beh.release);
+				*(size_t*)&args[spos] = 0;
 			}
 
 			if( descr->parameterTypes[n].IsObject() && !descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() )

@@ -43,7 +43,7 @@
 // Neither does WinCE
 
 
-#if defined(__GNUC__) || defined( AS_MARMALADE )
+#if defined(__GNUC__) 
 // Define mkdir for GNUC
 #include <sys/stat.h>
 #include <sys/types.h>

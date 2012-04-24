@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2012 Andreas Jonsson
+   Copyright (c) 2003-2011 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -38,9 +38,6 @@
 #include <stdio.h> // fopen(), fprintf(), fclose()
 
 #include "as_config.h"
-
-#ifndef AS_NO_COMPILER
-
 #include "as_bytecode.h"
 #include "as_debug.h" // mkdir()
 #include "as_array.h"
@@ -315,17 +312,17 @@ void asCByteCode::RemoveInstruction(cByteInstruction *instr)
 bool asCByteCode::CanBeSwapped(cByteInstruction *curr)
 {
 	if( !curr || !curr->next || !curr->next->next ) return false;
-	if( curr->next->next->op != asBC_SwapPtr ) return false;
+	if( curr->next->next->op != asBC_SWAP4 ) return false;
 
 	cByteInstruction *next = curr->next;
 
-	if( curr->op != asBC_PshNull &&
-		curr->op != asBC_PshVPtr &&
+	if( curr->op != asBC_PshC4 &&
+		curr->op != asBC_PshV4 &&
 		curr->op != asBC_PSF )
 		return false;
 
-	if( next->op != asBC_PshNull &&
-		next->op != asBC_PshVPtr &&
+	if( next->op != asBC_PshC4 &&
+		next->op != asBC_PshV4 &&
 		next->op != asBC_PSF )
 		return false;
 
@@ -343,9 +340,7 @@ cByteInstruction *asCByteCode::GoBack(cByteInstruction *curr)
 
 bool asCByteCode::PostponeInitOfTemp(cByteInstruction *curr, cByteInstruction **next)
 {
-	// This is not done for pointers
-	if( (curr->op != asBC_SetV4 && curr->op != asBC_SetV8) || 
-		!IsTemporary(curr->wArg[0]) ) return false;
+	if( curr->op != asBC_SetV4 || !IsTemporary(curr->wArg[0]) ) return false;
 
 	// Move the initialization to just before it's use. 
 	// Don't move it beyond any labels or jumps.
@@ -599,9 +594,6 @@ int asCByteCode::Optimize()
 	// TODO: optimize: A bytecode BC_RefCpyV that copies a handle from a local variable to another local variable
 	//                 can easily substitute the frequently appearing pattern BC_PshV4, BC_PSF, BC_REFCPY, BC_POP
 
-	// TODO: optimize: A single bytecode for incrementing a variable, comparing, and jumping can probably improve 
-	//                 loops a lot. How often do these loops really occur?
-
 	// TODO: optimize: Script class methods are currently implemented to increase the ref count of the object upon
 	//                 entry, and then release it upon exit. When the method isn't doing anything at all, this is
 	//                 not necessary, as the function could simply do a RET immediately. This optimization is only
@@ -609,9 +601,6 @@ int asCByteCode::Optimize()
 	//                 function, then we can't do this optimization. Of course, this optimization may not be all
 	//                 that useful, since in a real world app, it is probably not very common that empty class 
 	//                 methods are called.
-
-	// TODO: optimize: VAR + GET... should be optimized if the only instructions between them are trivial, i.e. no 
-	//                 function calls that can suspend the execution.
 
 	cByteInstruction *instr = first;
 	while( instr )
@@ -625,10 +614,10 @@ int asCByteCode::Optimize()
 		// Postpone initializations so that they may be combined in the second pass
 		if( PostponeInitOfTemp(curr, &instr) ) continue;
 
-		// XXX x, YYY y, SwapPtr -> YYY y, XXX x
+		// XXX x, YYY y, SWAP4 -> YYY y, XXX x
 		if( CanBeSwapped(curr) )
 		{
-			// Delete SwapPtr
+			// Delete SWAP4
 			DeleteInstruction(instr->next);
 
 			// Swap instructions
@@ -637,6 +626,12 @@ int asCByteCode::Optimize()
 
 			instr = GoBack(instr);
 		}
+		// SWAP4, OP -> OP
+		else if( IsCombination(curr, asBC_SWAP4, asBC_ADDi) ||
+				 IsCombination(curr, asBC_SWAP4, asBC_MULi) ||
+				 IsCombination(curr, asBC_SWAP4, asBC_ADDf) ||
+				 IsCombination(curr, asBC_SWAP4, asBC_MULf) )
+			instr = GoBack(DeleteInstruction(curr));
 		// T??, ClrHi -> T??
 		else if( IsCombination(curr, asBC_TZ, asBC_ClrHi) ||
 				 IsCombination(curr, asBC_TNZ, asBC_ClrHi) ||
@@ -649,17 +644,20 @@ int asCByteCode::Optimize()
 			DeleteInstruction(instr);
 			instr = GoBack(curr);
 		}
-		// PshVPtr 0, ADDSi, PopRPtr -> LoadThisR
-		else if( IsCombination(curr, asBC_PshVPtr, asBC_ADDSi) &&
+		// PshV4 0, ADDSi, PopRPtr -> LoadThisR
+		// PshV8 0, ADDSi, PopRPtr -> LoadThisR
+		else if( (IsCombination(curr, asBC_PshV4, asBC_ADDSi) ||
+			      IsCombination(curr, asBC_PshV8, asBC_ADDSi)) &&
 		         IsCombination(instr, asBC_ADDSi, asBC_PopRPtr) &&
 				 curr->wArg[0] == 0 )
 		{
 			DeleteInstruction(curr);
 			instr = GoBack(ChangeFirstDeleteNext(instr, asBC_LoadThisR));
 		}
-		// TODO: Optimize: PshVPtr x, PopRPtr -> LoadRObjR x, 0
-		// PshVPtr x, ADDSi, PopRPtr -> LoadRObjR
-		else if( IsCombination(curr, asBC_PshVPtr, asBC_ADDSi) &&
+		// PshV4 x, ADDSi, PopRPtr -> LoadRObjR
+		// PshV8 x, ADDSi, PopRPtr -> LoadRObjR
+		else if( (IsCombination(curr, asBC_PshV4, asBC_ADDSi) ||
+			      IsCombination(curr, asBC_PshV8, asBC_ADDSi)) &&
 		         IsCombination(instr, asBC_ADDSi, asBC_PopRPtr) &&
 				 curr->wArg[0] != 0 )
 		{
@@ -684,6 +682,28 @@ int asCByteCode::Optimize()
 			DeleteInstruction(instr->next);
 			DeleteInstruction(instr);
 			instr = GoBack(curr);
+		}
+		// PSF x, RDS4 -> PshV4 x
+		else if( IsCombination(curr, asBC_PSF, asBC_RDS4) )
+			instr = GoBack(ChangeFirstDeleteNext(curr, asBC_PshV4));
+		// PSF x, RDS8 -> PshV8 x
+		else if( IsCombination(curr, asBC_PSF, asBC_RDS8) )
+			instr = GoBack(ChangeFirstDeleteNext(curr, asBC_PshV8));
+		// RDS4, POP x -> POP x
+		else if( IsCombination(curr, asBC_RDS4, asBC_POP) && instr->wArg[0] >= 1 ) 
+		{
+			DeleteInstruction(curr);
+			// Transform the pop to remove the address instead of the 4 byte word
+			instr->wArg[0] -= 1-AS_PTR_SIZE; 
+			instr = GoBack(instr);
+		}
+		// RDS8, POP 2 -> POP x-1
+		else if( IsCombination(curr, asBC_RDS8, asBC_POP) && instr->wArg[0] >= 2 )
+		{
+			DeleteInstruction(curr);
+			// Transform the pop to remove the address instead of the 8 byte word
+			instr->wArg[0] -= 2-AS_PTR_SIZE; 
+			instr = GoBack(instr);
 		}
 		// LDG x, WRTV4 y -> CpyVtoG4 y, x
 		else if( IsCombination(curr, asBC_LDG, asBC_WRTV4) && !IsTempRegUsed(instr) )
@@ -772,10 +792,15 @@ int asCByteCode::Optimize()
 			// Continue with the instruction before the one removed
 			instr = GoBack(instr);
 		}
-		// VAR a, GETREF 0 -> PSF a
-		else if( IsCombination(curr, asBC_VAR, asBC_GETREF) && instr->wArg[0] == 0 )
+		// PshC4 a, GETREF 0 -> PSF a
+		else if( IsCombination(curr, asBC_PshC4, asBC_GETREF) && instr->wArg[0] == 0 )
 		{
-			instr = GoBack(ChangeFirstDeleteNext(curr, asBC_PSF));
+			// Convert PshC4 a, to PSF a
+			curr->wArg[0] = (short)*ARG_DW(curr->arg);
+			curr->size = asBCTypeSize[asBCInfo[asBC_PSF].type];
+			curr->op = asBC_PSF;
+			DeleteInstruction(instr);
+			instr = GoBack(curr);
 		}
 		// PGA, CHKREF -> PGA 
 		// PSF, CHKREF -> PSF
@@ -805,24 +830,32 @@ int asCByteCode::Optimize()
 			InsertBefore(curr, instr);
 			instr = GoBack(instr);
 		}
-		// PshVPtr y, POP x -> POP x-AS_PTR_SIZE
-		// PSF y    , POP x -> POP x-AS_PTR_SIZE
-		// VAR y    , POP x -> POP x-AS_PTR_SIZE
-		// PshNull  , POP x -> POP x-AS_PTR_SIZE
-		// PshRPtr  , POP x -> POP x-AS_PTR_SIZE
+		// PshV4 y, POP x -> POP x-1
+		// PshC4 y, POP x -> POP x-1
+		else if( (IsCombination(curr, asBC_PshV4, asBC_POP) ||
+		          IsCombination(curr, asBC_PshC4, asBC_POP)) && instr->wArg[0] >= 1 )
+		{
+			DeleteInstruction(curr);
+			instr->wArg[0]--;
+			instr = GoBack(instr);
+		}
+		// PshRPtr, POP x -> POP x - 1
 		else if( (IsCombination(curr, asBC_PshRPtr, asBC_POP) ||
 			      IsCombination(curr, asBC_PSF    , asBC_POP) ||
-				  IsCombination(curr, asBC_VAR    , asBC_POP) || 
-				  IsCombination(curr, asBC_PshVPtr, asBC_POP) ||
-			      IsCombination(curr, asBC_PshNull, asBC_POP)) && 
-				 instr->wArg[0] >= AS_PTR_SIZE )
+				  IsCombination(curr, asBC_VAR    , asBC_POP)) 
+				  && instr->wArg[0] >= AS_PTR_SIZE )
 		{
-			// The pop instruction will always only pop a single pointer
-			asASSERT( instr->wArg[0] == AS_PTR_SIZE );
-
-			// A pointer is pushed on the stack then immediately removed
 			DeleteInstruction(curr);
 			instr->wArg[0] -= AS_PTR_SIZE;
+			instr = GoBack(instr);
+		}
+		// PshV8 y, POP x -> POP x-2
+		// PshC8 y, POP x -> POP x-2
+		else if( (IsCombination(curr, asBC_PshV8, asBC_POP) ||
+			      IsCombination(curr, asBC_PshC8, asBC_POP)) && instr->wArg[0] >= 2 )
+		{
+			DeleteInstruction(curr);
+			instr->wArg[0] -= 2;
 			instr = GoBack(instr);
 		}
 		// POP 0 -> remove
@@ -853,18 +886,24 @@ int asCByteCode::Optimize()
 		// JMP +0 -> remove
 		else if( IsCombination(curr, asBC_JMP, asBC_LABEL) && *(int*)&curr->arg == instr->wArg[0] )
 			instr = GoBack(DeleteInstruction(curr));
-		// PSF, RDSPtr -> PshVPtr
-		else if( IsCombination(curr, asBC_PSF, asBC_RDSPtr) )
+		// PSF, ChkRefS, RDS4 -> PshV4, CHKREF
+		else if( IsCombination(curr, asBC_PSF, asBC_ChkRefS) &&
+		         IsCombination(instr, asBC_ChkRefS, asBC_RDS4) )
 		{
-			curr->op = asBC_PshVPtr;
-			DeleteInstruction(instr);
+			asASSERT( AS_PTR_SIZE == 1 );
+
+			curr->op = asBC_PshV4;
+			instr->op = asBC_CHKREF;
+			DeleteInstruction(instr->next);
 			instr = GoBack(curr);
 		}
-		// PSF, ChkRefS, RDSPtr -> PshVPtr, CHKREF
+		// PSF, ChkRefS, RDS8 -> PshV8, CHKREF
 		else if( IsCombination(curr, asBC_PSF, asBC_ChkRefS) &&
-		         IsCombination(instr, asBC_ChkRefS, asBC_RDSPtr) )
+		         IsCombination(instr, asBC_ChkRefS, asBC_RDS8) )
 		{
-			curr->op = asBC_PshVPtr;
+			asASSERT( AS_PTR_SIZE == 2 );
+
+			curr->op = asBC_PshV8;
 			instr->op = asBC_CHKREF;
 			DeleteInstruction(instr->next);
 			instr = GoBack(curr);
@@ -882,11 +921,26 @@ int asCByteCode::Optimize()
 			DeleteInstruction(instr);
 			instr = GoBack(curr);
 		}
-		// PshVPtr, CHKREF, POP -> ChkNullV
-		else if( (IsCombination(curr, asBC_PshVPtr, asBC_CHKREF) &&
+		// PshV4, CHKREF, POP -> ChkNullV
+		else if( (IsCombination(curr, asBC_PshV4, asBC_CHKREF) &&
 		          IsCombination(instr, asBC_CHKREF, asBC_POP) &&
-		          instr->next->wArg[0] == AS_PTR_SIZE) )
+		          instr->next->wArg[0] >= 1) )
 		{
+			asASSERT( AS_PTR_SIZE == 1 );
+
+			curr->op = asBC_ChkNullV;
+			curr->stackInc = 0;
+			DeleteInstruction(instr->next);
+			DeleteInstruction(instr);
+			instr = GoBack(curr);
+		}
+		// PshV8, CHKREF, POP -> ChkNullV
+		else if( (IsCombination(curr, asBC_PshV8, asBC_CHKREF) &&
+		          IsCombination(instr, asBC_CHKREF, asBC_POP) &&
+		          instr->next->wArg[0] >= 2) )
+		{
+			asASSERT( AS_PTR_SIZE == 2 );
+
 			curr->op = asBC_ChkNullV;
 			curr->stackInc = 0;
 			DeleteInstruction(instr->next);
@@ -1299,7 +1353,8 @@ void asCByteCode::Call(asEBCInstr instr, int funcID, int pop)
 	*((int*)ARG_DW(last->arg)) = funcID;
 
     // Add a JitEntry instruction after function calls so that JIT's can resume execution
-    InstrPTR(asBC_JitEntry, 0);
+    // TODO: Should this be done by the compiler?
+    InstrWORD(asBC_JitEntry, 0);
 }
 
 void asCByteCode::CallPtr(asEBCInstr instr, int funcPtrVar, int pop)
@@ -1315,7 +1370,8 @@ void asCByteCode::CallPtr(asEBCInstr instr, int funcPtrVar, int pop)
 	last->wArg[0] = (short)funcPtrVar;
 
     // Add a JitEntry instruction after function calls so that JIT's can resume execution
-    InstrPTR(asBC_JitEntry, 0);
+    // TODO: Should this be done by the compiler?
+    InstrWORD(asBC_JitEntry, 0);
 }
 
 void asCByteCode::Alloc(asEBCInstr instr, void *objID, int funcID, int pop)
@@ -1328,11 +1384,12 @@ void asCByteCode::Alloc(asEBCInstr instr, void *objID, int funcID, int pop)
 	last->stackInc = -pop; // BC_ALLOC
 
 	asASSERT(asBCInfo[instr].type == asBCTYPE_PTR_DW_ARG);
-	*ARG_PTR(last->arg) = (asPWORD)objID;
+	*ARG_PTR(last->arg) = (asPTRWORD)(size_t)objID;
 	*((int*)(ARG_DW(last->arg)+AS_PTR_SIZE)) = funcID;
 
     // Add a JitEntry instruction after function calls so that JIT's can resume execution
-    InstrPTR(asBC_JitEntry, 0);
+    // TODO: Should this be done by the compiler?
+    InstrWORD(asBC_JitEntry, 0);
 }
 
 void asCByteCode::Ret(int pop)
@@ -1391,7 +1448,8 @@ void asCByteCode::Line(int line, int column)
 	*((int*)ARG_DW(last->arg)) = (line & 0xFFFFF)|((column & 0xFFF)<<20);
 
     // Add a JitEntry after the line instruction to allow the JIT function to resume after a suspend
-    InstrPTR(asBC_JitEntry, 0);
+    // TODO: Should this be done by the compiler?
+    InstrWORD(asBC_JitEntry, 0);
 }
 
 void asCByteCode::ObjInfo(int offset, int info)
@@ -1526,7 +1584,7 @@ cByteInstruction *asCByteCode::DeleteInstruction(cByteInstruction *instr)
 
 void asCByteCode::Output(asDWORD *array)
 {
-	// TODO: Receive a script function pointer instead of the bytecode array
+	// TODO: Receive a script function pointer
 
 	asDWORD *ap = array;
 
@@ -1714,12 +1772,11 @@ void asCByteCode::DebugOutput(const char *name, asCScriptEngine *engine, asCScri
 	FILE *file = fopen(str.AddressOf(), "w");
 #endif
 
-#if !defined(AS_XENON) // XBox 360: When running in DVD Emu, no write is allowed
-	asASSERT( file );
-#endif
-
+#ifdef AS_XENON // XBox 360
+	// When running in DVD Emu, no write is allowed
 	if( file == 0 )
 		return;
+#endif
 
 	asUINT n;
 
@@ -1743,7 +1800,7 @@ void asCByteCode::DebugOutput(const char *name, asCScriptEngine *engine, asCScri
 	if( func->objectType )
 	{
 		fprintf(file, " %.3d: %s this\n", 0, func->objectType->name.AddressOf());
-		offset -= AS_PTR_SIZE;
+		offset += AS_PTR_SIZE;
 	}
 	for( n = 0; n < func->parameterTypes.GetLength(); n++ )
 	{
@@ -1759,7 +1816,7 @@ void asCByteCode::DebugOutput(const char *name, asCScriptEngine *engine, asCScri
 		if( !found )
 			fprintf(file, " %.3d: %s {noname param}\n", offset, func->parameterTypes[n].Format().AddressOf());
 
-		offset -= func->parameterTypes[n].GetSizeOnStackDWords();
+		offset += func->parameterTypes[n].GetSizeOnStackDWords();
 	}
 	for( n = 0; n < func->objVariablePos.GetLength(); n++ )
 	{
@@ -1993,10 +2050,6 @@ void asCByteCode::DebugOutput(const char *name, asCScriptEngine *engine, asCScri
 // Decrease stack with "numDwords"
 int asCByteCode::Pop(int numDwords)
 {
-	// Only single pointers are popped
-	// TODO: optimize: Change the instruction to be PopPtr and remove the argument
-	asASSERT(numDwords == AS_PTR_SIZE);
-
 	asASSERT(asBCInfo[asBC_POP].type == asBCTYPE_W_ARG);
 
 	if( AddInstruction() < 0 )
@@ -2120,7 +2173,7 @@ int asCByteCode::InstrW_PTR(asEBCInstr bc, short a, void *param)
 
 	last->op       = bc;
 	last->wArg[0]  = a;
-	*ARG_PTR(last->arg) = (asPWORD)param;
+	*ARG_PTR(last->arg) = (asPTRWORD)(size_t)param;
 	last->size     = asBCTypeSize[asBCInfo[bc].type];
 	last->stackInc = asBCInfo[bc].stackInc;
 
@@ -2328,7 +2381,7 @@ int asCByteCode::InstrPTR(asEBCInstr bc, void *param)
 
 	last->op = bc;
 	asASSERT(asBCInfo[bc].type == asBCTYPE_PTR_ARG);
-	*ARG_PTR(last->arg) = (asPWORD)param;
+	*ARG_PTR(last->arg) = (asPTRWORD)(size_t)param;
 	last->size     = asBCTypeSize[asBCInfo[bc].type];
 	last->stackInc = asBCInfo[bc].stackInc;
 
@@ -2500,6 +2553,3 @@ void cByteInstruction::Remove()
 }
 
 END_AS_NAMESPACE
-
-#endif // AS_NO_COMPILER
-

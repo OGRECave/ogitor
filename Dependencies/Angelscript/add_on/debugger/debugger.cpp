@@ -1,6 +1,8 @@
 #include "debugger.h"
 #include <iostream>  // cout
 #include <sstream> // stringstream
+// Fixes linux problems:
+#include <stdio.h>
 #include <stdlib.h>
 
 using namespace std;
@@ -23,9 +25,9 @@ string CDebugger::ToString(void *value, asUINT typeId, bool expandMembers, asISc
 	else if( typeId == asTYPEID_BOOL )
 		return *(bool*)value ? "true" : "false";
 	else if( typeId == asTYPEID_INT8 )
-		s << (int)*(signed char*)value;
+		s << *(signed char*)value;
 	else if( typeId == asTYPEID_INT16 )
-		s << (int)*(signed short*)value;
+		s << *(signed short*)value;
 	else if( typeId == asTYPEID_INT32 )
 		s << *(signed int*)value;
 	else if( typeId == asTYPEID_INT64 )
@@ -35,9 +37,9 @@ string CDebugger::ToString(void *value, asUINT typeId, bool expandMembers, asISc
 		s << *(asINT64*)value;
 #endif
 	else if( typeId == asTYPEID_UINT8 )
-		s << (unsigned int)*(unsigned char*)value;
+		s << *(unsigned char*)value;
 	else if( typeId == asTYPEID_UINT16 )
-		s << (unsigned int)*(unsigned short*)value;
+		s << *(unsigned short*)value;
 	else if( typeId == asTYPEID_UINT32 )
 		s << *(unsigned int*)value;
 	else if( typeId == asTYPEID_UINT64 )
@@ -80,7 +82,7 @@ string CDebugger::ToString(void *value, asUINT typeId, bool expandMembers, asISc
 		if( obj && expandMembers )
 		{
 			asIObjectType *type = obj->GetObjectType();
-			for( asUINT n = 0; n < obj->GetPropertyCount(); n++ )
+			for( int n = 0; n < obj->GetPropertyCount(); n++ )
 			{
 				s << endl << "  " << type->GetPropertyDeclaration(n) << " = " << ToString(obj->GetAddressOfProperty(n), obj->GetPropertyTypeId(n), false, engine);
 			}
@@ -410,7 +412,6 @@ void CDebugger::PrintValue(const std::string &expr, asIScriptContext *ctx)
 	asETokenClass t = engine->ParseToken(expr.c_str(), 0, &len);
 
 	// TODO: If the expression starts with :: we should only look for global variables
-	// TODO: If the expression starts with identifier followed by ::, then use that as namespace
 	if( t == asTC_IDENTIFIER )
 	{
 		string name(expr.c_str(), len);
@@ -468,9 +469,8 @@ void CDebugger::PrintValue(const std::string &expr, asIScriptContext *ctx)
 			{
 				for( asUINT n = 0; n < mod->GetGlobalVarCount(); n++ )
 				{
-					// TODO: Handle namespace too
-					const char *varName = 0, *nameSpace = 0;
-					mod->GetGlobalVar(n, &varName, &nameSpace, &typeId);
+					const char *varName = 0;
+					mod->GetGlobalVar(n, &varName, &typeId);
 					if( name == varName )
 					{
 						ptr = mod->GetAddressOfGlobalVar(n);
@@ -545,7 +545,7 @@ void CDebugger::ListGlobalVariables(asIScriptContext *ctx)
 	for( asUINT n = 0; n < mod->GetGlobalVarCount(); n++ )
 	{
 		int typeId;
-		mod->GetGlobalVar(n, 0, 0, &typeId);
+		mod->GetGlobalVar(n, 0, &typeId);
 		s << mod->GetGlobalVarDeclaration(n) << " = " << ToString(mod->GetAddressOfGlobalVar(n), typeId, false, ctx->GetEngine()) << endl;
 	}
 	Output(s.str());

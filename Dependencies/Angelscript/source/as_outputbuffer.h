@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2012 Andreas Jonsson
+   Copyright (c) 2003-2008 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -41,9 +41,6 @@
 #define AS_OUTPUTBUFFER_H
 
 #include "as_config.h"
-
-#ifndef AS_NO_COMPILER
-
 #include "as_string.h"
 #include "as_array.h"
 
@@ -74,7 +71,5 @@ public:
 };
 
 END_AS_NAMESPACE
-
-#endif // AS_NO_COMPILER
 
 #endif
