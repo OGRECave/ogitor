@@ -580,18 +580,32 @@ void ProjectFilesViewWidget::onAddFolder()
     // the new folder as a sibling of the selected item.
     if(selectedItemName.right(1) == "/")
     {
-        QString sName = selectedItemName + newFolderName;
-        ofsFile->createDirectory( sName.toStdString().c_str() );
-        mOfsTreeWidget->refreshWidget();
+        QString sName = selectedItemName + newFolderName + "/";
+        ofsFile->createDirectory(sName.toStdString().c_str());
+        mOfsTreeWidget->refreshWidget();   
+
+        // setCurrentItem() needs to be called twice, because the first call might trigger
+        // the onExpand() slot of ofsTreeWidget, which will overwrite our desired selection.
+        // The second call will then not need any expansion work anymore and therefore 
+        //successfully set the desired selection.
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
     }
     else
     {
         selectedItemName = selectedItemName.right(selectedItemName.size() - (selectedItemName.lastIndexOf("/") + 1));
         QString parentName = mOfsTreeWidget->findItems(selectedItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
         
-        QString sName = parentName + newFolderName;
-        ofsFile->createDirectory( sName.toStdString().c_str() );
+        QString sName = parentName + newFolderName + "/";
+        ofsFile->createDirectory(sName.toStdString().c_str());
         mOfsTreeWidget->refreshWidget();
+        
+        // setCurrentItem() needs to be called twice, because the first call might trigger
+        // the onExpand() slot of ofsTreeWidget, which will overwrite our desired selection.
+        // The second call will then not need any expansion work anymore and therefore 
+        //successfully set the desired selection.
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
     }
 }
 //----------------------------------------------------------------------------------------
