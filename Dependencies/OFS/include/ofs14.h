@@ -89,22 +89,9 @@ typedef off_t ofs64;
             close();
         }
 
-        void close()
-        {
-            if( m_pFile != NULL )
-            {
-                fflush( m_pFile );
-                fclose( m_pFile );
-                m_pFile = NULL;
-            }
-        }
+        void close();
 
-        void open( const char *file, const char *mode )
-        {
-            close();
-
-            m_pFile = fopen( file, mode );
-        }
+        void open( const char *file, const char *mode );
 
         bool fail()
         {
@@ -146,6 +133,8 @@ typedef off_t ofs64;
             assert( m_pFile != NULL );
             return fread( data, size, 1, m_pFile );
         }
+
+		void fill( ofs64 len );
 
     protected:
         FILE *m_pFile;
