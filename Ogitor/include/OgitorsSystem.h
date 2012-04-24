@@ -143,7 +143,7 @@ namespace Ogitors
         * @param title title of the dialog
         * @return name of selected directory
         */
-        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Open File" dialog
         * @param title title of the dialog
@@ -151,7 +151,7 @@ namespace Ogitors
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of selected file
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Save File" dialog
         * @param title title of the dialog
@@ -159,7 +159,7 @@ namespace Ogitors
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of the file to be saved
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Yes/No/Cancel" or "Okay/Cancel" dialog
         * @param msg message to convey to the user
