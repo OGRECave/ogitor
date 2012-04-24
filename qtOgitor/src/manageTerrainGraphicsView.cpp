@@ -302,8 +302,7 @@ void ManageTerrainGraphicsView::sltRemovePage()
             continue;
 
         CTerrainPageEditor* terPage = terGroup->getPage(page->getPosX(), page->getPosY());
-        terGroup->removePage(page->getPosX(), page->getPosY());
-        terPage->destroy(true);
+		OgitorsRoot::getSingletonPtr()->DestroyEditorObject( terPage, true, true );
     }
 
     clearSelection();
