@@ -32,5 +32,23 @@
 
 #pragma once
 
-#include "ofs14.h"
-#include "ofs_converter.h"
+namespace OFS
+{
+
+    class OfsExport OfsConverter
+    {
+    public:
+        OfsConverter();
+        ~OfsConverter();
+
+        bool convert(std::string infile, std::string outfile);
+
+    private:
+        
+        std::fstream mInStream;       // Handle of file system to be converted
+        std::fstream mOutStream;      // Handle of destination file system
+
+        bool _convertv13_v14(std::string infile, std::string outfile);
+    };
+
+}

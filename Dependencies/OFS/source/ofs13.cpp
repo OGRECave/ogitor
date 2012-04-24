@@ -30,7 +30,7 @@
 /// THE SOFTWARE. 
 ///////////////////////////////////////////////////////////////////////////////////*/
 
-#include "ofs.h"
+#include "ofs13.h"
 #include <algorithm>
 
 using namespace std;
@@ -41,8 +41,9 @@ using namespace std;
 #define OPEN_STREAM(a, b, c) a.open(b, c)
 #endif
 
+#pragma warning( disable : 4244 )
 
-namespace OFS
+namespace OFS13
 {
     STATIC_AUTO_MUTEX_DECL(_Ofs)
 
@@ -1545,7 +1546,7 @@ namespace OFS
 
         /* call this before createDirectory because we might be moving
         to a new directory within the same directory */
-        OFS::FileList allFiles = listFiles(dirname);
+        FileList allFiles = listFiles(dirname);
 
         OfsEntryDesc *dirDesc = _getDirectoryDesc(dest);
 
@@ -1572,7 +1573,7 @@ namespace OFS
                 destLoc += "/";
             destLoc += allFiles[i].name;
 
-            if(allFiles[i].flags & OFS::OFS_DIR)
+            if(allFiles[i].flags & OFS_DIR)
             {
                 ret = moveDirectory(currentLoc.c_str(), destLoc.c_str());
             } else {
@@ -3301,7 +3302,7 @@ namespace OFS
                 if(logCallbackFunc)
                     (*logCallbackFunc)(std::string("Defragmenting ").append(allFiles[i].name));
 
-                if(allFiles[i].flags & OFS::OFS_DIR)
+                if(allFiles[i].flags & OFS_DIR)
                 {
                     destFile->createDirectoryUUID(allFiles[i].name.c_str(), allFiles[i].uuid);
                 }
@@ -3311,8 +3312,8 @@ namespace OFS
 
                     try
                     {
-                        OFS::OfsResult ret = openFile(in_handle, file_ofs_path.c_str());
-                        if(ret != OFS::OFS_OK)
+                        OfsResult ret = openFile(in_handle, file_ofs_path.c_str());
+                        if(ret != OFS_OK)
                             continue;
 
                         unsigned int total = allFiles[i].file_size;
@@ -3380,7 +3381,7 @@ namespace OFS
         unsigned int list_max = list.size();
         unsigned int file_size = 0;
         
-        OFS::FileList subList;
+        FileList subList;
 
 
         for(unsigned int i = 0;i < list_max;i++)
@@ -3388,7 +3389,7 @@ namespace OFS
             list[i].name = path + list[i].name;
             file_size += list[i].file_size;
 
-            if(list[i].flags & OFS::OFS_DIR)
+            if(list[i].flags & OFS_DIR)
             {
                 std::string newpath = list[i].name + "/";
 
