@@ -222,7 +222,7 @@ bool TemplateViewWidget::OnDragMove(Ogre::Viewport *vp, unsigned int modifier, O
     else
         vPos = OgitorsRoot::getSingletonPtr()->GetGizmoIntersectCameraPlane(mDragObject, mouseRay);
 
-    if(modifier & Ogitors::DragDropControlModifier)
+    if((modifier & Ogitors::DragDropControlModifier) || OgitorsRoot::getSingletonPtr()->GetSnapGroundState())
     {
         bool hitfound = OgitorsRoot::getSingletonPtr()->GetViewport()->GetHitPosition(mouseRay, vPos, dragnamelist);
 

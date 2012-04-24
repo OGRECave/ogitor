@@ -30,8 +30,6 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "tinyxml.h"
-
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
@@ -39,6 +37,8 @@
 #include "OgitorsUndoManager.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
+
+#include "tinyxml.h"
 
 using namespace Ogitors;
 

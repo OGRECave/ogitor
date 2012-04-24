@@ -220,7 +220,7 @@ bool ObjectsViewWidget::OnDragMove(Ogre::Viewport *vp, unsigned int modifier, Og
 
     bool hitfound = false;
 
-    if(modifier & Ogitors::DragDropControlModifier)
+    if((modifier & Ogitors::DragDropControlModifier) || OgitorsRoot::getSingletonPtr()->GetSnapGroundState())
     {
         hitfound = OgitorsRoot::getSingletonPtr()->GetViewport()->GetHitPosition(mouseRay, vPos, mDragData.Object->getName());
     }
