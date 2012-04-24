@@ -546,12 +546,12 @@ void OgitorsClipboardManager::addTemplateFromFile(Ogre::String filename, bool is
     {
         OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
-        unsigned int file_size = 0;
+        OFS::ofs64 file_size = 0;
 
         if(mFile->getFileSize(filename.c_str(), file_size) != OFS::OFS_OK)
             return;
 
-        char *file_data = new char[file_size + 1];
+        char *file_data = new char[(unsigned int)file_size + 1];
 
         OFS::OFSHANDLE fileHandle;
 
@@ -561,10 +561,10 @@ void OgitorsClipboardManager::addTemplateFromFile(Ogre::String filename, bool is
             return;
         }
 
-        mFile->read(fileHandle, file_data, file_size);
+        mFile->read(fileHandle, file_data, (unsigned int)file_size);
         mFile->closeFile(fileHandle);
 
-        if(!docImport.LoadFromMemory(file_data, file_size))
+        if(!docImport.LoadFromMemory(file_data, (unsigned int)file_size))
         {
             delete [] file_data;
             return;

@@ -189,13 +189,13 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
         if(ofsFile->openFile(fHandle, file.c_str()) == OFS::OFS_OK)
         {
             char *contents;
-            unsigned int file_size = 0;
+            OFS::ofs64 file_size = 0;
             ofsFile->getFileSize(fHandle, file_size);
 
             if(file_size > 0)
             {
-                contents = new char[file_size + 1];
-                ofsFile->read(fHandle, contents, file_size);
+                contents = new char[(unsigned int)file_size + 1];
+                ofsFile->read(fHandle, contents, (unsigned int)file_size);
                 contents[file_size] = 0;
                 r = mBuilder->AddSectionFromMemory(contents, file.c_str());
                 delete [] contents;
@@ -316,13 +316,13 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, s
         if(ofsFile->openFile(fHandle, file.c_str()) == OFS::OFS_OK)
         {
             char *contents;
-            unsigned int file_size = 0;
+            OFS::ofs64 file_size = 0;
             ofsFile->getFileSize(fHandle, file_size);
 
             if(file_size > 0)
             {
-                contents = new char[file_size + 1];
-                ofsFile->read(fHandle, contents, file_size);
+                contents = new char[(unsigned int)file_size + 1];
+                ofsFile->read(fHandle, contents, (unsigned int)file_size);
                 contents[file_size] = 0;
                 r = mBuilder->AddSectionFromMemory(contents, file.c_str());
                 delete [] contents;

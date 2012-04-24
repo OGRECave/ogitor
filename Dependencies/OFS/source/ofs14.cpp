@@ -35,11 +35,7 @@
 
 using namespace std;
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
-#define OPEN_STREAM(a, b, c) a.open(b, c, SH_DENYWR)
-#else
 #define OPEN_STREAM(a, b, c) a.open(b, c)
-#endif
 
 
 namespace OFS
@@ -85,7 +81,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    void OFSHANDLE::_setWritePos(unsigned int value)
+    void OFSHANDLE::_setWritePos(ofs64 value)
     {
         if(value > mEntryDesc->FileSize)
             value = mEntryDesc->FileSize;
@@ -95,9 +91,9 @@ namespace OFS
             mWritePos = value;
             mWriteBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
 
-            unsigned int block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
+            ofs64 block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
             int i = 0;
-            unsigned int max_i = mEntryDesc->UsedBlocks.size();
+            ofs64 max_i = mEntryDesc->UsedBlocks.size();
             while(block_size <= value)
             {
                 value -= block_size;
@@ -122,7 +118,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    void OFSHANDLE::_setReadPos(unsigned int value)
+    void OFSHANDLE::_setReadPos(ofs64 value)
     {
         if(value > mEntryDesc->FileSize)
             value = mEntryDesc->FileSize;
@@ -132,9 +128,9 @@ namespace OFS
             mReadPos = value;
             mReadBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
 
-            unsigned int block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
+            ofs64 block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
             int i = 0;
-            unsigned int max_i = mEntryDesc->UsedBlocks.size();
+            ofs64 max_i = mEntryDesc->UsedBlocks.size();
             while(block_size <= value)
             {
                 value -= block_size;
@@ -249,7 +245,7 @@ namespace OFS
 
         stats.UsedSpace += desc->FileSize;
 
-        unsigned int total_alloc = 0;
+        ofs64 total_alloc = 0;
         
         for(unsigned int i = 0;i < desc->UsedBlocks.size();i++)
         {
@@ -291,11 +287,10 @@ namespace OFS
             stats.ActualFreeSpace += mFreeBlocks[i].Length;
         }
 
-        mStream.clear();
-        mStream.seekg(0, fstream::end);
+        mStream.seek(0, OFS_SEEK_END);
 
         stats.ActualUsedSpace += sizeof(strFileHeader);
-        stats.TotalFileSize = mStream.tellg();
+        stats.TotalFileSize = mStream.tell();
 
         return OFS_OK;
     }
@@ -319,15 +314,14 @@ namespace OFS
     {
         data.Type |= OFS_FREE_BLOCK;
         data.NextBlock = 0;
-        mStream.clear();
-        mStream.seekp(data.Start - sizeof(strBlockHeader) + offsetof(strBlockHeader, Type), fstream::beg);
+        mStream.seek(data.Start - sizeof(strBlockHeader) + offsetof(strBlockHeader, Type), OFS_SEEK_BEGIN);
         mStream.write((char*)&(data.Type), sizeof(unsigned int));
         mFreeBlocks.push_back(data);
     }
 
 //------------------------------------------------------------------------------
 
-    void _Ofs::_allocateFileBlock(OfsEntryDesc *desc, strMainEntryHeader& mainEntry, unsigned int block_size, unsigned int data_size, const char *data)
+    void _Ofs::_allocateFileBlock(OfsEntryDesc *desc, strMainEntryHeader& mainEntry, ofs64 block_size, unsigned int data_size, const char *data)
     {
         BlockData blockData;
         strBlockHeader blHeader;
@@ -361,14 +355,13 @@ namespace OFS
 
                blHeader.Type = OFS_MAIN_BLOCK;
                blHeader.Length = block_size;
-               mStream.clear();
-               mStream.seekp(blockData.Start - sizeof(strBlockHeader), fstream::beg);
+               mStream.seek(blockData.Start - sizeof(strBlockHeader), OFS_SEEK_BEGIN);
                mStream.write((char*)&blHeader, sizeof(strBlockHeader));
                mStream.write((char*)&mainEntry, sizeof(strMainEntryHeader));
                
                blHeader.Type = OFS_FREE_BLOCK;
                blHeader.Length = mFreeBlocks[alloc_pos].Length;
-               mStream.seekp(block_size - sizeof(strMainEntryHeader), fstream::cur);
+               mStream.seek(block_size - sizeof(strMainEntryHeader), OFS_SEEK_CURRENT);
                mStream.write((char*)&blHeader, sizeof(strBlockHeader));
 
                desc->UsedBlocks.push_back(blockData);
@@ -381,8 +374,7 @@ namespace OFS
                mFreeBlocks.erase(mFreeBlocks.begin() + alloc_pos);
                blHeader.Type = OFS_MAIN_BLOCK;
                blHeader.Length = blockData.Length;
-               mStream.clear();
-               mStream.seekp(blockData.Start - sizeof(strBlockHeader), fstream::beg);
+               mStream.seek(blockData.Start - sizeof(strBlockHeader), OFS_SEEK_BEGIN);
                mStream.write((char*)&blHeader, sizeof(strBlockHeader));
                mStream.write((char*)&mainEntry, sizeof(strMainEntryHeader));
                desc->UsedBlocks.push_back(blockData);
@@ -390,12 +382,11 @@ namespace OFS
         }
         else
         {
-            mStream.clear();
-            mStream.seekp(0, fstream::end);
+            mStream.seek(0, OFS_SEEK_END);
             blockData.Type = OFS_MAIN_BLOCK;
             blockData.NextBlock = 0;
             blockData.Length = block_size;
-            blockData.Start = mStream.tellp();
+            blockData.Start = mStream.tell();
             blockData.Start += sizeof(strBlockHeader);
             
             blHeader.Length = blockData.Length;
@@ -408,8 +399,7 @@ namespace OFS
             desc->UsedBlocks.push_back(blockData);
         }
 
-        mStream.clear();
-        mStream.seekp(blockData.Start + sizeof(strMainEntryHeader), fstream::beg);
+        mStream.seek(blockData.Start + sizeof(strMainEntryHeader), OFS_SEEK_BEGIN);
 
         block_size -= sizeof(strMainEntryHeader); 
         
@@ -425,7 +415,7 @@ namespace OFS
         if(fill_needed)
         {
             char dummy[] = {0};
-            for(unsigned int i = 0;i < block_size;i++)
+            for(ofs64 i = 0;i < block_size;i++)
             {
                 mStream.write(dummy, 1);
             }
@@ -436,7 +426,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    void _Ofs::_allocateExtendedFileBlock(OfsEntryDesc *desc, unsigned int block_size, unsigned int data_size, const char *data)
+    void _Ofs::_allocateExtendedFileBlock(OfsEntryDesc *desc, ofs64 block_size, unsigned int data_size, const char *data)
     {
         strExtendedEntryHeader extendedHeader;
         BlockData blockData;
@@ -476,14 +466,13 @@ namespace OFS
 
                blHeader.Type = OFS_EXTENDED_BLOCK;
                blHeader.Length = block_size;
-               mStream.clear();
-               mStream.seekp(blockData.Start - sizeof(strBlockHeader), fstream::beg);
+               mStream.seek(blockData.Start - sizeof(strBlockHeader), OFS_SEEK_BEGIN);
                mStream.write((char*)&blHeader, sizeof(strBlockHeader));
                mStream.write((char*)&extendedHeader, sizeof(strExtendedEntryHeader));
                
                blHeader.Type = OFS_FREE_BLOCK;
                blHeader.Length = mFreeBlocks[alloc_pos].Length;
-               mStream.seekp(block_size - sizeof(strExtendedEntryHeader), fstream::cur);
+               mStream.seek(block_size - sizeof(strExtendedEntryHeader), OFS_SEEK_CURRENT);
                mStream.write((char*)&blHeader, sizeof(strBlockHeader));
 
                desc->UsedBlocks.push_back(blockData);
@@ -496,8 +485,7 @@ namespace OFS
                mFreeBlocks.erase(mFreeBlocks.begin() + alloc_pos);
                blHeader.Type = OFS_EXTENDED_BLOCK;
                blHeader.Length = blockData.Length;
-               mStream.clear();
-               mStream.seekp(blockData.Start - sizeof(strBlockHeader), fstream::beg);
+               mStream.seek(blockData.Start - sizeof(strBlockHeader), OFS_SEEK_BEGIN);
                mStream.write((char*)&blHeader, sizeof(strBlockHeader));
                mStream.write((char*)&extendedHeader, sizeof(strExtendedEntryHeader));
                desc->UsedBlocks.push_back(blockData);
@@ -505,12 +493,11 @@ namespace OFS
         }
         else
         {
-            mStream.clear();
-            mStream.seekp(0, fstream::end);
+            mStream.seek(0, OFS_SEEK_END);
             blockData.Type = OFS_EXTENDED_BLOCK;
             blockData.NextBlock = 0;
             blockData.Length = block_size;
-            blockData.Start = mStream.tellp();
+            blockData.Start = mStream.tell();
             blockData.Start += sizeof(strBlockHeader);
             
             blHeader.Length = blockData.Length;
@@ -528,16 +515,14 @@ namespace OFS
         
         desc->UsedBlocks[prev_block].NextBlock = blockData.Start;
         
-        mStream.clear();
         if(prev_block == 0)
-            mStream.seekp(desc->UsedBlocks[prev_block].Start + offsetof(strMainEntryHeader, NextBlock), fstream::beg);
+            mStream.seek(desc->UsedBlocks[prev_block].Start + offsetof(strMainEntryHeader, NextBlock), OFS_SEEK_BEGIN);
         else
-            mStream.seekp(desc->UsedBlocks[prev_block].Start + offsetof(strExtendedEntryHeader, NextBlock), fstream::beg);
+            mStream.seek(desc->UsedBlocks[prev_block].Start + offsetof(strExtendedEntryHeader, NextBlock), OFS_SEEK_BEGIN);
 
-        mStream.write((char*)&(desc->UsedBlocks[prev_block].NextBlock), sizeof(unsigned int));
+        mStream.write((char*)&(desc->UsedBlocks[prev_block].NextBlock), sizeof(ofs64));
 
-        mStream.clear();
-        mStream.seekp(blockData.Start + sizeof(strExtendedEntryHeader), fstream::beg);
+        mStream.seek(blockData.Start + sizeof(strExtendedEntryHeader), OFS_SEEK_BEGIN);
 
         block_size -= sizeof(strExtendedEntryHeader); 
         
@@ -553,7 +538,7 @@ namespace OFS
         if(fill_needed)
         {
             char dummy[] = {0};
-            for(unsigned int i = 0;i < block_size;i++)
+            for(ofs64 i = 0;i < block_size;i++)
             {
                 mStream.write(dummy, 1);
             }
@@ -583,8 +568,8 @@ namespace OFS
         
         if(op & OFS_MOUNT_OPEN)
         {
-            OPEN_STREAM(mStream, mFileName.c_str(), fstream::in | fstream::out | fstream::binary | fstream::ate);
-            if(!mStream.fail() && mStream.is_open())
+            OPEN_STREAM(mStream, mFileName.c_str(), "rb+");
+            if(!mStream.fail())
             {
                 mActive = true;
                 ret = _readHeader();
@@ -592,7 +577,7 @@ namespace OFS
         }
         else
         {
-            OPEN_STREAM(mStream, mFileName.c_str(), fstream::in | fstream::out | fstream::binary | fstream::trunc);
+            OPEN_STREAM(mStream, mFileName.c_str(), "wb+");
             if(!mStream.fail())
             {
                 mActive = true;
@@ -645,7 +630,7 @@ namespace OFS
     {
         mActive = false;
 
-        if(mStream.is_open())
+        if(!mStream.fail())
         {
             mStream.flush();
             mStream.close();
@@ -670,11 +655,11 @@ namespace OFS
     {
         assert(mActive);
 
-        mStream.seekg(0, fstream::end);
-        unsigned int file_size = mStream.tellg();
+        mStream.seek(0, OFS_SEEK_END);
+        ofs64 file_size = mStream.tell();
 
         int HeaderSize = sizeof(strFileHeader);
-        mStream.seekg(0, fstream::beg);
+        mStream.seek(0, OFS_SEEK_BEGIN);
         mStream.read((char *)&mHeader, HeaderSize);
 
         if(mHeader.ID[0] != 'O' || mHeader.ID[1] != 'F' || mHeader.ID[2] != 'S' || mHeader.ID[3] != '1')
@@ -694,7 +679,7 @@ namespace OFS
         else if(version_diff < 0)
             return OFS_UNKNOWN_VERSION;
 
-        unsigned int current_loc = mStream.tellg();
+        ofs64 current_loc = mStream.tell();
 
         if(current_loc == file_size)
             return OFS_OK;
@@ -710,18 +695,17 @@ namespace OFS
 
         DirMap.insert(IdDescMap::value_type(-1, &mRootDir));
 
-        unsigned int skipped = 0;
+        ofs64 skipped = 0;
 
-        while((current_loc = mStream.tellg()) < file_size)
+        while((current_loc = mStream.tell()) < file_size)
         {
             mStream.read((char*)&blHeader, sizeof(strBlockHeader));
             if(blHeader.Signature[0] != mHeader.BLOCK_HEADER_SIG[0] || blHeader.Signature[1] != mHeader.BLOCK_HEADER_SIG[1])
             {
                 if(mRecoveryMode)
                 {
-                    unsigned int pos = mStream.tellg();
-                    mStream.clear();
-                    mStream.seekg( pos + 1 - sizeof(strBlockHeader));
+                    ofs64 pos = mStream.tell();
+                    mStream.seek( pos + 1 - sizeof(strBlockHeader));
                     skipped++;
                     continue;
                 }
@@ -732,12 +716,11 @@ namespace OFS
             {
                 if(skipped > sizeof(strBlockHeader))
                 {
-                    unsigned int pos = mStream.tellg();
-                    mStream.clear();
+                    ofs64 pos = mStream.tell();
 
                     //TODO : We may want to do some corrections here, like creating a free block signature
 
-                    mStream.seekg( pos );
+                    mStream.seek( pos );
                 }
 
                 skipped = 0;
@@ -746,18 +729,18 @@ namespace OFS
             if(blHeader.Type & OFS_FREE_BLOCK)
             {
                 blockData.Type = blHeader.Type;
-                blockData.Start = mStream.tellg();
+                blockData.Start = mStream.tell();
                 blockData.Length = blHeader.Length;
                 blockData.NextBlock = 0;
 
                 mFreeBlocks.push_back(blockData);
-                mStream.seekg(blockData.Length, fstream::cur);
+                mStream.seek(blockData.Length, OFS_SEEK_CURRENT);
             }
             else if(blHeader.Type == OFS_MAIN_BLOCK)
             {
                 mStream.read((char*)&mainEntry, sizeof(strMainEntryHeader));
                 blockData.Type = blHeader.Type;
-                blockData.Start = mStream.tellg();
+                blockData.Start = mStream.tell();
                 blockData.Start -= sizeof(strMainEntryHeader);
                 blockData.Length = blHeader.Length;
                 blockData.NextBlock = mainEntry.NextBlock;
@@ -822,14 +805,14 @@ namespace OFS
                 entryDesc->Parent = it->second;
                 it->second->Children.push_back(entryDesc);
 
-                mStream.seekg(blockData.Length - sizeof(strMainEntryHeader), fstream::cur);
+                mStream.seek(blockData.Length - sizeof(strMainEntryHeader), OFS_SEEK_CURRENT);
             }
             else if(blHeader.Type == OFS_EXTENDED_BLOCK)
             {
                 mStream.read((char*)&extendedEntry, sizeof(strExtendedEntryHeader));
  
                 blockData.Type = blHeader.Type;
-                blockData.Start = mStream.tellg();
+                blockData.Start = mStream.tell();
                 blockData.Start -= sizeof(strExtendedEntryHeader);
                 blockData.Length = blHeader.Length;
                 blockData.NextBlock = extendedEntry.NextBlock;
@@ -851,7 +834,7 @@ namespace OFS
 
                 it->second->UsedBlocks[extendedEntry.Index] = blockData;
 
-                mStream.seekg(blockData.Length - sizeof(strExtendedEntryHeader), fstream::cur);
+                mStream.seek(blockData.Length - sizeof(strExtendedEntryHeader), OFS_SEEK_CURRENT);
             }
             else
                 return OFS_FILE_CORRUPT;
@@ -868,8 +851,7 @@ namespace OFS
     {
         assert(mActive);
 
-        mStream.clear();
-        mStream.seekp(0, fstream::beg);
+        mStream.seek(0, OFS_SEEK_BEGIN);
         
         mStream.write((char *)&mHeader, sizeof(strFileHeader));
         
@@ -1056,8 +1038,7 @@ namespace OFS
 
                fileData.Type = OFS_MAIN_BLOCK;
                fileData.Length = sizeof(strMainEntryHeader);
-               mStream.clear();
-               mStream.seekp(dirData.Start - sizeof(strBlockHeader), fstream::beg);
+               mStream.seek(dirData.Start - sizeof(strBlockHeader), OFS_SEEK_BEGIN);
                mStream.write((char*)&fileData, sizeof(strBlockHeader));
                mStream.write((char*)&fileHeader, sizeof(strMainEntryHeader));
                
@@ -1072,8 +1053,7 @@ namespace OFS
                mFreeBlocks.erase(mFreeBlocks.begin());
                fileData.Type = OFS_MAIN_BLOCK;
                fileData.Length = dirData.Length;
-               mStream.clear();
-               mStream.seekp(dirData.Start - sizeof(strBlockHeader), fstream::beg);
+               mStream.seek(dirData.Start - sizeof(strBlockHeader), OFS_SEEK_BEGIN);
                mStream.write((char*)&fileData, sizeof(strBlockHeader));
                mStream.write((char*)&fileHeader, sizeof(strMainEntryHeader));
                dir->UsedBlocks.push_back(dirData);
@@ -1081,12 +1061,11 @@ namespace OFS
         }
         else
         {
-            mStream.clear();
-            mStream.seekp(0, fstream::end);
+            mStream.seek(0, OFS_SEEK_END);
             dirData.Type = OFS_MAIN_BLOCK;
             dirData.NextBlock = 0;
             dirData.Length = sizeof(strMainEntryHeader);
-            dirData.Start = mStream.tellp();
+            dirData.Start = mStream.tell();
             dirData.Start += sizeof(strBlockHeader);
             fileData.Length = dirData.Length;
             fileData.Type = OFS_MAIN_BLOCK;
@@ -1102,7 +1081,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    _Ofs::OfsEntryDesc* _Ofs::_createFile(OfsEntryDesc *parent, const std::string& name, unsigned int file_size, const UUID& uuid, unsigned int data_size, const char *data)
+    _Ofs::OfsEntryDesc* _Ofs::_createFile(OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid, unsigned int data_size, const char *data)
     {
         assert(parent != NULL);
         
@@ -1140,7 +1119,7 @@ namespace OFS
         fileHeader.Name[sz] = 0;
         fileHeader.Uuid = file->Uuid;
 
-        unsigned int blockToAlloc = file_size;
+        ofs64 blockToAlloc = file_size;
 
         if(blockToAlloc == 0)
             blockToAlloc = 1024;
@@ -1443,8 +1422,7 @@ namespace OFS
 
         fileDesc->Name = nName;
 
-        mStream.clear();
-        mStream.seekp(fileDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), fstream::beg);
+        mStream.seek(fileDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), OFS_SEEK_BEGIN);
         mStream.write(fileDesc->Name.c_str(), fileDesc->Name.length() + 1);
 
         mStream.flush();
@@ -1522,8 +1500,7 @@ namespace OFS
 
             dirDesc->Name = nName;
 
-            mStream.clear();
-            mStream.seekp(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), fstream::beg);
+            mStream.seek(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), OFS_SEEK_BEGIN);
             mStream.write(dirDesc->Name.c_str(), dirDesc->Name.length() + 1);
 
             mStream.flush();
@@ -1656,8 +1633,7 @@ namespace OFS
                     fileHeader.Name[sz] = 0;
                     fileHeader.Uuid = fileDesc->Uuid;
 
-                    mStream.clear();
-                    mStream.seekp(fileDesc->UsedBlocks[0].Start, fstream::beg);
+                    mStream.seek(fileDesc->UsedBlocks[0].Start, OFS_SEEK_BEGIN);
                     mStream.write((char*)&fileHeader, sizeof(strMainEntryHeader)); 
 
                     mStream.flush();
@@ -1737,8 +1713,7 @@ namespace OFS
                 fileHeader.Name[sz] = 0;
                 fileHeader.Uuid = fileDesc->Uuid;
 
-                mStream.clear();
-                mStream.seekp(fileDesc->UsedBlocks[0].Start, fstream::beg);
+                mStream.seek(fileDesc->UsedBlocks[0].Start, OFS_SEEK_BEGIN);
                 mStream.write((char*)&fileHeader, sizeof(strMainEntryHeader)); 
 
                 mStream.flush();
@@ -1760,7 +1735,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::createFileUUID(OFSHANDLE& handle, const char *filename, const UUID& uuid, unsigned int file_size, unsigned int data_size, const char *data)
+    OfsResult _Ofs::createFileUUID(OFSHANDLE& handle, const char *filename, const UUID& uuid, ofs64 file_size, unsigned int data_size, const char *data)
     {
         assert(filename != NULL);
 
@@ -1895,7 +1870,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::truncateFile(OFSHANDLE& handle, int file_size)
+    OfsResult _Ofs::truncateFile(OFSHANDLE& handle, ofs64 file_size)
     {
         LOCK_AUTO_MUTEX
 
@@ -1914,7 +1889,7 @@ namespace OFS
         if(!(handle.mAccessFlags & OFS_WRITE))
             return OFS_ACCESS_DENIED;
 
-        unsigned int trunc_pos = file_size;
+        ofs64 trunc_pos = file_size;
 
         if(file_size < 0)
             trunc_pos = handle.mWritePos;
@@ -1935,18 +1910,16 @@ namespace OFS
 
             std::sort(mFreeBlocks.begin(), mFreeBlocks.end(), BlockCompare);
 
-            mStream.clear();
-            mStream.seekp(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), fstream::beg);
-            mStream.write((char*)&trunc_pos, sizeof(unsigned int)); 
+            mStream.seek(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), OFS_SEEK_BEGIN);
+            mStream.write((char*)&trunc_pos, sizeof(ofs64)); 
 
-            mStream.clear();
             if(handle.mWriteBlock == 0)
-                mStream.seekp(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, NextBlock), fstream::beg);
+                mStream.seek(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, NextBlock), OFS_SEEK_BEGIN);
             else
-                mStream.seekp(desc->UsedBlocks[handle.mWriteBlock].Start + offsetof(strExtendedEntryHeader, NextBlock), fstream::beg);
+                mStream.seek(desc->UsedBlocks[handle.mWriteBlock].Start + offsetof(strExtendedEntryHeader, NextBlock), OFS_SEEK_BEGIN);
 
             trunc_pos = 0;
-            mStream.write((char*)&trunc_pos, sizeof(unsigned int)); 
+            mStream.write((char*)&trunc_pos, sizeof(ofs64)); 
             mStream.flush();
         }
 
@@ -1962,8 +1935,7 @@ namespace OFS
         flags &= (OFS_READONLY | OFS_HIDDEN);
         file->Flags = (file->Flags & (OFS_FILE | OFS_DIR)) | flags;
 
-        mStream.clear();
-        mStream.seekp(file->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Flags), fstream::beg);
+        mStream.seek(file->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Flags), OFS_SEEK_BEGIN);
         mStream.write((char *)&(file->Flags), sizeof(unsigned int));
 
         if(file->Flags & OFS_DIR)
@@ -2055,31 +2027,29 @@ namespace OFS
         OfsEntryDesc *desc = handle.mEntryDesc;
 
         if(desc->FileSize < (handle.mReadPos + length))
-            length = desc->FileSize - handle.mReadPos;
+            length = (unsigned int)(desc->FileSize - handle.mReadPos);
 
         if(length > 0)
         {
-            unsigned int can_read = handle.mReadBlockEnd - handle.mRealReadPos;
+            ofs64 can_read = handle.mReadBlockEnd - handle.mRealReadPos;
             unsigned int tmp_len = length;
-
-            mStream.clear();
 
             bool done = false;
             while(!done && (can_read > 0))
             {
                 if(can_read >= tmp_len)
                 {
-                    mStream.seekg(handle.mRealReadPos, fstream::beg);
+                    mStream.seek(handle.mRealReadPos, OFS_SEEK_BEGIN);
                     mStream.read(dest, tmp_len);
                     handle._setReadPos(handle.mReadPos + tmp_len);
                     done = true;
                 }
                 else
                 {
-                    mStream.seekg(handle.mRealReadPos, fstream::beg);
-                    mStream.read(dest, can_read);
+                    mStream.seek(handle.mRealReadPos, OFS_SEEK_BEGIN);
+                    mStream.read(dest, (unsigned int)can_read);
                     handle._setReadPos(handle.mReadPos + can_read);
-                    tmp_len -= can_read;
+                    tmp_len -= (unsigned int)can_read;
                     dest += can_read;
 
                     can_read = handle.mReadBlockEnd - handle.mRealReadPos;
@@ -2116,12 +2086,10 @@ namespace OFS
         if(!(handle.mAccessFlags & OFS_WRITE))
             return OFS_ACCESS_DENIED;
 
-        mStream.clear();
-
         OfsEntryDesc *desc = handle.mEntryDesc;
         if(length > 0)
         {
-            unsigned int total_alloc = desc->UsedBlocks[0].Length - sizeof(strMainEntryHeader);
+            ofs64 total_alloc = desc->UsedBlocks[0].Length - sizeof(strMainEntryHeader);
             for(unsigned int i = 1;i < desc->UsedBlocks.size();i++)
                 total_alloc += desc->UsedBlocks[i].Length - sizeof(strExtendedEntryHeader);
 
@@ -2130,7 +2098,7 @@ namespace OFS
 
             if(total_alloc < length)
             {
-                unsigned int space_needed = length - total_alloc;
+                unsigned int space_needed = length - (unsigned int)total_alloc;
                 unsigned int alloc_size =  sizeof(strExtendedEntryHeader);
                 
                 if(space_needed < 1024)
@@ -2138,33 +2106,31 @@ namespace OFS
                 else
                     alloc_size += space_needed;
 
-                _allocateExtendedFileBlock(desc, alloc_size, length - total_alloc, (src + total_alloc));
+                _allocateExtendedFileBlock(desc, alloc_size, space_needed, (src + total_alloc));
 
-                output_amount = total_alloc; 
+                output_amount = (unsigned int)total_alloc; 
             }
 
-            unsigned int write_pos_save = handle.mWritePos;
+            ofs64 write_pos_save = handle.mWritePos;
 
-            unsigned int can_write = handle.mWriteBlockEnd - handle.mRealWritePos;
-
-            mStream.clear();
+            ofs64 can_write = handle.mWriteBlockEnd - handle.mRealWritePos;
 
             bool done = false;
             while(!done)
             {
                 if(can_write >= output_amount)
                 {
-                    mStream.seekp(handle.mRealWritePos, fstream::beg);
+                    mStream.seek(handle.mRealWritePos, OFS_SEEK_BEGIN);
                     mStream.write(src, output_amount);
                     handle._setWritePos(handle.mWritePos + output_amount);
                     done = true;
                 }
                 else
                 {
-                    mStream.seekp(handle.mRealWritePos, fstream::beg);
-                    mStream.write(src, can_write);
+                    mStream.seek(handle.mRealWritePos, OFS_SEEK_BEGIN);
+                    mStream.write(src, (unsigned int)can_write);
                     handle._setWritePos(handle.mWritePos + can_write);
-                    output_amount -= can_write;
+                    output_amount -= (unsigned int)can_write;
                     src += can_write;
 
                     can_write = handle.mWriteBlockEnd - handle.mRealWritePos;
@@ -2174,9 +2140,8 @@ namespace OFS
             if(write_pos_save + length > desc->FileSize)
             {
                 desc->FileSize = write_pos_save + length;
-                mStream.clear();
-                mStream.seekp(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), fstream::beg);
-                mStream.write((char*)&(desc->FileSize), sizeof(unsigned int));
+                mStream.seek(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), OFS_SEEK_BEGIN);
+                mStream.write((char*)&(desc->FileSize), sizeof(ofs64));
                 mStream.flush();
             }
 
@@ -2188,7 +2153,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    unsigned int _Ofs::seekr(OFSHANDLE& handle, int pos, SeekDirection dir)
+    ofs64 _Ofs::seekr(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
     {
         LOCK_AUTO_MUTEX
 
@@ -2222,7 +2187,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    unsigned int _Ofs::seekw(OFSHANDLE& handle, int pos, SeekDirection dir)
+    ofs64 _Ofs::seekw(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
     {
         LOCK_AUTO_MUTEX
 
@@ -2256,7 +2221,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    unsigned int _Ofs::tellr(OFSHANDLE& handle)
+    ofs64 _Ofs::tellr(OFSHANDLE& handle)
     {
         LOCK_AUTO_MUTEX
 
@@ -2277,7 +2242,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    unsigned int _Ofs::tellw(OFSHANDLE& handle)
+    ofs64 _Ofs::tellw(OFSHANDLE& handle)
     {
         LOCK_AUTO_MUTEX
 
@@ -2495,7 +2460,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::getFileSize(const char *filename, unsigned int& size)
+    OfsResult _Ofs::getFileSize(const char *filename, ofs64& size)
     {
         LOCK_AUTO_MUTEX
 
@@ -2676,7 +2641,7 @@ namespace OFS
                     mUuidMap.insert(UuidDescMap::value_type(uuid, fileDesc));
 
                 fileDesc->Uuid = uuid;
-                mStream.seekp(fileDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Uuid), fstream::beg);
+                mStream.seek(fileDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Uuid), OFS_SEEK_BEGIN);
                 mStream.write((char*)&(fileDesc->Uuid), sizeof(UUID));
                 mStream.flush();
             }
@@ -2720,7 +2685,7 @@ namespace OFS
                 mUuidMap.insert(UuidDescMap::value_type(uuid, handle.mEntryDesc));
 
             handle.mEntryDesc->Uuid = uuid;
-            mStream.seekp(handle.mEntryDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Uuid), fstream::beg);
+            mStream.seek(handle.mEntryDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Uuid), OFS_SEEK_BEGIN);
             mStream.write((char*)&(handle.mEntryDesc->Uuid), sizeof(UUID));
             mStream.flush();
         }
@@ -2815,7 +2780,7 @@ namespace OFS
                     mUuidMap.insert(UuidDescMap::value_type(uuid, dirDesc));
 
                 dirDesc->Uuid = uuid;
-                mStream.seekp(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Uuid), fstream::beg);
+                mStream.seek(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Uuid), OFS_SEEK_BEGIN);
                 mStream.write((char*)&(dirDesc->Uuid), sizeof(UUID));
                 mStream.flush();
             }
@@ -2945,7 +2910,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OfsResult _Ofs::getFileSize(OFSHANDLE& handle, unsigned int& size)
+    OfsResult _Ofs::getFileSize(OFSHANDLE& handle, ofs64& size)
     {
         LOCK_AUTO_MUTEX
 
@@ -3044,7 +3009,7 @@ namespace OFS
         if((ret = openFile(srcHandle, src)) != OFS_OK)
             return ret;
 
-        unsigned int file_size = 0;
+        ofs64 file_size = 0;
 
         getFileSize(srcHandle, file_size);
 
@@ -3052,11 +3017,11 @@ namespace OFS
         {
             UUID uuid;
 
-            char *buffer = new char[file_size];
-            read(srcHandle, buffer, file_size);
+            char *buffer = new char[(unsigned int)file_size];
+            read(srcHandle, buffer, (unsigned int)file_size);
             closeFile(srcHandle);
 
-            ret = createFileUUID(destHandle, dest, UUID_ZERO, file_size, file_size, buffer);
+            ret = createFileUUID(destHandle, dest, UUID_ZERO, file_size, (unsigned int)file_size, buffer);
             
             delete [] buffer;
 
@@ -3112,8 +3077,7 @@ namespace OFS
             std::string nName = _extractFileName(dest);
             if( nName == "" || srcDesc->Name == nName )
             {
-                mStream.clear();
-                mStream.seekp(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), fstream::beg);
+                mStream.seek(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), OFS_SEEK_BEGIN);
                 mStream.write((char*)&(srcDesc->ParentId), sizeof(unsigned int));
                 mStream.flush();
             }
@@ -3125,13 +3089,11 @@ namespace OFS
 
                 srcDesc->Name = nName;
 
-                mStream.clear();
-                mStream.seekp(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), fstream::beg);
+                mStream.seek(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, Name), OFS_SEEK_BEGIN);
                 mStream.write(srcDesc->Name.c_str(), srcDesc->Name.length() + 1);
                 mStream.flush();
 
-                mStream.clear();
-                mStream.seekp(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), fstream::beg);
+                mStream.seek(srcDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), OFS_SEEK_BEGIN);
                 mStream.write((char*)&(srcDesc->ParentId), sizeof(unsigned int));
                 mStream.flush();
             }
@@ -3161,16 +3123,15 @@ namespace OFS
         if(it != mAllocatedHandles.end())
             return ret;
 
-        std::fstream destStream;
-        OPEN_STREAM(destStream, dest, fstream::in | fstream::out | fstream::binary | fstream::trunc);
+        FileStream destStream;
+        OPEN_STREAM(destStream, dest, "wb+");
 
         if(!destStream.fail())
         {
-            mStream.clear();
-            mStream.seekg(0, fstream::end);
-            unsigned int total_amount = mStream.tellg();
+            mStream.seek(0, OFS_SEEK_END);
+            ofs64 total_amount = mStream.tell();
 
-            mStream.seekg(0, fstream::beg);
+            mStream.seek(0, OFS_SEEK_BEGIN);
 
             char *buffer = new char[65536];
 
@@ -3184,8 +3145,8 @@ namespace OFS
                 }
                 else
                 {
-                    mStream.read(buffer, total_amount);
-                    destStream.write(buffer, total_amount);
+                    mStream.read(buffer, (unsigned int)total_amount);
+                    destStream.write(buffer, (unsigned int)total_amount);
                     total_amount = 0;
                 }
             }
@@ -3195,8 +3156,8 @@ namespace OFS
             destStream.close();
             mStream.close();
 
-            OPEN_STREAM(mStream, dest, fstream::in | fstream::out | fstream::binary | fstream::ate);
-            if(!mStream.fail() && mStream.is_open())
+            OPEN_STREAM(mStream, dest, "rb+");
+            if(!mStream.fail())
             {
                 mAllocatedHandles.erase(mAllocatedHandles.find(mFileName));
                 mActive = true;
@@ -3234,21 +3195,21 @@ namespace OFS
         if(it != mAllocatedHandles.end())
             return ret;
 
-        std::fstream destStream;
-        OPEN_STREAM(destStream, dest, fstream::in | fstream::out | fstream::binary | fstream::ate);
+        FileStream destStream;
+        OPEN_STREAM(destStream, dest, "rb+");
 
         if(!destStream.fail())
         {
             destStream.close();
             mStream.close();
 
-            OPEN_STREAM(mStream, dest, fstream::in | fstream::out | fstream::binary | fstream::ate);
-            if(!mStream.fail() && mStream.is_open())
+            OPEN_STREAM(mStream, dest, "rb+");
+            if(!mStream.fail())
             {
                 mAllocatedHandles.erase(mAllocatedHandles.find(mFileName));
                 mActive = true;
                 mFileName = dest;
-                mStream.seekg(0, fstream::beg);
+                mStream.seek(0, OFS_SEEK_BEGIN);
                 mStream.read((char*)&mHeader, sizeof(_Ofs::strFileHeader));
                 ret = OFS_OK;
                 mAllocatedHandles.insert(NameOfsHandleMap::value_type(std::string(dest), this));
@@ -3292,7 +3253,7 @@ namespace OFS
             OFSHANDLE out_handle;
             OFSHANDLE in_handle;
 
-            unsigned int output_amount = 0;
+            ofs64 output_amount = 0;
 
             char *tmp_buffer = new char[MAX_BUFFER_SIZE];
 
@@ -3315,7 +3276,7 @@ namespace OFS
                         if(ret != OFS_OK)
                             continue;
 
-                        unsigned int total = allFiles[i].file_size;
+                        ofs64 total = allFiles[i].file_size;
 
                         bool dest_file_created = false;
 
@@ -3323,11 +3284,11 @@ namespace OFS
                         {
                             if(total < MAX_BUFFER_SIZE)
                             {
-                                read(in_handle, tmp_buffer, total);
+                                read(in_handle, tmp_buffer, (unsigned int)total);
                                 if(dest_file_created)
-                                    destFile->write(out_handle, tmp_buffer, total);
+                                    destFile->write(out_handle, tmp_buffer, (unsigned int)total);
                                 else
-                                    destFile->createFileUUID(out_handle, file_ofs_path.c_str(), allFiles[i].uuid, total, total, tmp_buffer);
+                                    destFile->createFileUUID(out_handle, file_ofs_path.c_str(), allFiles[i].uuid, total, (unsigned int)total, tmp_buffer);
 
                                 output_amount += total;
                                 total = 0;
@@ -3372,13 +3333,13 @@ namespace OFS
 
 //------------------------------------------------------------------------------------------
 
-    unsigned int _Ofs::listFilesRecursive(const std::string& path, FileList& list)
+    ofs64 _Ofs::listFilesRecursive(const std::string& path, FileList& list)
     {
         if(list.empty())
             list = listFiles(path.c_str());
 
         unsigned int list_max = list.size();
-        unsigned int file_size = 0;
+        ofs64 file_size = 0;
         
         FileList subList;
 
