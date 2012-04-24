@@ -297,10 +297,10 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
 
         mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileLocation));
 
-        if( _stricmp( newfileLocation.c_str(), fileLocation.c_str() ) == 0 )
-            SaveAs = false;
-        else
+        if(Ogre::StringUtil::match(newfileLocation, fileLocation, false))
         {
+            SaveAs = false;
+        } else {
             forceSave = true;
             fileLocation = newfileLocation;
         }
