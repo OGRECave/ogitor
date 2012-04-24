@@ -6,17 +6,17 @@
     <message>
         <location filename="../src/actiontoolbar.cpp" line="130"/>
         <source>Add Script Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj Skript Handling</translation>
     </message>
     <message>
         <location filename="../src/actiontoolbar.cpp" line="132"/>
         <source>Remove Script Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Fjern Skript Handling</translation>
     </message>
     <message>
         <location filename="../src/actiontoolbar.cpp" line="135"/>
         <source>Edit Script Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Ændre Skript Handling</translation>
     </message>
 </context>
 <context>
@@ -24,32 +24,32 @@
     <message>
         <location filename="../src/addscriptactiondialog.cpp" line="63"/>
         <source>The script file can not be found!!</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriptfilen findes ikke!</translation>
     </message>
     <message>
         <location filename="../src/addscriptactiondialog.cpp" line="69"/>
         <source>Select an Icon File</source>
-        <translation type="unfinished"></translation>
+        <translation>Vælg en ikon-fil</translation>
     </message>
     <message>
         <location filename="../src/addscriptactiondialog.cpp" line="69"/>
         <source>PNG Files</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG Filer</translation>
     </message>
     <message>
         <location filename="../src/addscriptactiondialog.cpp" line="69"/>
         <source>SVG Files</source>
-        <translation type="unfinished"></translation>
+        <translation>SVG Filer</translation>
     </message>
     <message>
         <location filename="../src/addscriptactiondialog.cpp" line="86"/>
         <source>Select a Script File</source>
-        <translation type="unfinished"></translation>
+        <translation>Vælg en skript-fil</translation>
     </message>
     <message>
         <location filename="../src/addscriptactiondialog.cpp" line="86"/>
         <source>Script Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Skript-filer</translation>
     </message>
 </context>
 <context>
@@ -149,7 +149,7 @@
     <message>
         <location filename="../src/layerview.cpp" line="218"/>
         <source>Paste From</source>
-        <translation type="unfinished">Sæt ind Fra</translation>
+        <translation>Indsæt Fra</translation>
     </message>
 </context>
 <context>
@@ -311,17 +311,17 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="637"/>
         <source>Snap :</source>
-        <translation type="unfinished"></translation>
+        <translation>Lås til net:</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="655"/>
         <source>Camera Speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Kamera Hastighed</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="675"/>
         <source>View :</source>
-        <translation type="unfinished"></translation>
+        <translation>Se :</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="709"/>
@@ -339,51 +339,51 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="558"/>
         <source>Meshes</source>
-        <translation type="unfinished"></translation>
+        <translation>Modeller</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="735"/>
         <source>Add Script Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj Skript Handling</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="736"/>
         <source>Create a toolbar action that executes a script</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj en handling der udfører et skript til værktøjslinen</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="739"/>
         <source>Script Actions</source>
-        <translation type="unfinished"></translation>
+        <translation>Skript Handlinger</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="771"/>
         <location filename="../src/mainwindow.cpp" line="1419"/>
         <location filename="../src/mainwindow.cpp" line="1428"/>
         <source>Run Scene Scripts</source>
-        <translation type="unfinished"></translation>
+        <translation>Kør Scene Skripts</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="772"/>
         <location filename="../src/mainwindow.cpp" line="1420"/>
         <location filename="../src/mainwindow.cpp" line="1429"/>
         <source>Run scripts in the scene</source>
-        <translation type="unfinished"></translation>
+        <translation>Kør skripts i scenen</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="776"/>
         <source>Stop Scene Scripts</source>
-        <translation type="unfinished"></translation>
+        <translation>Stop Scene Skripts</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="777"/>
         <source>Stop scripts in the scene</source>
-        <translation type="unfinished"></translation>
+        <translation>Stop skripts i scenen</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="781"/>
         <source>Scene Player</source>
-        <translation type="unfinished"></translation>
+        <translation>Scene Spiller</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="810"/>
@@ -394,12 +394,12 @@
         <location filename="../src/mainwindow.cpp" line="844"/>
         <location filename="../src/mainwindow.cpp" line="870"/>
         <source>Invalid DockWidget ID:%1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ugyldig Dokvindue ID: %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="893"/>
         <source>Invalid TabWidget ID:%1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ugyldig Tabvindue ID: %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="914"/>
@@ -426,41 +426,41 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="236"/>
         <source>Generic Text Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Generisk Text Editor</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="511"/>
         <location filename="../src/mainwindowactions.cpp" line="257"/>
         <source>Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>Udforsker</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="512"/>
         <location filename="../src/mainwindowactions.cpp" line="261"/>
         <source>Groups</source>
-        <translation type="unfinished"></translation>
+        <translation>Grupper</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="513"/>
         <location filename="../src/mainwindowactions.cpp" line="265"/>
         <source>Resources</source>
-        <translation type="unfinished"></translation>
+        <translation>Resourcer</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="560"/>
         <source>Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Filer</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="983"/>
         <location filename="../src/mainwindowactions.cpp" line="364"/>
         <source>Define Selection List</source>
-        <translation type="unfinished"></translation>
+        <translation>Definer Udsnits-liste</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="984"/>
         <source>Activate Selection List</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktivér Udsnits-liste</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="992"/>
@@ -487,27 +487,27 @@
         <location filename="../src/mainwindow.cpp" line="1074"/>
         <location filename="../src/ogrewidget.cpp" line="128"/>
         <source>Triangles : %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Triangler: %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1160"/>
         <source>Execute</source>
-        <translation type="unfinished"></translation>
+        <translation>Kør</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1178"/>
         <source>Script Console</source>
-        <translation type="unfinished"></translation>
+        <translation>Skript Konsol</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1437"/>
         <source>Pause Scene Scripts</source>
-        <translation type="unfinished"></translation>
+        <translation>Pause Scene Skripts</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1438"/>
         <source>Pause scripts in the scene</source>
-        <translation type="unfinished"></translation>
+        <translation>Pause Skripts i scenen</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="661"/>
@@ -548,7 +548,7 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="1177"/>
         <source>Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1231"/>
@@ -737,7 +737,7 @@ Fortryd</translation>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="190"/>
         <source>Rename Selected Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Ændre Navn på Valgte Objekt</translation>
     </message>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="194"/>
@@ -1062,17 +1062,17 @@ Modus</translation>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="695"/>
         <source>Do you want to continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vil du fortsætte?</translation>
     </message>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="935"/>
         <source>An Error Occured trying to Export File</source>
-        <translation type="unfinished"></translation>
+        <translation>En Fejl Opstod da vi prøvede at Eksportere Filen</translation>
     </message>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="948"/>
         <source>An Error Occured trying to Import File</source>
-        <translation type="unfinished"></translation>
+        <translation>En Fejl Opstod da vi prøvede at Importere Filen</translation>
     </message>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="1114"/>
@@ -1092,24 +1092,24 @@ Modus</translation>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="1258"/>
         <source>Enter a new name</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriv et nyt navn</translation>
     </message>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="1258"/>
         <source>Name : </source>
-        <translation type="unfinished"></translation>
+        <translation>Navn : </translation>
     </message>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="1295"/>
         <location filename="../src/mainwindowactions.cpp" line="1317"/>
         <source>Error saving the template</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunne ikke gemme skabelonen</translation>
     </message>
     <message>
         <location filename="../src/mainwindowactions.cpp" line="1347"/>
         <location filename="../src/mainwindowactions.cpp" line="1361"/>
         <source>Layout Files (*.oglayout)</source>
-        <translation type="unfinished"></translation>
+        <translation>Layout-filer (*.oglayout)</translation>
     </message>
 </context>
 <context>
@@ -1122,17 +1122,17 @@ Modus</translation>
     <message>
         <location filename="../src/ogitorpreferenceswidget.cpp" line="79"/>
         <source>System locale: </source>
-        <translation type="unfinished">System Lokalitet: </translation>
+        <translation>System Lokale : </translation>
     </message>
     <message>
         <location filename="../src/ogitorpreferenceswidget.cpp" line="87"/>
         <source>List of all loaded Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste over alle aktive plugins</translation>
     </message>
     <message>
         <location filename="../src/ogitorpreferenceswidget.cpp" line="131"/>
         <source>Editor Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor Objekter</translation>
     </message>
     <message>
         <location filename="../src/ogitorpreferenceswidget.cpp" line="145"/>
@@ -1157,12 +1157,12 @@ Modus</translation>
     <message>
         <location filename="../src/ogitorpreferenceswidget.cpp" line="213"/>
         <source>Toolbars</source>
-        <translation type="unfinished"></translation>
+        <translation>Værktøjslinier</translation>
     </message>
     <message>
         <location filename="../src/ogitorpreferenceswidget.cpp" line="233"/>
         <source>Preferences Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Præference Editor</translation>
     </message>
     <message>
         <location filename="../src/ogitorpreferenceswidget.cpp" line="381"/>
@@ -1231,7 +1231,7 @@ Modus</translation>
     <message>
         <location filename="../src/preferencesmanager.cpp" line="60"/>
         <source>Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Moduler</translation>
     </message>
     <message>
         <location filename="../src/preferencesmanager.cpp" line="136"/>
@@ -1573,17 +1573,17 @@ Vil du fortsætte?</translation>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="86"/>
         <source>Select a Directory to Export</source>
-        <translation type="unfinished">Vælg en mappe at eksportere til</translation>
+        <translation>Vælg en mappe at eksportere</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="87"/>
         <source>Import Blendmap</source>
-        <translation type="unfinished"></translation>
+        <translation>Importer Blandekort</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="88"/>
         <source>Import Blendmaps</source>
-        <translation type="unfinished"></translation>
+        <translation>Import Blandekort</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="89"/>
@@ -1714,72 +1714,72 @@ Vil du fortsætte?</translation>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="136"/>
         <source>Calculate Blendmap</source>
-        <translation type="unfinished"></translation>
+        <translation>Kalkuler Blandekort</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="138"/>
         <source>You must first specify a plant material!!</source>
-        <translation type="unfinished"></translation>
+        <translation>Do skal først specificere et plante materiale!!</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="498"/>
         <source>Loading</source>
-        <translation type="unfinished">Henter</translation>
+        <translation>Henter</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="114"/>
         <source>Parsing project file</source>
-        <translation type="unfinished">Parser Projekt fil</translation>
+        <translation>Analyserer Projekt fil</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="66"/>
         <source>Parsing Scene File</source>
-        <translation type="unfinished"></translation>
+        <translation>Anyserer Scene-fil</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="67"/>
         <source>Applying Post Load Updates</source>
-        <translation type="unfinished"></translation>
+        <translation>Anvender Updateringer efter Hentning</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="115"/>
         <source>Parsing project options</source>
-        <translation type="unfinished">Parser projekt opsætning</translation>
+        <translation>Analyserer projekt opsætning</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="116"/>
         <source>Creating scene objects</source>
-        <translation type="unfinished">Genererer scene objekter</translation>
+        <translation>Genererer scene objekter</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="117"/>
         <source>Loading scene objects</source>
-        <translation type="unfinished">Henter scene objekter</translation>
+        <translation>Henter scene objekter</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="118"/>
         <source>Please load a Scene File...</source>
-        <translation type="unfinished">Venligst hent en scene fil...</translation>
+        <translation>Venligst hent en scene fil...</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="119"/>
         <source>Load in progress...</source>
-        <translation type="unfinished">Hentning foregår...</translation>
+        <translation>Hentning foregår...</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="120"/>
         <source>Rendering...</source>
-        <translation type="unfinished">Renderer...</translation>
+        <translation>Renderer...</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="121"/>
         <source>Missing Colour Map : </source>
-        <translation type="unfinished"></translation>
+        <translation>Manglende Farvekort : </translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="122"/>
         <source>You must first define a SkyBox Material!</source>
-        <translation type="unfinished"></translation>
+        <translation>Du skal først definere et himmelkasse materiale!</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="123"/>
@@ -1812,22 +1812,22 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="128"/>
         <source>Add Technique</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj Teknik</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="129"/>
         <source>Delete Technique</source>
-        <translation type="unfinished"></translation>
+        <translation>Fjern Teknik</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="130"/>
         <source>Add Pass</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj Pas</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="131"/>
         <source>Delete Pass</source>
-        <translation type="unfinished"></translation>
+        <translation>Fjern Pas</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="132"/>
@@ -1837,22 +1837,22 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="133"/>
         <source>PNG Grayscale</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG Gråskala</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="134"/>
         <source>Image Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Billed-Filer</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="135"/>
         <source>Import Terrain From Heightmap</source>
-        <translation type="unfinished"></translation>
+        <translation>Importer Terræn Fra Højdekort</translation>
     </message>
     <message>
         <location filename="../src/qtogitorsystem.cpp" line="137"/>
         <source>Re-Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Gen-Oplys</translation>
     </message>
 </context>
 <context>
@@ -2048,7 +2048,7 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/sceneview.cpp" line="196"/>
         <source>Paste From</source>
-        <translation type="unfinished">Sæt ind Fra</translation>
+        <translation>Sæt ind Fra</translation>
     </message>
 </context>
 <context>
@@ -2071,7 +2071,7 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/settingsdialog.cpp" line="317"/>
         <source>Add Directories Recursively</source>
-        <translation type="unfinished">Tilføj Mapper Rekursivt</translation>
+        <translation>Tilføj Mapper Rekursivt</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog.cpp" line="318"/>
@@ -2165,105 +2165,105 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/shortcutsettings.cpp" line="274"/>
         <source>Replace</source>
-        <translation type="unfinished">Udskift</translation>
+        <translation>Udskift</translation>
     </message>
     <message>
         <location filename="../src/shortcutsettings.cpp" line="275"/>
         <source>Shortcut is already in use for</source>
         <comment>action name will be appended to this</comment>
         <translatorcomment>navnet vil blive blah blah</translatorcomment>
-        <translation type="unfinished">Genvejen er allerede i brug for</translation>
+        <translation>Genvejen er allerede i brug for</translation>
     </message>
     <message>
         <location filename="../src/shortcutsettings.cpp" line="277"/>
         <source>Do you still want to assign it?</source>
-        <translation type="unfinished">Vil du stadig tilordne den?</translation>
+        <translation>Vil du stadig tilordne den?</translation>
     </message>
     <message>
         <location filename="../src/shortcutsettings.cpp" line="311"/>
         <source>Action</source>
-        <translation type="unfinished">Kommando</translation>
+        <translation>Kommando</translation>
     </message>
     <message>
         <location filename="../src/shortcutsettings.cpp" line="312"/>
         <source>Shortcut</source>
-        <translation type="unfinished">Genvej</translation>
+        <translation>Genvej</translation>
     </message>
     <message>
         <location filename="../src/shortcutsettings.cpp" line="313"/>
         <source>KeyCode</source>
-        <translation type="unfinished">TasteKode</translation>
+        <translation>TasteKode</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Genveje</translation>
+        <translation>Genveje</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="35"/>
         <source>Change</source>
-        <translation type="unfinished">Ændre Genvej</translation>
+        <translation>Ændre Genvej</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="51"/>
         <source>Reset</source>
-        <translation type="unfinished">Reset til Standard</translation>
+        <translation>Reset til Standard</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="58"/>
         <source>TextLabel</source>
-        <translation type="unfinished">Genvej</translation>
+        <translation>Genvej</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="82"/>
         <source>Mouse Buttons</source>
-        <translation type="unfinished">Muse Knapper</translation>
+        <translation>Muse Knapper</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="88"/>
         <source>Select : </source>
-        <translation type="unfinished">Vælg : </translation>
+        <translation>Vælg : </translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="99"/>
         <location filename="../shortcutsettings.ui" line="128"/>
         <location filename="../shortcutsettings.ui" line="157"/>
         <source>Right Mouse Button</source>
-        <translation type="unfinished">Højre Muse Knap</translation>
+        <translation>Højre Muse Knap</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="104"/>
         <location filename="../shortcutsettings.ui" line="133"/>
         <location filename="../shortcutsettings.ui" line="162"/>
         <source>Left Mouse Button</source>
-        <translation type="unfinished">Venstre Muse Knap</translation>
+        <translation>Venstre Muse Knap</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="109"/>
         <location filename="../shortcutsettings.ui" line="138"/>
         <location filename="../shortcutsettings.ui" line="167"/>
         <source>Middle Mouse Button</source>
-        <translation type="unfinished">Midterste Muse Knap</translation>
+        <translation>Midterste Muse Knap</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="117"/>
         <source>Pan : </source>
-        <translation type="unfinished">Panorer : </translation>
+        <translation>Panorer : </translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="146"/>
         <source>Look : </source>
-        <translation type="unfinished">Se : </translation>
+        <translation>Se : </translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="180"/>
         <source>Modifier Keys</source>
-        <translation type="unfinished">Modifikator Knapper</translation>
+        <translation>Modifikator Knapper</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="188"/>
         <source>Object Mode</source>
-        <translation type="unfinished">Objekt Modus</translation>
+        <translation>Objekt Modus</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="196"/>
@@ -2271,7 +2271,7 @@ Do you want to continue?</source>
         <location filename="../shortcutsettings.ui" line="262"/>
         <location filename="../shortcutsettings.ui" line="293"/>
         <source>SPACE</source>
-        <translation type="unfinished">MELLEMRUM</translation>
+        <translation>MELLEMRUM</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="201"/>
@@ -2279,7 +2279,7 @@ Do you want to continue?</source>
         <location filename="../shortcutsettings.ui" line="267"/>
         <location filename="../shortcutsettings.ui" line="298"/>
         <source>SHIFT</source>
-        <translation type="unfinished">SKIFT</translation>
+        <translation>SKIFT</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="206"/>
@@ -2287,7 +2287,7 @@ Do you want to continue?</source>
         <location filename="../shortcutsettings.ui" line="272"/>
         <location filename="../shortcutsettings.ui" line="303"/>
         <source>CTRL</source>
-        <translation type="unfinished">CTRL</translation>
+        <translation>CTRL</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="211"/>
@@ -2295,22 +2295,22 @@ Do you want to continue?</source>
         <location filename="../shortcutsettings.ui" line="277"/>
         <location filename="../shortcutsettings.ui" line="308"/>
         <source>ALT</source>
-        <translation type="unfinished">ALT</translation>
+        <translation>ALT</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="219"/>
         <source>Clone Mode</source>
-        <translation type="unfinished">Klone Modus</translation>
+        <translation>Klone Modus</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="254"/>
         <source>Snap to Grid/Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Lås til Net/Vinkel</translation>
     </message>
     <message>
         <location filename="../shortcutsettings.ui" line="285"/>
         <source>Snap To Ground</source>
-        <translation type="unfinished"></translation>
+        <translation>Lås Til Landjord</translation>
     </message>
 </context>
 <context>
@@ -2318,32 +2318,32 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/shortcuts.cpp" line="160"/>
         <source>Move Forwards</source>
-        <translation type="unfinished">Fremad</translation>
+        <translation>Forlæns</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="166"/>
         <source>Move Left</source>
-        <translation type="unfinished">Venstre</translation>
+        <translation>Venstre</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="172"/>
         <source>Move Backwards</source>
-        <translation type="unfinished">Baglæns</translation>
+        <translation>Baglæns</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="178"/>
         <source>Move Right</source>
-        <translation type="unfinished">Forlæns</translation>
+        <translation>Højre</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="184"/>
         <source>Move Up</source>
-        <translation type="unfinished">Op</translation>
+        <translation>Op</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="190"/>
         <source>Move Down</source>
-        <translation type="unfinished">Ned</translation>
+        <translation>Ned</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="196"/>
@@ -2353,17 +2353,17 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/shortcuts.cpp" line="202"/>
         <source>Focus Object</source>
-        <translation type="unfinished">Fokusér Objekt</translation>
+        <translation>Fokusér Objekt</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="208"/>
         <source>Clone Modifier</source>
-        <translation type="unfinished">Klon Modifikator</translation>
+        <translation>Klon Modifikator</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="214"/>
         <source>Delete Selected</source>
-        <translation type="unfinished">Slet Valgte</translation>
+        <translation>Slet Valgte</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="220"/>
@@ -2373,32 +2373,32 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/shortcuts.cpp" line="226"/>
         <source>Switch Locked Axis</source>
-        <translation type="unfinished">Skift Låst Akse</translation>
+        <translation>Skift Låst Akse</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="232"/>
         <source>Snap to Grid Modifier</source>
-        <translation type="unfinished">Lås til Net Modifikator</translation>
+        <translation>Lås til Net Modifikator</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="238"/>
         <source>Snap to Ground Modifier</source>
-        <translation type="unfinished"></translation>
+        <translation>Lås til Landjort Modifikator</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="244"/>
         <source>Add to Selection Modifier</source>
-        <translation type="unfinished">Tilføj til Selektion Modifikator</translation>
+        <translation>Tilføj til Udvalg Modifikator</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="250"/>
         <source>Subtract from Selection Modifier</source>
-        <translation type="unfinished">Træk fra Selektion Modifikator</translation>
+        <translation>Træk fra Udvalg Modifikator</translation>
     </message>
     <message>
         <location filename="../src/shortcuts.cpp" line="256"/>
         <source>Always Select Modifier</source>
-        <translation type="unfinished">Vælg Altid Modifikator</translation>
+        <translation>Vælg Altid Modifikator</translation>
     </message>
 </context>
 <context>
@@ -2406,7 +2406,7 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/templateview.cpp" line="71"/>
         <source>Copy</source>
-        <translation type="unfinished">Kopier</translation>
+        <translation>Kopier</translation>
     </message>
 </context>
 <context>
@@ -2414,12 +2414,12 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/templateview.cpp" line="145"/>
         <source>General Templates</source>
-        <translation type="unfinished"></translation>
+        <translation>Generelle Skabeloner</translation>
     </message>
     <message>
         <location filename="../src/templateview.cpp" line="163"/>
         <source>Project Templates</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt Skabeloner</translation>
     </message>
 </context>
 <context>
@@ -2427,47 +2427,47 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="67"/>
         <source>Size (1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Størrelse (1)</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="74"/>
         <source>Intensity (999)</source>
-        <translation type="unfinished"></translation>
+        <translation>Itensitet (999)</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="76"/>
         <source>Intensity (1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Itensitet (1)</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="110"/>
         <source>Brush</source>
-        <translation type="unfinished"></translation>
+        <translation>Pensel</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="111"/>
         <source>Layer Textures</source>
-        <translation type="unfinished"></translation>
+        <translation>Lag Teksturer</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="112"/>
         <source>Plant Textures</source>
-        <translation type="unfinished"></translation>
+        <translation>Plante Teksturer</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="120"/>
         <source>Paint Colour</source>
-        <translation type="unfinished"></translation>
+        <translation>Male Farve</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="404"/>
         <source>Size (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Størrelse (%1)</translation>
     </message>
     <message>
         <location filename="../src/terraintoolswidget.cpp" line="414"/>
         <source>Intensity (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Itensitet (%1)</translation>
     </message>
 </context>
 <context>
@@ -2475,7 +2475,7 @@ Do you want to continue?</source>
     <message>
         <location filename="../src/userdefined.cpp" line="64"/>
         <source>Remove Option</source>
-        <translation type="unfinished"></translation>
+        <translation>Fjern Valgmulighed</translation>
     </message>
 </context>
 <context>
@@ -2484,58 +2484,58 @@ Do you want to continue?</source>
         <location filename="../src/userdefined.cpp" line="117"/>
         <location filename="../src/userdefined.cpp" line="236"/>
         <source>Property Name</source>
-        <translation type="unfinished">Egenskabsnavn</translation>
+        <translation>Egenskabsnavn</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="118"/>
         <location filename="../src/userdefined.cpp" line="241"/>
         <source>Property Type</source>
-        <translation type="unfinished">Egenskabstype</translation>
+        <translation>Egenskabstype</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="134"/>
         <source>Add Option</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj Mulighed</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="260"/>
         <location filename="../src/userdefined.cpp" line="270"/>
         <location filename="../src/userdefined.cpp" line="284"/>
         <source>Field Name X</source>
-        <translation type="unfinished"></translation>
+        <translation>Felt Navn X</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="264"/>
         <location filename="../src/userdefined.cpp" line="274"/>
         <location filename="../src/userdefined.cpp" line="288"/>
         <source>Field Name Y</source>
-        <translation type="unfinished"></translation>
+        <translation>Felt Navn Y</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="278"/>
         <location filename="../src/userdefined.cpp" line="292"/>
         <source>Field Name Z</source>
-        <translation type="unfinished"></translation>
+        <translation>Felt Navn Z</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="296"/>
         <source>Field Name W</source>
-        <translation type="unfinished"></translation>
+        <translation>Felt Navn W</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="313"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Valgmuligheder</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="316"/>
         <source>Key %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nøgle %1</translation>
     </message>
     <message>
         <location filename="../src/userdefined.cpp" line="321"/>
         <source>Value %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Værdi %1</translation>
     </message>
 </context>
 <context>
@@ -2640,28 +2640,28 @@ Do you want to continue?</source>
     <message>
         <location filename="../addscriptaction.ui" line="20"/>
         <source>Add Script Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj Skript Handling</translation>
     </message>
     <message>
         <location filename="../addscriptaction.ui" line="81"/>
         <source>:/icons/toolbar.svg</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../addscriptaction.ui" line="100"/>
         <location filename="../addscriptaction.ui" line="122"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../addscriptaction.ui" line="129"/>
         <source>  Icon :</source>
-        <translation type="unfinished"></translation>
+        <translation>  Ikon :</translation>
     </message>
     <message>
         <location filename="../addscriptaction.ui" line="136"/>
         <source>  Script :</source>
-        <translation type="unfinished"></translation>
+        <translation>  Skript :</translation>
     </message>
 </context>
 <context>
@@ -2679,7 +2679,7 @@ Do you want to continue?</source>
     <message>
         <location filename="../addtemplatedialog.ui" line="61"/>
         <source>General Scope</source>
-        <translation type="unfinished">Generel Virkefelt</translation>
+        <translation>Generel Omfang</translation>
     </message>
 </context>
 <context>
@@ -2687,7 +2687,7 @@ Do you want to continue?</source>
     <message>
         <location filename="../addterraindialog.ui" line="14"/>
         <source>Add New Terrain Page</source>
-        <translation type="unfinished">Tilføj Ny Terræn Side</translation>
+        <translation>Tilføj Ny Terræn Side</translation>
     </message>
     <message>
         <location filename="../addterraindialog.ui" line="48"/>
@@ -2697,12 +2697,12 @@ Do you want to continue?</source>
     <message>
         <location filename="../addterraindialog.ui" line="61"/>
         <source>Base Layer Diffuse Texture</source>
-        <translation type="unfinished"></translation>
+        <translation>Basis Lag Sprednings-Tekstur</translation>
     </message>
     <message>
         <location filename="../addterraindialog.ui" line="74"/>
         <source>Base Layer Normal Texture</source>
-        <translation type="unfinished"></translation>
+        <translation>Base Lag Normal Tekstur</translation>
     </message>
 </context>
 <context>
