@@ -59,7 +59,7 @@ else(NOT QT4_FOUND)
         include_directories(../OFS/include)
 
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor)
-    add_library(GenericTextEditor SHARED ${SRCS})
+    ogitor_add_library(GenericTextEditor SHARED ${SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
     add_dependencies(GenericTextEditor OFS)
@@ -99,6 +99,12 @@ else(NOT QT4_FOUND)
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
     ENDIF(UNIX AND NOT APPLE)
+
+    IF (APPLE)
+        set_target_properties(GenericTextEditor PROPERTIES OUTPUT_NAME GenericTextEditor)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(GenericTextEditor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
+    ENDIF(APPLE)
 
 endif(NOT QT4_FOUND)
 

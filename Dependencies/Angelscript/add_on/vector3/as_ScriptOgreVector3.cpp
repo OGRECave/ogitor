@@ -13,12 +13,12 @@
 		new(self) Ogre::Vector2(Ogre::Real(x), Ogre::Real(y));
 	}
 
-    static void Vector3DefaultConstructor(Ogre::Vector3 *self)
+    static void OgreVector3DefaultConstructor(Ogre::Vector3 *self)
 	{
 		new(self) Ogre::Vector3();
 	}
 
-	static void Vector3InitConstructor(float x, float y, float z, Ogre::Vector3 *self)
+	static void OgreVector3InitConstructor(float x, float y, float z, Ogre::Vector3 *self)
 	{
 		new(self) Ogre::Vector3(Ogre::Real(x), Ogre::Real(y), Ogre::Real(z));
 	}
@@ -103,9 +103,9 @@
 		r = engine->RegisterObjectProperty("Vector3", "float z", offsetof(Ogre::Vector3, z)); assert( r >= 0 );
 
 
-	    r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f()",                     asFUNCTION(Vector3DefaultConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	    r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f()",                     asFUNCTION(OgreVector3DefaultConstructor), asCALL_CDECL_OBJLAST); assert( r >= 0 );
         r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f(const Vector3 &in)",    asFUNCTION(CopyConstructVector3), asCALL_CDECL_OBJLAST); assert( r >= 0 );
-		r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f(float, float, float)",	asFUNCTION(Vector3InitConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectBehaviour("Vector3", asBEHAVE_CONSTRUCT,  "void f(float, float, float)",	asFUNCTION(OgreVector3InitConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 
 
 /*        r = engine->RegisterObjectMethod("Vector3", "Vector3 &opAssign(Vector3&in)", asFUNCTION(Vector3Assignment), asCALL_CDECL_OBJLAST); assert( r >= 0 );*/
