@@ -55,11 +55,12 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         extlist.push_back(OTR("Ogitor Scene File"));
         extlist.push_back("*.ofs");
 
-        importfile = mSystem->DisplayOpenDialog(OTR("Open"), extlist, "");
+        importfile = mSystem->GetSetting("system", "oldOpenPath", "");
+        importfile = mSystem->DisplayOpenDialog(OTR("Open"), extlist, importfile);
         if(importfile == "") 
             return SCF_CANCEL;
 
-        mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(importfile));
+        mSystem->SetSetting("system", "oldOpenPath", importfile);
     }
 
     importfile = OgitorsUtils::QualifyPath(importfile);
@@ -291,11 +292,11 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
         extlist.push_back(OTR("Ogitor Scene File"));
         extlist.push_back("*.ofs");
 
-        Ogre::String newfileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, "");
+        Ogre::String newfileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, fileLocation);
         if(newfileLocation == "") 
             return SCF_CANCEL;
 
-        mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileLocation));
+        mSystem->SetSetting("system", "oldOpenPath", newfileLocation);
 
         if(Ogre::StringUtil::match(newfileLocation, fileLocation, false))
         {
