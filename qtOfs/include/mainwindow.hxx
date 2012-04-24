@@ -78,11 +78,11 @@ private:
     std::string currentDir;
     float currentPos;
     QMutex mutex;
-    unsigned int mTotalFileSize;
+    OFS::ofs64 mTotalFileSize;
     QString msgProgress;
 
     void run();
-    unsigned int generateList(OFS::FileList& list);
+    OFS::ofs64 generateList(OFS::FileList& list);
     void extractFiles(QString path, const OFS::FileList& list);
 };
 //-----------------------------------------------------------------------------------------
@@ -127,11 +127,11 @@ private:
     std::string currentDir;
     float currentPos;
     QMutex mutex;
-    unsigned int mTotalFileSize;
+    OFS::ofs64 mTotalFileSize;
     QString msgProgress;
 
     void run();
-    unsigned int generateList(AddFilesList& list);
+    OFS::ofs64 generateList(AddFilesList& list);
     void addFiles(const AddFilesList& list);
 };
 //-----------------------------------------------------------------------------------------

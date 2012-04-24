@@ -57,16 +57,101 @@
 namespace OFS
 {
 
-#define VERSION_MAJOR_0 '0'
-#define VERSION_MAJOR_1 '1'
-#define VERSION_MINOR   '3'
-#define VERSION_FIX     '0'
+const char VERSION_MAJOR_0  = '0';
+const char VERSION_MAJOR_1  = '1';
+const char VERSION_MINOR    = '4';
+const char VERSION_FIX      = '0';
 
 #define AUTO_MUTEX mutable boost::recursive_mutex OfsMutex;
 #define LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsMutex);
 #define STATIC_AUTO_MUTEX_DECL(a) boost::recursive_mutex a::OfsStaticMutex;
 #define STATIC_AUTO_MUTEX static boost::recursive_mutex OfsStaticMutex;
 #define STATIC_LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsStaticMutex);
+
+#if defined( __WIN32__ ) || defined( _WIN32 )
+typedef __int64 ofs64;
+#define fseeko _fseeki64
+#define ftello _ftelli64
+#else
+typedef off_t ofs64;
+#endif
+
+    class FileStream
+    {
+    public:
+        FileStream()
+        {
+            m_pFile = NULL;
+        }
+
+        ~FileStream()
+        {
+            close();
+        }
+
+        void close()
+        {
+            if( m_pFile != NULL )
+            {
+                fflush( m_pFile );
+                fclose( m_pFile );
+                m_pFile = NULL;
+            }
+        }
+
+        void open( const char *file, const char *mode )
+        {
+            close();
+
+            m_pFile = fopen( file, mode );
+        }
+
+        bool fail()
+        {
+            return ( m_pFile == NULL );
+        }
+
+        void flush()
+        {
+            assert( m_pFile != NULL );
+            fflush( m_pFile );
+        }
+
+        void seek( ofs64 pos, int seekdir = SEEK_SET )
+        {
+            assert( m_pFile != NULL );
+            fseeko( m_pFile, pos, seekdir );
+        }
+
+        ofs64 tell()
+        {
+            assert( m_pFile != NULL );
+            return ftello( m_pFile );
+        }
+
+        bool eof()
+        {
+            assert( m_pFile != NULL );
+            return ( feof( m_pFile ) != 0 );
+        }
+
+        size_t write( const void *data, size_t size )
+        {
+            assert( m_pFile != NULL );
+            return fwrite( data, size, 1, m_pFile );
+        }
+
+        size_t read( void *data, size_t size )
+        {
+            assert( m_pFile != NULL );
+            return fread( data, size, 1, m_pFile );
+        }
+
+    protected:
+        FILE *m_pFile;
+
+    };
+
 
     extern const unsigned int MAX_BUFFER_SIZE;
 
@@ -253,7 +338,7 @@ namespace OFS
         std::string  name;
         unsigned int flags;
         UUID         uuid; 
-        unsigned int file_size;
+        ofs64        file_size;
         time_t       create_time;
         time_t       modified_time;
 
@@ -267,15 +352,15 @@ namespace OFS
 
     struct FileSystemStats
     {
-        unsigned int NumDirectories;
-        unsigned int NumFiles;
-        unsigned int UsedAllocations;
-        unsigned int FreeAllocations;
-        unsigned int UsedSpace;
-        unsigned int FreeSpace;
-        unsigned int ActualUsedSpace;
-        unsigned int ActualFreeSpace;
-        unsigned int TotalFileSize;
+        ofs64 NumDirectories;
+        ofs64 NumFiles;
+        ofs64 UsedAllocations;
+        ofs64 FreeAllocations;
+        ofs64 UsedSpace;
+        ofs64 FreeSpace;
+        ofs64 ActualUsedSpace;
+        ofs64 ActualFreeSpace;
+        ofs64 TotalFileSize;
     };
     
 //------------------------------------------------------------------------------
@@ -386,7 +471,8 @@ namespace OFS
         {
             unsigned int Signature[2]; /* Block Signature */
             unsigned int Type;         /* Block Type */
-            unsigned int Length;       /* Length of the block in file not including this header */
+            unsigned int Reserved;     /* Reserved for block packing */
+            ofs64        Length;       /* Length of the block in file not including this header */
         };
 
         /* Short entry header for EXTENDED BLOCKS */
@@ -394,8 +480,9 @@ namespace OFS
         {
              int          Id;           /* Id of the Owner Entry */
              int          ParentId;     /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-             unsigned int NextBlock;    /* Position of Next Block in file (owned by the same entry) */
              unsigned int Index;        /* Index of this Extended Data */
+             unsigned int Reserved;     /* RESERVED */
+             ofs64        NextBlock;    /* Position of Next Block in file (owned by the same entry) */
         };
 
         /* Full Entry Header, contains all information needed for entry */
@@ -403,10 +490,10 @@ namespace OFS
         {
             int          Id;              /* Id of the Owner Entry */
             int          ParentId;        /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-            unsigned int NextBlock;       /* File Position of Next Block owned by this entry */
             unsigned int Flags;           /* File Flags */
-            unsigned int FileSize;        /* Entry's File Size, 0 for Directories */
-            unsigned int RESERVED[5];     /* RESERVED */
+            unsigned int RESERVED[3];     /* RESERVED */
+            ofs64        FileSize;        /* Entry's File Size, 0 for Directories */
+            ofs64        NextBlock;       /* File Position of Next Block owned by this entry */
             char         Name[256];       /* Entry's Name */
             OTIME        CreationTime;    /* Entry's Creation Time */
             UUID         Uuid;            /* UUID of Entry */
@@ -418,9 +505,9 @@ namespace OFS
         struct BlockData
         {
             unsigned int Type;        /* Block Type */
-            unsigned int Start;       /* Starting position of Block in File, just after header */
-            unsigned int Length;      /* Length of the block in file not including file block header */ 
-            unsigned int NextBlock;   /* Position of Next Block in file */
+            ofs64        Start;       /* Starting position of Block in File, just after header */
+            ofs64        Length;      /* Length of the block in file not including file block header */ 
+            ofs64        NextBlock;   /* Position of Next Block in file */
         };
 
         struct OfsEntryDesc;
@@ -451,7 +538,7 @@ namespace OFS
             unsigned int  Flags;                  /* File Flags */
             UUID          Uuid;                   /* UUID of Entry */
             time_t        CreationTime;           /* Entry's Creation Time */
-            unsigned int  FileSize;               /* Entry's File Size, 0 for Directories */
+            ofs64         FileSize;               /* Entry's File Size, 0 for Directories */
             std::string   Name;                   /* Entry's Name */
             OfsEntryDesc *Parent;                 /* Pointer to Entry's Parent's descriptor */
             int           UseCount;               /* Number of handles using this entry */
@@ -461,7 +548,7 @@ namespace OFS
             std::vector<CallBackData> Triggers;   /* Vector of Entry's triggers */
         };
 
-        typedef std::map<unsigned int, BlockData> PosBlockDataMap;
+        typedef std::map<ofs64, BlockData> PosBlockDataMap;
         typedef std::map<int, OfsEntryDesc*> IdDescMap;
         typedef std::map<UUID, OfsEntryDesc*> UuidDescMap;
         typedef std::map<int, OFSHANDLE*> IdHandleMap;
@@ -612,7 +699,7 @@ namespace OFS
         * @param data initial data to fill in the file
         * @return Result of operation, OFS_OK if successful
         */
-        inline OfsResult    createFile(OFSHANDLE& handle, const char *filename, unsigned int file_size = 0, unsigned int data_size = 0, const char *data = NULL)
+        inline OfsResult    createFile(OFSHANDLE& handle, const char *filename, ofs64 file_size = 0, unsigned int data_size = 0, const char *data = NULL)
         {
             return createFileUUID(handle, filename, UUID_ZERO, file_size, data_size, data);
         };
@@ -626,7 +713,7 @@ namespace OFS
         * @param data initial data to fill in the file
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    createFileUUID(OFSHANDLE& handle, const char *filename, const UUID& uuid, unsigned int file_size = 0, unsigned int data_size = 0, const char *data = NULL);
+        OfsResult    createFileUUID(OFSHANDLE& handle, const char *filename, const UUID& uuid, ofs64 file_size = 0, unsigned int data_size = 0, const char *data = NULL);
         /**
         * Opens a file
         * @param handle File Handle, once the file is opened, this handle will point to it
@@ -655,7 +742,7 @@ namespace OFS
         * @param file_size New file_size of the file, pass -1 to truncate at Write Position, must be less than or equal to original File Size
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    truncateFile(OFSHANDLE& handle, int file_size = -1);
+        OfsResult    truncateFile(OFSHANDLE& handle, ofs64 file_size = -1);
         /**
         * List files/folders in a given directory
         * @param path path of the directory
@@ -669,7 +756,7 @@ namespace OFS
         * @param list Filled with results
         * @return Total file size of returned files
         */
-        unsigned int listFilesRecursive(const std::string& path, FileList& list);
+        ofs64 listFilesRecursive(const std::string& path, FileList& list);
         /**
         * Retrieves Name of the file
         * @param handle handle to the file
@@ -732,14 +819,14 @@ namespace OFS
         * @param size Returns file's size
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    getFileSize(const char *filename, unsigned int& size); 
+        OfsResult    getFileSize(const char *filename, ofs64& size); 
         /**
         * Retrieves file size of file
         * @param handle handle to the file
         * @param size Returns file's size
         * @return Result of operation, OFS_OK if successful
         */
-        OfsResult    getFileSize(OFSHANDLE& handle, unsigned int& size); 
+        OfsResult    getFileSize(OFSHANDLE& handle, ofs64& size); 
         /**
         * Sets file flags like read-only/hidden
         * @param filename path to the file
@@ -854,7 +941,7 @@ namespace OFS
         * @param dir direction of seek operation
         * @return Returns final read position
         */
-        unsigned int seekr(OFSHANDLE& handle, int pos, SeekDirection dir);
+        ofs64 seekr(OFSHANDLE& handle, ofs64 pos, SeekDirection dir);
         /**
         * Sets Write Position in a file
         * @param handle handle of the file
@@ -862,19 +949,19 @@ namespace OFS
         * @param dir direction of seek operation
         * @return Returns final write position
         */
-        unsigned int seekw(OFSHANDLE& handle, int pos, SeekDirection dir);
+        ofs64 seekw(OFSHANDLE& handle, ofs64 pos, SeekDirection dir);
         /**
         * Retrieves Current Read Position in a file
         * @param handle handle of the file
         * @return Returns current read position
         */
-        unsigned int tellr(OFSHANDLE& handle);
+        ofs64 tellr(OFSHANDLE& handle);
         /**
         * Retrieves Current Write Position in a file
         * @param handle handle of the file
         * @return Returns current write position
         */
-        unsigned int tellw(OFSHANDLE& handle);
+        ofs64 tellw(OFSHANDLE& handle);
         /**
         * Checks if Read Pointer is at the End Of File
         * @param handle handle of the file
@@ -887,7 +974,7 @@ namespace OFS
         STATIC_AUTO_MUTEX
         std::string               mFileName;            // Underlying filename of the file system
         bool                      mActive;              // Is a file system mounted?
-        std::fstream              mStream;              // Handle of underlying file system
+        FileStream                mStream;              // Handle of underlying file system
         strFileHeader             mHeader;              // File System Header
         OfsEntryDesc              mRootDir;             // Root directory definition
         BlockDataVector           mFreeBlocks;          // Vector holding free(available) blocks in file system 
@@ -928,9 +1015,9 @@ namespace OFS
         /* Marks a used block as free (available) */
         inline void   _markUnused(BlockData data);
         /* Allocates a data block for use, either from free blocks or creates a new block and writes given header */
-        inline void   _allocateFileBlock(OfsEntryDesc *desc, strMainEntryHeader& mainEntry, unsigned int block_size, unsigned int data_size = 0, const char *data = NULL);
+        inline void   _allocateFileBlock(OfsEntryDesc *desc, strMainEntryHeader& mainEntry, ofs64 block_size, unsigned int data_size = 0, const char *data = NULL);
         /* Allocates a data block for use, either from free blocks or creates a new block, writes a short header */
-        inline void   _allocateExtendedFileBlock(OfsEntryDesc *desc, unsigned int block_size, unsigned int data_size = 0, const char *data = NULL);
+        inline void   _allocateExtendedFileBlock(OfsEntryDesc *desc, ofs64 block_size, unsigned int data_size = 0, const char *data = NULL);
 
         void          _getFileSystemStatsRecursive(OfsEntryDesc *desc, FileSystemStats& stats);
         /* Retrieves directory descriptor of a given path, null if not found */
@@ -942,7 +1029,7 @@ namespace OFS
         /* Internal createDirectory implementation */
         OfsEntryDesc* _createDirectory(OfsEntryDesc *parent, const std::string& name, const UUID& uuid = UUID_ZERO);
         /* Internal createFile implementation */
-        OfsEntryDesc* _createFile(OfsEntryDesc *parent, const std::string& name, unsigned int file_size, const UUID& uuid = UUID_ZERO, unsigned int data_size = 0, const char *data = NULL);
+        OfsEntryDesc* _createFile(OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid = UUID_ZERO, unsigned int data_size = 0, const char *data = NULL);
         /* Internal deleteDirectory implementation */
         OfsResult     _deleteDirectory(OfsEntryDesc *dir);
         /* Internal deleteFile implementation */
@@ -980,13 +1067,15 @@ namespace OFS
         _Ofs::OfsEntryDesc *mEntryDesc;
         unsigned int  mAccessFlags;
         unsigned int  mReadBlock;
-        unsigned int  mReadBlockEnd;
-        unsigned int  mReadPos;
-        unsigned int  mRealReadPos;
         unsigned int  mWriteBlock;
-        unsigned int  mWriteBlockEnd;
-        unsigned int  mWritePos;
-        unsigned int  mRealWritePos;
+
+        ofs64         mReadBlockEnd;
+        ofs64         mReadPos;
+        ofs64         mRealReadPos;
+
+        ofs64         mWriteBlockEnd;
+        ofs64         mWritePos;
+        ofs64         mRealWritePos;
 
         OFSHANDLE(_Ofs::OfsEntryDesc *_entryDesc) : mEntryDesc(_entryDesc), mAccessFlags(0), mReadBlock(0), mReadPos(0), mRealReadPos(0), mWriteBlock(0), mWritePos(0), mRealWritePos(0) 
         {
@@ -1002,13 +1091,13 @@ namespace OFS
         * Sets the Write pointer position
         * @param value New write position
         */
-        inline void _setWritePos(unsigned int value);
+        inline void _setWritePos(ofs64 value);
 
         /**
         * Sets the Read pointer position
         * @param value New read position
         */
-        inline void _setReadPos(unsigned int value);
+        inline void _setReadPos(ofs64 value);
     };
 
 //------------------------------------------------------------------------------
