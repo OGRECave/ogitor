@@ -106,7 +106,6 @@ class AddFilesThread : public QThread
 public:
 
     void addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QStringList& _list);
-    void addEmptyFolder(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _name);
 
     float getCurrentPos()
     {
@@ -157,14 +156,13 @@ public:
         CAP_FULL_FUNCTIONS   = 0xFFFF
     };
 
-    OfsTreeWidget(QWidget *parent = 0, unsigned int capabilities = CAP_SHOW_DIRS, std::string initialSelection = "/");
+    OfsTreeWidget(QWidget *parent = 0, unsigned int capabilities = CAP_SHOW_DIRS, QStringList initialSelection = QStringList("/"));
     virtual ~OfsTreeWidget();
 
-    const std::string& getSelected() { return mSelected; }
+    const QStringList& getSelectedItems() { return mSelectedItems; }
     void refreshWidget();
     void extractFiles();
     void addFiles(QString rootDir, QStringList list);
-    void addEmptyFolder(QString rootDir, QString name);
 
     static void triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2);
 
@@ -181,7 +179,7 @@ protected:
     typedef std::map<std::string, QTreeWidgetItem*> NameTreeWidgetMap;
 
     OFS::OfsPtr       mFile;
-    std::string       mSelected;
+    QStringList       mSelectedItems;
     NameTreeWidgetMap mItemMap;
     unsigned int      mCapabilities;
     QIcon             mUnknownFileIcon;

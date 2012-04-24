@@ -52,7 +52,7 @@ ImageConverter::ImageConverter(const size_t& width/*=128*/, const size_t& height
 
     Ogre::TexturePtr rendertexture = Ogre::TextureManager::getSingleton().createManual("RenderTex", 
                    "QTImageConverter", Ogre::TEX_TYPE_2D, 
-                   mWidth, mHeight, 0, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET);
+                   mWidth, mHeight, 1, Ogre::PF_R8G8B8, Ogre::TU_RENDERTARGET);
 
     mRttTex = rendertexture->getBuffer()->getRenderTarget();
 
@@ -106,18 +106,20 @@ QImage ImageConverter::fromOgreImage(const Ogre::Image& image)
     if (!Ogre::PixelUtil::isAccessible(image.getFormat()))
         return _imageFromRenderTarget(image);
 
-    size_t size = Ogre::PixelUtil::getMemorySize(image.getWidth(), image.getHeight(), image.getDepth(), Ogre::PF_A8R8G8B8);
+    size_t size = Ogre::PixelUtil::getMemorySize(mWidth, mHeight, 1, Ogre::PF_A8R8G8B8);
     unsigned char *dataptr = OGRE_ALLOC_T(unsigned char, size, Ogre::MEMCATEGORY_GENERAL);
 
     Ogre::PixelBox pixbox(mWidth, mHeight, 1, Ogre::PF_A8R8G8B8, dataptr);
     Ogre::Image::scale(image.getPixelBox(), pixbox);
     pixbox.setConsecutive();
 
-    QImage qimg = QImage(dataptr, pixbox.getWidth(), pixbox.getHeight(), QImage::Format_ARGB32);
+    QImage shallowImg(dataptr, pixbox.getWidth(), pixbox.getHeight(), QImage::Format_ARGB32);
 
+    // perform deep copy otherwise data lost upon freeing dataptr
+    QImage deepImg = shallowImg.copy();
     OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
 
-    return qimg;
+    return deepImg;
 }
 //----------------------------------------------------------------------------------------
 QImage ImageConverter::fromOgreImageName(const Ogre::String& name, const Ogre::String& resourceGroup)
@@ -157,10 +159,12 @@ QImage ImageConverter::_getRenderTarget(const Ogre::String& matName)
     pb.setConsecutive();
 
     mRttTex->copyContentsToMemory(pb, Ogre::RenderTarget::FB_FRONT);
-    QImage qimg(dataptr, pb.getWidth(), pb.getHeight(), QImage::Format_ARGB32);
+    QImage shallowImg(dataptr, pb.getWidth(), pb.getHeight(), QImage::Format_ARGB32);
 
+    // perform deep copy otherwise data lost upon freeing dataptr
+    QImage deepImg = shallowImg.copy();
     OGRE_FREE(dataptr, Ogre::MEMCATEGORY_GENERAL);
 
-    return qimg;
+    return deepImg;
 }
 //----------------------------------------------------------------------------------------

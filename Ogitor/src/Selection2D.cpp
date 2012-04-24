@@ -29,7 +29,7 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-
+#include "OgitorsPrerequisites.h"
 #include "OgreStableHeaders.h"
 #include "Selection2D.h"
 

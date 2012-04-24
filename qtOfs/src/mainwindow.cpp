@@ -794,10 +794,10 @@ void ExtractThread::extractFiles(QString path, const OFS::FileList& list)
     mutex.unlock();
 }
 //------------------------------------------------------------------------------------
-unsigned int ExtractThread::generateList(OFS::FileList& list)
+OFS::ofs64 ExtractThread::generateList(OFS::FileList& list)
 {
     unsigned int list_max = list.size();
-    unsigned int file_size = 0;
+    OFS::ofs64 file_size = 0;
     
     std::string tmpSaveCurrentDir;
     OFS::FileList subList;
@@ -976,18 +976,18 @@ void AddFilesThread::addFiles(const AddFilesList& list)
                             currentPos = (float)output_amount / (float)mTotalFileSize; 
                             mutex.unlock();
                         }
-                        //createFile accepts initial data to be written during alocation
-                        //its an optimization, thats why we dont have to call Ofs:write after createFile
+                        //createFile accepts initial data to be written during allocation
+                        //its an optimization, thats why we don't have to call Ofs::write after createFile
                         if(ofsFile->createFile(fhandle, file_ofs_path.c_str(), stream_size, stream_size, tmp_buffer) != OFS::OFS_OK)
                         {
-                            QMessageBox::information(QApplication::activeWindow(),"File Copy Error", tr("File copy failed for : ")+ QString(file_ofs_path.c_str()), QMessageBox::Ok);
+                            QMessageBox::information(QApplication::activeWindow(), "File Copy Error", tr("File copy failed for: ") + QString(file_ofs_path.c_str()), QMessageBox::Ok);
                             stream.close();
                             continue;
                         }
                     }
                     catch(OFS::Exception& e)
                     {
-                        QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", QString(e.getDescription().c_str()), QMessageBox::Ok);
+                        QMessageBox::information(QApplication::activeWindow(), "Ofs Exception:", QString(e.getDescription().c_str()), QMessageBox::Ok);
                     }
 
                     stream.close();
@@ -1004,13 +1004,13 @@ void AddFilesThread::addFiles(const AddFilesList& list)
                 OFS::OfsResult ret = ofsFile->createDirectory(dir_ofs_path.c_str());
                 if(ret != OFS::OFS_OK)
                 {
-                    QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", tr("Can not create directory : ") + QString(dir_ofs_path.c_str()), QMessageBox::Ok);
+                    QMessageBox::information(QApplication::activeWindow(), "Ofs Exception:", tr("Cannot create directory: ") + QString(dir_ofs_path.c_str()), QMessageBox::Ok);
                     continue;
                 }
             }
             catch(OFS::Exception& e)
             {
-                QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", tr("Can not create directory : ") + QString(dir_ofs_path.c_str()) + QString("\n") + QString(e.getDescription().c_str()), QMessageBox::Ok);
+                QMessageBox::information(QApplication::activeWindow(), "Ofs Exception:", tr("Cannot create directory: ") + QString(dir_ofs_path.c_str()) + QString("\n") + QString(e.getDescription().c_str()), QMessageBox::Ok);
                 continue;
             }
         }
@@ -1021,10 +1021,10 @@ void AddFilesThread::addFiles(const AddFilesList& list)
     mutex.unlock();
 }
 //------------------------------------------------------------------------------------
-unsigned int AddFilesThread::generateList(AddFilesList& list)
+OFS::ofs64 AddFilesThread::generateList(AddFilesList& list)
 {
     unsigned int list_max = list.size();
-    unsigned int file_size = 0;
+    OFS::ofs64 file_size = 0;
     
     AddFilesData data;
     AddFilesList subList;

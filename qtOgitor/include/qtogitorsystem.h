@@ -61,9 +61,11 @@ public:
 
     void DummyTranslationFunction();
 
-    void initTreeIcons();
+    void InitTreeIcons();
 
-    Ogre::String getProjectsDirectory();
+    Ogre::String GetProjectsDirectory();
+    Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue);
+    bool SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value);
     bool FileExists(const Ogre::String& filename);
     bool CopyFile(Ogre::String source, Ogre::String destination);
     bool CopyFilesEx(Ogre::String source, Ogre::String destination);
@@ -72,14 +74,16 @@ public:
     void RenameFile(const Ogre::String &oldname, const Ogre::String &newname);
     void GetFileList(Ogre::String path, Ogre::StringVector &list);
     void GetDirList(Ogre::String path, Ogre::StringVector &list);
-    Ogre::String DisplayDirectorySelector(Ogre::UTFString title);
     void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value);
     void HideProgressDialog();
     void UpdateProgressDialog(int value);
-    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
-    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList);
+
+    Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath);
+    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
+    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
+
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
-    bool DisplayTerrainDialog(Ogre::NameValuePairList &params);
+    void DisplayTerrainDialog();
     bool DisplayImportHeightMapDialog(Ogre::NameValuePairList &params);
     bool DisplayEuclidDialog(Ogre::NameValuePairList &params);
     bool DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &params);

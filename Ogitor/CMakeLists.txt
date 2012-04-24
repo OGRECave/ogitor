@@ -1,6 +1,9 @@
 include_directories(${DEPENDENCIES_INCLUDES})
 include_directories(include)
 
+include(PrecompiledHeader)
+include(OgreAddTargets)
+
 set(Ogitor_hdrs
 	./include/AxisGizmo.h
 	./include/BaseEditor.h
@@ -104,6 +107,7 @@ set(Ogitor_srcs
 	./src/OgitorsUtils.cpp
 	./src/OgitorsPaging.cpp
 	./src/OgitorsPagedWorldSection.cpp
+	./src/PrecompiledHeaders.cpp
 	./src/TerrainGroupEditor.cpp
 	./src/TerrainGroupEditorEditing.cpp
 	./src/TerrainGroupEditorUpdate.cpp
@@ -129,10 +133,11 @@ set(Ogitor_srcs
 	./src/tinyxml.cpp
 	./src/tinyxmlerror.cpp
 	./src/tinyxmlparser.cpp
-	${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp
+	${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp	
 )
 
-add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
+#add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
+ogitor_add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
 set(LIBRARY_OUTPUT_PATH ../lib)
 
 set_target_properties(Ogitor PROPERTIES COMPILE_DEFINITIONS "${OGITOR_PREPROCESSOR}")
@@ -142,10 +147,18 @@ message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 message(STATUS ${OGRE_LIBRARY})
 target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
 
+# specify a precompiled header to use
+use_precompiled_header(Ogitor 
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/OgitorsPrerequisites.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/PrecompiledHeaders.cpp"
+)
+
 if(APPLE)
         find_package(Cocoa REQUIRED)
-	message(STATUS ${Cocoa_LIBRARIES})
-	target_link_libraries(Ogitor ${Cocoa_LIBRARIES})
+        if (NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
+            message(FATAL_ERROR "OGRE Paging and Terrain Components are required dependencies. If you are sure you have them, make sure to set OGRE_SDK to the correct path.")
+        endif(NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
+	target_link_libraries(Ogitor ${Cocoa_LIBRARIES} ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
 	# Setup to be a framework
 	set_target_properties(Ogitor PROPERTIES FRAMEWORK TRUE)
 	set_target_properties(Ogitor PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
@@ -156,7 +169,7 @@ if(APPLE)
 	set_target_properties(Ogitor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Frameworks")
 endif(APPLE)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
   set_target_properties( Ogitor PROPERTIES OUTPUT_NAME "Ogitor" VERSION
 ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 endif()

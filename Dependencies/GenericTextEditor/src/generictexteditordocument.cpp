@@ -47,13 +47,22 @@ GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTe
 mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false),
 mInitialDisplay(true)
 {
+    QSettings settings;
+
     QFont fnt = font();
     fnt.setFamily("Courier New");
-    fnt.setPointSize(10);
-    setFont(fnt);
+    fnt.setPointSize(settings.value("preferences/fontSize").toUInt());
+    setFont(fnt);   
 
+    QPlainTextEdit::LineWrapMode mode;
+
+    if(settings.value("preferences/lineWrapping").toBool())
+        mode = QPlainTextEdit::WidgetWidth;
+    else
+        mode = QPlainTextEdit::NoWrap;
+
+    setLineWrapMode(mode);
     setAttribute(Qt::WA_DeleteOnClose);
-    setLineWrapMode(QPlainTextEdit::WidgetWidth);
 
     QFontMetrics fm(fnt);
     setTabStopWidth(fm.width("abcd"));
@@ -98,13 +107,13 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
 
         mIsOfsFile = true;
 
-        unsigned int cont_len = 0;
+        OFS::ofs64 cont_len = 0;
         mOfsPtr->getFileSize(mOfsFileHandle, cont_len);
 
-        char* buf = new char[cont_len + 1];
+        char* buf = new char[(unsigned int)cont_len + 1];
         buf[cont_len] = 0;
 
-        mOfsPtr->read(mOfsFileHandle, buf, cont_len);
+        mOfsPtr->read(mOfsFileHandle, buf, (unsigned int)cont_len);
         mOfsPtr->closeFile(mOfsFileHandle);
         
         displayText(filePath, buf, optionalData);

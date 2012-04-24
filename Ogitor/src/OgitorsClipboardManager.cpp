@@ -30,8 +30,8 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "tinyxml.h"
 #include "OgitorsPrerequisites.h"
+#include "tinyxml.h"
 #include "OgitorsClipboardManager.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
@@ -42,7 +42,7 @@
 
 using namespace Ogitors;
 
-template<> OgitorsClipboardManager* Singleton<OgitorsClipboardManager>::ms_Singleton = 0;
+template<> OgitorsClipboardManager* Ogitors::Singleton<OgitorsClipboardManager>::ms_Singleton = 0;
 unsigned int OgitorsClipboardManager::mClipboardMaxSize = 10;
 
 //----------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ bool OgitorsClipboardManager::copyToTemplate(CBaseEditor *object, const Ogre::St
     
     if(isGeneralScope)
     {
-        filename = OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates";
+        filename = OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates";
         filename = OgitorsUtils::QualifyPath(filename);
         OgitorsSystem::getSingletonPtr()->MakeDirectory(filename);
     }
@@ -211,7 +211,7 @@ bool OgitorsClipboardManager::copyToTemplateWithChildren(CBaseEditor *object, co
     
     if(isGeneralScope)
     {
-        filename = OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates";
+        filename = OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates";
         filename = OgitorsUtils::QualifyPath(filename);
         OgitorsSystem::getSingletonPtr()->MakeDirectory(filename);
     }
@@ -304,7 +304,7 @@ bool OgitorsClipboardManager::copyToTemplateMulti(CMultiSelEditor *object, const
 
     if(isGeneralScope)
     {
-        filename = OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates";
+        filename = OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates";
         filename = OgitorsUtils::QualifyPath(filename) + "/";
         OgitorsSystem::getSingletonPtr()->MakeDirectory(filename);
     }
@@ -546,12 +546,12 @@ void OgitorsClipboardManager::addTemplateFromFile(Ogre::String filename, bool is
     {
         OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
-        unsigned int file_size = 0;
+        OFS::ofs64 file_size = 0;
 
         if(mFile->getFileSize(filename.c_str(), file_size) != OFS::OFS_OK)
             return;
 
-        char *file_data = new char[file_size + 1];
+        char *file_data = new char[(unsigned int)file_size + 1];
 
         OFS::OFSHANDLE fileHandle;
 
@@ -561,10 +561,10 @@ void OgitorsClipboardManager::addTemplateFromFile(Ogre::String filename, bool is
             return;
         }
 
-        mFile->read(fileHandle, file_data, file_size);
+        mFile->read(fileHandle, file_data, (unsigned int)file_size);
         mFile->closeFile(fileHandle);
 
-        if(!docImport.LoadFromMemory(file_data, file_size))
+        if(!docImport.LoadFromMemory(file_data, (unsigned int)file_size))
         {
             delete [] file_data;
             return;

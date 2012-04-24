@@ -41,6 +41,7 @@
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
+#include "OgitorsUtils.h"
 #include "DefaultEvents.h"
 #include "EventManager.h"
 
@@ -353,16 +354,16 @@ void ProjectFilesViewWidget::onDefrag()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onDelete()
 {
-    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
+    QStringList selItems = mOfsTreeWidget->getSelectedItems();
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     if(selItems.size() > 0 && ofsFile.valid())
     {
-        if(QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Are you sure you want to delete selected files?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Are you sure you want to delete selected files/folders?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
         {
             for(int i = 0;i < selItems.size();i++)
             {
-                QString name = selItems[i]->whatsThis(0);
+                QString name = selItems.at(i);
 
                 if(name.endsWith("/"))
                     ofsFile->deleteDirectory(name.toStdString().c_str(), true);
@@ -484,7 +485,14 @@ void ProjectFilesViewWidget::onHidden()
 void ProjectFilesViewWidget::onImportFolder()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    Ogre::String folderName = mSystem->DisplayDirectorySelector(OTR("Choose folder to import"));
+
+    Ogre::UTFString defaultPath = mSystem->GetSetting("system", "importOpenPath", "");
+    Ogre::String folderName = mSystem->DisplayDirectorySelector(OTR("Choose folder to import"), defaultPath);
+
+    if (folderName == "")
+        return;
+
+    mSystem->SetSetting("system", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(folderName));
 
     QStringList folders(folderName.c_str());
     if(!folders.empty())
@@ -494,7 +502,14 @@ void ProjectFilesViewWidget::onImportFolder()
 void ProjectFilesViewWidget::onImportFile()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector());
+    
+    Ogre::UTFString defaultPath = mSystem->GetSetting("system", "importOpenPath", "");
+    Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector(), defaultPath);
+
+    if (fileName == "")
+        return;
+
+    mSystem->SetSetting("system", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(fileName));
 
     QStringList files(fileName.c_str());
     if(!files.empty())
@@ -536,8 +551,17 @@ void ProjectFilesViewWidget::onMakeAsset()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onAddFolder()
 {
-    QString selectItemName = mOfsTreeWidget->getSelected().c_str();
+    QString selectedItemName;
     QString newFolderName;
+    
+    QStringList selectItemList = mOfsTreeWidget->getSelectedItems();
+    if(selectItemList.size() > 1)
+    {
+        QMessageBox::information(QApplication::activeWindow(), "Ogitor", tr("Only select one parent folder!"));
+        return;
+    }
+    else
+        selectedItemName = selectItemList.at(0);
 
     // Search until a yet unused name has been found.
     bool nameFound = false;
@@ -551,21 +575,42 @@ void ProjectFilesViewWidget::onAddFolder()
             i++;
     }    
     
-    // If current selected item is a folder, create a subfolder. Otherwise create
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+    // If current selected item is a folder, create a sub folder. Otherwise create
     // the new folder as a sibling of the selected item.
-    if(selectItemName.right(1) == "/")
-        mOfsTreeWidget->addEmptyFolder(selectItemName, newFolderName);
+    if(selectedItemName.right(1) == "/")
+    {
+        QString sName = selectedItemName + newFolderName + "/";
+        ofsFile->createDirectory(sName.toStdString().c_str());
+        mOfsTreeWidget->refreshWidget();   
+
+        // setCurrentItem() needs to be called twice, because the first call might trigger
+        // the onExpand() slot of ofsTreeWidget, which will overwrite our desired selection.
+        // The second call will then not need any expansion work anymore and therefore 
+        //successfully set the desired selection.
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+    }
     else
     {
-        selectItemName = selectItemName.right(selectItemName.size() - (selectItemName.lastIndexOf("/") + 1));
-        QString parentName = mOfsTreeWidget->findItems(selectItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
-        mOfsTreeWidget->addEmptyFolder(parentName, newFolderName);
+        selectedItemName = selectedItemName.right(selectedItemName.size() - (selectedItemName.lastIndexOf("/") + 1));
+        QString parentName = mOfsTreeWidget->findItems(selectedItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
+        
+        QString sName = parentName + newFolderName + "/";
+        ofsFile->createDirectory(sName.toStdString().c_str());
+        mOfsTreeWidget->refreshWidget();
+        
+        // setCurrentItem() needs to be called twice, because the first call might trigger
+        // the onExpand() slot of ofsTreeWidget, which will overwrite our desired selection.
+        // The second call will then not need any expansion work anymore and therefore 
+        //successfully set the desired selection.
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
     }
 }
-
+//----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::triggerRefresh()
 {
-mActRefresh->trigger();
+    mActRefresh->trigger();
 }
-
 //----------------------------------------------------------------------------------------

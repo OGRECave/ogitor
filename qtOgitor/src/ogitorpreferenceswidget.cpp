@@ -39,9 +39,13 @@
 #include <QtCore/QTranslator>
 
 #include <QtGui/QMessageBox>
-#include "OgreRoot.h"
-#include "ogitorpreferenceswidget.hxx"
+#include <QtGui/QPlainTextEdit>
 
+#include "ogitorpreferenceswidget.hxx"
+#include "mainwindow.hxx"
+#include "generictexteditor.hxx"
+
+#include "OgreRoot.h"
 #include "BaseEditor.h"
 #include "CameraEditor.h"
 #include "ViewportEditor.h"
@@ -57,9 +61,9 @@ OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, Q
     mRenderSystemChanged   = false;    
     mVSyncChanged          = false;
     mKeyboardLayoutChanged = false;
-    
+
     setPrefsSectionName(prefSectionName);
-    
+
     setupUi(this);
     styleSheetList->addItem(":/stylesheets/obsidian.qss");
     styleSheetList->addItem(":/stylesheets/KDE4.qss");
@@ -74,7 +78,7 @@ OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, Q
 
     QDir myDir(QString(Ogitors::Globals::LANGUAGE_PATH.c_str()));
     QStringList list = myDir.entryList(QStringList("ogitor_*.qm")); // filter only translation files
-    
+
     /** Add System Default Option Manually */
     languageFileList->addItem(tr("Use System Default..."));
     mLanguageMap[tr("Use System Default...")] = "";
@@ -88,13 +92,13 @@ OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, Q
         languageFileList->addItem(QLocale::languageToString(loc.language()));
         mLanguageMap[QLocale::languageToString(loc.language())] = list.at(i);
     }
-    
+
     /** Add English Option Manually */
     languageFileList->addItem("English");
     mLanguageMap["English"] = "ogitor_en.qm";
-    
+
     langGroupBox->setToolTip(tr("System locale: ") + QLocale::system().name());
-    
+
     fillOgreTab();
 
     QVBoxLayout *vlayout = new QVBoxLayout();
@@ -129,7 +133,7 @@ OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, Q
     while(it_vec != vec.end())
     {
         it = pluginmap->find(it_vec->second);
-        
+
         topItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(it->second.mName.c_str())));
         if(it->second.mLoaded)
             topItem->setCheckState(0, Qt::Checked);
@@ -277,11 +281,17 @@ void OgitorPreferencesWidget::getPreferences(Ogre::NameValuePairList& preference
 
     preferences.insert(Ogre::NameValuePairList::value_type("customStyleSheet",
         Ogre::String(styleSheetList->currentText().toStdString())));
-    
+
+    preferences.insert(Ogre::NameValuePairList::value_type("fontSize",
+        Ogre::StringConverter::toString(fontSizeSpinBox->value())));
+
+    preferences.insert(Ogre::NameValuePairList::value_type("lineWrapping",
+        Ogre::StringConverter::toString(lineBreakCheckBox->isChecked())));
+
     QString langFileName = languageFileList->itemText(0);
     if(languageFileList->currentIndex() != 0)
         langFileName = mLanguageMap.value(languageFileList->currentText());
-    
+
     preferences.insert(Ogre::NameValuePairList::value_type("customLanguage",
         Ogre::String(langFileName.toStdString())));
     preferences.insert(Ogre::NameValuePairList::value_type("useVSync",
@@ -295,7 +305,7 @@ void OgitorPreferencesWidget::getPreferences(Ogre::NameValuePairList& preference
     QSettings settings;
     settings.beginGroup(QString(getPrefsSectionName().c_str()) + "disabledPlugins");
     settings.clear();
-    
+
     // Store plugin usage
     QString disabledPluginPrefString;
     for(int i = 0; i < treeWidget->topLevelItemCount(); i++)
@@ -314,9 +324,9 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
 {
     QSettings settings;
     settings.beginGroup(getPrefsSectionName().c_str());
-    
+
     styleSheetList->setCurrentIndex(styleSheetList->findText(settings.value("customStyleSheet").toString()));;  
-    
+
     loadLastCheckBox->setChecked(settings.value("loadLastLoadedScene", false).toBool());
     splashscreenCheckBox->setChecked(settings.value("skipSplash", false).toBool());
     azertyCheckBox->setChecked(settings.value("useAZERTY", false).toBool());
@@ -327,9 +337,9 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
         styleSheetList->setCurrentIndex(result);
     else {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-            styleSheetList->setCurrentIndex(1);
+        styleSheetList->setCurrentIndex(1);
 #else
-            styleSheetList->setCurrentIndex(0);
+        styleSheetList->setCurrentIndex(0);
 #endif
     }
 
@@ -346,12 +356,15 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
     }
     mLanguageChanged = false;
     mPluginsChanged = false;
-    
+
+    fontSizeSpinBox->setValue(settings.value("fontSize", 10).toUInt());
+    lineBreakCheckBox->setChecked(settings.value("lineWrapping", false).toBool());
+
     if(antiAlliasingComboBox->findText(settings.value("antiAliasing").toString()) >= 0)
         antiAlliasingComboBox->setCurrentIndex(antiAlliasingComboBox->findText(settings.value("antiAliasing").toString()));
     if(renderSystemComboBox->findText(settings.value("renderSystem").toString()) >= 0)
         renderSystemComboBox->setCurrentIndex(renderSystemComboBox->findText(settings.value("renderSystem").toString()));
-    
+
     useVSyncCheckBox->setChecked(settings.value("useVSync").toBool());
 
     // Load plugin usage
@@ -363,7 +376,7 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
         vec.push_back(std::pair<Ogre::String, void*>(it->second.mPluginPath, it->first));
         it++;
     }
- 
+
     settings.beginGroup("/disabledPlugins");
     std::vector<std::pair<Ogre::String, void*> >::const_iterator it_vec;
     for(int i = 0; i < treeWidget->topLevelItemCount(); i++)
@@ -389,16 +402,18 @@ void *OgitorPreferencesWidget::getPreferencesWidget()
     settings.endGroup();
     applyPreferences();
 
-    connect(azertyCheckBox,           SIGNAL(stateChanged(int)),        this, SLOT(keyboardLayoutChanged()));
-    connect(splashscreenCheckBox,     SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
-    connect(loadLastCheckBox,         SIGNAL(stateChanged(int)),        this, SLOT(setDirty()));
-    connect(styleSheetList,           SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
-    connect(languageFileList,         SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
-    connect(languageFileList,         SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged()));
-    connect(renderSystemComboBox,     SIGNAL(currentIndexChanged(int)), this, SLOT(renderSystemChanged()));
-    connect(useVSyncCheckBox,         SIGNAL(stateChanged(int)),        this, SLOT(VSyncChanged()));
-    connect(antiAlliasingComboBox,    SIGNAL(currentIndexChanged(int)), this, SLOT(setDirty()));
-    connect(treeWidget,               SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeChanged(QTreeWidgetItem*, int)));
+    connect(azertyCheckBox,             SIGNAL(stateChanged(int)),                  this, SLOT(keyboardLayoutChanged()));
+    connect(splashscreenCheckBox,       SIGNAL(stateChanged(int)),                  this, SLOT(setDirty()));
+    connect(loadLastCheckBox,           SIGNAL(stateChanged(int)),                  this, SLOT(setDirty()));
+    connect(styleSheetList,             SIGNAL(currentIndexChanged(int)),           this, SLOT(setDirty()));
+    connect(languageFileList,           SIGNAL(currentIndexChanged(int)),           this, SLOT(setDirty()));
+    connect(languageFileList,           SIGNAL(currentIndexChanged(int)),           this, SLOT(languageChanged()));
+    connect(fontSizeSpinBox,            SIGNAL(valueChanged(int)),                  this, SLOT(setDirty()));
+    connect(lineBreakCheckBox,          SIGNAL(stateChanged(int)),                  this, SLOT(setDirty()));
+    connect(renderSystemComboBox,       SIGNAL(currentIndexChanged(int)),           this, SLOT(renderSystemChanged()));
+    connect(useVSyncCheckBox,           SIGNAL(stateChanged(int)),                  this, SLOT(VSyncChanged()));
+    connect(antiAlliasingComboBox,      SIGNAL(currentIndexChanged(int)),           this, SLOT(setDirty()));
+    connect(treeWidget,                 SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeChanged(QTreeWidgetItem*, int)));
 
     return this;
 }
@@ -410,7 +425,7 @@ bool OgitorPreferencesWidget::applyPreferences()
     {
         if(!QFile::exists(styleSheetList->currentText()))
         {
-            QMessageBox::warning(QApplication::activeWindow(),tr("Preferences"), tr("Can not find the requested StyleSheet"), QMessageBox::Ok);
+            QMessageBox::warning(QApplication::activeWindow(),tr("Preferences"), tr("Cannot find the requested StyleSheet"), QMessageBox::Ok);
             return false;
         }
         QFile file(styleSheetList->currentText());
@@ -426,6 +441,27 @@ bool OgitorPreferencesWidget::applyPreferences()
         QString styleSheet = QLatin1String(file.readAll());
         qApp->setStyleSheet(styleSheet);
         file.close();
+    }
+
+    QList<QPlainTextEdit*> list = mOgitorMainWindow->getGenericTextEditor()->findChildren<QPlainTextEdit*>();
+    QFont font;
+    QPlainTextEdit::LineWrapMode mode;
+
+    if(list.size() > 0)
+    {
+        font = list.at(0)->font();
+        font.setPointSize(fontSizeSpinBox->value());
+    }
+
+    if(lineBreakCheckBox->isChecked())
+        mode = QPlainTextEdit::WidgetWidth;
+    else
+        mode = QPlainTextEdit::NoWrap;
+
+    for(int i = 0; i < list.size(); i++)
+    {
+        list.at(i)->setFont(font);
+        list.at(i)->setLineWrapMode(mode);
     }
 
     if(mLanguageChanged)
@@ -450,7 +486,7 @@ bool OgitorPreferencesWidget::applyPreferences()
 
         if(azertyCheckBox->isChecked())
         {
-            // azerty keys
+            // AZERTY keys
             keys.SPK_LEFT = Qt::Key_Q;
             keys.SPK_FORWARD = Qt::Key_Z;
             keys.SPK_DOWN = Qt::Key_A;
@@ -466,37 +502,37 @@ bool OgitorPreferencesWidget::applyPreferences()
         Ogitors::CViewportEditor::SetKeyboard(ViewKeyboard, keys);
     }
 
-    //// Unload plugins
-    //const Ogitors::PluginEntryMap* pPluginMap = Ogitors::OgitorsRoot::getSingletonPtr()->GetPluginMap();
-    //Ogitors::PluginEntryMap::const_iterator it = pPluginMap->begin();
-    //std::vector<std::pair<Ogre::String, void*> > vec;
-    //while(it != pPluginMap->end())
-    //{
-    //    vec.push_back(std::pair<Ogre::String, void*>(it->second.mPluginPath, it->first));
-    //    it++;
-    //}
+    /*// Unload plugins
+    const Ogitors::PluginEntryMap* pPluginMap = Ogitors::OgitorsRoot::getSingletonPtr()->GetPluginMap();
+    Ogitors::PluginEntryMap::const_iterator it = pPluginMap->begin();
+    std::vector<std::pair<Ogre::String, void*> > vec;
+    while(it != pPluginMap->end())
+    {
+    vec.push_back(std::pair<Ogre::String, void*>(it->second.mPluginPath, it->first));
+    it++;
+    }
 
-    //std::vector<std::pair<Ogre::String, void*> >::const_iterator it_vec;
-    //for(int i = 0; i < treeWidget->topLevelItemCount(); i++)
-    //{    
-    //    if(treeWidget->topLevelItem(i)->checkState(0) == Qt::Unchecked)
-    //    {
-    //        // Search the matching pluginPath that was passed on via the tree user data
-    //        it_vec = vec.begin();
-    //        while(it_vec != vec.end())
-    //        {
-    //            if(vec.begin()->first == Ogre::String(treeWidget->topLevelItem(i)->data(0, Qt::UserRole).toString().toStdString()))
-    //            {
-    //                it = pPluginMap->find(it_vec->second);
-    //                Ogitors::OgitorsRoot::getSingletonPtr()->UnLoadPlugin(it->first);
-    //                break;
-    //            }
-    //            else
-    //                it_vec++;
-    //        }   
-    //    }
-    //}
-    
+    std::vector<std::pair<Ogre::String, void*> >::const_iterator it_vec;
+    for(int i = 0; i < treeWidget->topLevelItemCount(); i++)
+    {    
+    if(treeWidget->topLevelItem(i)->checkState(0) == Qt::Unchecked)
+    {
+    // Search the matching pluginPath that was passed on via the tree user data
+    it_vec = vec.begin();
+    while(it_vec != vec.end())
+    {
+    if(vec.begin()->first == Ogre::String(treeWidget->topLevelItem(i)->data(0, Qt::UserRole).toString().toStdString()))
+    {
+    it = pPluginMap->find(it_vec->second);
+    Ogitors::OgitorsRoot::getSingletonPtr()->UnLoadPlugin(it->first);
+    break;
+    }
+    else
+    it_vec++;
+    }   
+    }
+    }*/
+
     return true;
 }
 //----------------------------------------------------------------------------------------

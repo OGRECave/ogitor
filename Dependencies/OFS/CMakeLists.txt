@@ -5,12 +5,16 @@ cmake_policy(SET CMP0003 NEW)
 project(OFS)
 
 set(OFS_SOURCE
-	source/ofs.cpp
+	source/ofs13.cpp
+	source/ofs14.cpp
 	source/ofs_converter.cpp
 )
 
 set(OFS_HEADERS
 	include/ofs.h
+	include/ofs13.h
+	include/ofs14.h
+	include/ofs_converter.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -18,7 +22,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 
 include_directories(${Boost_INCLUDE_DIR})
 
-add_library(OFS SHARED ${OFS_SOURCE} ${OFS_HEADERS})
+ogitor_add_library(OFS SHARED ${OFS_SOURCE} ${OFS_HEADERS})
 
 target_link_libraries(OFS ${Boost_LIBRARIES})
 
@@ -54,3 +58,11 @@ IF(UNIX AND NOT APPLE)
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
 ENDIF(UNIX AND NOT APPLE)
+
+IF (APPLE)
+        set_target_properties(OFS PROPERTIES OUTPUT_NAME OFS)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(OFS PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
+   ENDIF(APPLE)
+
+

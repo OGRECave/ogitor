@@ -30,6 +30,8 @@ else(NOT QT4_FOUND)
         ./src/addscriptactiondialog.cpp
         ./include/addtemplatedialog.hxx
         ./src/addtemplatedialog.cpp
+        ./include/manageTerrainGraphicsView.hxx
+        ./src/manageTerrainGraphicsView.cpp
         ./include/manageTerrainDialog.hxx
         ./src/manageTerrainDialog.cpp
         ./include/calculateblendmapdialog.hxx
@@ -101,6 +103,7 @@ else(NOT QT4_FOUND)
         ./include/actiontoolbar.hxx
         ./include/addscriptactiondialog.hxx
         ./include/addtemplatedialog.hxx
+        ./include/manageTerrainGraphicsView.hxx
         ./include/manageTerrainDialog.hxx
         ./include/calculateblendmapdialog.hxx
         ./include/colourpicker.hxx
@@ -158,21 +161,20 @@ else(NOT QT4_FOUND)
         ./qtpropertybrowser-2.5/src
     )
 
-    if(WIN32)
+    #if(WIN32)
         file(GLOB qtOgitor_res ./res/*.rc)
-    endif(WIN32)
+    #endif(WIN32)
 
     if(NOT APPLE)
-        add_executable(qtOgitor WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOgitor_res})
+        ogitor_add_executable(qtOgitor WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOgitor_res})
     else()
         # The first time we build Ogitor.framework will not exist so create a dummy file if necessary
         find_file(OGITOR_FRAMEWORK_FILE Ogitor.framework "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/" NO_SYSTEM_ENVIRONMENT_PATH)
         if(NOT OGITOR_FRAMEWORK_FILE)
             file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/Ogitor.framework")
         endif()
-
         set(COPY_FRAMEWORKS ${OGRE_LIBRARIES} ${Cg_LIBRARY_FWK} "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/Ogitor.framework")
-        set(COPY_RESOURCES "${MAC_PATH}/resources.cfg" "${MAC_PATH}/plugins.cfg" "${RUNPATH}/Media")
+        set(COPY_RESOURCES "../Mac/resources.cfg" "../Mac/plugins.cfg" "${RUNPATH}/Media")
         set(COPY_PLUGINS
             ${OGRE_RenderSystem_GL_LIBRARY_DBG}
             ${OGRE_Plugin_ParticleFX_LIBRARY_DBG}
@@ -207,14 +209,15 @@ else(NOT QT4_FOUND)
         get_target_property(qtOgitorLocation qtOgitor LOCATION)
         get_dotapp_dir(${qtOgitorLocation} qtOgitorLocationAppdir)
         set(MakeBundle
-            cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_Terrain_LIBRARY_DBG} ${OGRE_Paging_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Components && 
-            cp ${OGRE_RenderSystem_GL_LIBRARY_DBG} ${OGRE_Plugin_OctreeSceneManager_LIBRARY_DBG} ${OGRE_Plugin_ParticleFX_LIBRARY_DBG} ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
-            cp -r /Library/Frameworks/OGRE.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
+            cp ${QtSolutions_PropertyBrowser_BINARY_DIR}/${CMAKE_CFG_INTDIR}/libQtSolutions_PropertyBrowser*.dylib ${OGRE_LIBRARIES}/../../libOgreTerrain*.dylib ${OGRE_LIBRARIES}/../../libOgrePaging*.dylib ${qtOgitorLocationAppdir}/Contents/Components && 
+            cp ${OGRE_LIBRARIES}/../../libRenderSystem_GL*.dylib ${OGRE_LIBRARIES}/../../libPlugin_OctreeSceneManager*.dylib ${OGRE_LIBRARIES}/../../libPlugin_ParticleFX*.dylib ${OGRE_Plugin_CgProgramManager_LIBRARY_DBG} ${qtOgitorLocationAppdir}/Contents/Plugins && 
+            cp ../lib/${CMAKE_CFG_INTDIR}/libOgreOfsPlugin*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins &&
+            cp -r ${OGRE_LIBRARY} ${qtOgitorLocationAppdir}/Contents/Frameworks && 
             cp -r ../lib/${CMAKE_CFG_INTDIR}/Ogitor.framework ${qtOgitorLocationAppdir}/Contents/Frameworks && 
-            cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
-            cp -r ../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
-            cp -r ../RunPath/Plugins/Icons ${qtOgitorLocationAppdir}/Contents/Plugins && 
-            cp ../Mac/plugins.cfg ../Mac/resources.cfg ${qtOgitorLocationAppdir}/Contents/Resources
+            cp ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgCaelum*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgHydrax*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgModularZone*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libOgSkyx*.dylib ../Plugins/lib/${CMAKE_CFG_INTDIR}/libDotSceneSerializer*.dylib ../Dependencies/lib/libGenericTextEditor*.dylib ../Dependencies/lib/libImageConverter*.dylib ../Dependencies/lib/libGenericImageEditor*.dylib ../Dependencies/lib/libOFS*.dylib ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && 
+            cp -r ../../RunPath/Media ${qtOgitorLocationAppdir}/Contents/Resources && 
+            cp -r ../../RunPath/Plugins/Icons ${qtOgitorLocationAppdir}/Contents/Plugins && 
+            cp ../../Mac/plugins.cfg ../../Mac/resources.cfg ${qtOgitorLocationAppdir}/Contents/Resources
         )
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND mkdir -p ${qtOgitorLocationAppdir}/Contents/Resources && mkdir -p ${qtOgitorLocationAppdir}/Contents/Components && mkdir -p ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && mkdir -p ${qtOgitorLocationAppdir}/Contents/Frameworks)
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})
@@ -229,19 +232,12 @@ else(NOT QT4_FOUND)
     else(OGITOR_MESHMAGICK_INTERFACE)
         TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     endif(OGITOR_MESHMAGICK_INTERFACE)
-    
-    if(UNIX AND NOT APPLE)
-        TARGET_LINK_LIBRARIES(qtOgitor optimized QtSolutions_PropertyBrowser ${Boost_LIBRARIES})
-    elseif(APPLE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser)
-    elseif(WIN32)
-        TARGET_LINK_LIBRARIES(qtOgitor optimized QtSolutions_PropertyBrowser)
-    endif()
 
     if(UNIX AND NOT APPLE)
         target_link_libraries(qtOgitor optimized QtSolutions_PropertyBrowser ${Boost_LIBRARIES})
     elseif(APPLE)
-        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser)
+        find_package(Cocoa REQUIRED)
+        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${Cocoa_LIBRARIES})
     elseif(WIN32)
         target_link_libraries(qtOgitor optimized QtSolutions_PropertyBrowser)
     endif()
@@ -270,7 +266,7 @@ else(NOT QT4_FOUND)
                 CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     endif(UNIX AND NOT APPLE)
 
-    if(UNIX AND NOT APPLE)
+    if(UNIX)
     
         if(OGITOR_DIST)
             install(
@@ -300,7 +296,7 @@ else(NOT QT4_FOUND)
             PATTERN     "qt_*.qm"
             PATTERN     "ogitor_*.qm" EXCLUDE
         )
-    else(UNIX AND NOT APPLE)
+    elseif(WINDOWS)
         # ie Windows
         install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
             DESTINATION ${PREFIX}
@@ -309,7 +305,7 @@ else(NOT QT4_FOUND)
             PATTERN "*.exe" EXCLUDE
             PATTERN "*.bat" EXCLUDE
         )
-    endif(UNIX AND NOT APPLE)
+    endif(UNIX)
 
     if(WIN32)
         set(QT_DLL_DIR ${QT_BINARY_DIR})

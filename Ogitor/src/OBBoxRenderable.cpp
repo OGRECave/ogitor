@@ -1,5 +1,5 @@
 // This Class is taken from OGRE Wiki
-
+#include "OgitorsPrerequisites.h"
 #include "Ogre.h"
 #include "OBBoxRenderable.h"
 

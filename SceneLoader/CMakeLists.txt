@@ -53,9 +53,9 @@ else(NOT OIS_FOUND)
 	endif(WIN32)
 
 	if(NOT APPLE)
-		add_executable(SampleLoadApp WIN32 ${SRCS} ${SampleLoadApp_res})
+		ogitor_add_executable(SampleLoadApp WIN32 ${SRCS} ${SampleLoadApp_res})
 	else()
-		add_executable(SampleLoadApp MACOSX_BUNDLE 
+		ogitor_add_executable(SampleLoadApp MACOSX_BUNDLE 
 			${SRCS} 
 			${SampleLoadApp_res})
 	endif(NOT APPLE)
@@ -66,7 +66,8 @@ else(NOT OIS_FOUND)
 
 	if(APPLE)
 		find_package(IOKIT REQUIRED)
-        TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${IOKit_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry)
+                find_package(Cocoa REQUIRED)
+        TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${IOKit_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry ${Cocoa_LIBRARIES})
     ELSE()
         TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry ${Boost_LIBRARIES})
 	endif(APPLE)

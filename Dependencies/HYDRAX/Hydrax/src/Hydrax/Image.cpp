@@ -26,24 +26,24 @@ http://www.gnu.org/copyleft/lesser.txt.
 
 namespace Hydrax
 {
-	Image::Image(const Size &Size)
-		: mSize(Hydrax::Size(Size.Width+1,Size.Height+1))
+	Image::Image(const Size &size)
+		: mSize(Size(size.Width+1,size.Height+1))
 		, mChannels(static_cast<int>(TYPE_RGBA))
 		, mData(0)
 	{
 		_Initialize(0);
 	}
 
-	Image::Image(const Size &Size, const Type &Type)
-		: mSize(Hydrax::Size(Size.Width+1,Size.Height+1))
+	Image::Image(const Size &size, const Type &Type)
+		: mSize(Size(size.Width+1,size.Height+1))
 		, mChannels(static_cast<int>(Type))
 		, mData(0)
 	{
 		_Initialize(0);
 	}
 
-	Image::Image(const Size &Size, const Type &Type, const float &v)
-		: mSize(Hydrax::Size(Size.Width+1,Size.Height+1))
+	Image::Image(const Size &size, const Type &Type, const float &v)
+		: mSize(Size(size.Width+1,size.Height+1))
 		, mChannels(static_cast<int>(Type))
 		, mData(0)
 	{

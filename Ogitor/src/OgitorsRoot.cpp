@@ -131,7 +131,8 @@ mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO),
 mTerrainEditor(0), mTerrainEditorObject(0), mPagingEditor(0), mPagingEditorObject(0), mIsSceneModified(false),
 mGlobalLightVisiblity(true), mGlobalCameraVisiblity(true), mSelRect(0), mSelectionNode(0),
 mMouseListener(0), mKeyboardListener(0),
-mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), mWorldSpaceGizmoOrientation(false),
+mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), 
+mAlwaysSnapGround(false), mWorldSpaceGizmoOrientation(false),
 mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSource(0)
 {
     unsigned int i;
@@ -519,15 +520,15 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("/debug/*Script_d.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/debug/*Script_d.dll", ScriptPluginList);
 #else
-    mSystem->GetFileList("../Plugins/*Script.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/*Script.dll", ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so", ScriptPluginList);
 #else
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so", ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -560,15 +561,15 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("../Plugins/debug/*_d.dll",PluginList);
+    mSystem->GetFileList("../Plugins/debug/*_d.dll", PluginList);
 #else
-    mSystem->GetFileList("../Plugins/*.dll",PluginList);
+    mSystem->GetFileList("../Plugins/*.dll", PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so", PluginList);
 #else
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so", PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -1130,7 +1131,7 @@ void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreeli
 
         if(viewport->getViewportIndex() == 1)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Can not delete the main viewport!!"), DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Cannot delete the main viewport!!"), DLGTYPE_OK);
             return;
         }
 
@@ -1325,7 +1326,7 @@ PROJECTOPTIONS OgitorsRoot::CreateDefaultProjectOptions()
     Ogitors::PROJECTOPTIONS opt;
     opt.IsNewProject = true;
     opt.ProjectName = "";
-    opt.ProjectDir = mSystem->getProjectsDirectory();
+    opt.ProjectDir = mSystem->GetProjectsDirectory();
     opt.SceneManagerName = "OctreeSceneManager";
     opt.TerrainDirectory = "Terrain";
     opt.HydraxDirectory = "Hydrax";
@@ -1549,7 +1550,7 @@ bool OgitorsRoot::AfterLoadScene()
 
     Ogre::StringVector templateList;
 
-    Ogre::String generaltemplates = OgitorsUtils::QualifyPath(OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates/*.otl");
+    Ogre::String generaltemplates = OgitorsUtils::QualifyPath(OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates/*.otl");
     mSystem->GetFileList(generaltemplates, templateList);
     mClipboardManager->addTemplatesFromFiles(templateList, true);
     templateList.clear();
@@ -1999,6 +2000,11 @@ void OgitorsRoot::SetRunState(RunState state)
     if(state == RS_STOPPED)
     {
         UndoCollection* coll = mUndoManager->EndCollection();
+		if( coll != NULL )
+		{
+		    coll->apply();
+		    delete coll;
+		}
 
         mUpdateScriptList.clear();
     }

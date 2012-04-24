@@ -19,58 +19,57 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindTootle.cmake)
 # dependencies
 #find_package(PkgConfig)
 #find_package(OGRE 1.6 REQUIRED)
-#find_package(Tootle)
-
-set(MESHMAGICK_HEADERS
-include/MeshMagick.h
-include/MeshMagickPrerequisites.h
-include/MmEditableBone.h
-include/MmEditableMesh.h
-include/MmEditableSkeleton.h
-include/MmInfoTool.h
-include/MmInfoToolFactory.h
-include/MmMeshMergeTool.h
-include/MmMeshMergeToolFactory.h
-include/MmMeshUtils.h
-include/MmOgreEnvironment.h
-include/MmOptimiseTool.h
-include/MmOptimiseToolFactory.h
-include/MmOptionsParser.h
-include/MmRenameTool.h
-include/MmRenameToolFactory.h
-include/MmStatefulMeshSerializer.h
-include/MmStatefulSkeletonSerializer.h
-include/MmTool.h
-include/MmToolFactory.h
-include/MmToolManager.h
-include/MmToolUtils.h
-include/MmTransformTool.h
-include/MmTransformToolFactory.h
-)
 
 set(MESHMAGICK_SOURCE
-src/MeshMagick.cpp
-src/MmEditableBone.cpp
-src/MmEditableMesh.cpp
-src/MmEditableSkeleton.cpp
-src/MmInfoTool.cpp
-src/MmInfoToolFactory.cpp
-src/MmMeshMergeTool.cpp
-src/MmMeshMergeToolFactory.cpp
-src/MmMeshUtils.cpp
-src/MmOgreEnvironment.cpp
-src/MmOptimiseTool.cpp
-src/MmOptimiseToolFactory.cpp
-src/MmOptionsParser.cpp
-src/MmRenameTool.cpp
-src/MmRenameToolFactory.cpp
-src/MmStatefulMeshSerializer.cpp
-src/MmStatefulSkeletonSerializer.cpp
-src/MmTool.cpp
-src/MmToolManager.cpp
-src/MmToolsUtils.cpp
-src/MmTransformTool.cpp
-src/MmTransformToolFactory.cpp
+	src/MeshMagick.cpp
+	src/MmEditableBone.cpp
+	src/MmEditableMesh.cpp
+	src/MmEditableSkeleton.cpp
+	src/MmInfoTool.cpp
+	src/MmInfoToolFactory.cpp
+	src/MmMeshMergeTool.cpp
+	src/MmMeshMergeToolFactory.cpp
+	src/MmMeshUtils.cpp
+	src/MmOgreEnvironment.cpp
+	src/MmOptimiseTool.cpp
+	src/MmOptimiseToolFactory.cpp
+	src/MmOptionsParser.cpp
+	src/MmRenameTool.cpp
+	src/MmRenameToolFactory.cpp
+	src/MmStatefulMeshSerializer.cpp
+	src/MmStatefulSkeletonSerializer.cpp
+	src/MmTool.cpp
+	src/MmToolManager.cpp
+	src/MmToolsUtils.cpp
+	src/MmTransformTool.cpp
+	src/MmTransformToolFactory.cpp
+)
+
+set(MESHMAGICK_HEADERS
+	include/MeshMagick.h
+	include/MeshMagickPrerequisites.h
+	include/MmEditableBone.h
+	include/MmEditableMesh.h
+	include/MmEditableSkeleton.h
+	include/MmInfoToolFactory.h
+	include/MmInfoTool.h
+	include/MmMeshMergeToolFactory.h
+	include/MmMeshMergeTool.h
+	include/MmMeshUtils.h
+	include/MmOgreEnvironment.h
+	include/MmOptimiseToolFactory.h
+	include/MmOptimiseTool.h
+	include/MmOptionsParser.h
+	include/MmRenameToolFactory.h
+	include/MmRenameTool.h
+	include/MmStatefulMeshSerializer.h
+	include/MmStatefulSkeletonSerializer.h
+	include/MmToolFactory.h
+	include/MmTool.h
+	include/MmToolManager.h
+	include/MmToolUtils.h
+	include/MmTransformToolFactory.h
+	include/MmTransformTool.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${OGRE_INCLUDE_DIRS})

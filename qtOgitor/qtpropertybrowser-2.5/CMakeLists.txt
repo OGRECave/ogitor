@@ -152,7 +152,7 @@ ELSE(NOT QT4_FOUND)
     ${qtpropertyeditor_HDRS}
     )
 
-    ADD_LIBRARY(QtSolutions_PropertyBrowser SHARED ${SRCS})
+    add_library(QtSolutions_PropertyBrowser SHARED ${SRCS})
 
     TARGET_LINK_LIBRARIES(QtSolutions_PropertyBrowser ${QT_LIBRARIES})
 
@@ -184,6 +184,13 @@ ELSE(NOT QT4_FOUND)
 	    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 
     ENDIF(UNIX AND NOT APPLE)
+
+    IF (APPLE)
+       set_target_properties(QtSolutions_PropertyBrowser
+       PROPERTIES BUILD_WITH_INSTALL_RPATH 1
+       INSTALL_NAME_DIR "@executable_path/../Components"
+    )
+    ENDIF (APPLE)
 
 ENDIF(NOT QT4_FOUND)
 
