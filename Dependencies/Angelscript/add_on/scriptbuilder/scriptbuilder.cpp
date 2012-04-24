@@ -3,16 +3,13 @@
 using namespace std;
 
 #include <stdio.h>
-#if defined(_MSC_VER) && !defined(_WIN32_WCE) && !defined( AS_MARMALADE )
+#if defined(_MSC_VER) && !defined(_WIN32_WCE)
 #include <direct.h>
 #endif
 #ifdef _WIN32_WCE
 #include <windows.h> // For GetModuleFileName
 #endif
 
-#if defined(AS_MARMALADE)
-#include <unistd.h>
-#endif
 
 BEGIN_AS_NAMESPACE
 
@@ -46,11 +43,6 @@ int CScriptBuilder::StartNewModule(asIScriptEngine *engine, const char *moduleNa
 	ClearAll();
 
 	return 0;
-}
-
-asIScriptModule *CScriptBuilder::GetModule()
-{
-	return module;
 }
 
 int CScriptBuilder::AddSectionFromFile(const char *filename)
@@ -98,9 +90,7 @@ void CScriptBuilder::ClearAll()
 {
 	includedScripts.clear();
 
-#if AS_PROCESS_METADATA == 1
-	currentClass = "";
-
+#if AS_PROCESS_METADATA == 1	
 	foundDeclarations.clear();
 	typeMetadataMap.clear();
 	funcMetadataMap.clear();
@@ -127,7 +117,7 @@ int CScriptBuilder::LoadScriptSection(const char *filename)
 {
 	// Open the script file
 	string scriptFile = filename;
-#if _MSC_VER >= 1500 && !defined(AS_MARMALADE)
+#if _MSC_VER >= 1500
 	FILE *f = 0;
 	fopen_s(&f, scriptFile.c_str(), "rb");
 #else
@@ -262,45 +252,6 @@ int CScriptBuilder::ProcessScriptSection(const char *script, const char *section
 		}
 
 #if AS_PROCESS_METADATA == 1
-		// Check if class
-		if( currentClass == "" && modifiedScript.substr(pos,len) == "class" )
-		{
-			// Get the identifier after "class"
-			do 
-			{
-				pos += len;
-				t = engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
-			} while(t == asTC_COMMENT || t == asTC_WHITESPACE);
-
-			currentClass = modifiedScript.substr(pos,len);
-			
-			// Search until first { is encountered
-			while( pos < (int)modifiedScript.length() )
-			{
-				engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
-			
-				// If start of class section encountered stop
-				if( modifiedScript[pos] == '{' ) 
-				{
-					pos += len;
-					break;
-				}
-
-				// Check next symbol
-				pos += len;
-			}
-
-			continue;
-		}
-
-		// Check if end of class
-		if( currentClass != "" && modifiedScript[pos] == '}' )
-		{
-			currentClass = "";
-			pos += len;
-			continue;
-		}
-
 		// Is this the start of metadata?
 		if( modifiedScript[pos] == '[' )
 		{
@@ -309,12 +260,12 @@ int CScriptBuilder::ProcessScriptSection(const char *script, const char *section
 
 			// Determine what this metadata is for
 			int type;
-			ExtractDeclaration(pos, declaration, type);
-
+			pos = ExtractDeclaration(pos, declaration, type);
+			
 			// Store away the declaration in a map for lookup after the build has completed
 			if( type > 0 )
 			{
-				SMetadataDecl decl(metadata, declaration, type, currentClass);
+				SMetadataDecl decl(metadata, declaration, type);
 				foundDeclarations.push_back(decl);
 			}
 		}
@@ -340,7 +291,7 @@ int CScriptBuilder::ProcessScriptSection(const char *script, const char *section
 						t = engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
 					}
 
-					if( t == asTC_VALUE && len > 2 && (modifiedScript[pos] == '"' || modifiedScript[pos] == '\'') )
+					if( t == asTC_VALUE && len > 2 && modifiedScript[pos] == '"' )
 					{
 						// Get the include file
 						string includefile;
@@ -358,9 +309,7 @@ int CScriptBuilder::ProcessScriptSection(const char *script, const char *section
 		}
 		// Don't search for metadata/includes within statement blocks or between tokens in statements
 		else 
-		{
 			pos = SkipStatement(pos);
-		}
 	}
 
 	// Build the actual script
@@ -433,103 +382,17 @@ int CScriptBuilder::Build()
 		}
 		else if( decl->type == 2 )
 		{
-			if( decl->parentClass == "" )
-			{
-				// Find the function id
-				int funcId = module->GetFunctionIdByDecl(decl->declaration.c_str());
-				if( funcId >= 0 )
-					funcMetadataMap.insert(map<int, string>::value_type(funcId, decl->metadata));
-			}
-			else
-			{
-				// Find the method id
-				int typeId = module->GetTypeIdByDecl(decl->parentClass.c_str());
-				map<int, SClassMetadata>::iterator it = classMetadataMap.find(typeId);
-				if( it == classMetadataMap.end() )
-				{
-					classMetadataMap.insert(map<int, SClassMetadata>::value_type(typeId, SClassMetadata(decl->parentClass)));
-					it = classMetadataMap.find(typeId);
-				}
-
-				asIObjectType *type = engine->GetObjectTypeById(typeId);
-				int funcId = type->GetMethodIdByDecl(decl->declaration.c_str());
-				if( funcId >= 0 )
-					it->second.funcMetadataMap.insert(map<int, string>::value_type(funcId, decl->metadata));
-			}
-		}
-		else if( decl->type == 4 )
-		{
-			if( decl->parentClass == "" )
-			{
-				// Find the global virtual property accessors
-				int funcId = module->GetFunctionIdByName(("get_" + decl->declaration).c_str());
-				if( funcId >= 0 )
-					funcMetadataMap.insert(map<int, string>::value_type(funcId, decl->metadata));
-				funcId = module->GetFunctionIdByName(("set_" + decl->declaration).c_str());
-				if( funcId >= 0 )
-					funcMetadataMap.insert(map<int, string>::value_type(funcId, decl->metadata));
-			}
-			else
-			{
-				// Find the method virtual property accessors
-				int typeId = module->GetTypeIdByDecl(decl->parentClass.c_str());
-				map<int, SClassMetadata>::iterator it = classMetadataMap.find(typeId);
-				if( it == classMetadataMap.end() )
-				{
-					classMetadataMap.insert(map<int, SClassMetadata>::value_type(typeId, SClassMetadata(decl->parentClass)));
-					it = classMetadataMap.find(typeId);
-				}
-
-				asIObjectType *type = engine->GetObjectTypeById(typeId);
-				int funcId = type->GetMethodIdByName(("get_" + decl->declaration).c_str());
-				if( funcId >= 0 )
-					it->second.funcMetadataMap.insert(map<int, string>::value_type(funcId, decl->metadata));
-				funcId = type->GetMethodIdByName(("set_" + decl->declaration).c_str());
-				if( funcId >= 0 )
-					it->second.funcMetadataMap.insert(map<int, string>::value_type(funcId, decl->metadata));
-
-			}
+			// Find the function id
+			int funcId = module->GetFunctionIdByDecl(decl->declaration.c_str());
+			if( funcId >= 0 )
+				funcMetadataMap.insert(map<int, string>::value_type(funcId, decl->metadata));
 		}
 		else if( decl->type == 3 )
 		{
-			if( decl->parentClass == "" )
-			{
-				// Find the global variable index
-				int varIdx = module->GetGlobalVarIndexByName(decl->declaration.c_str());
-				if( varIdx >= 0 )
-					varMetadataMap.insert(map<int, string>::value_type(varIdx, decl->metadata));
-			}
-			else
-			{
-				int typeId = module->GetTypeIdByDecl(decl->parentClass.c_str());
-				
-				// Add the classes if needed
-				map<int, SClassMetadata>::iterator it = classMetadataMap.find(typeId);
-				if( it == classMetadataMap.end() )
-				{
-					classMetadataMap.insert(map<int, SClassMetadata>::value_type(typeId, SClassMetadata(decl->parentClass)));
-					it = classMetadataMap.find(typeId);
-				}
-
-				// Add the variable to class
-				asIObjectType *objectType = engine->GetObjectTypeById(typeId);
-				int idx = -1;
-
-				// Search through all properties to get proper declaration
-				for( asUINT i = 0; i < (asUINT)objectType->GetPropertyCount(); ++i )
-				{
-					const char *name;
-					objectType->GetProperty(i, &name);
-					if( decl->declaration == name )
-					{
-						idx = i;
-						break;
-					}
-				}
-				
-				// If found, add it
-				if( idx >= 0 ) it->second.varMetadataMap.insert(map<int, string>::value_type(idx, decl->metadata));
-			}
+			// Find the global variable index
+			int varIdx = module->GetGlobalVarIndexByDecl(decl->declaration.c_str());
+			if( varIdx >= 0 )
+				varMetadataMap.insert(map<int, string>::value_type(varIdx, decl->metadata));
 		}
 	}
 #endif
@@ -544,7 +407,7 @@ int CScriptBuilder::SkipStatement(int pos)
 	// Skip until ; or { whichever comes first
 	while( pos < (int)modifiedScript.length() && modifiedScript[pos] != ';' && modifiedScript[pos] != '{' )
 	{
-		engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
+		engine->ParseToken(&modifiedScript[pos], 0, &len);
 		pos += len;
 	}
 
@@ -557,7 +420,7 @@ int CScriptBuilder::SkipStatement(int pos)
 		int level = 1;
 		while( level > 0 && pos < (int)modifiedScript.size() )
 		{
-			asETokenClass t = engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
+			asETokenClass t = engine->ParseToken(&modifiedScript[pos], 0, &len);
 			if( t == asTC_KEYWORD )
 			{
 				if( modifiedScript[pos] == '{' )
@@ -710,13 +573,12 @@ int CScriptBuilder::ExtractDeclaration(int pos, string &declaration, int &type)
 		{
 			// For function declarations, store everything up to the start of the statement block
 
-			// For variable declaration store just the name as there can only be one
+			// For variable declaration store everything up until the first parenthesis, assignment, or end statement.
 
 			// We'll only know if the declaration is a variable or function declaration when we see the statement block, or absense of a statement block.
-			bool hasParenthesis = false;
+			int varLength = 0;
 			declaration.append(&modifiedScript[pos], len);
 			pos += len;
-			string name;
 			for(; pos < (int)modifiedScript.size();)
 			{
 				t = engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
@@ -725,37 +587,25 @@ int CScriptBuilder::ExtractDeclaration(int pos, string &declaration, int &type)
 					token.assign(&modifiedScript[pos], len);
 					if( token == "{" )
 					{
-						if( hasParenthesis )
-						{
-							// We've found the end of a function signature
-							type = 2;
-						}
-						else
-						{
-							// We've found a virtual property. Just keep the name
-							declaration = name;
-							type = 4;
-						}
+						// We've found the end of a function signature
+						type = 2;
 						return pos;
 					}
 					if( token == "=" || token == ";" )
 					{
-						// Substitute the declaration with just the name
-						declaration = name;
+						// We've found the end of a variable declaration.
+						if( varLength != 0 )
+							declaration.resize(varLength);
 						type = 3;
 						return pos;
 					}
-					else if( token == "(" )
+					else if( token == "(" && varLength == 0 )
 					{
 						// This is the first parenthesis we encounter. If the parenthesis isn't followed 
 						// by a statement block, then this is a variable declaration, in which case we 
 						// should only store the type and name of the variable, not the initialization parameters.
-						hasParenthesis = true;
+						varLength = (int)declaration.size();
 					}
-				}
-				else if( t == asTC_IDENTIFIER )
-				{
-					name.assign(&modifiedScript[pos], len);
 				}
 
 				declaration.append(&modifiedScript[pos], len);
@@ -793,28 +643,6 @@ const char *CScriptBuilder::GetMetadataStringForVar(int varIdx)
 
 	return "";
 }
-
-const char *CScriptBuilder::GetMetadataStringForTypeProperty(int typeId, int varIdx)
-{
-	map<int, SClassMetadata>::iterator typeIt = classMetadataMap.find(typeId);
-	if(typeIt == classMetadataMap.end()) return "";
-
-	map<int, string>::iterator propIt = typeIt->second.varMetadataMap.find(varIdx);
-	if(propIt == typeIt->second.varMetadataMap.end()) return "";
-
-	return propIt->second.c_str();
-}
-
-const char *CScriptBuilder::GetMetadataStringForTypeMethod(int typeId, int methodIdx)
-{
-	map<int, SClassMetadata>::iterator typeIt = classMetadataMap.find(typeId);
-	if(typeIt == classMetadataMap.end()) return "";
-
-	map<int, string>::iterator methodIt = typeIt->second.funcMetadataMap.find(methodIdx);
-	if(methodIt == typeIt->second.funcMetadataMap.end()) return "";
-	
-	return methodIt->second.c_str();
-}
 #endif
 
 static const char *GetCurrentDir(char *buf, size_t size)
@@ -851,17 +679,9 @@ static const char *GetCurrentDir(char *buf, size_t size)
 #endif
 
     return buf;
-#elif defined( AS_MARMALADE )
-	// Marmalade uses its own portable C library
-	return getcwd(buf, (int)size);
-#elif _XBOX_VER >= 200
-	// XBox 360 doesn't support the getcwd function, just use the root folder
-	assert( size >= 7 );
-	sprintf(buf, "game:\\");
-	return buf;
 #else
 	return _getcwd(buf, (int)size);
-#endif // _MSC_VER
+#endif
 #elif defined(__APPLE__)
 	return getcwd(buf, size);
 #else

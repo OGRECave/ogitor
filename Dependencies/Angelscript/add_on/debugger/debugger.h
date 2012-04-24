@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-BEGIN_AS_NAMESPACE
-
 class CDebugger
 {
 public:
@@ -59,7 +57,5 @@ protected:
 	};
 	std::vector<BreakPoint> breakPoints;
 };
-
-END_AS_NAMESPACE
 
 #endif

@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2012 Andreas Jonsson
+   Copyright (c) 2003-2009 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -56,16 +56,6 @@ int PrepareSystemFunction(asCScriptFunction *func, asSSystemFunctionInterface *i
 
 int CallSystemFunction(int id, asCContext *context, void *objectPointer);
 
-inline asPWORD FuncPtrToUInt(asFUNCTION_t func)
-{
-	// A little trickery as the C++ standard doesn't allow direct 
-	// conversion between function pointer and data pointer
-	union { asFUNCTION_t func; asPWORD idx; } u;
-	u.func = func;
-
-	return u.idx;
-}
-
 enum internalCallConv
 {
 	ICC_GENERIC_FUNC,
@@ -88,7 +78,7 @@ enum internalCallConv
 
 struct asSSystemFunctionInterface
 {
-	asFUNCTION_t         func;
+	size_t               func;
 	int                  baseOffset;
 	internalCallConv     callConv;
 	int                  scriptReturnSize;

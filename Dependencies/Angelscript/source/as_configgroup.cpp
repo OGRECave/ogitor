@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2012 Andreas Jonsson
+   Copyright (c) 2003-2010 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -46,6 +46,7 @@ BEGIN_AS_NAMESPACE
 asCConfigGroup::asCConfigGroup()
 {
 	refCount = 0;
+	defaultAccess = true;
 }
 
 asCConfigGroup::~asCConfigGroup()
@@ -205,5 +206,39 @@ void asCConfigGroup::ValidateNoUsage(asCScriptEngine *engine, asCObjectType *typ
 	// TODO: Check also usage of the type as sub types in other types
 }
 #endif
+
+int asCConfigGroup::SetModuleAccess(const char *module, bool hasAccess)
+{
+	if( module == asALL_MODULES )
+	{
+		// Set default module access
+		defaultAccess = hasAccess;
+	}
+	else
+	{
+		asCString mod(module ? module : "");
+		asSMapNode<asCString,bool> *cursor = 0;
+		if( moduleAccess.MoveTo(&cursor, mod) )
+		{
+			moduleAccess.GetValue(cursor) = hasAccess;
+		}
+		else
+		{
+			moduleAccess.Insert(mod, hasAccess);
+		}
+	}
+
+	return 0;
+}
+
+bool asCConfigGroup::HasModuleAccess(const char *module)
+{
+	asCString mod(module ? module : "");
+	asSMapNode<asCString,bool> *cursor = 0;
+	if( moduleAccess.MoveTo(&cursor, mod) )
+		return moduleAccess.GetValue(cursor);
+	
+	return defaultAccess;
+}
 
 END_AS_NAMESPACE

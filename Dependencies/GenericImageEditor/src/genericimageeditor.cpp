@@ -52,13 +52,11 @@ GenericImageEditor::GenericImageEditor(QString editorName, QWidget *parent) : QM
     setObjectName(editorName);
     setViewMode(QMdiArea::TabbedView);
     
-    if(!findChildren<QTabBar*>().isEmpty())
-    {
-        mTabBar = findChildren<QTabBar*>().at(0);
-        mTabBar->setTabsClosable(true);
-        connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    }
-    
+    mTabBar = findChildren<QTabBar*>().at(0);
+    mTabBar->setTabsClosable(true);
+
+    connect(mTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+
     mActZoomIn = new QAction(tr("Zoom In"), this);
     mActZoomIn->setStatusTip(tr("Zoom In"));
     mActZoomIn->setIcon(QIcon(":/icons/zoom_in.svg"));
@@ -202,7 +200,7 @@ void GenericImageEditor::closeTab(int index)
 {
     QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
 
-    GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
+    GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
     setActiveDocument(document);
 
     if (!document->close())

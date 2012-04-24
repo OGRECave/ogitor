@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2011 Andreas Jonsson
+   Copyright (c) 2003-2007 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -56,14 +56,12 @@ public:
 
 	void ConvertPosToRowCol(size_t pos, int *row, int *col);
 
-	bool TokenEquals(size_t pos, size_t len, const char *str);
-
-	asCString        name;
-	char            *code;
-	size_t           codeLength;
-	bool             sharedCode;
-	int              idx;
-	int              lineOffset;
+	asCString name;
+	char *code;
+	size_t   codeLength;
+	bool  sharedCode;
+	int idx;
+	int lineOffset;
 	asCArray<size_t> linePositions;
 };
 
