@@ -1,0 +1,9 @@
+#!/bin/sh
+# Deal with some gentoo-specific issues
+export WANT_AUTOMAKE='1.7'
+export WANT_AUTOCONF_2_5=1
+
+echo "Bootstrap..."
+
+# Fire up autotools
+libtoolize --force && aclocal $ACLOCAL_FLAGS && automake --include-deps --add-missing --foreign && autoconf
