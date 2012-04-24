@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=qtOgitor
+GenericName=Ogitor
+Comment=Ogre Scenebuilder
+Exec=qtOgitor
+Icon=qtogitor
+Terminal=false
+Type=Application
+Categories=Graphics;3DGraphics;
+MimeType=application/x-ogitor;
