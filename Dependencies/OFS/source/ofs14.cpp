@@ -32,6 +32,7 @@
 
 #include "ofs14.h"
 #include <algorithm>
+#include <stdio.h>
 
 using namespace std;
 
@@ -62,7 +63,59 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    void OFSHANDLE::_prepareReadWritePointers(bool append)
+    void FileStream::close()
+    {
+        if( m_pFile != NULL )
+        {
+            fflush( m_pFile );
+            fclose( m_pFile );
+            m_pFile = NULL;
+        }
+    }
+
+//------------------------------------------------------------------------------
+
+    void FileStream::open( const char *file, const char *mode )
+    {
+        close();
+
+#if defined( __WIN32__ ) || defined( _WIN32 )
+		m_pFile = _fsopen( file, mode, _SH_DENYWR );
+#else
+        m_pFile = fopen( file, mode );
+#endif
+		
+	}
+
+//------------------------------------------------------------------------------
+	char fl_4k[ 4096 ];
+	char fl_32[ 32 ];
+	char fl_b = 0;
+
+
+    void FileStream::fill( ofs64 len )
+    {
+		ofs64 i;
+
+		ofs64 fl4k = len >> 12;
+		ofs64 fl32 = ( len & 0xFFF ) >> 5; 
+		len = len & 0x1F;
+
+        assert( m_pFile != NULL );
+         
+	    for( i = 0; i < fl4k; i++ )
+		    fwrite( &fl_4k, 4096, 1, m_pFile );    
+
+	    for( i = 0; i < fl32; i++ )
+		    fwrite( &fl_32, 32, 1, m_pFile );    
+
+		for( i = 0; i < len; i++ )
+		    fwrite( &fl_b, 1, 1, m_pFile );    
+    }
+
+//------------------------------------------------------------------------------
+
+	void OFSHANDLE::_prepareReadWritePointers(bool append)
     {
         assert(mEntryDesc != NULL);
 
@@ -412,13 +465,9 @@ namespace OFS
                 block_size -= data_size; 
         }
 
-        if(fill_needed)
+        if(fill_needed && block_size > 0)
         {
-            char dummy[] = {0};
-            for(ofs64 i = 0;i < block_size;i++)
-            {
-                mStream.write(dummy, 1);
-            }
+            mStream.fill( block_size );
         }
 
         _writeHeader();
@@ -535,13 +584,9 @@ namespace OFS
                 block_size -= data_size; 
         }
 
-        if(fill_needed)
+        if(fill_needed && block_size > 0)
         {
-            char dummy[] = {0};
-            for(ofs64 i = 0;i < block_size;i++)
-            {
-                mStream.write(dummy, 1);
-            }
+            mStream.fill( block_size );
         }
 
         _writeHeader();
