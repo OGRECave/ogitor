@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2011 Andreas Jonsson
+   Copyright (c) 2003-2012 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -51,8 +51,6 @@ BEGIN_AS_NAMESPACE
 class asCScriptFunction;
 class asCScriptEngine;
 
-// TODO: The context should be renamed to something that better describes it, e.g. asIVirtualMachine, asIExecuter, asIProcessor, asIScriptThread, or something like that
-
 class asCContext : public asIScriptContext
 {
 public:
@@ -64,7 +62,9 @@ public:
 
 	asEContextState GetState() const;
 
-	int  Prepare(int functionID);
+	int  Prepare(asIScriptFunction *func);
+	// TODO: interface: deprecate this
+	int  Prepare(int functionId);
 	int  Unprepare();
 
 	int SetArgByte(asUINT arg, asBYTE value);
@@ -93,10 +93,10 @@ public:
 	int  Abort();
 	int  Suspend();
 
-	int  SetException(const char *descr);
-	int  GetExceptionLineNumber(int *column, const char **sectionName);
-	int  GetExceptionFunction();
-	const char *GetExceptionString();
+	int                SetException(const char *descr);
+	int                GetExceptionLineNumber(int *column, const char **sectionName);
+	asIScriptFunction *GetExceptionFunction();
+	const char *       GetExceptionString();
 
 	int  SetLineCallback(asSFuncPtr callback, void *obj, int callConv);
 	void ClearLineCallback();
@@ -114,6 +114,7 @@ public:
 	bool               IsVarInScope(asUINT varIndex, asUINT stackLevel);
 	int                GetThisTypeId(asUINT stackLevel);
     void              *GetThisPointer(asUINT stackLevel);
+	asIScriptFunction *GetSystemFunction();
 
 	void *SetUserData(void *data);
 	void *GetUserData() const;
@@ -156,9 +157,9 @@ public:
 	bool doSuspend;
 	bool doAbort;
 	bool externalSuspendRequest;
-	bool isCallingSystemFunction;
 
 	asCScriptFunction *currentFunction;
+	asCScriptFunction *callingSystemFunction;
 	bool isStackMemoryNotAllocated;
 
 	asCArray<size_t> callStack;

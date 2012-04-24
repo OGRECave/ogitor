@@ -35,6 +35,8 @@
 #include "ogrewidget.hxx"
 #include "sceneview.hxx"
 #include "layerview.hxx"
+#include "imageconverter.hxx"
+#include "OgitorsRoot.h"
 
 #include "qtpropertymanager.h"
 #include "qteditorfactory.h"
@@ -49,8 +51,7 @@
 
 #include "BaseEditor.h"
 #include "MultiSelEditor.h"
-//-------------------------------------------------------------------------------
-//---PLACE ALL CORE MESSAGES HERE SO LINGUIST CAN PICK THEM----------------------
+
 //-------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
 {
@@ -59,6 +60,13 @@ QString ConvertToQString(Ogre::UTFString& value)
     return codec->toUnicode(encodedString);
 }
 //-------------------------------------------------------------------------------
+Ogre::UTFString ConvertFromQString(QString& value)
+{
+    return Ogre::UTFString(value.toUtf8().constData());
+}
+//-------------------------------------------------------------------------------
+//---PLACE ALL CORE MESSAGES HERE SO LINGUIST CAN PICK THEM----------------------
+//-------------------------------------------------------------------------------
 void QtOgitorSystem::DummyTranslationFunction()
 {
 #define tr(a) QString(a)
@@ -66,7 +74,7 @@ void QtOgitorSystem::DummyTranslationFunction()
     QString dummyStr;
     dummyStr = tr("Parsing Scene File");
     dummyStr = tr("Applying Post Load Updates");
-    dummyStr = tr("Can not delete the main viewport!!");
+    dummyStr = tr("Cannot delete the main viewport!!");
     dummyStr = tr("Do you want to save your current project?");
     dummyStr = tr("Do you want to remove %s?");
     dummyStr = tr("No free slots to create a page. Please increase rows or columns.");
@@ -160,12 +168,12 @@ QtOgitorSystem::~QtOgitorSystem(void)
 
 }
 //-------------------------------------------------------------------------------
-Ogre::String QtOgitorSystem::getProjectsDirectory()
+Ogre::String QtOgitorSystem::GetProjectsDirectory()
 {
     return mProjectsDirectory.toStdString();
 }
 //-------------------------------------------------------------------------------
-void QtOgitorSystem::initTreeIcons()
+void QtOgitorSystem::InitTreeIcons()
 {
     Ogitors::EditorObjectFactoryMap objects = Ogitors::OgitorsRoot::getSingletonPtr()->GetEditorObjectFactories();
     Ogitors::EditorObjectFactoryMap::iterator it = objects.begin();
@@ -220,10 +228,8 @@ bool CopyDir(const QString& src, const QString& target, const QString& targetRoo
     if (!QDir(from).exists())
         return false;
 
-
-    if (!QDir(to).exists()) {
+    if (!QDir(to).exists())
         Mkdir(to);
-    }
 
     QString filename;
     QDirIterator it(from, QDir::AllDirs | QDir::Files, QDirIterator::NoIteratorFlags);
@@ -306,6 +312,29 @@ bool QtOgitorSystem::CopyFile(Ogre::String source, Ogre::String destination)
 
     QFile::remove(fdest);
     return QFile::copy(fname, fdest);
+}
+//-------------------------------------------------------------------------------
+Ogre::UTFString QtOgitorSystem::GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue)
+{
+    QSettings settings;
+    settings.beginGroup(ConvertToQString(group));
+    QString value = settings.value(ConvertToQString(name), ConvertToQString(defaultValue)).toString();
+    settings.endGroup();
+
+    return ConvertFromQString(value);
+}
+//-------------------------------------------------------------------------------
+bool QtOgitorSystem::SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value)
+{
+    QSettings settings;
+    settings.beginGroup(ConvertToQString(group));
+    settings.setValue(ConvertToQString(name), ConvertToQString(value));
+    
+    settings.sync();
+
+    bool ret = settings.status() == QSettings::NoError;
+    settings.endGroup();
+    return ret;
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::FileExists(const Ogre::String& filename)
@@ -399,34 +428,6 @@ Ogitors::DIALOGRET QtOgitorSystem::DisplayMessageDialog(Ogre::UTFString msg, Ogi
     return Ogitors::DLGRET_CANCEL;
 }
 //-------------------------------------------------------------------------------
-Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title)
-{
-    mOgitorMainWindow->getOgreWidget()->stopRendering(true);
-
-    QSettings settings;
-    settings.beginGroup("OgitorSystem");
-    QString oldOpenPath = settings.value("oldOpenPath", mProjectsDirectory).toString();
-    settings.endGroup();
-
-    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), oldOpenPath
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-      , QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
-#else
-      );
-#endif
-
-    mOgitorMainWindow->getOgreWidget()->stopRendering(false);
-
-    if(path != "")
-    {
-        settings.beginGroup("OgitorSystem");
-        settings.setValue("oldOpenPath", path);
-        settings.endGroup();
-    }
-
-    return path.toStdString();
-}
-//-------------------------------------------------------------------------------
 void QtOgitorSystem::DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value)
 {
     if(mProgressDialog != 0)
@@ -460,32 +461,64 @@ void QtOgitorSystem::UpdateProgressDialog(int value)
     mProgressDialog->setValue(value);
 }
 //-------------------------------------------------------------------------------
-Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
+Ogre::String QtOgitorSystem::DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
-    QSettings settings;
+    // Is default path is empty then use the project location directory    
+    if(defaultPath.empty())
+    {
+        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath(GetProjectsDirectory());
+        defaultPath = GetSetting("system", "oldOpenPath", defaultPath);
+    }
+    
+    QString oldOpenPath = ConvertToQString(defaultPath);
+
+    QString path = QFileDialog::getExistingDirectory(QApplication::activeWindow(), ConvertToQString(title), oldOpenPath
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+      , QFileDialog::DontUseNativeDialog | QFileDialog::ShowDirsOnly);
+#else
+      );
+#endif
+
+    mOgitorMainWindow->getOgreWidget()->stopRendering(false);
+    return path.toStdString();
+}
+//-------------------------------------------------------------------------------
+Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath)
+{
+    mOgitorMainWindow->getOgreWidget()->stopRendering(true);
+
     QString theList;
     QString selectedFilter;
-    QString oldOpenPath;
+
+    // Is default path is empty then use the project location directory    
+    if(defaultPath.empty())
+    {
+        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath(GetProjectsDirectory());
+        defaultPath = GetSetting("system", "oldOpenPath", defaultPath);
+    }
+    
+    QString oldOpenPath = ConvertToQString(defaultPath);
+
     for(unsigned int i = 0; i < ExtensionList.size(); i+=2)
     {
         if(i)
             theList += QString(";;");
+
         theList += ConvertToQString(ExtensionList[i]) + QString(" (") + ConvertToQString(ExtensionList[i + 1]) + QString(")");
     }
 
-    settings.beginGroup("OgitorSystem");
-    if( theList.contains("xml", Qt::CaseInsensitive) || theList.contains(".scene", Qt::CaseInsensitive) )
+    if(theList.contains("xml", Qt::CaseInsensitive) || theList.contains(".scene", Qt::CaseInsensitive))
     {
-        oldOpenPath = settings.value("oldDotsceneOpenPath", mProjectsDirectory).toString();
+        QSettings settings;
+        settings.beginGroup("system");
+        if (oldOpenPath.isEmpty()) 
+            oldOpenPath = settings.value("oldDotsceneOpenPath", mProjectsDirectory).toString();
+
         selectedFilter = settings.value("selectedDotsceneOpenFilter", "").toString();
+        settings.endGroup();
     }
-    else
-    {
-        oldOpenPath = settings.value("oldOpenPath", mProjectsDirectory).toString();
-    }
-    settings.endGroup();
 
     QString path = QFileDialog::getOpenFileName(QApplication::activeWindow(), ConvertToQString(title), oldOpenPath, theList , &selectedFilter
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -495,53 +528,42 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
-
-    if(path != "")
-    {
-        settings.beginGroup("OgitorSystem");
-        if((theList.contains("xml", Qt::CaseInsensitive))&&(theList.contains(".scene", Qt::CaseInsensitive)))
-        {
-            settings.setValue("oldDotsceneOpenPath", path);
-            settings.setValue("selectedDotsceneOpenFilter", selectedFilter);
-        }
-        else
-        {
-            settings.setValue("oldOpenPath", path);
-        }
-        settings.endGroup();
-    }
-
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
-Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList)
+Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath)
 {
     mOgitorMainWindow->getOgreWidget()->stopRendering(true);
 
-    QSettings settings;
     QString theList;
-    QString selectedFilter;
-    QString oldSavePath;
+    QString selectedFilter = "";
+
+    // Is default path is empty then use the project location directory    
+    if(defaultPath.empty())
+    {
+        defaultPath = Ogitors::OgitorsUtils::ExtractFilePath(GetProjectsDirectory());
+        defaultPath = GetSetting("system", "oldOpenPath", defaultPath);
+    }
+    
+    QString oldSavePath = ConvertToQString(defaultPath);
 
     for(unsigned int i = 0; i < ExtensionList.size(); i+=2)
     {
-        if(i)
+        if(i) 
             theList += QString(";;");
+
         theList += ConvertToQString(ExtensionList[i]) + QString(" (") + ConvertToQString(ExtensionList[i + 1]) + QString(")");
     }
 
-    settings.beginGroup("OgitorSystem");
     if(theList.contains("xml", Qt::CaseInsensitive))
     {
-        oldSavePath = settings.value("oldDotsceneSavePath", mProjectsDirectory).toString();
-        selectedFilter = settings.value("selectedDotsceneFilter", "").toString();
+        QSettings settings;
+        settings.beginGroup("system");
+        if (oldSavePath.isEmpty())
+            oldSavePath = settings.value("oldDotsceneSavePath", mProjectsDirectory).toString();
+
+        settings.endGroup();
     }
-    else
-    {
-        oldSavePath = settings.value("oldSavePath", mProjectsDirectory).toString();
-        selectedFilter = settings.value("selectedFilter", "").toString();
-    }
-    settings.endGroup();
 
     QString path = QFileDialog::getSaveFileName(QApplication::activeWindow(), ConvertToQString(title), oldSavePath, theList, &selectedFilter
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
@@ -551,22 +573,6 @@ Ogre::String QtOgitorSystem::DisplaySaveDialog(Ogre::UTFString title, Ogitors::U
 #endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
-
-    if(path != "")
-    {
-        settings.beginGroup("OgitorSystem");
-        if(theList.contains("xml", Qt::CaseInsensitive))
-        {
-            settings.setValue("oldDotsceneSavePath", path);
-            settings.setValue("selectedDotsceneFilter", selectedFilter);
-        }
-        else
-        {
-            settings.setValue("oldSavePath", path);
-            settings.setValue("selectedFilter", selectedFilter);
-        }
-        settings.endGroup();
-    }
     return path.toStdString();
 }
 //-------------------------------------------------------------------------------
@@ -625,13 +631,10 @@ void QtOgitorSystem::ShowMouseCursor(bool bShow)
     mRenderViewWidget->showCursorEx(bShow);
 }
 //-------------------------------------------------------------------------------
-bool QtOgitorSystem::DisplayTerrainDialog(Ogre::NameValuePairList &params)
+void QtOgitorSystem::DisplayTerrainDialog()
 {
-    params.clear();
     ManageTerrainDialog* dlg = new ManageTerrainDialog(QApplication::activeWindow());
     dlg->show();
-
-    return false;
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList &params)
@@ -717,39 +720,30 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
 {
     if(!mCalcBlendmapDlg)
     {
+        Ogitors::OgitorsRoot *ogitorRoot = Ogitors::OgitorsRoot::getSingletonPtr();
         mCalcBlendmapDlg = new CalculateBlendMapDialog(QApplication::activeWindow());
+        
+        ImageConverter imageConverter(128,128);
+        Ogitors::PropertyOptionsVector* diffuseList = ogitorRoot->GetTerrainDiffuseTextureNames();
 
-        Ogre::FileInfoListPtr resList2 = Ogre::ResourceGroupManager::getSingleton().listResourceFileInfo("TerrainTextures");
-
-        Ogre::String fname_diffuse;
-        Ogre::String fname_normal;
-        for (Ogre::FileInfoList::const_iterator it = resList2->begin(); it != resList2->end(); ++it)
+        for (Ogitors::PropertyOptionsVector::const_iterator diffItr = diffuseList->begin(); diffItr != diffuseList->end(); ++diffItr)
         {
-            Ogre::FileInfo fInfo = (*it);
-            if(fInfo.archive->getType() == "FileSystem")
-            {
-                if(fInfo.filename.find("_diffuse.png") == -1) continue;
-                fname_diffuse = fInfo.archive->getName() + "/";
-                fname_diffuse += fInfo.filename;
-                fname_normal = fInfo.filename;
-                fname_normal.erase(fname_normal.length() - 12,12);
-                fname_normal += "_normalheight.dds";
+            Ogitors::PropertyOption opt = (*diffItr);
+            Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
+            
+            QPixmap pixmap;
+            if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainGroupDiffuseSpecular")))
+                continue;
 
-                QString result = fInfo.filename.c_str();
-                if(QFile::exists(QString(Ogre::String(fInfo.archive->getName() + "/" + fname_normal).c_str())))
-                {
-                    result += QString(";") + QString(fname_normal.c_str());
-                }
-
-                QVariant data(result);
-                mCalcBlendmapDlg->tex1->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex2->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex3->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex4->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-                mCalcBlendmapDlg->tex5->addItem(QIcon(QString(fname_diffuse.c_str())),"",data);
-            }
+            QIcon witem(pixmap);
+            QString texname(name.c_str());
+            QVariant data(texname);
+            mCalcBlendmapDlg->tex1->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex2->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex3->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex4->addItem(witem, QString(texname), data);
+            mCalcBlendmapDlg->tex5->addItem(witem, QString(texname), data);
         }
-        resList2.setNull();
     }
 
     params.clear();
@@ -764,7 +758,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex1->itemData(mCalcBlendmapDlg->tex1->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs1->text().toStdString();
@@ -783,7 +776,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex2->itemData(mCalcBlendmapDlg->tex2->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs2->text().toStdString();
@@ -802,7 +794,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex3->itemData(mCalcBlendmapDlg->tex3->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs3->text().toStdString();
@@ -821,7 +812,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex4->itemData(mCalcBlendmapDlg->tex4->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs4->text().toStdString();
@@ -840,7 +830,6 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
             QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex5->itemData(mCalcBlendmapDlg->tex5->currentIndex()));
-            str.replace(QString("_diffuse.png"),QString("_diffusespecular.dds"), Qt::CaseInsensitive);
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs5->text().toStdString();

@@ -30,7 +30,6 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "tinyxml.h"
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
@@ -39,10 +38,11 @@
 #include "DefaultEvents.h"
 #include "EventManager.h"
 
+#include "tinyxml.h"
+
 using namespace Ogitors;
 
-template<> OgitorsUndoManager* Singleton<OgitorsUndoManager>::ms_Singleton = 0;
-
+template<> OgitorsUndoManager* Ogitors::Singleton<OgitorsUndoManager>::ms_Singleton = 0;
 
 //----------------------------------------------------------------------------------
 PropertyUndo::PropertyUndo(OgitorsPropertySet *set, OgitorsPropertyBase *property)

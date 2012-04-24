@@ -989,6 +989,11 @@ void MainWindow::snapMultiplierIndexChanged ( int index )
     CViewportEditor::SetSnapMultiplier(index + 1);
 }
 //------------------------------------------------------------------------------
+void MainWindow::snapGroundChanged( int state )
+{
+    OgitorsRoot::getSingletonPtr()->SetSnapGroundState( state == Qt::Checked );
+}
+//------------------------------------------------------------------------------
 void MainWindow::viewModeIndexChanged ( int index )
 {
     CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
@@ -1591,7 +1596,7 @@ void MainWindow::runScriptClicked()
     }
     else
     {
-        OgitorsScriptConsole::getSingletonPtr()->execString(commandString);
+		OgitorsScriptConsole::getSingletonPtr()->insertLine(commandString);
     }
     txtScriptInput->StoreLine();
     txtScriptInput->clear();

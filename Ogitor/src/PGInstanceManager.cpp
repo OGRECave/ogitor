@@ -251,7 +251,7 @@ void CPGInstanceManager::_onLoad()
     if(ret != OFS::OFS_OK)
         return;
 
-    unsigned int file_size = 0;
+    OFS::ofs64 file_size = 0;
 
     mFile->getFileSize(handle, file_size);
 
@@ -261,8 +261,8 @@ void CPGInstanceManager::_onLoad()
         return;
     }
 
-    char *buffer = new char[file_size];
-    mFile->read(handle, buffer, file_size);
+    char *buffer = new char[(unsigned int)file_size];
+    mFile->read(handle, buffer, (unsigned int)file_size);
 
     std::stringstream stream;
     stream << buffer;

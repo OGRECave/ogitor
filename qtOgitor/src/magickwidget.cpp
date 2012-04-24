@@ -254,7 +254,7 @@ void MagickWidget::openMesh()
     if(path != "")
     {
         QSettings settings;
-        settings.beginGroup("OgitorSystem");
+        settings.beginGroup("system");
         settings.setValue("oldMeshOpenPath", path);
         settings.endGroup();
 

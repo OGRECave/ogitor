@@ -47,7 +47,7 @@ else(NOT QT4_FOUND)
     include_directories(${OGITOR_INCLUDES})
 
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} Ogitor)
-    add_library(ImageConverter SHARED ${SRCS})
+    ogitor_add_library(ImageConverter SHARED ${SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
     if(NOT OGITOR_DIST)
@@ -86,6 +86,13 @@ else(NOT QT4_FOUND)
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
     ENDIF(UNIX AND NOT APPLE)
+
+IF (APPLE)
+        set_target_properties(ImageConverter PROPERTIES OUTPUT_NAME ImageConverter_Ogitor)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(ImageConverter PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
+   ENDIF(APPLE)
+
 
 endif(NOT QT4_FOUND)
 

@@ -55,6 +55,7 @@
 #include "MultiSelEditor.h"
 #include "tinyxml.h"
 #include "ofs.h"
+#include "OFSDataStream.h"
 
 #include "PagedGeometry.h"
 #include "GrassLoader.h"
@@ -165,58 +166,7 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
 {
     if(menuresult == 0)
     {
-        Ogitors::NameObjectPairList::iterator it;
-        Ogre::NameValuePairList params;
-        Ogre::String posval;
-
-        int minX = -1, minY = -1, maxX = 1, maxY = 1, PX, PY;
-        for(it = mChildren.begin(); it != mChildren.end(); it++)
-        {
-             CTerrainPageEditor *terrain = static_cast<CTerrainPageEditor*>(it->second);
-             PX = terrain->getPageX();
-             PY = terrain->getPageY();
-             minX = std::min(minX, PX - 1);
-             minY = std::min(minY, PY - 1);
-             maxX = std::max(maxX, PX + 1);
-             maxY = std::max(maxY, PY + 1);
-        }
-
-        int width = maxX - minX + 1;
-        int height = maxY - minY + 1;
-
-        bool *mMtx = OGRE_ALLOC_T(bool, width * height, Ogre::MEMCATEGORY_GEOMETRY);
-        for(int i = 0; i < width * height;++i)
-            mMtx[i] = true;
-
-        for(it = mChildren.begin(); it != mChildren.end();it++)
-        {
-             CTerrainPageEditor *terrain = static_cast<CTerrainPageEditor*>(it->second);
-             PX = terrain->getPageX();
-             PY = terrain->getPageY();
-
-             mMtx[((PY - minY) * width) + (PX - minX)] = false;
-        }
-
-        for(int Y = 0;Y < height;++Y)
-        {
-            for(int X = 0;X < width;++X)
-            {
-                if(mMtx[(Y * width) + X])
-                {
-                    posval = Ogre::StringConverter::toString(X + minX) + "x" + Ogre::StringConverter::toString(Y + minY);
-                    params[posval] = posval;
-                }
-            }
-        }
-
-        OGRE_FREE(mMtx, Ogre::MEMCATEGORY_GEOMETRY);
-
-        if(mSystem->DisplayTerrainDialog(params))
-        {
-            int x = Ogre::StringConverter::parseInt(params["pagex"]);
-            int y = Ogre::StringConverter::parseInt(params["pagey"]);
-            addPage(x, y, params["diffuse"], params["normal"]);
-        }
+        mSystem->DisplayTerrainDialog();
     }
     else if(menuresult == 1)
     {
@@ -478,6 +428,34 @@ bool CTerrainGroupEditor::load(bool async)
     mTerrainGlobalOptions->setLightMapDirection(vDir);
     mTerrainGlobalOptions->setCompositeMapAmbient(mOgitorsRoot->GetSceneManager()->getAmbientLight());
     mTerrainGlobalOptions->setCompositeMapDiffuse(cDiffuse);
+
+    terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory + "/terrain/";
+
+    OFS::FileList TGAList = mOgitorsRoot->GetProjectFile()->listFiles( terrainDir.c_str(), OFS::OFS_FILE );
+
+    for( unsigned int t = 0; t < TGAList.size(); t++ )
+    {
+        int pos = TGAList[t].name.find("_density.tga");
+        if( pos > 0 )
+        {
+            Ogre::Image _img;
+            Ogre::String sLoc = terrainDir + TGAList[t].name;
+
+            // Block to ensure streams are freed when exiting the block
+            {
+                OFS::OFSHANDLE *iHandle = new OFS::OFSHANDLE();
+                mOgitorsRoot->GetProjectFile()->openFile( *iHandle, sLoc.c_str() );
+                Ogre::DataStreamPtr img_stream = Ogre::DataStreamPtr( OGRE_NEW OfsDataStream( mOgitorsRoot->GetProjectFile(), iHandle ) );
+                _img.load(img_stream);
+            }
+
+            Ogre::String nLoc = terrainDir + TGAList[t].name.substr(0, pos);
+            nLoc += "_density.png";
+
+            OgitorsUtils::SaveImageOfs( _img, nLoc );
+            mOgitorsRoot->GetProjectFile()->deleteFile( sLoc.c_str() );
+        }
+    }
 
     registerForUpdates();
 

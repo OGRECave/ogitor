@@ -29,39 +29,31 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#ifndef ADDTERRAINDIALOG_HXX
-#define ADDTERRAINDIALOG_HXX
+#pragma once
 
+#include "manageTerrainGraphicsView.hxx"
+
+#include <QtGui/QMainWindow>
 #include <QtGui/QDialog>
 #include <Ogre.h>
 
-#include "ui_manageTerrainDialog.h"
+#include <QtGui/QWidget>
 
-class ManageTerrainDialog : public QDialog, public Ui::manageTerrainDialog 
+class ManageTerrainDialog : public QMainWindow
 {
     Q_OBJECT
 public:
     ManageTerrainDialog(QWidget *parent);
     virtual ~ManageTerrainDialog();
 
-    void requestPageDraw();
-    bool hasTerrain(int X, int Y);  
+    bool hasTerrain(int X, int Y);
+    void redrawMap();
+
+private:
     void drawPageMap();
 
-    inline Ogre::String getLastUsedDiffuse(){return mLastUsedDiffuse;};
-    inline Ogre::String getLastUsedNormal(){return mLastUsedNormal;};
-
-    void setLastUsedDiffuse(Ogre::String diffuse){mLastUsedDiffuse = diffuse;};
-    void setLastUsedNormal(Ogre::String normal){mLastUsedNormal = normal;};
-
-public Q_SLOTS:
-    void update();
-
-private:   
-    QTimer*         mTimerDrawPage;
-    bool            mDrawRequested;
-    Ogre::String    mLastUsedDiffuse;
-    Ogre::String    mLastUsedNormal;
+    ManageTerrainGraphicsView *mPageGraphics;
+    QToolBar        *mToolBar;
     
     bool*           mMtx;
     int             mWidth;
@@ -71,4 +63,3 @@ private:
     QGraphicsScene  mScene;
 };
 
-#endif // ADDTERRAINDIALOG_HXX

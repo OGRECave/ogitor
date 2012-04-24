@@ -125,12 +125,15 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
         filename = mTempFileName;
     }
 
+    Ogre::String tmpCompressFile = OgitorsUtils::ExtractFilePath(mOgitorsRoot->GetProjectFile()->getFileSystemName()) + "Temp/";
+    tmpCompressFile = tmpCompressFile + Ogre::StringConverter::toString(mObjectID->get()) + ".compress";
+
     OFS::OFSHANDLE *fileHandle = new OFS::OFSHANDLE();
 
     mOgitorsRoot->GetProjectFile()->createFile(*fileHandle, filename.c_str());
 
     Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), fileHandle));
-    Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filename, stream));
+    Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filename, stream, tmpCompressFile));
     Ogre::StreamSerialiser ser(compressStream);
     mHandle->save(ser);
 }
@@ -172,7 +175,7 @@ void CTerrainPageEditor::onSave(bool forced)
         Ogre::String filename = terGroup->generateFilename(mPageX->get(), mPageY->get());
 
         Ogre::String pathFrom = mTempDensityFileName;
-        Ogre::String pathTo = terrainDir + filename.substr(0, filename.size() - 4) + "_density.tga";
+        Ogre::String pathTo = terrainDir + filename.substr(0, filename.size() - 4) + "_density.png";
 
         mOgitorsRoot->GetProjectFile()->moveFile(pathFrom.c_str(), pathTo.c_str());
     }
@@ -810,7 +813,7 @@ TiXmlElement* CTerrainPageEditor::exportDotScene(TiXmlElement *pParent)
     if(idx < 4)
     {
         Ogre::String tempStr;
-        Ogre::String denmapname = name.substr(0, name.size() - 4) + "_density.tga";
+        Ogre::String denmapname = name.substr(0, name.size() - 4) + "_density.png";
         TiXmlElement *pGrassPage = pTerrainPage->InsertEndChild(TiXmlElement("grassLayers"))->ToElement();
         TiXmlElement *pGrassLayers;
         TiXmlElement *pGrassLayerProps;

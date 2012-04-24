@@ -40,13 +40,13 @@
 #define MAX_BUFFER_SIZE 0xFFFFFF
 
 //----------------------------------------------------------------------------------------
-OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, std::string initialSelection) : QTreeWidget(parent), mCapabilities(capabilities) 
+OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, QStringList initialSelection) : QTreeWidget(parent), mCapabilities(capabilities) 
 {
-    mSelected = initialSelection;
+    mSelectedItems = initialSelection;
 
     setColumnCount(1);
     setHeaderHidden(true);
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setContextMenuPolicy(Qt::CustomContextMenu);
     setDragDropOverwriteMode(false);
@@ -60,45 +60,7 @@ OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, std::st
     mFile->addTrigger(this, OFS::_Ofs::CLBK_CREATE, &triggerCallback);
     mFile->addTrigger(this, OFS::_Ofs::CLBK_DELETE, &triggerCallback);
 
-    QTreeWidgetItem* item = 0;
-    QTreeWidgetItem* pItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("Project")));
-    pItem->setIcon(0, mOgitorMainWindow->mIconProvider.icon(QFileIconProvider::Folder));
-    pItem->setTextColor(0, Qt::black);
-    QFont fnt = pItem->font(0);
-    fnt.setBold(true);
-    pItem->setFont(0, fnt);
-    pItem->setWhatsThis(0, QString("/"));
-    
-    addTopLevelItem(pItem);
-
-    fillTree(pItem, "/");
-
-    if(capabilities & CAP_SHOW_FILES)
-        fillTreeFiles(pItem, "/");
-
-    expandItem(pItem);
-
-    if(mSelected == "/")
-        setItemSelected(pItem, true);
-    else
-    {
-        NameTreeWidgetMap::iterator it = mItemMap.find(mSelected);
-
-        if(it != mItemMap.end())
-        {
-            clearSelection();
-            scrollToItem(it->second);
-            setItemSelected(it->second, true);
-        }
-    }
-
-    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
-
-    if(capabilities & CAP_SHOW_FILES)
-    {
-        connect(this, SIGNAL(itemCollapsed( QTreeWidgetItem * )), this, SLOT(onItemCollapsed( QTreeWidgetItem * )));
-        connect(this, SIGNAL(itemExpanded( QTreeWidgetItem * )), this, SLOT(onItemExpanded( QTreeWidgetItem * )));
-    }
+    refreshWidget();
 
     mAddFilesThread = new AddFilesThread();
     mExtractorThread = new ExtractorThread();
@@ -281,21 +243,22 @@ void OfsTreeWidget::refreshWidget()
 
     expandItem(pItem);
 
-    if(mSelected == "/")
-        setItemSelected(pItem, true);
-    else
+    for(int i = 0; i < mSelectedItems.size(); i++)
     {
-        NameTreeWidgetMap::iterator it = mItemMap.find(mSelected);
-
-        if(it != mItemMap.end())
+        if(mSelectedItems.at(i) == "/")
+            setItemSelected(pItem, true);
+        else
         {
-            clearSelection();
-            scrollToItem(it->second);
-            setItemSelected(it->second, true);
-        }
-    }    
+            NameTreeWidgetMap::iterator it = mItemMap.find(mSelectedItems.at(i).toStdString());
 
-    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
+            if(it != mItemMap.end())
+            {
+                clearSelection();
+                scrollToItem(it->second);
+                setItemSelected(it->second, true);
+            }
+        }  
+    }      
 
     if(mCapabilities & CAP_SHOW_FILES)
     {
@@ -309,23 +272,28 @@ void OfsTreeWidget::refreshWidget()
         it = mItemMap.find(string.toStdString());
 
         if(it != mItemMap.end())
+        {
             it->second->setExpanded(true);
+            onItemExpanded(it->second);
+        }
     }
+
+    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
 }
 //----------------------------------------------------------------------------------------
 void OfsTreeWidget::onSelectionChanged()
 {
-    mSelected = "/";
+    mSelectedItems.clear();
 
     QList<QTreeWidgetItem*> selectionList = selectedItems();
 
-    if(selectionList.size() > 0)
+    for(int i = 0; i < selectionList.size(); i++)
     {
-        mSelected = selectionList[0]->whatsThis(0).toStdString();
+        mSelectedItems.push_back(selectionList[i]->whatsThis(0));
     }
 }
 //----------------------------------------------------------------------------------------
-void OfsTreeWidget::onItemCollapsed( QTreeWidgetItem * item )
+void OfsTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 {
     std::vector<QTreeWidgetItem*> deleteList;
 
@@ -367,7 +335,7 @@ void OfsTreeWidget::onItemCollapsed( QTreeWidgetItem * item )
     setItemSelected(item, true);
 }
 //----------------------------------------------------------------------------------------
-void OfsTreeWidget::onItemExpanded( QTreeWidgetItem * item )
+void OfsTreeWidget::onItemExpanded(QTreeWidgetItem* item)
 {
     if(item != NULL && item != topLevelItem(0))
     {
@@ -389,7 +357,7 @@ void OfsTreeWidget::onItemExpanded( QTreeWidgetItem * item )
     setItemSelected(item, true);
 }
 //----------------------------------------------------------------------------------------
-QStringList OfsTreeWidget::getFilenames(const QMimeData * data)
+QStringList OfsTreeWidget::getFilenames(const QMimeData* data)
 {
    QStringList result;
 
@@ -481,15 +449,6 @@ void OfsTreeWidget::addFiles(QString rootDir, QStringList list)
     {
         emit busyState(true);
         mAddFilesThread->addFiles(mFile, rootDir.toStdString(), list);
-    }
-}
-//----------------------------------------------------------------------------------------
-void OfsTreeWidget::addEmptyFolder(QString rootDir, QString name)
-{
-    if(!mAddFilesThread->isRunning())
-    {
-        emit busyState(true);
-        mAddFilesThread->addEmptyFolder(mFile, rootDir.toStdString(), name);
     }
 }
 //----------------------------------------------------------------------------------------
@@ -728,23 +687,9 @@ void AddFilesThread::addFiles(const OFS::OfsPtr& _ofsFile, const std::string& _c
     {
         data.fileName = _list.at(i);
         data.onFS = true;
+        data.isDir = false;
         mlist.push_back(data);
     }
-
-    currentDir = _currentDir;
-    ofsFileName = _ofsFile->getFileSystemName();
-
-    start();
-}
-//------------------------------------------------------------------------------------
-void AddFilesThread::addEmptyFolder(const OFS::OfsPtr& _ofsFile, const std::string& _currentDir, const QString& _name)
-{
-    mlist.clear();
-    AddFilesData data;
-    data.fileName = _name;
-    data.onFS = false;
-    data.isDir = true;
-    mlist.push_back(data);
 
     currentDir = _currentDir;
     ofsFileName = _ofsFile->getFileSystemName();
@@ -789,7 +734,7 @@ void AddFilesThread::addFiles(const AddFilesList& list)
                 if(stream_size >= MAX_BUFFER_SIZE)
                 {
                     //createFile accepts initial data to be written during allocation
-                    //its an optimization, thats why we don't have to call Ofs:write after createFile
+                    //its an optimization, thats why we don't have to call Ofs::write after createFile
                     stream.read(tmp_buffer, MAX_BUFFER_SIZE);
                     try
                     {
@@ -864,8 +809,8 @@ void AddFilesThread::addFiles(const AddFilesList& list)
                             currentPos = (float)output_amount / (float)mTotalFileSize; 
                             mutex.unlock();
                         }
-                        //createFile accepts initial data to be written during allocation
-                        //its an optimization, thats why we don't have to call Ofs:write after createFile
+                        // createFile() accepts initial data to be written during allocation.
+                        // It's an optimization, thats why we don't have to call Ofs::write after createFile()
                         if(ofsFile->createFile(fhandle, file_ofs_path.c_str(), stream_size, stream_size, tmp_buffer) != OFS::OFS_OK)
                         {
                             QMessageBox::information(QApplication::activeWindow(),"File Copy Error", tr("File copy failed for : ")+ QString(file_ofs_path.c_str()), QMessageBox::Ok);
@@ -892,13 +837,13 @@ void AddFilesThread::addFiles(const AddFilesList& list)
                 OFS::OfsResult ret = ofsFile->createDirectory(dir_ofs_path.c_str());
                 if(ret != OFS::OFS_OK)
                 {
-                    QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", tr("Can not create directory : ") + QString(dir_ofs_path.c_str()), QMessageBox::Ok);
+                    QMessageBox::information(QApplication::activeWindow(), "Ofs Exception:", tr("Cannot create directory : ") + QString(dir_ofs_path.c_str()), QMessageBox::Ok);
                     continue;
                 }
             }
             catch(OFS::Exception& e)
             {
-                QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", tr("Can not create directory : ") + QString(dir_ofs_path.c_str()) + QString("\n") + QString(e.getDescription().c_str()), QMessageBox::Ok);
+                QMessageBox::information(QApplication::activeWindow(), "Ofs Exception:", tr("Cannot create directory : ") + QString(dir_ofs_path.c_str()) + QString("\n") + QString(e.getDescription().c_str()), QMessageBox::Ok);
                 continue;
             }
         }
@@ -950,6 +895,8 @@ unsigned int AddFilesThread::generateList(AddFilesList& list)
                 }
 
                 data.fileName = file2.absoluteFilePath();
+                data.isDir = file2.isDir();
+                data.ofsName = list[i].ofsName + "/" + file2.fileName();
                 subList.push_back(data);
             }
 

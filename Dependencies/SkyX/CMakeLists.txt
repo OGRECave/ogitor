@@ -50,7 +50,7 @@ set(SKYX_VERSION_MINOR "3")
 set(SKYX_VERSION_PATCH "0")
 set(SKYX_VERSION "${SKYX_VERSION_MAJOR}.${SKYX_VERSION_MINOR}.${SKYX_VERSION_PATCH}")
 
-add_library(Skyx SHARED ${HEADER_FILES} ${SOURCE_FILES})
+ogitor_add_library(Skyx SHARED ${HEADER_FILES} ${SOURCE_FILES})
 set(LIBRARY_OUTPUT_PATH  ../lib)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
@@ -62,6 +62,12 @@ set_target_properties(Skyx PROPERTIES COMPILE_DEFINITIONS SKYX_LIB)
 set_target_properties(Skyx PROPERTIES SOLUTION_FOLDER Dependencies)
 
 target_link_libraries(Skyx ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
+
+# specify a precompiled header to use
+use_precompiled_header(Skyx
+  "${CMAKE_CURRENT_SOURCE_DIR}/Prerequisites.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Prerequisites.cpp"
+)
 
 if(WIN32)
 	add_custom_command(TARGET Skyx PRE_BUILD
@@ -90,5 +96,11 @@ IF(UNIX AND NOT APPLE)
     endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)
+
+IF (APPLE)
+        set_target_properties(Skyx PROPERTIES OUTPUT_NAME Skyx)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(Skyx PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
+   ENDIF(APPLE)
 
 # vim: set sw=2 ts=2 noet:

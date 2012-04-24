@@ -59,7 +59,7 @@ include_directories (.)
 # Terrain Scene Manager
 #include_directories ( ${OGITOR_SM_INCLUDES} )
 
-add_library(Hydrax SHARED ${HEADER_FILES} ${SOURCE_FILES}  )
+ogitor_add_library(Hydrax SHARED ${HEADER_FILES} ${SOURCE_FILES}  )
 SET(LIBRARY_OUTPUT_PATH  ../../../../lib)
 
 set_target_properties(PROPERTIES
@@ -104,3 +104,11 @@ IF(UNIX AND NOT APPLE)
     endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)
+
+
+IF (APPLE)
+        set_target_properties(Hydrax PROPERTIES OUTPUT_NAME Hydrax)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(Hydrax PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
+   ENDIF(APPLE)
+

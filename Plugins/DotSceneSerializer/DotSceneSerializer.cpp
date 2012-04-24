@@ -138,8 +138,11 @@ int CDotSceneSerializer::Import(Ogre::String importfile)
         extlist.push_back("*.scene");
         extlist.push_back(OTR("DotScene File"));
         extlist.push_back("*.xml");
-        importfile = mSystem->DisplayOpenDialog(OTR("Import DotScene File"),extlist);
+
+        importfile = mSystem->DisplayOpenDialog(OTR("Import DotScene File"), extlist, "");
         if(importfile == "") return SCF_CANCEL;
+
+        mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(importfile));
     }
 
     ogRoot->ClearProjectOptions();

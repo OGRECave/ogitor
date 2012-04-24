@@ -149,9 +149,11 @@ int CDotSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     extlist.push_back("*.scene");
     extlist.push_back(OTR("DotScene File"));
     extlist.push_back("*.xml");
-    fileName = mSystem->DisplaySaveDialog(OTR("Export DotScene File"),extlist);
+    fileName = mSystem->DisplaySaveDialog(OTR("Export DotScene File"), extlist, "");
     if(fileName == "") 
         return SCF_CANCEL;
+
+    mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileName));
 
     Ogre::String newDir = OgitorsUtils::ExtractFilePath(fileName);
 

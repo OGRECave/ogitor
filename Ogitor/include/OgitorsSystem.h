@@ -53,6 +53,21 @@ namespace Ogitors
         */
         virtual ~OgitorsSystem();
         /**
+        * Retrieves a global application saved setting
+        * @param name Name of the setting
+        * @param defaultValue A default value is the setting does not exist
+        * @return Ogre::UTFString
+        */
+        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) = 0;
+        /**
+        * Sets a global application saved setting
+        * @param group Name of the settings group
+        * @param name Name of the setting
+        * @param value The value to save
+        * @return true if successful
+        */
+        virtual bool SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value) = 0;
+        /**
         * Checks if a file exists
         * @param filename source filename
         * @return true if file exists
@@ -82,7 +97,7 @@ namespace Ogitors
         * Fetches full path to the Ogitor' Projects directory
         * @return full path to the Ogitor' Projects directory
         */
-        virtual Ogre::String getProjectsDirectory() = 0;
+        virtual Ogre::String GetProjectsDirectory() = 0;
         /**
         * Deletes specified file
         * @param file full path to the file, including file name
@@ -107,12 +122,6 @@ namespace Ogitors
         */
         virtual void GetDirList(Ogre::String path, Ogre::StringVector &list) = 0;
         /**
-        * Displays "Select Directory" dialog
-        * @param title title of the dialog
-        * @return name of selected directory
-        */
-        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title) = 0;
-        /**
         * Displays Progress dialog
         * @param title title of the dialog
         * @param min minimum value of progress bar
@@ -130,19 +139,27 @@ namespace Ogitors
         */
         virtual void UpdateProgressDialog(int value) = 0;
         /**
+        * Displays "Select Directory" dialog
+        * @param title title of the dialog
+        * @return name of selected directory
+        */
+        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath) = 0;
+        /**
         * Displays "Open File" dialog
         * @param title title of the dialog
         * @param extensionlist the list of extensions to filter out
+        * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of selected file
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList) = 0;
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
         /**
         * Displays "Save File" dialog
         * @param title title of the dialog
         * @param extensionlist the list of extensions to filter out
+        * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of the file to be saved
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList) = 0;
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
         /**
         * Displays "Yes/No/Cancel" or "Okay/Cancel" dialog
         * @param msg message to convey to the user
@@ -151,11 +168,10 @@ namespace Ogitors
         */
         virtual DIALOGRET    DisplayMessageDialog(Ogre::UTFString msg, DIALOGTYPE dlgType) = 0;
         /**
-        * Displays terrain creation dialog
-        * @param params additional terrain parameters needed for its creation
+        * Displays manage terrain dialog
         * @return true if dialog' result was accepted, otherwise false
         */
-        virtual bool         DisplayTerrainDialog(Ogre::NameValuePairList &params) = 0;
+        virtual void         DisplayTerrainDialog() = 0;
         /**
         * Displays heightmap import dialog
         * @param params additional heightmap parameters needed for its import
@@ -297,6 +313,14 @@ namespace Ogitors
         */
         virtual ~OgitorsDummySystem() {};
         /**
+        * @copydoc OgitorsSystem::GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue)
+        */
+        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) {return defaultValue;};
+        /**
+        * @copydoc OgitorsSystem::SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value)
+        */
+        virtual bool SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value) {return false;};
+        /**
         * @copydoc OgitorsSystem::FileExists(const Ogre::String&)
         */
         virtual bool FileExists(const Ogre::String& filename) {return false;};
@@ -319,7 +343,7 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::getProjectsDirectory()
         */
-        virtual Ogre::String getProjectsDirectory() {return "./";};
+        virtual Ogre::String GetProjectsDirectory() {return "./";};
         /**
         * @copydoc OgitorsSystem::DeleteFile(const Ogre::String&)
         */
@@ -337,10 +361,6 @@ namespace Ogitors
         */
         virtual void GetDirList(Ogre::String path, Ogre::StringVector &list) {list.clear();};
         /**
-        * @copydoc OgitorsSystem::DisplayDirectorySelector(Ogre::UTFString)
-        */
-        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title) {return "";};
-        /**
         * @copydoc OgitorsSystem::DisplayProgressDialog(Ogre::UTFString, int, int, int)
         */
         virtual void DisplayProgressDialog(Ogre::UTFString title, int min, int max, int value) {};
@@ -353,21 +373,25 @@ namespace Ogitors
         */
         virtual void UpdateProgressDialog(int value) {};
         /**
+        * @copydoc OgitorsSystem::DisplayDirectorySelector(Ogre::UTFString)
+        */
+        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath = "") {return "";};
+        /**
         * @copydoc OgitorsSystem::DisplayOpenDialog(Ogre::UTFString, Ogre::UTFStringVector&)
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList) {return "";};
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") {return "";};
         /**
         * @copydoc OgitorsSystem::DisplaySaveDialog(Ogre::UTFString, Ogre::UTFStringVector&)
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList) {return "";};
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") {return "";};
         /**
         * @copydoc OgitorsSystem::DisplayMessageDialog(Ogre::UTFString, DIALOGTYPE)
         */
         virtual DIALOGRET    DisplayMessageDialog(Ogre::UTFString msg, DIALOGTYPE dlgType) {return DLGRET_CANCEL;};
         /**
-        * @copydoc OgitorsSystem::DisplayTerrainDialog(Ogre::NameValuePairList&)
+        * @copydoc OgitorsSystem::DisplayTerrainDialog(void)
         */
-        virtual bool         DisplayTerrainDialog(Ogre::NameValuePairList &params) {return false;};
+        virtual void         DisplayTerrainDialog() {};
         /**
         * @copydoc OgitorsSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList)
         */

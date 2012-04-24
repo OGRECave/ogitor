@@ -38,6 +38,10 @@
 #include <QtCore/QString>
 #endif
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 std::string bundlePath()
 {
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE

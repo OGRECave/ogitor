@@ -70,7 +70,7 @@ include_directories(include)
 #include_directories ( ${OGITOR_SM_INCLUDES} )
 link_libraries(Caelum  ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
-add_library(Caelum SHARED ${HEADER_FILES} ${SOURCE_FILES})
+ogitor_add_library(Caelum SHARED ${HEADER_FILES} ${SOURCE_FILES})
 set(LIBRARY_OUTPUT_PATH  ../../lib)
 
 set_target_properties(Caelum PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
@@ -103,5 +103,11 @@ IF(UNIX AND NOT APPLE)
     endif(OGITOR_DIST)
 
 ENDIF(UNIX AND NOT APPLE)
+
+IF (APPLE)
+        set_target_properties(Caelum PROPERTIES OUTPUT_NAME Caelum)
+        # Set the INSTALL_PATH so that Frameworks can be local
+        set_target_properties(Caelum PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
+   ENDIF(APPLE)
 
 # vim: set sw=2 ts=2 noet:

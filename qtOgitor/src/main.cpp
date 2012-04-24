@@ -62,7 +62,7 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
     Ogre::ConfigFile cf;
     std::string cfPath = resourcePath();
-    cfPath.append("resources.cfg");
+	cfPath.append("resources.cfg");
     cf.load(cfPath);
 
     // Go through all sections & settings in the file
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
     {
         if(info.suffix() == "ofs")
         {
-            // Yes we've got an ogscene file to load.
+            // Yes we've got an .OFS file to load.
             fileArg = info.absoluteFilePath();
             suffix = info.suffix();
         }
@@ -274,9 +274,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    //a.setOrganizationName(QString("Ogitor ") + QString(Ogitors::Globals::OGITOR_VERSION.c_str()));
     a.setOrganizationName(QString("Ogitor"));
-    a.setApplicationName("qtOgitor");
+    a.setApplicationName(QString("Ogitor ") + QString(Ogitors::Globals::OGITOR_VERSION.c_str()));
 
     QSettings settings;
     QString languageFile = settings.value("preferences/customLanguage").toString();
