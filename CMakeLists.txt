@@ -63,7 +63,7 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
         # Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
         set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
     endif ()
-    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0")
+    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0" "1.50" "1.50.0")
     # Components that need linking (NB does not include header-only components like bind)
     set(OGRE_BOOST_COMPONENTS thread date_time regex)
     find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
@@ -72,6 +72,15 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
         set(Boost_USE_STATIC_LIBS NOT ${Boost_USE_STATIC_LIBS})
         find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
     endif()
+    if (Boost_FOUND AND WIN32)
+        if(Boost_VERSION GREATER 104700)
+            set(OGRE_BOOST_COMPONENTS thread date_time regex system)
+        endif(Boost_VERSION GREATER 104700)
+        if(Boost_VERSION GREATER 104900)
+            set(OGRE_BOOST_COMPONENTS thread date_time regex system chrono)
+        endif(Boost_VERSION GREATER 104900)
+        find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
+    endif(Boost_FOUND AND WIN32)
     find_package(Boost QUIET)
 endif(NOT OGRE_BUILD_PLATFORM_IPHONE)
 
@@ -213,6 +222,12 @@ set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 
+# Unity build options
+# A Unity build includes all sources files in just a few actual compilation units
+# to potentially speed up the compilation.
+option(OGITOR_UNITY_BUILD "Enable unity build for Ogitor." FALSE)
+set(OGITOR_UNITY_FILES_PER_UNIT "50" CACHE STRING "Number of files per compilation unit in Unity build.")
+
 # configure global paths for OgitorsGlobals
 if(UNIX)
     set(DBG_POSTFIX "")
@@ -242,6 +257,9 @@ if(UNIX)
         set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path" FORCE)
         set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "libOgreOfsPlugin path" FORCE)
     endif(OGITOR_DIST)
+	if (APPLE)
+	set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
+	endif(APPLE)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
 else(UNIX)
     # We are on Windows
