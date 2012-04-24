@@ -291,12 +291,19 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
         extlist.push_back(OTR("Ogitor Scene File"));
         extlist.push_back("*.ofs");
 
-        fileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, "");
-        if(fileLocation == "") 
+        Ogre::String newfileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, "");
+        if(newfileLocation == "") 
             return SCF_CANCEL;
 
         mSystem->SetSetting("system", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileLocation));
-        forceSave = true;
+
+        if( _stricmp( newfileLocation.c_str(), fileLocation.c_str() ) == 0 )
+            SaveAs = false;
+        else
+        {
+            forceSave = true;
+            fileLocation = newfileLocation;
+        }
     }
 
     fileName = OgitorsUtils::ExtractFileName(fileLocation);

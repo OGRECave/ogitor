@@ -3156,6 +3156,11 @@ namespace OFS
 
         OfsResult ret = OFS_INVALID_FILE;
 
+        NameOfsHandleMap::iterator it = mAllocatedHandles.find(std::string(dest));
+
+        if(it != mAllocatedHandles.end())
+            return ret;
+
         std::fstream destStream;
         OPEN_STREAM(destStream, dest, fstream::in | fstream::out | fstream::binary | fstream::trunc);
 
@@ -3193,9 +3198,11 @@ namespace OFS
             OPEN_STREAM(mStream, dest, fstream::in | fstream::out | fstream::binary | fstream::ate);
             if(!mStream.fail() && mStream.is_open())
             {
+                mAllocatedHandles.erase(mAllocatedHandles.find(mFileName));
                 mActive = true;
                 mFileName = dest;
                 ret = OFS_OK;
+                mAllocatedHandles.insert(NameOfsHandleMap::value_type(std::string(dest), this));
             }
             else
             {
@@ -3222,6 +3229,11 @@ namespace OFS
 
         OfsResult ret = OFS_INVALID_FILE;
 
+        NameOfsHandleMap::iterator it = mAllocatedHandles.find(std::string(dest));
+
+        if(it != mAllocatedHandles.end())
+            return ret;
+
         std::fstream destStream;
         OPEN_STREAM(destStream, dest, fstream::in | fstream::out | fstream::binary | fstream::ate);
 
@@ -3233,11 +3245,13 @@ namespace OFS
             OPEN_STREAM(mStream, dest, fstream::in | fstream::out | fstream::binary | fstream::ate);
             if(!mStream.fail() && mStream.is_open())
             {
+                mAllocatedHandles.erase(mAllocatedHandles.find(mFileName));
                 mActive = true;
                 mFileName = dest;
                 mStream.seekg(0, fstream::beg);
                 mStream.read((char*)&mHeader, sizeof(_Ofs::strFileHeader));
                 ret = OFS_OK;
+                mAllocatedHandles.insert(NameOfsHandleMap::value_type(std::string(dest), this));
             }
             else
             {
