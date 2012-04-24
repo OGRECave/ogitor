@@ -303,10 +303,7 @@ add_subdirectory(Dependencies/OFS)
 add_subdirectory(Dependencies/ImageConverter)
 add_subdirectory(Dependencies/GenericTextEditor)
 add_subdirectory(Dependencies/GenericImageEditor)
-IF(OGITOR_MESHMAGICK_INTERFACE)
-    add_subdirectory(Dependencies/MeshMagick)
-ENDIF(OGITOR_MESHMAGICK_INTERFACE)
-
+add_subdirectory(Dependencies/MeshMagick)
 
 # plugins
 add_subdirectory(Plugins/OgCaelum)
@@ -398,7 +395,7 @@ if(WIN32)
 	)
 	# SDK: SkyX headers
 	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
-		DESTINATION ${PREFIX}/sdk/dependencies/include
+		DESTINATION ${PREFIX}/sdk/dependencies/include/SkyX
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 		PATTERN "*.cpp" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE
@@ -431,6 +428,14 @@ if(WIN32)
 		DESTINATION ${PREFIX}/sdk/dependencies/include/Caelum-0.5.0
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 	)
+	# SDK: SkyX headers
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include/*.h
+		DESTINATION ${PREFIX}/sdk/dependencies/include
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+		PATTERN "*.cpp" EXCLUDE
+		PATTERN "CMakeLists.txt" EXCLUDE
+	)
+
 	
 	# TODO: MeshMagick
 	# TODO: lua
@@ -485,47 +490,47 @@ endif(WIN32)
 if(UNIX)
     # SDK : Ogitor includes
     FILE(GLOB ogitor_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include/*.h")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include/*.h")
     install(FILES ${ogitor_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor
+	${CMAKE_INSTALL_PREFIX}/include/ogitor
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: OFS headers
     FILE(GLOB ofs_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
     install(FILES ${ofs_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/OFS
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/OFS
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: ImageConverter headers
     FILE(GLOB ImageConverter_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
     install(FILES ${ImageConverter_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/ImageConverter
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/ImageConverter
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: GenericImageEditor headers
     FILE(GLOB GenericImageEditor_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include/*.hxx")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include/*.hxx")
     install(FILES ${GenericImageEditor_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericImageEditor
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericImageEditor
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: GenericTextEditor headers
     FILE(GLOB GenericTextEditor_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include/*.hxx")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include/*.hxx")
     install(FILES ${GenericTextEditor_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericTextEditor
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericTextEditor
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: Hydrax headers
     install(DIRECTORY
-${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
+	${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
         PATTERN "*.cpp" EXCLUDE
@@ -533,31 +538,31 @@ ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
     )
     # SDK: SkyX headers
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/SkyX
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
         PATTERN "*.cpp" EXCLUDE
         PATTERN "CMakeLists.txt" EXCLUDE
     )
     # SDK: PagedGeometry headers
     FILE(GLOB pg_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
     install(FILES ${pg_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/PagedGeometry
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/PagedGeometry
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     # SDK: Angelscript headers
     FILE(GLOB angelscript_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include/*.h")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include/*.h")
     install(FILES ${angelscript_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
     install(DIRECTORY
-${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
+	${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
         PATTERN "*.cpp" EXCLUDE
         PATTERN "*.dsp" EXCLUDE
@@ -568,12 +573,20 @@ ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
     )
     # SDK: Caelum headers
     FILE(GLOB caelum_headers
-"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
+	"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
     install(FILES ${caelum_headers}
         DESTINATION
-${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Caelum-0.5.0
+	${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Caelum-0.5.0
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
     )
+    # SDK: SkyX headers
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include/*.h
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/MeshMagick
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+        PATTERN "*.cpp" EXCLUDE
+        PATTERN "CMakeLists.txt" EXCLUDE
+    )
+
 
     # TODO: MeshMagick
     # TODO: lua
