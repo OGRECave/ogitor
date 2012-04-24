@@ -55,7 +55,7 @@
 #include "MultiSelEditor.h"
 #include "tinyxml.h"
 #include "ofs.h"
-#include "OfsDataStream.h"
+#include "OFSDataStream.h"
 
 #include "PagedGeometry.h"
 #include "GrassLoader.h"

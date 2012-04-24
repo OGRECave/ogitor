@@ -55,6 +55,8 @@ bool CSkyxEditor::update(float timePassed)
 {
     mHandle->update(timePassed);
     mHandle->notifyCameraRender(mOgitorsRoot->GetViewport()->getCameraEditor()->getCamera());
+    mProperties.setValue("options::time", mBasicController->getTime());
+
     return false;
 }
 //---------------------------------------------------------------------------------
@@ -188,7 +190,7 @@ void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
 
     // SkyX Volumetric Clouds parameters
     PROPERTY_PTR(mVCEnable              , "vclouds::enable"             , bool,                 true,                                   0, SETTER(bool,                 CSkyxEditor, _setVCEnable));
-    PROPERTY_PTR(mVCAutoUpdate          , "vclouds::autoupdate"         , bool,                 false,                                  0, SETTER(bool,                 CSkyxEditor, _setVCAutoUpdate));
+    PROPERTY_PTR(mVCAutoUpdate          , "vclouds::autoupdate"         , bool,                 true,                                   0, SETTER(bool,                 CSkyxEditor, _setVCAutoUpdate));
     PROPERTY_PTR(mVCWindSpeed           , "vclouds::windspeed"          , int,                  80,                                     0, SETTER(int,                  CSkyxEditor, _setVCWindSpeed));
     PROPERTY_PTR(mVCWindDirection       , "vclouds::winddirection"      , int,                  0,                                      0, SETTER(int,                  CSkyxEditor, _setVCWindDirection));
     PROPERTY_PTR(mVCCloudScale          , "vclouds::cloudscale"         , Ogre::Real,           4.2f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setVCCloudScale));

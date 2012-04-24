@@ -115,7 +115,7 @@ bool OgreWidget::frameStarted(const Ogre::FrameEvent& evt)
     {
         char temp[128];
         sprintf(temp," X: % .2f, Y: % .2f, Z: % .2f", campos.x, campos.y, campos.z);
-        QString camtext = QApplication::translate("MainWindow","Camera Position:") + QString(temp);
+        QString camtext = QApplication::translate("MainWindow", "Camera Position:") + QString(temp);
         mOgitorMainWindow->mCamPosLabel->setText(camtext);
         oldCamPos = campos;
     }
@@ -123,7 +123,7 @@ bool OgreWidget::frameStarted(const Ogre::FrameEvent& evt)
     int tris = mRenderWindow->getTriangleCount();
     if(oldTris != tris)
     {
-        QString tritext = QApplication::translate("MainWindow","Triangles : %1").arg(tris);
+        QString tritext = QApplication::translate("MainWindow","Triangles visible: %1").arg(tris);
         mOgitorMainWindow->mTriangleCountLabel->setText(tritext);
         oldTris = tris;
     }

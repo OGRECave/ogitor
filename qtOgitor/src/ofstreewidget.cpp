@@ -260,8 +260,6 @@ void OfsTreeWidget::refreshWidget()
         }  
     }      
 
-    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
-
     if(mCapabilities & CAP_SHOW_FILES)
     {
         connect(this, SIGNAL(itemCollapsed( QTreeWidgetItem * )), this, SLOT(onItemCollapsed( QTreeWidgetItem * )));
@@ -276,9 +274,11 @@ void OfsTreeWidget::refreshWidget()
         if(it != mItemMap.end())
         {
             it->second->setExpanded(true);
-            onItemExpanded( it->second );
+            onItemExpanded(it->second);
         }
     }
+
+    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
 }
 //----------------------------------------------------------------------------------------
 void OfsTreeWidget::onSelectionChanged()
@@ -335,7 +335,7 @@ void OfsTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
     setItemSelected(item, true);
 }
 //----------------------------------------------------------------------------------------
-void OfsTreeWidget::onItemExpanded( QTreeWidgetItem * item )
+void OfsTreeWidget::onItemExpanded(QTreeWidgetItem* item)
 {
     if(item != NULL && item != topLevelItem(0))
     {
@@ -357,7 +357,7 @@ void OfsTreeWidget::onItemExpanded( QTreeWidgetItem * item )
     setItemSelected(item, true);
 }
 //----------------------------------------------------------------------------------------
-QStringList OfsTreeWidget::getFilenames(const QMimeData * data)
+QStringList OfsTreeWidget::getFilenames(const QMimeData* data)
 {
    QStringList result;
 
