@@ -243,13 +243,13 @@ void MagickWidget::createActions()
 //-------------------------------------------------------------------------------------------
 void MagickWidget::openMesh()
 {
-    UTFStringVector extension;
-    QString ext = tr("Mesh Files ");
-    extension.push_back(ext.toStdString());
-    extension.push_back("*.mesh");
-
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    QString path = mSystem->DisplayOpenDialog(OTR("Open mesh file"), extension).c_str();
+    
+    UTFStringVector extlist;
+    extlist.push_back(OTR("Mesh Files"));
+    extlist.push_back("*.mesh");
+
+    QString path = mSystem->DisplayOpenDialog(OTR("Open mesh file"), extlist).c_str();
 
     if(path != "")
     {
