@@ -68,6 +68,7 @@ public Q_SLOTS:
     void onMakeAsset();
     void onAddFolder();
     void onLinkFileSystem();
+	void onUnlinkFileSystem( const QString & text );
 
 Q_SIGNALS:
     void needUpdate();
