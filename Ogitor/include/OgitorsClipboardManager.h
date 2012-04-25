@@ -202,6 +202,6 @@ namespace Ogitors
         ObjectTemplateMap   mProjectTemplates;          /** Project Scope Templates */
     private:
         /** Private function for recursively pasting an object */
-        CBaseEditor *pasteRecursive(CBaseEditor* copyParent, CBaseEditor* newParent);
+        void pasteRecursive(CBaseEditor* copyParent, CBaseEditor* newParent);
     };
 };

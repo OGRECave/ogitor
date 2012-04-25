@@ -231,14 +231,18 @@ CBaseEditor* CBaseEditor::findChild(Ogre::String name, bool searchchildren)
     return 0;
 }
 //-----------------------------------------------------------------------------------------
-void CBaseEditor::getNameList(Ogre::StringVector& list)
+void CBaseEditor::getNameList(Ogre::StringVector& list, bool recursive)
 {
     list.push_back(mName->get());
 
     NameObjectPairList::const_iterator i = mChildren.begin();
     while( i != mChildren.end()) 
     {
-        i->second->getNameList(list);
+        if (recursive) {
+            i->second->getNameList(list);
+        } else {
+            list.push_back(i->second->getName());
+        }
         i++;
     }
 }

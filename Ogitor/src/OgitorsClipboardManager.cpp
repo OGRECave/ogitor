@@ -144,10 +144,10 @@ CBaseEditor *OgitorsClipboardManager::paste(CBaseEditor *parent, int index)
     return object;
 }
 //----------------------------------------------------------------------------------
-CBaseEditor *OgitorsClipboardManager::pasteRecursive(CBaseEditor* copyParent, CBaseEditor* newParent)
+void OgitorsClipboardManager::pasteRecursive(CBaseEditor* copyParent, CBaseEditor* newParent)
 {
     Ogre::StringVector list;
-    copyParent->getNameList(list);
+    copyParent->getNameList(list, false);
 
     ObjectTemplateMap::iterator rit;
     for(unsigned int i = 1;i < list.size();i++)
@@ -173,8 +173,6 @@ CBaseEditor *OgitorsClipboardManager::pasteRecursive(CBaseEditor* copyParent, CB
         if (item->getEditorType() == ETYPE_NODE)
             pasteRecursive(item, object);
     }
-
-    return newParent;
 }
 //----------------------------------------------------------------------------------
 bool OgitorsClipboardManager::copyToTemplate(CBaseEditor *object, const Ogre::String& templatename, bool isGeneralScope)
