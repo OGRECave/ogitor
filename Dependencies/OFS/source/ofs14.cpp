@@ -287,7 +287,11 @@ namespace OFS
 
     OfsResult _Ofs::linkFileSystem(const char *filename, const char *directory)
     {
-        OfsEntryDesc *dirDesc = _getDirectoryDesc(directory);
+        std::string dest_dir = directory;
+        if(dest_dir[dest_dir.length() - 1] != '/')
+            dest_dir += "/";
+
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(dest_dir.c_str());
 
         if(dirDesc == NULL)
             return OFS_INVALID_PATH;
@@ -308,8 +312,8 @@ namespace OFS
             {
                 fileSystemName = name.substr(0, pos);
                 name.erase(0, pos + 2);
-                if(name[name.length() - 1] == '/')
-                    name.erase(name.length() - 1, 1);
+                if(name[name.length() - 1] != '/')
+                    name += "/";
             }
             else
                 name = "/";
@@ -333,14 +337,14 @@ namespace OFS
                 dirDesc->Children.push_back( foreignDir->Children[i] );
             }
 
-            UuidDescMap::iterator it = _ofsptr->mUuidMap.begin();
+            UuidDescMap::iterator uit = _ofsptr->mUuidMap.begin();
 
-            while( it != _ofsptr->mUuidMap.end() )
+            while( uit != _ofsptr->mUuidMap.end() )
             {
-                if(mUuidMap.find(it->first) == mUuidMap.end())
-                    mUuidMap.insert( UuidDescMap::value_type(it->first, it->second) );
+                if(mUuidMap.find(uit->first) == mUuidMap.end())
+                    mUuidMap.insert( UuidDescMap::value_type(uit->first, uit->second) );
 
-                it++;
+                uit++;
             }
 
             dirDesc->Links.insert( NameOfsPtrMap::value_type( filename, _ofsptr ) );
@@ -369,8 +373,8 @@ namespace OFS
             if( pos > -1 )
             {
                 name.erase(0, pos + 2);
-                if(name[name.length() - 1] == '/')
-                    name.erase(name.length() - 1, 1);
+                if(name[name.length() - 1] != '/')
+                    name += "/";
             }
             else
                 name = "/";
@@ -389,15 +393,15 @@ namespace OFS
                 }
             }
 
-            UuidDescMap::iterator oit = (it->second)->mUuidMap.begin();
+            UuidDescMap::iterator uit = (it->second)->mUuidMap.begin();
 
-            while( oit != (it->second)->mUuidMap.end() )
+            while( uit != (it->second)->mUuidMap.end() )
             {
-                UuidDescMap::iterator bit = mUuidMap.find(oit->first);
+                UuidDescMap::iterator bit = mUuidMap.find(uit->first);
                 if( bit != mUuidMap.end())
                     mUuidMap.erase( bit );
 
-                it++;
+                uit++;
             }
 
             dirDesc->Links.erase( it );
@@ -1352,6 +1356,51 @@ namespace OFS
 
         if(dirDesc->Parent != NULL)
         {
+            NameOfsPtrMap::iterator it = dirDesc->Links.begin();
+
+            while( it != dirDesc->Links.end() )
+            {
+                std::string name = it->first;
+
+                int pos = name.find("::");
+
+                if( pos > -1 )
+                {
+                    name.erase(0, pos + 2);
+                    if(name[name.length() - 1] == '/')
+                        name.erase(name.length() - 1, 1);
+                }
+                else
+                    name = "/";
+
+                OfsEntryDesc *foreignDir = (it->second)->_getDirectoryDesc(name.c_str());
+
+                for( unsigned int i = 0; i < foreignDir->Children.size(); i++ )
+                {
+                    for( unsigned int k = 0; k < dirDesc->Children.size(); k++ )
+                    {
+                        if( dirDesc->Children[k] == foreignDir->Children[i] )
+                        {
+                            dirDesc->Children.erase( dirDesc->Children.begin() + k );
+                            break;
+                        }
+                    }
+                }
+
+                UuidDescMap::iterator uit = (it->second)->mUuidMap.begin();
+
+                while( uit != (it->second)->mUuidMap.end() )
+                {
+                    UuidDescMap::iterator bit = mUuidMap.find(uit->first);
+                    if( bit != mUuidMap.end())
+                        mUuidMap.erase( bit );
+
+                    uit++;
+                }
+
+                it++;
+            }
+
             OfsResult ret = _deleteDirectory(dirDesc);
 
             mStream.flush();
