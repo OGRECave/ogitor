@@ -212,9 +212,10 @@ namespace OFS
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-    _Ofs::_Ofs() : mActive(false), mUseCount(0), mRecoveryMode(false)
+    _Ofs::_Ofs() : mActive(false), mUseCount(0), mRecoveryMode(false), mLinkMode(false)
     {
         mFileName           = "";
+        mRootDir.Owner     = this;
         mRootDir.Id         = -1;
         mRootDir.ParentId   = -1;
         mRootDir.Flags      = OFS_DIR;
@@ -284,9 +285,134 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
+    OfsResult _Ofs::linkFileSystem(const char *filename, const char *directory)
+    {
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(directory);
+
+        if(dirDesc == NULL)
+            return OFS_INVALID_PATH;
+
+        NameOfsPtrMap::iterator it = dirDesc->Links.find( filename );
+
+        if( it == dirDesc->Links.end() )
+        {
+            OfsPtr _ofsptr;
+            OfsResult ret;
+
+            std::string name = filename;
+
+            int pos = name.find("::");
+            std::string fileSystemName = name;
+            
+            if( pos > -1 )
+            {
+                fileSystemName = name.substr(0, pos);
+                name.erase(0, pos + 2);
+                if(name[name.length() - 1] == '/')
+                    name.erase(name.length() - 1, 1);
+            }
+            else
+                name = "/";
+        
+            ret = _ofsptr.mount( fileSystemName.c_str(), OFS_MOUNT_OPEN | OFS_MOUNT_LINK );
+
+            if( ret != OFS_OK )
+                return OFS_INVALID_FILE;
+
+
+            OfsEntryDesc *foreignDir = _ofsptr->_getDirectoryDesc(name.c_str());
+
+            if(foreignDir == NULL)
+            {
+                _ofsptr.unmount();
+                return OFS_INVALID_PATH;
+            }
+
+            for( unsigned int i = 0; i < foreignDir->Children.size(); i++ )
+            {
+                dirDesc->Children.push_back( foreignDir->Children[i] );
+            }
+
+            UuidDescMap::iterator it = _ofsptr->mUuidMap.begin();
+
+            while( it != _ofsptr->mUuidMap.end() )
+            {
+                if(mUuidMap.find(it->first) == mUuidMap.end())
+                    mUuidMap.insert( UuidDescMap::value_type(it->first, it->second) );
+
+                it++;
+            }
+
+            dirDesc->Links.insert( NameOfsPtrMap::value_type( filename, _ofsptr ) );
+        }
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------
+
+    OfsResult _Ofs::unlinkFileSystem(const char *filename, const char *directory)
+    {
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(directory);
+
+        if(dirDesc == NULL)
+            return OFS_INVALID_PATH;
+
+        NameOfsPtrMap::iterator it = dirDesc->Links.find( filename );
+
+        if( it != dirDesc->Links.end() )
+        {
+            std::string name = filename;
+
+            int pos = name.find("::");
+
+            if( pos > -1 )
+            {
+                name.erase(0, pos + 2);
+                if(name[name.length() - 1] == '/')
+                    name.erase(name.length() - 1, 1);
+            }
+            else
+                name = "/";
+
+            OfsEntryDesc *foreignDir = (it->second)->_getDirectoryDesc(name.c_str());
+
+            for( unsigned int i = 0; i < foreignDir->Children.size(); i++ )
+            {
+                for( unsigned int k = 0; k < dirDesc->Children.size(); k++ )
+                {
+                    if( dirDesc->Children[k] == foreignDir->Children[i] )
+                    {
+                        dirDesc->Children.erase( dirDesc->Children.begin() + k );
+                        break;
+                    }
+                }
+            }
+
+            UuidDescMap::iterator oit = (it->second)->mUuidMap.begin();
+
+            while( oit != (it->second)->mUuidMap.end() )
+            {
+                UuidDescMap::iterator bit = mUuidMap.find(oit->first);
+                if( bit != mUuidMap.end())
+                    mUuidMap.erase( bit );
+
+                it++;
+            }
+
+            dirDesc->Links.erase( it );
+        }
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------
+
     void _Ofs::_getFileSystemStatsRecursive(OfsEntryDesc *desc, FileSystemStats& stats)
     {
-        if(desc->Flags & OFS_FILE)
+        if(desc->Flags & OFS_LINK)
+            return;
+        else if(desc->Flags & OFS_FILE)
             stats.NumFiles++;
         else
         {
@@ -354,8 +480,11 @@ namespace OFS
     {
         for(unsigned int i = 0;i < parent->Children.size();i++)
         {
-            _deallocateChildren(parent->Children[i]);
-            delete parent->Children[i];
+            if( parent->Children[i]->Owner == this )
+            {
+                _deallocateChildren(parent->Children[i]);
+                delete parent->Children[i];
+            }
         }
 
         parent->Children.clear();
@@ -611,6 +740,9 @@ namespace OFS
         if(op & OFS_MOUNT_RECOVER)
             mRecoveryMode = true;
         
+        if(op & OFS_MOUNT_LINK)
+            mLinkMode = true;
+
         if(op & OFS_MOUNT_OPEN)
         {
             OPEN_STREAM(mStream, mFileName.c_str(), "rb+");
@@ -692,6 +824,7 @@ namespace OFS
         mUuidMap.clear();
         mTriggers.clear();
         mRecoveryMode = false;
+        mLinkMode = false;
     }
 
 //------------------------------------------------------------------------------
@@ -784,6 +917,10 @@ namespace OFS
             else if(blHeader.Type == OFS_MAIN_BLOCK)
             {
                 mStream.read((char*)&mainEntry, sizeof(strMainEntryHeader));
+                
+                if(mLinkMode)
+                    mainEntry.Flags |= OFS_LINK;
+
                 blockData.Type = blHeader.Type;
                 blockData.Start = mStream.tell();
                 blockData.Start -= sizeof(strMainEntryHeader);
@@ -815,6 +952,7 @@ namespace OFS
                     }
                 }
                     
+                entryDesc->Owner = this;
                 entryDesc->Id = mainEntry.Id;
                 entryDesc->ParentId = mainEntry.ParentId;
                 entryDesc->Flags = mainEntry.Flags;
@@ -1037,6 +1175,7 @@ namespace OFS
         }
 
 
+        dir->Owner = this;
         dir->Id = mHeader.LAST_ID++;
         dir->ParentId = parent->Id;
         dir->Flags = OFS_DIR;
@@ -1132,6 +1271,7 @@ namespace OFS
         
         OfsEntryDesc *file = new OfsEntryDesc();
 
+        file->Owner = this;
         file->Id = mHeader.LAST_ID++;
         file->ParentId = parent->Id;
         file->Flags = OFS_FILE;
@@ -1203,6 +1343,9 @@ namespace OFS
 
         if(dirDesc == NULL)
             return OFS_INVALID_PATH;
+
+        if(dirDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
 
         if(dirDesc->Children.size() > 0 && !force)
             return OFS_DIRECTORY_NOT_EMPTY;
@@ -1293,6 +1436,9 @@ namespace OFS
 
         if(fileDesc == NULL)
             return OFS_FILE_NOT_FOUND;
+
+        if(fileDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
 
         std::vector<_Ofs::CallBackData> saveTrigs = fileDesc->Triggers;
 
@@ -1408,6 +1554,9 @@ namespace OFS
 
                 if(tmpDesc == NULL)
                 {
+                    if(curDesc->Flags & OFS_LINK)
+                        return OFS_ACCESS_DENIED;
+
                     if(force)
                         curDesc = _createDirectory(curDesc, dir);
                     else
@@ -1425,7 +1574,12 @@ namespace OFS
         dir = tmp.substr(pos - name_st, end_pos - pos);
 
         if(dir.length() > 0)
+        {
+            if(curDesc->Flags & OFS_LINK)
+                return OFS_ACCESS_DENIED;
+
             _createDirectory(curDesc, dir, uuid);
+        }
 
         return OFS_OK;
     }
@@ -1455,6 +1609,9 @@ namespace OFS
 
         if(fileDesc == NULL)
             return OFS_FILE_NOT_FOUND;
+
+        if(fileDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
 
         std::string nName = _extractFileName(newname);
 
@@ -1518,6 +1675,9 @@ namespace OFS
 
         if(dirDesc == NULL)
             return OFS_INVALID_PATH;
+
+        if(dirDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
 
         if(dirDesc->Parent != NULL)
         {
@@ -1645,7 +1805,7 @@ namespace OFS
 
             if(open_mode & OFS_WRITE)
             {
-                if((fileDesc->UseCount > 0) || (fileDesc->Flags & OFS_READONLY))
+                if((fileDesc->UseCount > 0) || (fileDesc->Flags & OFS_READONLY) || (fileDesc->Flags & OFS_LINK))
                     return OFS_ACCESS_DENIED;
 
                 fileDesc->WriteLocked = true;
@@ -1725,7 +1885,7 @@ namespace OFS
 
         if(open_mode & OFS_WRITE)
         {
-            if((fileDesc->UseCount > 0) || (fileDesc->Flags & OFS_READONLY))
+            if((fileDesc->UseCount > 0) || (fileDesc->Flags & OFS_READONLY) || (fileDesc->Flags & OFS_LINK))
                 return OFS_ACCESS_DENIED;
 
             fileDesc->WriteLocked = true;
@@ -1795,7 +1955,10 @@ namespace OFS
         OfsEntryDesc *dirDesc = _getDirectoryDesc(filename);
 
         if(dirDesc == NULL)
-            return OFS_FILE_NOT_FOUND;
+            return OFS_INVALID_PATH;
+
+        if(dirDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
 
         std::string fName = _extractFileName(filename);
 
@@ -1876,6 +2039,9 @@ namespace OFS
             return OFS_INVALID_FILE;
         }
 
+        if(handle.mEntryDesc->Owner != this)
+            return handle.mEntryDesc->Owner->closeFile(handle);
+
         IdHandleMap::iterator it = mActiveFiles.find(handle.mEntryDesc->Id);
 
         if(it != mActiveFiles.end())
@@ -1931,7 +2097,7 @@ namespace OFS
             return OFS_INVALID_FILE;
         }
 
-        if(!(handle.mAccessFlags & OFS_WRITE))
+        if(!(handle.mAccessFlags & OFS_WRITE) || (handle.mAccessFlags & OFS_LINK))
             return OFS_ACCESS_DENIED;
 
         ofs64 trunc_pos = file_size;
@@ -2065,6 +2231,9 @@ namespace OFS
             OFS_EXCEPT("_Ofs::read, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
+
+        if(handle.mEntryDesc->Owner != this)
+            return handle.mEntryDesc->Owner->read(handle, dest, length, actual_read);
 
         if(!(handle.mAccessFlags & OFS_READ))
             return OFS_ACCESS_DENIED;
@@ -2554,7 +2723,11 @@ namespace OFS
 
         OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
 
-        if(fileDesc != NULL)
+        if(fileDesc == NULL)
+            return OFS_FILE_NOT_FOUND;
+        else if( fileDesc->Flags & OFS_LINK )
+            return OFS_ACCESS_DENIED;
+        else
         {
             if(fileDesc->WriteLocked)
                 return OFS_ACCESS_DENIED;
@@ -2563,8 +2736,6 @@ namespace OFS
             mStream.flush();
             return OFS_OK;
         }
-        else
-            return OFS_FILE_NOT_FOUND;
     }
 
 //------------------------------------------------------------------------------
@@ -2584,6 +2755,9 @@ namespace OFS
             OFS_EXCEPT("_Ofs::setFileFlags, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
+
+        if( handle.mEntryDesc->Flags & OFS_LINK )
+            return OFS_ACCESS_DENIED;
 
         _setFileFlags(handle.mEntryDesc, flags);
         mStream.flush();
@@ -2666,7 +2840,11 @@ namespace OFS
 
         OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
 
-        if(fileDesc != NULL)
+        if(fileDesc == NULL)
+            return OFS_FILE_NOT_FOUND;
+        else if( fileDesc->Flags & OFS_LINK )
+            return OFS_ACCESS_DENIED;
+        else
         {
             if(fileDesc->Uuid != uuid)
             {
@@ -2693,8 +2871,6 @@ namespace OFS
             
             return OFS_OK;
         }
-        else
-            return OFS_FILE_NOT_FOUND;
     }
 
 //------------------------------------------------------------------------------
@@ -2714,6 +2890,9 @@ namespace OFS
             OFS_EXCEPT("_Ofs::setFileUUID, Supplied OfsHandle is not valid.");
             return OFS_INVALID_FILE;
         }
+
+        if( handle.mEntryDesc->Flags & OFS_LINK )
+            return OFS_ACCESS_DENIED;
 
         if(handle.mEntryDesc->Uuid != uuid)
         {
@@ -2808,6 +2987,8 @@ namespace OFS
 
         if(dirDesc == NULL)
             return OFS_INVALID_PATH;
+        else if( dirDesc->Flags & OFS_LINK )
+            return OFS_ACCESS_DENIED;
         else
         {
             if(dirDesc->Uuid != uuid)
@@ -2874,6 +3055,8 @@ namespace OFS
 
         if(dirDesc == NULL)
             return OFS_INVALID_PATH;
+        else if( dirDesc->Flags & OFS_LINK )
+            return OFS_ACCESS_DENIED;
         else
         {
             _setFileFlags(dirDesc, flags);
@@ -3028,6 +3211,9 @@ namespace OFS
         }
         else
         {
+            if((op & OFS_MOUNT_LINK) && (it->second->mLinkMode == false))
+                return OFS_ACCESS_DENIED;
+
             if(op == OFS_MOUNT_CREATE)
             {
                 OFS_EXCEPT("_Ofs::mount, Cannot overwrite an archive in use.");
@@ -3095,9 +3281,15 @@ namespace OFS
             return OFS_INVALID_PATH;            
 
         if((ret = openFile(srcHandle, src)) != OFS_OK)
-            return ret;
+            return OFS_INVALID_FILE;
 
         OfsEntryDesc *srcDesc = srcHandle.mEntryDesc;
+
+        if( srcDesc->Flags & OFS_READONLY || srcDesc->Flags & OFS_LINK )
+        {
+            closeFile(srcHandle);
+            return OFS_ACCESS_DENIED;
+        }
 
         closeFile(srcHandle);
 
@@ -3304,6 +3496,9 @@ namespace OFS
 
             for(unsigned int i = 0;i < allFiles.size();i++)
             {
+                if(allFiles[i].flags & OFS_LINK)
+                    continue;
+
                 if(logCallbackFunc)
                     (*logCallbackFunc)(std::string("Defragmenting ").append(allFiles[i].name));
 

@@ -236,6 +236,14 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
     {
         QString path = selItems[0]->whatsThis(0);
  
+        OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+        unsigned int flags = 0;
+
+        if(path.endsWith("/"))
+            file->getDirFlags(path.toStdString().c_str(), flags);
+        else
+            file->getFileFlags(path.toStdString().c_str(), flags);
+
         if(path == "/")
         {
             mActMakeAsset->setEnabled(false);
@@ -256,19 +264,11 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             mActMakeAsset->setChecked(false);
             mActReadOnly->setChecked(true);
             mActHidden->setChecked(true);
-            mActReadOnly->setEnabled(true);
-            mActHidden->setEnabled(true);
-            mActRename->setEnabled(true);
-            mActDelete->setEnabled(true);
+            mActReadOnly->setEnabled(!(flags & OFS::OFS_LINK));
+            mActHidden->setEnabled(!(flags & OFS::OFS_LINK));
+            mActRename->setEnabled(!(flags & OFS::OFS_LINK));
+            mActDelete->setEnabled(!(flags & OFS::OFS_LINK));
         }
-
-        OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
-        unsigned int flags = 0;
-
-        if(path.endsWith("/"))
-            file->getDirFlags(path.toStdString().c_str(), flags);
-        else
-            file->getFileFlags(path.toStdString().c_str(), flags);
 
         mActReadOnly->setChecked(flags & OFS::OFS_READONLY);
         if(flags & OFS::OFS_READONLY)
