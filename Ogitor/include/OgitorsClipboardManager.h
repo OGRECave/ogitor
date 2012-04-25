@@ -86,7 +86,6 @@ namespace Ogitors
         * Index specifies which object from the clipboardbuffer will be pasted
         */
         CBaseEditor *paste(CBaseEditor *parent, int index = -1);
-        
         /**
         * Fetch the names of objects in the clipboard buffer
         * @return stringvector of available objects in clipboard buffer
@@ -201,5 +200,8 @@ namespace Ogitors
         ClipboardBuffer     mBuffer;                    /** Clipboard's internal buffer to hold multiple copy operations */
         ObjectTemplateMap   mGeneralTemplates;          /** General Scope Templates */
         ObjectTemplateMap   mProjectTemplates;          /** Project Scope Templates */
+    private:
+        /** Private function for recursively pasting an object */
+        CBaseEditor *pasteRecursive(CBaseEditor* copyParent, CBaseEditor* newParent);
     };
 };
