@@ -78,7 +78,8 @@ protected:
     QVBoxLayout*    mVBoxLayout;
     QToolBar*       mToolBar;
 
-    QMenu*          mMenu; 
+    QMenu*          mMenu;
+    QMenu*          mUnlinkFileSystem;
     
     QAction*        mActRefresh;
     QAction*        mActImportFolder;

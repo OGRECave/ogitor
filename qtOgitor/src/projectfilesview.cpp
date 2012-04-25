@@ -106,8 +106,11 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActLinkFileSystem = new QAction(tr("Link File System"), this);
     mActLinkFileSystem->setStatusTip(tr("Link a File System to current directory"));
 
+    mUnlinkFileSystem = new QMenu(tr("un-Link File System(s)"));
+
     mMenu->addAction(mActAddFolder);
     mMenu->addAction(mActLinkFileSystem);
+    mMenu->addMenu(mUnlinkFileSystem);
     mMenu->addSeparator();
     mMenu->addAction(mActImportFile);
     mMenu->addAction(mActImportFolder);
@@ -132,6 +135,7 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActReadOnly->setEnabled(false);
     mActHidden->setEnabled(false);
     mActLinkFileSystem->setEnabled(false);
+    mUnlinkFileSystem->setEnabled(false);
 
 
     connect(mActAddFolder,      SIGNAL(triggered()),    this,   SLOT(onAddFolder()));
@@ -241,13 +245,18 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
 
     if(selItems.size() > 0)
     {
+        OFS::_Ofs::NameOfsPtrMap fsLinks;
+
         QString path = selItems[0]->whatsThis(0);
  
         OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
         unsigned int flags = 0;
 
         if(path.endsWith("/"))
+        {
             file->getDirFlags(path.toStdString().c_str(), flags);
+            file->getDirectoryLinks( path.toStdString().c_str(), fsLinks );
+        }
         else
             file->getFileFlags(path.toStdString().c_str(), flags);
 
@@ -296,6 +305,19 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             if((*it) == path.toStdString())
                 mActMakeAsset->setChecked(true);
         }
+
+        mUnlinkFileSystem->clear();
+
+        OFS::_Ofs::NameOfsPtrMap::iterator fit = fsLinks.begin();
+        
+        while( fit != fsLinks.end() )
+        {
+            mUnlinkFileSystem->addAction(QString(fit->first.c_str()));
+
+            fit++;
+        }
+
+        mUnlinkFileSystem->setEnabled( fsLinks.size() > 0 );
     }
     else
     {

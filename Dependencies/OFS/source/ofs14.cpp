@@ -412,6 +412,20 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
+    OfsResult _Ofs::getDirectoryLinks(const char *directory, NameOfsPtrMap& list)
+    {
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(directory);
+
+        if(dirDesc == NULL)
+            return OFS_INVALID_PATH;
+
+        list = dirDesc->Links;
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------
+    
     void _Ofs::_getFileSystemStatsRecursive(OfsEntryDesc *desc, FileSystemStats& stats)
     {
         if(desc->Flags & OFS_LINK)
