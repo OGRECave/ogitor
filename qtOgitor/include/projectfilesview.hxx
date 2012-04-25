@@ -67,6 +67,7 @@ public Q_SLOTS:
     void onImportFile();
     void onMakeAsset();
     void onAddFolder();
+    void onLinkFileSystem();
 
 Q_SIGNALS:
     void needUpdate();
@@ -90,6 +91,7 @@ protected:
     QAction*        mActRename;
     QAction*        mActReadOnly;
     QAction*        mActHidden;
+    QAction*        mActLinkFileSystem;
 };
 
 //------------------------------------------------------------------------------

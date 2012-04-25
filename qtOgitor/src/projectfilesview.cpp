@@ -103,7 +103,11 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActHidden->setCheckable(true);
     mActHidden->setChecked(false);
 
+    mActLinkFileSystem = new QAction(tr("Link File System"), this);
+    mActLinkFileSystem->setStatusTip(tr("Link a File System to current directory"));
+
     mMenu->addAction(mActAddFolder);
+    mMenu->addAction(mActLinkFileSystem);
     mMenu->addSeparator();
     mMenu->addAction(mActImportFile);
     mMenu->addAction(mActImportFolder);
@@ -127,6 +131,8 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActRename->setEnabled(false);
     mActReadOnly->setEnabled(false);
     mActHidden->setEnabled(false);
+    mActLinkFileSystem->setEnabled(false);
+
 
     connect(mActAddFolder,      SIGNAL(triggered()),    this,   SLOT(onAddFolder()));
     connect(mActImportFile,     SIGNAL(triggered()),    this,   SLOT(onImportFile()));
@@ -139,6 +145,7 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     connect(mActRename,         SIGNAL(triggered()),    this,   SLOT(onRename()));
     connect(mActReadOnly,       SIGNAL(triggered()),    this,   SLOT(onReadOnly()));
     connect(mActHidden,         SIGNAL(triggered()),    this,   SLOT(onHidden()));
+    connect(mActLinkFileSystem, SIGNAL(triggered()),    this,   SLOT(onLinkFileSystem()));
 
     mToolBar = new QToolBar();
     mToolBar->setIconSize(QSize(16, 16));
@@ -254,11 +261,17 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             mActHidden->setEnabled(false);
             mActRename->setEnabled(false);
             mActDelete->setEnabled(false);
+            mActLinkFileSystem->setEnabled(true);
         }
         else
         {
             if(path.endsWith("/"))
+            {
                 mAddFileFolderPath = path.toStdString();
+                mActLinkFileSystem->setEnabled(true);
+            }
+            else
+                mActLinkFileSystem->setEnabled(false);
 
             mActMakeAsset->setEnabled(true);
             mActMakeAsset->setChecked(false);
@@ -294,6 +307,7 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
         mActHidden->setEnabled(false);
         mActRename->setEnabled(false);
         mActDelete->setEnabled(false);
+        mActLinkFileSystem->setEnabled(false);
     }
 
     mActImportFile->setEnabled(true);
@@ -311,6 +325,39 @@ void ProjectFilesViewWidget::onOfsWidgetBusyState(bool state)
     mActRefresh->setEnabled(!state);
     mActExtract->setEnabled(!state);
     mActDefrag->setEnabled(!state);
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onLinkFileSystem()
+{
+    QStringList selItems = mOfsTreeWidget->getSelectedItems();
+    Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() > 0 && ofsFile.valid())
+    {
+        Ogitors::UTFStringVector extlist;
+        extlist.push_back(OTR("Ogitor File System File"));
+        extlist.push_back("*.ofs");
+
+        Ogre::UTFString importfile = mSystem->GetSetting("system", "oldOpenPath", "");
+        importfile = mSystem->DisplayOpenDialog(OTR("Link File System"), extlist, importfile);
+        if(importfile == "") 
+            return;
+
+        mSystem->SetSetting("system", "oldOpenPath", importfile);
+
+        QString name = selItems.at(0);
+
+        Ogitors::LINKDATA data;
+
+        data.FileSystem = importfile;
+        data.Directory = name.toStdString();
+
+        if( ofsFile->linkFileSystem( data.FileSystem.c_str(), data.Directory.c_str()) == OFS::OFS_OK )
+            Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->FileSystemLinks.push_back( data );
+
+        mOfsTreeWidget->refreshWidget();
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onRefresh()
