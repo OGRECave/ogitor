@@ -87,7 +87,7 @@ OgitorsClipboardManager::~OgitorsClipboardManager()
 void OgitorsClipboardManager::copy(CBaseEditor* object)
 {
     assert(object != 0 && "The object to copy must not be null");
-    
+
     if((mBuffer.size() + 1) > mClipboardMaxSize)
     {
         int count = (mBuffer.size() + 1) - mClipboardMaxSize;
@@ -118,25 +118,63 @@ CBaseEditor *OgitorsClipboardManager::paste(CBaseEditor *parent, int index)
     else
         data = mBuffer[index];
 
-    CBaseEditor* object = OgitorsRoot::getSingletonPtr()->FindObject(data->mObjectName);
-    
+    CBaseEditor* copyObject = OgitorsRoot::getSingletonPtr()->FindObject(data->mObjectName);
+
     OgitorsPropertyValueMap properties = data->mProperties;
-    if(object)
+    if(copyObject)
     {
         Ogre::String newname = data->mObjectName + "Copy";
         newname += OgitorsRoot::getSingletonPtr()->CreateUniqueID(newname, "", 0);
         properties["name"].val = Ogre::Any(newname);
     }
 
-    object = OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, data->mObjectTypeName, properties, true, false);
+    CBaseEditor* object = OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, data->mObjectTypeName, properties, true, false);
     if(!object)
         return 0;
+
+    if (copyObject->getEditorType() == ETYPE_NODE)
+    {
+        pasteRecursive(copyObject, object);
+    }
 
     object->getCustomProperties()->initFromSet(data->mCustomProperties);
     object->load();
     OgitorsRoot::getSingletonPtr()->GetSelection()->setSelection(object);
 
     return object;
+}
+//----------------------------------------------------------------------------------
+CBaseEditor *OgitorsClipboardManager::pasteRecursive(CBaseEditor* copyParent, CBaseEditor* newParent)
+{
+    Ogre::StringVector list;
+    copyParent->getNameList(list);
+
+    ObjectTemplateMap::iterator rit;
+    for(unsigned int i = 1;i < list.size();i++)
+    {
+        CBaseEditor *item = OgitorsRoot::getSingletonPtr()->FindObject(list[i]);
+        if(item == 0)
+            continue;
+
+        OgitorsPropertyValueMap properties;
+        item->getPropertyMap(properties);
+        properties.erase(properties.find("object_id"));
+
+        Ogre::String newname = item->getName() + "Copy";
+        newname += OgitorsRoot::getSingletonPtr()->CreateUniqueID(newname, "", 0);
+        properties["name"].val = Ogre::Any(newname);
+
+        CBaseEditor* object = OgitorsRoot::getSingletonPtr()->CreateEditorObject(newParent, item->getTypeName(), properties, true, false);
+        if(!object)
+            continue;
+
+        object->load();
+
+        if (item->getEditorType() == ETYPE_NODE)
+            pasteRecursive(item, object);
+    }
+
+    return newParent;
 }
 //----------------------------------------------------------------------------------
 bool OgitorsClipboardManager::copyToTemplate(CBaseEditor *object, const Ogre::String& templatename, bool isGeneralScope)
