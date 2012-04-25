@@ -165,7 +165,8 @@ typedef off_t ofs64;
     {
         OFS_MOUNT_CREATE = 0,
         OFS_MOUNT_OPEN = 1,
-        OFS_MOUNT_RECOVER = 2
+        OFS_MOUNT_RECOVER = 2,
+        OFS_MOUNT_LINK = 4
     };
 
     enum FileOpType
@@ -185,10 +186,11 @@ typedef off_t ofs64;
 
     enum FileFlags
     {
-        OFS_DIR = 1,
-        OFS_FILE = 2,
-        OFS_READONLY = 4,
-        OFS_HIDDEN = 8
+        OFS_DIR      = 0x00000001,
+        OFS_FILE     = 0x00000002,
+        OFS_READONLY = 0x00000004,
+        OFS_HIDDEN   = 0x00000008,
+        OFS_LINK     = 0x80000000
     };
 
 #pragma pack(push)
@@ -519,9 +521,12 @@ typedef off_t ofs64;
             void             *owner;
         };
              
+        typedef std::map<std::string, OfsPtr> NameOfsPtrMap;
+
         /* Entry Descriptor, contains all information needed for entry (in memory) */
         struct OfsEntryDesc
         {
+            _Ofs         *Owner;                 /* Owner of the Entry */
             int           Id;                     /* Id of the Owner Entry */
             int           ParentId;               /* Id of the Owner Entry's Parent Directory, -1 if root directory */
             unsigned int  Flags;                  /* File Flags */
@@ -535,14 +540,15 @@ typedef off_t ofs64;
             std::vector<BlockData> UsedBlocks;    /* Vector of BlockData used by this entry */
             std::vector<OfsEntryDesc*> Children;  /* Vector of Entry's children */
             std::vector<CallBackData> Triggers;   /* Vector of Entry's triggers */
+            NameOfsPtrMap Links;                  /* Map of ofsptr links */
         };
 
         typedef std::map<ofs64, BlockData> PosBlockDataMap;
         typedef std::map<int, OfsEntryDesc*> IdDescMap;
         typedef std::map<UUID, OfsEntryDesc*> UuidDescMap;
         typedef std::map<int, OFSHANDLE*> IdHandleMap;
-        typedef std::map<std::string, _Ofs*> NameOfsHandleMap;
         typedef std::vector<BlockData> BlockDataVector;
+        typedef std::map<std::string, _Ofs*> NameOfsHandleMap;
 
 
         /**
@@ -623,6 +629,18 @@ typedef off_t ofs64;
         {
             return createDirectoryUUID(filename, UUID_ZERO, force);
         };
+        /**
+        * Link a File System to a directory
+        * @param filename path for file system to link
+        * @param directory path to directory to link to
+        */
+        OfsResult    linkFileSystem(const char *filename, const char *directory); 
+        /**
+        * UnLink a File System to a directory
+        * @param filename path for file system to unlink
+        * @param directory path to directory to unlink from
+        */
+        OfsResult    unlinkFileSystem(const char *filename, const char *directory); 
         /**
         * Creates a new directory
         * @param filename path for new directory
@@ -971,6 +989,7 @@ typedef off_t ofs64;
         UuidDescMap               mUuidMap;             // Map holding entry descriptors indexed with UUID
         int                       mUseCount;            // Number of objects using this file system instance
         bool                      mRecoveryMode;        // Is recovery mode activated?
+        bool                      mLinkMode;            // Is link mode activated?
         std::vector<CallBackData> mTriggers;            // Vector of File System Triggers 
         LogCallBackFunction       mLogCallBackFunc;     // Function pointer to callback handler
         

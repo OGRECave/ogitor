@@ -460,6 +460,12 @@ namespace Ogitors
         */
         bool            OptionsReadDirectories(TiXmlElement *parent, Ogre::StringVector &pDir);
         /**
+        * Loads file system links list from an XML element
+        * @param parent top XML element containing file system links XML elements 
+        * @return true if options were read successfully, otherwise false
+        */
+        bool            OptionsReadFileSystemLinks(TiXmlElement *parent);
+        /**
         * Loads layer list from an XML element
         * @param parent top XML element containing layers XML elements 
         * @return true if options were read successfully, otherwise false
