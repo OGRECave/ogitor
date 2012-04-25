@@ -633,14 +633,23 @@ typedef off_t ofs64;
         * Link a File System to a directory
         * @param filename path for file system to link
         * @param directory path to directory to link to
+        * @return Result of operation, OFS_OK if successful
         */
         OfsResult    linkFileSystem(const char *filename, const char *directory); 
         /**
         * UnLink a File System to a directory
         * @param filename path for file system to unlink
         * @param directory path to directory to unlink from
+        * @return Result of operation, OFS_OK if successful
         */
         OfsResult    unlinkFileSystem(const char *filename, const char *directory); 
+        /**
+        * Fetch File System Links of a directory
+        * @param directory path for directory to list links
+        * @param list Map of Name / OfsPtr pairs
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    getDirectoryLinks(const char *directory, NameOfsPtrMap& list);
         /**
         * Creates a new directory
         * @param filename path for new directory
