@@ -233,10 +233,11 @@ namespace Ogitors
         */
         void                        destroy(bool informparent = false);
         /**
-        * Returns a list with object's name and all of its childrens names recursively
+        * Returns a list with object's name and all of its children
         * @param list the list to be filled with names
+        * @param recursive if true will return all the objects children's names recursively
         */
-        void                        getNameList(Ogre::StringVector& list);
+        void                        getNameList(Ogre::StringVector& list, bool recursive=true);
         /**
         * Adds a new child object to editor object
         * @param child new child object
