@@ -460,6 +460,12 @@ namespace Ogitors
         */
         bool            OptionsReadDirectories(TiXmlElement *parent, Ogre::StringVector &pDir);
         /**
+        * Loads file system links list from an XML element
+        * @param parent top XML element containing file system links XML elements 
+        * @return true if options were read successfully, otherwise false
+        */
+        bool            OptionsReadFileSystemLinks(TiXmlElement *parent);
+        /**
         * Loads layer list from an XML element
         * @param parent top XML element containing layers XML elements 
         * @return true if options were read successfully, otherwise false
@@ -623,6 +629,19 @@ namespace Ogitors
         inline void SetWorldSpaceGizmoOrientation(bool state) 
         {
             mWorldSpaceGizmoOrientation = state;
+        };
+        /**
+        * Fetches Snap Ground state
+        * @return Snap Ground state
+        */
+        inline bool GetSnapGroundState() { return mAlwaysSnapGround; };
+        /**
+        * Sets Snap Ground state
+        * @param state new Snap Ground state
+        */
+        inline void SetSnapGroundState(bool state) 
+        {
+            mAlwaysSnapGround = state;
         };
         /**
         * Fetches render window handle
@@ -1109,6 +1128,7 @@ namespace Ogitors
         Ogre::SceneNode    *mGizmoY;                                    /** Y axis widget node handle */
         Ogre::SceneNode    *mGizmoZ;                                    /** Z axis widget node handle */
         Ogre::Entity       *mGizmoEntities[6];                          /** Gizmo handles */
+        bool                mAlwaysSnapGround;                          /** Do we always snap to ground when placing objects? */
         bool                mWorldSpaceGizmoOrientation;                /** Is the gizmo Orientation in World Space? */ 
         int                 mOldGizmoMode;                              /** Previous gizmo mode (@see EDITORTOOLS) */
         int                 mOldGizmoAxis;                              /** Previous gizmo axis along which transformation has occured */

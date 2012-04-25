@@ -55,6 +55,8 @@ bool CSkyxEditor::update(float timePassed)
 {
     mHandle->update(timePassed);
     mHandle->notifyCameraRender(mOgitorsRoot->GetViewport()->getCameraEditor()->getCamera());
+    mProperties.setValue("options::time", mBasicController->getTime());
+
     return false;
 }
 //---------------------------------------------------------------------------------
@@ -162,7 +164,7 @@ bool CSkyxEditor::unLoad()
 //-----------------------------------------------------------------------------------------
 void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
 {
-    PROPERTY_PTR(mTimeMultiplier        , "options::timemultiplier"     , Ogre::Real,           0.08f,                                  0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsTimeMultiplier));
+    PROPERTY_PTR(mTimeMultiplier        , "options::timemultiplier"     , Ogre::Real,           0.01f,                                  0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsTimeMultiplier));
     
     // SkyX Basic Controller parameters
     PROPERTY_PTR(mTime                  , "options::time"               , Ogre::Vector3,        Ogre::Vector3(8.80f, 7.50f, 20.50f),    0, SETTER(Ogre::Vector3,        CSkyxEditor, _setOptionsTime));
@@ -188,7 +190,7 @@ void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
 
     // SkyX Volumetric Clouds parameters
     PROPERTY_PTR(mVCEnable              , "vclouds::enable"             , bool,                 true,                                   0, SETTER(bool,                 CSkyxEditor, _setVCEnable));
-    PROPERTY_PTR(mVCAutoUpdate          , "vclouds::autoupdate"         , bool,                 false,                                  0, SETTER(bool,                 CSkyxEditor, _setVCAutoUpdate));
+    PROPERTY_PTR(mVCAutoUpdate          , "vclouds::autoupdate"         , bool,                 true,                                   0, SETTER(bool,                 CSkyxEditor, _setVCAutoUpdate));
     PROPERTY_PTR(mVCWindSpeed           , "vclouds::windspeed"          , int,                  80,                                     0, SETTER(int,                  CSkyxEditor, _setVCWindSpeed));
     PROPERTY_PTR(mVCWindDirection       , "vclouds::winddirection"      , int,                  0,                                      0, SETTER(int,                  CSkyxEditor, _setVCWindDirection));
     PROPERTY_PTR(mVCCloudScale          , "vclouds::cloudscale"         , Ogre::Real,           4.2f,                                   0, SETTER(Ogre::Real,           CSkyxEditor, _setVCCloudScale));

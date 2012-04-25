@@ -131,7 +131,8 @@ mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO),
 mTerrainEditor(0), mTerrainEditorObject(0), mPagingEditor(0), mPagingEditorObject(0), mIsSceneModified(false),
 mGlobalLightVisiblity(true), mGlobalCameraVisiblity(true), mSelRect(0), mSelectionNode(0),
 mMouseListener(0), mKeyboardListener(0),
-mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), mWorldSpaceGizmoOrientation(false),
+mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), 
+mAlwaysSnapGround(false), mWorldSpaceGizmoOrientation(false),
 mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSource(0)
 {
     unsigned int i;
@@ -519,15 +520,15 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("/debug/*Script_d.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/debug/*Script_d.dll", ScriptPluginList);
 #else
-    mSystem->GetFileList("../Plugins/*Script.dll",ScriptPluginList);
+    mSystem->GetFileList("../Plugins/*Script.dll", ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so", ScriptPluginList);
 #else
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so",ScriptPluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so", ScriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -560,15 +561,15 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-    mSystem->GetFileList("../Plugins/debug/*_d.dll",PluginList);
+    mSystem->GetFileList("../Plugins/debug/*_d.dll", PluginList);
 #else
-    mSystem->GetFileList("../Plugins/*.dll",PluginList);
+    mSystem->GetFileList("../Plugins/*.dll", PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so", PluginList);
 #else
-    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so",PluginList);
+    mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so", PluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
@@ -1130,7 +1131,7 @@ void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreeli
 
         if(viewport->getViewportIndex() == 1)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Can not delete the main viewport!!"), DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Cannot delete the main viewport!!"), DLGTYPE_OK);
             return;
         }
 
@@ -1288,6 +1289,7 @@ void OgitorsRoot::ClearProjectOptions()
     mProjectOptions.PagedGeometryDirectory = "PagedGeometry";
     mProjectOptions.SceneManagerConfigFile = "";
     mProjectOptions.ResourceDirectories.clear();
+    mProjectOptions.FileSystemLinks.clear();
     mProjectOptions.CameraSaveCount = 0;
     for(int i = 0;i < 10;i++)
     {
@@ -1325,7 +1327,7 @@ PROJECTOPTIONS OgitorsRoot::CreateDefaultProjectOptions()
     Ogitors::PROJECTOPTIONS opt;
     opt.IsNewProject = true;
     opt.ProjectName = "";
-    opt.ProjectDir = mSystem->getProjectsDirectory();
+    opt.ProjectDir = mSystem->GetProjectsDirectory();
     opt.SceneManagerName = "OctreeSceneManager";
     opt.TerrainDirectory = "Terrain";
     opt.HydraxDirectory = "Hydrax";
@@ -1335,6 +1337,7 @@ PROJECTOPTIONS OgitorsRoot::CreateDefaultProjectOptions()
     opt.CameraSaveCount = 0;
     opt.CameraSpeed = 1.0f;
     opt.ResourceDirectories.clear();
+    opt.FileSystemLinks.clear();
     opt.SelectionRectColour = Ogre::ColourValue(0.5f, 0, 1);
     opt.SelectionBBColour = Ogre::ColourValue(1, 1, 1);
     opt.HighlightBBColour = Ogre::ColourValue(0.91f, 0.19f, 0.19f);
@@ -1415,6 +1418,39 @@ bool OgitorsRoot::OptionsReadDirectories(TiXmlElement *parent, Ogre::StringVecto
     return true;
 }
 //----------------------------------------------------------------------------
+bool OgitorsRoot::OptionsReadFileSystemLinks(TiXmlElement *parent)
+{
+    TiXmlElement* element = 0;
+    
+    LINKDATA data;
+
+    element = parent->FirstChildElement();
+    
+    if(!element) return false;
+    
+    do
+    {
+        data.FileSystem = ValidAttr(element->Attribute("filesystem"));
+        data.Directory = ValidAttr(element->Attribute("directory"));
+        
+        if( (*mProjectFile)->linkFileSystem(data.FileSystem.c_str(), data.Directory.c_str()) == OFS::OFS_OK)
+            mProjectOptions.FileSystemLinks.push_back(data);
+        else
+        {
+            Ogre::String msg = "Could not link File System \"";
+            msg += data.FileSystem;
+            msg += "\" to directory \"";
+            msg += data.Directory;
+            msg += "\"";
+
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, msg );
+        }
+
+    } while(element = element->NextSiblingElement());
+    
+    return true;
+}
+//----------------------------------------------------------------------------
 bool OgitorsRoot::OptionsReadLayers(TiXmlElement *parent)
 {
     TiXmlElement* element = 0;
@@ -1451,6 +1487,7 @@ bool OgitorsRoot::LoadProjectOptions(TiXmlElement *optRoot)
         else if(eType == "MODELDIRECTORIES") OptionsReadDirectories(element,mProjectOptions.ResourceDirectories);
         else if(eType == "MATERIALDIRECTORIES") OptionsReadDirectories(element,mProjectOptions.ResourceDirectories);
         else if(eType == "RESOURCEDIRECTORIES") OptionsReadDirectories(element,mProjectOptions.ResourceDirectories);
+        else if(eType == "FILESYSTEMLINKS") OptionsReadFileSystemLinks(element);
         else if(eType == "CAMERASPEED") mProjectOptions.CameraSpeed = Ogre::StringConverter::parseReal(ValidAttr(element->Attribute("value"), "10"));
         else if(eType == "CAMERAPOSITIONS") OptionsReadCameraPositions(element);
         else if(eType == "LAYERS") OptionsReadLayers(element);
@@ -1549,7 +1586,7 @@ bool OgitorsRoot::AfterLoadScene()
 
     Ogre::StringVector templateList;
 
-    Ogre::String generaltemplates = OgitorsUtils::QualifyPath(OgitorsSystem::getSingletonPtr()->getProjectsDirectory() + "/Templates/*.otl");
+    Ogre::String generaltemplates = OgitorsUtils::QualifyPath(OgitorsSystem::getSingletonPtr()->GetProjectsDirectory() + "/Templates/*.otl");
     mSystem->GetFileList(generaltemplates, templateList);
     mClipboardManager->addTemplatesFromFiles(templateList, true);
     templateList.clear();
@@ -1736,6 +1773,8 @@ bool OgitorsRoot::TerminateScene()
         }
     }
 
+    PROJECTOPTIONS optSave = mProjectOptions;
+
     SetRunState(RS_STOPPED);
     SetEditorTool(TOOL_SELECT);
 
@@ -1772,6 +1811,11 @@ bool OgitorsRoot::TerminateScene()
     mMaterialNames.clear();
     mAutoTrackTargets.clear();
     mAutoTrackTargets.push_back(PropertyOption("None",Ogre::Any(Ogre::String("None"))));
+
+    for(unsigned int i = 0; i < optSave.FileSystemLinks.size();i++)
+    {
+        (*mProjectFile)->unlinkFileSystem(optSave.FileSystemLinks[i].FileSystem.c_str(), optSave.FileSystemLinks[i].Directory.c_str());
+    }
 
     (*mProjectFile).unmount();
 
@@ -1999,6 +2043,11 @@ void OgitorsRoot::SetRunState(RunState state)
     if(state == RS_STOPPED)
     {
         UndoCollection* coll = mUndoManager->EndCollection();
+		if( coll != NULL )
+		{
+		    coll->apply();
+		    delete coll;
+		}
 
         mUpdateScriptList.clear();
     }

@@ -909,11 +909,12 @@ void OgitorsUtils::SphereQuery(const Ogre::Vector3& pos, Ogre::Real radius, Obje
 Ogitors::PropertyOptionsVector OgitorsUtils::GetResourceFilenames(const Ogre::String& resourceName, const Ogre::String resourceType, const Ogre::String match)
 {
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
-    Ogre::FileInfoListPtr resList = mngr->listResourceFileInfo(resourceName);
-
+    Ogre::FileInfoListPtr resList = Ogre::FileInfoListPtr();
     PropertyOptionsVector resourceList;
     
-    if (resList->size() == 0)
+    if(mngr->resourceGroupExists(resourceName))
+        resList = mngr->listResourceFileInfo(resourceName);
+    else
         return resourceList;
 
     Ogre::String fname;

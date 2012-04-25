@@ -54,12 +54,10 @@ namespace Ogitors
         r = engine->RegisterObjectBehaviour(name, asBEHAVE_IMPLICIT_REF_CAST, "BaseEditor@ f()", asFUNCTION((refCast<classname,CBaseEditor>)), asCALL_CDECL_OBJLAST); assert( r >= 0 );\
     }\
     //-----------------------------------------------------------------------------------------
-    #define REGISTER_BASEOBJECT_WRAPPERS( name, classname )\
-    asDECLARE_METHOD_WRAPPER(classname##_getDerivedPosition_Wrapper, classname, getDerivedPosition);\
 
     #define REGISTER_BASEOBJECT_FUNCTIONS( name, classname )\
     {\
-        r = engine->RegisterObjectMethod(name, "Vector3 getDerivedPosition()", asFUNCTION(classname##_getDerivedPosition_Wrapper), asCALL_GENERIC);assert(r >= 0);\
+        r = engine->RegisterObjectMethod(name, "Vector3 getDerivedPosition()", asMETHOD(classname, getDerivedPosition), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "void setDerivedPosition(Vector3)", asMETHOD(classname, setDerivedPosition), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "Quaternion getDerivedOrientation()", asMETHOD(classname, getDerivedOrientation), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "void setDerivedOrientation(Quaternion)", asMETHOD(classname, setDerivedOrientation), asCALL_THISCALL);assert(r >= 0);\
@@ -112,13 +110,11 @@ namespace Ogitors
         r = engine->RegisterObjectMethod(name, "bool isTerrainType()", asMETHOD(classname, isTerrainType), asCALL_THISCALL);assert(r >= 0);\
     }\
     //-----------------------------------------------------------------------------------------
-    #define REGISTER_NODE_WRAPPERS( name, classname )\
-    asDECLARE_METHOD_WRAPPER(classname##_getPosition_Wrapper, classname, getPosition);\
 
     #define REGISTER_NODE_FUNCTIONS( name, classname )\
     {\
         r = engine->RegisterObjectMethod(name, "void setPosition(const Vector3 &in)", asMETHOD(classname, setPosition), asCALL_THISCALL);assert(r >= 0);\
-        r = engine->RegisterObjectMethod(name, "Vector3 getPosition()", asFUNCTION(classname##_getPosition_Wrapper), asCALL_GENERIC);assert(r >= 0);\
+        r = engine->RegisterObjectMethod(name, "Vector3 getPosition()", asMETHOD(classname, getPosition), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "void setScale(const Vector3 &in)", asMETHOD(classname, setScale), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "Vector3 getScale()", asMETHOD(classname, getScale), asCALL_THISCALL);assert(r >= 0);\
         r = engine->RegisterObjectMethod(name, "void setOrientation(const Quaternion &in)", asMETHOD(classname, setOrientation), asCALL_THISCALL);assert(r >= 0);\
@@ -141,30 +137,6 @@ namespace Ogitors
         }
         return b;
     }
-
-    REGISTER_BASEOBJECT_WRAPPERS("BaseEditor", CBaseEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("BillboardSetEditor", CBillboardSetEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("CameraEditor", CCameraEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("EntityEditor", CEntityEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("LightEditor", CLightEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("MarkerEditor", CMarkerEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("MultiSelection", CMultiSelEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("NodeEditor", CNodeEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("PagingManager", CPagingManager);
-    REGISTER_BASEOBJECT_WRAPPERS("ParticleEditor", CParticleEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("PGInstanceEditor", CPGInstanceEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("PGInstanceManager", CPGInstanceManager);
-    REGISTER_BASEOBJECT_WRAPPERS("PlaneEditor", CPlaneEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("SceneManagerEditor", CSceneManagerEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("TerrainGroupEditor", CTerrainGroupEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("TerrainPageEditor" , CTerrainPageEditor);
-    REGISTER_BASEOBJECT_WRAPPERS("ViewportEditor"    , CViewportEditor);
-
-    REGISTER_NODE_WRAPPERS("NodeEditor", CNodeEditor);
-    REGISTER_NODE_WRAPPERS("EntityEditor", CEntityEditor);
-    REGISTER_NODE_WRAPPERS("PlaneEditor", CPlaneEditor);
-    REGISTER_NODE_WRAPPERS("ParticleEditor", CParticleEditor);
-    REGISTER_NODE_WRAPPERS("MarkerEditor", CMarkerEditor);
 
     //-----------------------------------------------------------------------------------------
     void RegisterBaseEditorBindings(asIScriptEngine *engine)

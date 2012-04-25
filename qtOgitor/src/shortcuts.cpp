@@ -35,12 +35,11 @@
 #include <QtGui/QMessageBox>
 
 Shortcuts* Shortcuts::instance = 0;
-
+//------------------------------------------------------------------------------
 Shortcuts::Shortcuts()
 {
-
 }
-
+//------------------------------------------------------------------------------
 Shortcuts* Shortcuts::getInstance()
 {
     if (instance == 0)
@@ -56,7 +55,7 @@ Shortcuts* Shortcuts::getInstance()
 
     return instance;
 }
-
+//------------------------------------------------------------------------------
 void Shortcuts::add(const QString &shortcut, const QString &description, const QString &SPK, const int &keycode)
 {
     if (actions.contains(cleanName(SPK)))
@@ -82,34 +81,33 @@ void Shortcuts::add(const QString &shortcut, const QString &description, const Q
         settings.setValue(QString("orig_") + settingsKey(actions[cleanName(SPK)] ) + QString("_keycode"), keycode);
     }
 }
-
+//------------------------------------------------------------------------------
 QList<ShortCut> Shortcuts::getActions()
 {
     return actions.values();
 }
-
+//------------------------------------------------------------------------------
 QString Shortcuts::settingsKey(ShortCut &shortcut)
 {
-    return QString("OgitorShortcuts/%1").arg(cleanName(shortcut));
+    return QString("shortcuts/%1").arg(cleanName(shortcut));
 }
-
+//------------------------------------------------------------------------------
 QString Shortcuts::settingsKey(const QString &shortcut)
 {
-    return QString("OgitorShortcuts/%1").arg(cleanName(shortcut));
+    return QString("shortcuts/%1").arg(cleanName(shortcut));
 }
-
+//------------------------------------------------------------------------------
 QString Shortcuts::cleanName(const ShortCut &shortcut)
 {
     return cleanName(shortcut.SPK);
 }
-
+//------------------------------------------------------------------------------
 QString Shortcuts::cleanName(const QString &s)
 {
-
     QString h = s;
     return h.remove("&");
 }
-
+//------------------------------------------------------------------------------
 QString Shortcuts::isReserved(const QString &shortcut, const QString &SPK)
 {
     QString isTaken = QString::null;
@@ -124,7 +122,7 @@ QString Shortcuts::isReserved(const QString &shortcut, const QString &SPK)
     }
     return isTaken;
 }
-
+//------------------------------------------------------------------------------
 void Shortcuts::setShortcut(const QString &shortcut, const QString &description, const QString &SPK, const int &keycode)
 {
     if (actions.contains(cleanName(SPK)))
@@ -137,7 +135,7 @@ void Shortcuts::setShortcut(const QString &shortcut, const QString &description,
         settings.setValue(settingsKey(actions[cleanName(SPK)] ) + QString("_keycode"), keycode);
     }
 }
-
+//------------------------------------------------------------------------------
 void Shortcuts::clearShortcut(const QString &SPK)
 {
     if (actions.contains(cleanName(SPK)))
@@ -148,12 +146,12 @@ void Shortcuts::clearShortcut(const QString &SPK)
         actions[cleanName(SPK)].keycode = keycode;
     }
 }
-
+//------------------------------------------------------------------------------
 void Shortcuts::removeShortcut(const QString &SPK)
 {
     settings.remove(settingsKey(actions[cleanName(SPK)]));
 }
-
+//------------------------------------------------------------------------------
 void Shortcuts::load()
 {
     QString shortcut = settings.value(settingsKey("SPK_FORWARD"), "W").toString();
@@ -258,9 +256,10 @@ void Shortcuts::load()
     keycode = settings.value(settingsKey("SPK_ALWAYS_SELECT_keycode"), (Qt::Key_Alt & 0xFFF) + 0xFF).toInt();
     add(shortcut, description, SPK, keycode);
 }
-
+//------------------------------------------------------------------------------
 Shortcuts::~Shortcuts()
 {
     if (instance != 0)
         delete instance;
 }
+//------------------------------------------------------------------------------

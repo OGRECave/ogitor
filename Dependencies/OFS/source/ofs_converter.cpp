@@ -30,7 +30,9 @@
 /// THE SOFTWARE. 
 ///////////////////////////////////////////////////////////////////////////////////*/
 
-#include "ofs.h"
+#include "ofs13.h"
+#include "ofs14.h"
+#include "ofs_converter.h"
 #include <algorithm>
 
 using namespace std;
@@ -41,74 +43,8 @@ using namespace std;
 #define OPEN_STREAM(a, b, c) a.open(b, c)
 #endif
 
-#define BLOCK_SIGNATURE_OLD_0 0x89ABCDEF
-#define BLOCK_SIGNATURE_OLD_1 0xFEDCBA98
-
 namespace OFS
 {
-
-    /* OFS File Header */
-    struct HeaderV10
-    {
-        unsigned char ID[4];      /* The file identifier */
-        unsigned char VERSION[4]; /* Version of the OFS File */
-        unsigned int  LAST_ID;    /* The Last ID used for any entry */
-        unsigned int  RESERVED;   /* RESERVED */
-    };
-
-    /* Holds information about an allocated block (for writing to file as block header) */
-    struct FileBlockDataV10
-    {
-        unsigned int Signature[2]; /* Block Signature */
-        unsigned int Type;         /* Block Type */
-        unsigned int Length;       /* Length of the block in file not including this header */
-    };
-
-    /* Short entry header for EXTENDED BLOCKS */
-    struct EntryHeaderShortV10
-    {
-        int          Id;           /* Id of the Owner Entry */
-        unsigned int NextBlock;    /* Position of Next Block in file (owned by the same entry) */
-    };
-
-    /* Full Entry Header, contains all information needed for entry */
-    struct EntryHeaderV10
-    {
-        int          Id;           /* Id of the Owner Entry */
-        int          ParentId;     /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-        unsigned int Flags;        /* File Flags */
-        time_t       CreationTime; /* Entry's Creation Time */
-        unsigned int FileSize;     /* Entry's File Size, 0 for Directories */
-        unsigned int NextBlock;    /* File Position of Next Block owned by this entry */
-        char         Name[252];    /* Entry's Name */
-    };
-
-    /* Full Entry Header, contains all information needed for entry */
-    struct EntryHeaderV11
-    {
-        int          Id;           /* Id of the Owner Entry */
-        int          ParentId;     /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-        unsigned int Flags;        /* File Flags */
-        UUID         Uuid;         /* UUID of Entry */
-        time_t       CreationTime; /* Entry's Creation Time */
-        unsigned int FileSize;     /* Entry's File Size, 0 for Directories */
-        unsigned int NextBlock;    /* File Position of Next Block owned by this entry */
-        char         Name[252];    /* Entry's Name */
-    };
-    
-    /* Full Entry Header, contains all information needed for entry */
-    struct EntryHeaderV12
-    {
-        int          Id;              /* Id of the Owner Entry */
-        int          ParentId;        /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-        unsigned int NextBlock;       /* File Position of Next Block owned by this entry */
-        unsigned int Flags;           /* File Flags */
-        unsigned int FileSize;        /* Entry's File Size, 0 for Directories */
-        unsigned int RESERVED[5];     /* RESERVED */
-        char         Name[256];       /* Entry's Name */
-        time_t       CreationTime;    /* Entry's Creation Time */
-        UUID         Uuid;            /* UUID of Entry */
-    };
 
     
  //------------------------------------------------------------------------------
@@ -127,30 +63,13 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    void OfsConverter::_deallocateChildren(_Ofs::OfsEntryDesc* parent)
-    {
-        for(unsigned int i = 0;i < parent->Children.size();i++)
-        {
-            _deallocateChildren(parent->Children[i]);
-            delete parent->Children[i];
-        }
-
-        parent->Children.clear();
-    }
-
-//------------------------------------------------------------------------------
-
     bool OfsConverter::convert(std::string infile, std::string outfile)
     {
-        unsigned int ehV10 = sizeof(EntryHeaderV10);
-        unsigned int ehV11 = sizeof(EntryHeaderV11);
-        unsigned int ehV12 = sizeof(_Ofs::strMainEntryHeader);
-        
         OPEN_STREAM(mInStream, infile.c_str(), fstream::in | fstream::out | fstream::binary | fstream::ate);
         if(mInStream.fail() || !mInStream.is_open())
             return false;
 
-        HeaderV10 fsHeader;
+        _Ofs::strFileHeader fsHeader;
 
         mInStream.seekg(0, fstream::beg);
         mInStream.read((char *)&fsHeader, sizeof(char) * 8);
@@ -175,9 +94,7 @@ namespace OFS
         {
             switch(file_version)
             {
-            case 10:return _convertv10_v13(infile, outfile);
-            case 11:return _convertv11_v13(infile, outfile);
-            case 12:return _convertv12_v13(infile, outfile);
+            case 13:return _convertv13_v14(infile, outfile);
             };
         }
 
@@ -186,851 +103,115 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    bool OfsConverter::_convertv10_v13(std::string infile, std::string outfile)
+    bool OfsConverter::_convertv13_v14(std::string infile, std::string outfile)
     {
-        OPEN_STREAM(mInStream, infile.c_str(), fstream::in | fstream::out | fstream::binary | fstream::ate);
-        if(mInStream.fail() || !mInStream.is_open())
+        OFS13::OfsPtr    srcFile;
+        OfsPtr           destFile;
+        OFS13::OfsResult ret1;
+        OfsResult        ret2;
+
+        ret1 = srcFile.mount(infile.c_str(), OFS13::OFS_MOUNT_OPEN);
+
+        if( ret1 != OFS13::OFS_OK )
             return false;
 
-        HeaderV10 fsHeader;
+        ret2 = destFile.mount(outfile.c_str(), OFS_MOUNT_CREATE);
 
-        mInStream.seekg(0, fstream::end);
-        unsigned int file_size = mInStream.tellg();
-
-        int HeaderSize = sizeof(HeaderV10);
-        mInStream.seekg(0, fstream::beg);
-        mInStream.read((char *)&fsHeader, HeaderSize);
-
-        unsigned int current_loc = mInStream.tellg();
-
-        int max_id = -1000;
-
-        FileBlockDataV10    fileBlockData;
-        EntryHeaderV10      entryHeaderOld;
-        EntryHeaderShortV10 entryHeaderShort;
-
-        _Ofs::BlockData          blockData;
-        _Ofs::strMainEntryHeader entryHeaderNew;
-        _Ofs::IdDescMap::const_iterator it;
-        _Ofs::IdDescMap::iterator dait;
-        _Ofs::IdDescMap DirMap;
-        _Ofs::IdDescMap FileMap;
-        _Ofs::PosBlockDataMap extendedEntries;
-        _Ofs::OfsEntryDesc RootDir;
-
-        RootDir.Id = -1;
-        RootDir.ParentId = -1;
-
-        DirMap.insert(_Ofs::IdDescMap::value_type(-1, &RootDir));
-
-        while((current_loc = mInStream.tellg()) < file_size)
-        {
-            mInStream.read((char*)&fileBlockData, sizeof(FileBlockDataV10));
-            if(fileBlockData.Signature[0] != BLOCK_SIGNATURE_OLD_0 || fileBlockData.Signature[1] != BLOCK_SIGNATURE_OLD_1)
-            {
-                unsigned int pos = mInStream.tellg();
-                mInStream.clear();
-                mInStream.seekg( pos + 1 - sizeof(FileBlockDataV10));
-                continue;
-            }
-
-            if(fileBlockData.Type & _Ofs::OFS_FREE_BLOCK)
-            {
-                mInStream.seekg(fileBlockData.Length, fstream::cur);
-            }
-            else if(fileBlockData.Type == _Ofs::OFS_MAIN_BLOCK)
-            {
-                mInStream.read((char*)&entryHeaderOld, sizeof(EntryHeaderV10));
-                blockData.Type = fileBlockData.Type;
-                blockData.Start = mInStream.tellg();
-                blockData.Start -= sizeof(EntryHeaderV10);
-                blockData.Length = fileBlockData.Length;
-                blockData.NextBlock = entryHeaderOld.NextBlock;
-
-                _Ofs::OfsEntryDesc *entryDesc = new _Ofs::OfsEntryDesc();
-
-                if(entryHeaderOld.Flags & OFS_DIR)
-                {
-                    dait = DirMap.find(entryHeaderOld.Id);
-                    if(dait == DirMap.end())
-                        DirMap.insert(_Ofs::IdDescMap::value_type(entryHeaderOld.Id, entryDesc));
-                    else
-                    {
-                        delete entryDesc;
-                        entryDesc = dait->second;
-                    }
-                }
-                else
-                    FileMap.insert(_Ofs::IdDescMap::value_type(entryHeaderOld.Id, entryDesc));
- 
-                entryDesc->Id = entryHeaderOld.Id;
-                entryDesc->ParentId = entryHeaderOld.ParentId;
-                entryDesc->Flags = entryHeaderOld.Flags;
-                entryDesc->Name = entryHeaderOld.Name;
-                entryDesc->FileSize = entryHeaderOld.FileSize;
-                entryDesc->CreationTime = entryHeaderOld.CreationTime;
-                entryDesc->UseCount = 0;
-                entryDesc->WriteLocked = false;
-                entryDesc->Uuid = UUID_ZERO;
-
-                it = DirMap.find(entryDesc->ParentId);
-                if(it == DirMap.end())
-                {
-                    _Ofs::OfsEntryDesc *dirDesc = new _Ofs::OfsEntryDesc();
-                    dirDesc->Id = entryDesc->ParentId;
-                    dirDesc->Name = "Error_NoName";
-                    dirDesc->Parent = 0;
-
-                    it = DirMap.insert(_Ofs::IdDescMap::value_type(dirDesc->Id, dirDesc)).first;
-                }
-
-                entryDesc->UsedBlocks.push_back(blockData);
-                entryDesc->Parent = it->second;
-                it->second->Children.push_back(entryDesc);
-
-                mInStream.seekg(blockData.Length - sizeof(EntryHeaderV10), fstream::cur);
-
-                if(max_id < entryHeaderOld.Id)
-                    max_id = entryHeaderOld.Id;
-            }
-            else if(fileBlockData.Type == _Ofs::OFS_EXTENDED_BLOCK)
-            {
-                mInStream.read((char*)&entryHeaderShort, sizeof(EntryHeaderShortV10));
- 
-                blockData.Type = fileBlockData.Type;
-                blockData.Start = mInStream.tellg();
-                blockData.Start -= sizeof(EntryHeaderShortV10);
-                blockData.Length = fileBlockData.Length;
-                blockData.NextBlock = entryHeaderShort.NextBlock;
-
-                extendedEntries.insert(_Ofs::PosBlockDataMap::value_type(blockData.Start, blockData));
-                mInStream.seekg(blockData.Length - sizeof(EntryHeaderShortV10), fstream::cur);
-            }
-            else
-            {
-                mInStream.close();
-                return false;
-            }
-        }
-
-        _Ofs::PosBlockDataMap::iterator pit;
-        _Ofs::IdDescMap::const_iterator dit = FileMap.begin();
-
-        while(dit != FileMap.end())
-        {
-            unsigned int next_block = dit->second->UsedBlocks[0].NextBlock;
-            while(next_block != 0)
-            {
-                pit = extendedEntries.find(next_block);
-                if(pit == extendedEntries.end())
-                {
-                    break;
-                }
-
-                dit->second->UsedBlocks.push_back(pit->second);
-
-                next_block = pit->second.NextBlock;
-
-                extendedEntries.erase(pit);
-            }
-
-            dit++;
-        }
-
-        OPEN_STREAM(mOutStream, outfile.c_str(), fstream::in | fstream::out | fstream::binary | fstream::trunc);
-        if(mOutStream.fail() || !mOutStream.is_open())
-        {
-            mInStream.close();
+        if( ret2 != OFS_OK )
             return false;
-        }
-
-        _Ofs::strFileHeader newHeader;
-
-        memset(&newHeader, 0, sizeof(_Ofs::strFileHeader));
-
-        time_t signature_time = time(NULL);
-        unsigned int * signature = (unsigned int *)(&signature_time);
-
-        newHeader.ID[0] = 'O';newHeader.ID[1] = 'F';newHeader.ID[2] = 'S';newHeader.ID[3] = '1';
-        newHeader.VERSION[0] = VERSION_MAJOR_0;
-        newHeader.VERSION[1] = VERSION_MAJOR_1;
-        newHeader.VERSION[2] = VERSION_MINOR;
-        newHeader.VERSION[3] = VERSION_FIX;
-        newHeader.BLOCK_HEADER_SIG[0] = signature[0];
-        newHeader.BLOCK_HEADER_SIG[1] = signature[0] ^ 0xFFFFFFFF;
-        newHeader.LAST_ID = ++max_id;
 
         
-        mOutStream.write((char *)&newHeader, sizeof(_Ofs::strFileHeader));
+        OFS13::FileList allFiles;
 
-        dit = DirMap.begin();
+        srcFile->listFilesRecursive("/", allFiles);
 
-        _Ofs::strBlockHeader blHeader;
-        memset(&blHeader, 0 , sizeof(_Ofs::strBlockHeader));
-        memset(&entryHeaderNew, 0 , sizeof(_Ofs::strMainEntryHeader));
+        std::sort(allFiles.begin(), allFiles.end(), OFS13::FileEntry::Compare);
 
-        blHeader.Signature[0] = newHeader.BLOCK_HEADER_SIG[0];
-        blHeader.Signature[1] = newHeader.BLOCK_HEADER_SIG[1];
-        blHeader.Type = _Ofs::OFS_MAIN_BLOCK;
-
-        while(dit != DirMap.end())
+        if(ret2 == OFS_OK)
         {
-            if(dit->second->Id == -1)
+            OFS13::OFSHANDLE in_handle;
+            OFSHANDLE        out_handle;
+
+            unsigned int output_amount = 0;
+
+            char *tmp_buffer = new char[MAX_BUFFER_SIZE];
+
+            for(unsigned int i = 0;i < allFiles.size();i++)
             {
-                dit++;
-                continue;
-            }
-
-            blHeader.Length = sizeof(_Ofs::strMainEntryHeader);
-            mOutStream.write((char *)&blHeader, sizeof(_Ofs::strBlockHeader));
-
-            entryHeaderNew.Id = dit->second->Id;
-            entryHeaderNew.ParentId = dit->second->ParentId;
-            entryHeaderNew.Flags = dit->second->Flags;
-            entryHeaderNew.NextBlock = 0;
-            entryHeaderNew.FileSize = dit->second->FileSize;
-            entryHeaderNew.CreationTime = dit->second->CreationTime;
-
-            int sz = dit->second->Name.length();
-            if(sz > 255)
-                sz = 255;
-            memcpy(entryHeaderNew.Name, dit->second->Name.c_str(), sz);
-            entryHeaderNew.Name[sz] = 0;
-            entryHeaderNew.Uuid = dit->second->Uuid;
-
-            mOutStream.write((char *)&entryHeaderNew, sizeof(_Ofs::strMainEntryHeader));
-            
-            dit++;
-        }
-
-        dit = FileMap.begin();
-
-        char *buffer = new char[2 * MAX_BUFFER_SIZE];
-
-        while(dit != FileMap.end())
-        {
-            blHeader.Length = sizeof(_Ofs::strMainEntryHeader) + dit->second->FileSize;
-            mOutStream.write((char *)&blHeader, sizeof(_Ofs::strBlockHeader));
-
-            entryHeaderNew.Id = dit->second->Id;
-            entryHeaderNew.ParentId = dit->second->ParentId;
-            entryHeaderNew.Flags = dit->second->Flags;
-            entryHeaderNew.NextBlock = 0;
-            entryHeaderNew.FileSize = dit->second->FileSize;
-            entryHeaderNew.CreationTime = dit->second->CreationTime;
-
-            int sz = dit->second->Name.length();
-            if(sz > 255)
-                sz = 255;
-            memcpy(entryHeaderNew.Name, dit->second->Name.c_str(), sz);
-            entryHeaderNew.Name[sz] = 0;
-            entryHeaderNew.Uuid = dit->second->Uuid;
-
-            mOutStream.write((char *)&entryHeaderNew, sizeof(_Ofs::strMainEntryHeader));
-
-            unsigned int total = dit->second->FileSize;
-            unsigned int curBlock = 0;
-
-            unsigned int can_read = dit->second->UsedBlocks[0].Length - sizeof(EntryHeaderV10);
-
-            while(total > 0)
-            {
-                if(can_read > total)
+                if(allFiles[i].flags & OFS13::OFS_DIR)
                 {
-                    mInStream.clear();
-                    mInStream.seekg(dit->second->UsedBlocks[0].Start + sizeof(EntryHeaderV10), fstream::beg);
-                    mInStream.read(buffer, total);
-                    mOutStream.write(buffer, total);
-                    total = 0;
+                    destFile->createDirectoryUUID(allFiles[i].name.c_str(), *((OFS::UUID*)&allFiles[i].uuid));
+                    destFile->setDirFlags(allFiles[i].name.c_str(), allFiles[i].flags);
                 }
                 else
                 {
-                    mInStream.clear();
-                    mInStream.seekg(dit->second->UsedBlocks[0].Start + sizeof(EntryHeaderV10), fstream::beg);
-                    mInStream.read(buffer, can_read);
-                    mOutStream.write(buffer, can_read);
-                    total -= can_read;
-                    
-                    if(total > 0)
+                    std::string file_ofs_path = allFiles[i].name;
+
+                    try
                     {
-                        curBlock++;
-                        can_read = dit->second->UsedBlocks[curBlock].Length - sizeof(EntryHeaderShortV10);
+                        ret1 = srcFile->openFile(in_handle, file_ofs_path.c_str());
+                        if(ret1 != OFS13::OFS_OK)
+                            continue;
+
+                        unsigned int total = allFiles[i].file_size;
+
+                        bool dest_file_created = false;
+
+                        while(total > 0)
+                        {
+                            if(total < MAX_BUFFER_SIZE)
+                            {
+                                srcFile->read(in_handle, tmp_buffer, total);
+                                if(dest_file_created)
+                                    destFile->write(out_handle, tmp_buffer, total);
+                                else
+                                {
+                                    destFile->createFileUUID(out_handle, file_ofs_path.c_str(), *((OFS::UUID*)&allFiles[i].uuid), total, total, tmp_buffer);
+                                    destFile->setFileFlags(out_handle, allFiles[i].flags);
+                                }
+
+                                output_amount += total;
+                                total = 0;
+                            }
+                            else
+                            {
+                                srcFile->read(in_handle, tmp_buffer, MAX_BUFFER_SIZE);
+                                if(dest_file_created)
+                                    destFile->write(out_handle, tmp_buffer, MAX_BUFFER_SIZE);
+                                else
+                                {
+                                    destFile->createFileUUID(out_handle, file_ofs_path.c_str(), *((OFS::UUID*)&allFiles[i].uuid), MAX_BUFFER_SIZE, MAX_BUFFER_SIZE, tmp_buffer);
+                                    destFile->setFileFlags(out_handle, allFiles[i].flags);
+                                    dest_file_created = true;
+                                }
+
+                                total -= MAX_BUFFER_SIZE;
+                                output_amount += MAX_BUFFER_SIZE;
+                            }
+                        }
                     }
+                    catch(...)
+                    {
+                    }
+
+                    if(out_handle._valid())
+                        destFile->closeFile(out_handle);
+                    if(in_handle._valid())
+                        srcFile->closeFile(in_handle);
                 }
             }
-            
-            dit++;
+
+            delete [] tmp_buffer;
+
+            srcFile.unmount();
+            destFile.unmount();
         }
-
-        delete [] buffer;
-
-        _deallocateChildren(&RootDir);
-
-        mInStream.close();
-        mOutStream.close();
 
         return true;
     }
 
 //------------------------------------------------------------------------------
 
-    bool OfsConverter::_convertv11_v13(std::string infile, std::string outfile)
-    {
-        OPEN_STREAM(mInStream, infile.c_str(), fstream::in | fstream::out | fstream::binary | fstream::ate);
-        if(mInStream.fail() || !mInStream.is_open())
-            return false;
-
-        HeaderV10 fsHeader;
-
-        mInStream.seekg(0, fstream::end);
-        unsigned int file_size = mInStream.tellg();
-
-        int HeaderSize = sizeof(HeaderV10);
-        mInStream.seekg(0, fstream::beg);
-        mInStream.read((char *)&fsHeader, HeaderSize);
-
-        unsigned int current_loc = mInStream.tellg();
-
-        int max_id = -1000;
-
-        FileBlockDataV10    fileBlockData;
-        EntryHeaderV11      entryHeaderOld;
-        EntryHeaderShortV10 entryHeaderShort;
-
-        _Ofs::BlockData          blockData;
-        _Ofs::strMainEntryHeader entryHeaderNew;
-        _Ofs::IdDescMap::const_iterator it;
-        _Ofs::IdDescMap::iterator dait;
-        _Ofs::IdDescMap DirMap;
-        _Ofs::IdDescMap FileMap;
-        _Ofs::PosBlockDataMap extendedEntries;
-        _Ofs::OfsEntryDesc RootDir;
-
-        RootDir.Id = -1;
-        RootDir.ParentId = -1;
-
-        DirMap.insert(_Ofs::IdDescMap::value_type(-1, &RootDir));
-
-        while((current_loc = mInStream.tellg()) < file_size)
-        {
-            mInStream.read((char*)&fileBlockData, sizeof(FileBlockDataV10));
-            if(fileBlockData.Signature[0] != BLOCK_SIGNATURE_OLD_0 || fileBlockData.Signature[1] != BLOCK_SIGNATURE_OLD_1)
-            {
-                unsigned int pos = mInStream.tellg();
-                mInStream.clear();
-                mInStream.seekg( pos + 1 - sizeof(FileBlockDataV10));
-                continue;
-            }
-
-            if(fileBlockData.Type & _Ofs::OFS_FREE_BLOCK)
-            {
-                mInStream.seekg(fileBlockData.Length, fstream::cur);
-            }
-            else if(fileBlockData.Type == _Ofs::OFS_MAIN_BLOCK)
-            {
-                mInStream.read((char*)&entryHeaderOld, sizeof(EntryHeaderV11));
-                blockData.Type = fileBlockData.Type;
-                blockData.Start = mInStream.tellg();
-                blockData.Start -= sizeof(EntryHeaderV11);
-                blockData.Length = fileBlockData.Length;
-                blockData.NextBlock = entryHeaderOld.NextBlock;
-
-                _Ofs::OfsEntryDesc *entryDesc = new _Ofs::OfsEntryDesc();
-
-                if(entryHeaderOld.Flags & OFS_DIR)
-                {
-                    dait = DirMap.find(entryHeaderOld.Id);
-                    if(dait == DirMap.end())
-                        DirMap.insert(_Ofs::IdDescMap::value_type(entryHeaderOld.Id, entryDesc));
-                    else
-                    {
-                        delete entryDesc;
-                        entryDesc = dait->second;
-                    }
-                }
-                else
-                    FileMap.insert(_Ofs::IdDescMap::value_type(entryHeaderOld.Id, entryDesc));
- 
-                entryDesc->Id = entryHeaderOld.Id;
-                entryDesc->ParentId = entryHeaderOld.ParentId;
-                entryDesc->Flags = entryHeaderOld.Flags;
-                entryDesc->Name = entryHeaderOld.Name;
-                entryDesc->FileSize = entryHeaderOld.FileSize;
-                entryDesc->CreationTime = entryHeaderOld.CreationTime;
-                entryDesc->UseCount = 0;
-                entryDesc->WriteLocked = false;
-                entryDesc->Uuid = entryHeaderOld.Uuid;
-
-                it = DirMap.find(entryDesc->ParentId);
-                if(it == DirMap.end())
-                {
-                    _Ofs::OfsEntryDesc *dirDesc = new _Ofs::OfsEntryDesc();
-                    dirDesc->Id = entryDesc->ParentId;
-                    dirDesc->Name = "Error_NoName";
-                    dirDesc->Parent = 0;
-
-                    it = DirMap.insert(_Ofs::IdDescMap::value_type(dirDesc->Id, dirDesc)).first;
-                }
-
-                entryDesc->UsedBlocks.push_back(blockData);
-                entryDesc->Parent = it->second;
-                it->second->Children.push_back(entryDesc);
-
-                mInStream.seekg(blockData.Length - sizeof(EntryHeaderV11), fstream::cur);
-
-                if(max_id < entryHeaderOld.Id)
-                    max_id = entryHeaderOld.Id;
-            }
-            else if(fileBlockData.Type == _Ofs::OFS_EXTENDED_BLOCK)
-            {
-                mInStream.read((char*)&entryHeaderShort, sizeof(EntryHeaderShortV10));
- 
-                blockData.Type = fileBlockData.Type;
-                blockData.Start = mInStream.tellg();
-                blockData.Start -= sizeof(EntryHeaderShortV10);
-                blockData.Length = fileBlockData.Length;
-                blockData.NextBlock = entryHeaderShort.NextBlock;
-
-                extendedEntries.insert(_Ofs::PosBlockDataMap::value_type(blockData.Start, blockData));
-                mInStream.seekg(blockData.Length - sizeof(EntryHeaderShortV10), fstream::cur);
-            }
-            else
-            {
-                mInStream.close();
-                return false;
-            }
-        }
-
-        _Ofs::PosBlockDataMap::iterator pit;
-        _Ofs::IdDescMap::const_iterator dit = FileMap.begin();
-
-        while(dit != FileMap.end())
-        {
-            unsigned int next_block = dit->second->UsedBlocks[0].NextBlock;
-            while(next_block != 0)
-            {
-                pit = extendedEntries.find(next_block);
-                if(pit == extendedEntries.end())
-                {
-                    break;
-                }
-
-                dit->second->UsedBlocks.push_back(pit->second);
-
-                next_block = pit->second.NextBlock;
-
-                extendedEntries.erase(pit);
-            }
-
-            dit++;
-        }
-
-        OPEN_STREAM(mOutStream, outfile.c_str(), fstream::in | fstream::out | fstream::binary | fstream::trunc);
-        if(mOutStream.fail() || !mOutStream.is_open())
-        {
-            mInStream.close();
-            return false;
-        }
-
-        _Ofs::strFileHeader newHeader;
-
-        memset(&newHeader, 0, sizeof(_Ofs::strFileHeader));
-
-        time_t signature_time = time(NULL);
-        unsigned int * signature = (unsigned int *)(&signature_time);
-
-        newHeader.ID[0] = 'O';newHeader.ID[1] = 'F';newHeader.ID[2] = 'S';newHeader.ID[3] = '1';
-        newHeader.VERSION[0] = VERSION_MAJOR_0;
-        newHeader.VERSION[1] = VERSION_MAJOR_1;
-        newHeader.VERSION[2] = VERSION_MINOR;
-        newHeader.VERSION[3] = VERSION_FIX;
-        newHeader.BLOCK_HEADER_SIG[0] = signature[0];
-        newHeader.BLOCK_HEADER_SIG[1] = signature[0] ^ 0xFFFFFFFF;
-        newHeader.LAST_ID = ++max_id;
-
-        
-        mOutStream.write((char *)&newHeader, sizeof(_Ofs::strFileHeader));
-
-        dit = DirMap.begin();
-
-        _Ofs::strBlockHeader blHeader;
-        memset(&blHeader, 0 , sizeof(_Ofs::strBlockHeader));
-        memset(&entryHeaderNew, 0 , sizeof(_Ofs::strMainEntryHeader));
-
-        blHeader.Signature[0] = newHeader.BLOCK_HEADER_SIG[0];
-        blHeader.Signature[1] = newHeader.BLOCK_HEADER_SIG[1];
-        blHeader.Type = _Ofs::OFS_MAIN_BLOCK;
-
-        while(dit != DirMap.end())
-        {
-            if(dit->second->Id == -1)
-            {
-                dit++;
-                continue;
-            }
-
-            blHeader.Length = sizeof(_Ofs::strMainEntryHeader);
-            mOutStream.write((char *)&blHeader, sizeof(_Ofs::strBlockHeader));
-
-            entryHeaderNew.Id = dit->second->Id;
-            entryHeaderNew.ParentId = dit->second->ParentId;
-            entryHeaderNew.Flags = dit->second->Flags;
-            entryHeaderNew.NextBlock = 0;
-            entryHeaderNew.FileSize = dit->second->FileSize;
-            entryHeaderNew.CreationTime = dit->second->CreationTime;
-
-            int sz = dit->second->Name.length();
-            if(sz > 255)
-                sz = 255;
-            memcpy(entryHeaderNew.Name, dit->second->Name.c_str(), sz);
-            entryHeaderNew.Name[sz] = 0;
-            entryHeaderNew.Uuid = dit->second->Uuid;
-
-            mOutStream.write((char *)&entryHeaderNew, sizeof(_Ofs::strMainEntryHeader));
-            
-            dit++;
-        }
-
-        dit = FileMap.begin();
-
-        char *buffer = new char[2 * MAX_BUFFER_SIZE];
-
-        while(dit != FileMap.end())
-        {
-            blHeader.Length = sizeof(_Ofs::strMainEntryHeader) + dit->second->FileSize;
-            mOutStream.write((char *)&blHeader, sizeof(_Ofs::strBlockHeader));
-
-            entryHeaderNew.Id = dit->second->Id;
-            entryHeaderNew.ParentId = dit->second->ParentId;
-            entryHeaderNew.Flags = dit->second->Flags;
-            entryHeaderNew.NextBlock = 0;
-            entryHeaderNew.FileSize = dit->second->FileSize;
-            entryHeaderNew.CreationTime = dit->second->CreationTime;
-
-            int sz = dit->second->Name.length();
-            if(sz > 255)
-                sz = 255;
-            memcpy(entryHeaderNew.Name, dit->second->Name.c_str(), sz);
-            entryHeaderNew.Name[sz] = 0;
-            entryHeaderNew.Uuid = dit->second->Uuid;
-
-            mOutStream.write((char *)&entryHeaderNew, sizeof(_Ofs::strMainEntryHeader));
-
-            unsigned int total = dit->second->FileSize;
-            unsigned int curBlock = 0;
-
-            unsigned int can_read = dit->second->UsedBlocks[0].Length - sizeof(EntryHeaderV11);
-
-            while(total > 0)
-            {
-                if(can_read > total)
-                {
-                    mInStream.clear();
-                    mInStream.seekg(dit->second->UsedBlocks[0].Start + sizeof(EntryHeaderV11), fstream::beg);
-                    mInStream.read(buffer, total);
-                    mOutStream.write(buffer, total);
-                    total = 0;
-                }
-                else
-                {
-                    mInStream.clear();
-                    mInStream.seekg(dit->second->UsedBlocks[0].Start + sizeof(EntryHeaderV11), fstream::beg);
-                    mInStream.read(buffer, can_read);
-                    mOutStream.write(buffer, can_read);
-                    total -= can_read;
-                    
-                    if(total > 0)
-                    {
-                        curBlock++;
-                        can_read = dit->second->UsedBlocks[curBlock].Length - sizeof(EntryHeaderShortV10);
-                    }
-                }
-            }
-            
-            dit++;
-        }
-
-        delete [] buffer;
-
-        _deallocateChildren(&RootDir);
-
-        mInStream.close();
-        mOutStream.close();
-
-        return true;
-    }
-
-//------------------------------------------------------------------------------
-
-    bool OfsConverter::_convertv12_v13(std::string infile, std::string outfile)
-    {
-        OPEN_STREAM(mInStream, infile.c_str(), fstream::in | fstream::out | fstream::binary | fstream::ate);
-        if(mInStream.fail() || !mInStream.is_open())
-            return false;
-
-        _Ofs::strFileHeader fsHeader;
-
-        mInStream.seekg(0, fstream::end);
-        unsigned int file_size = mInStream.tellg();
-
-        int HeaderSize = sizeof(_Ofs::strFileHeader);
-        mInStream.seekg(0, fstream::beg);
-        mInStream.read((char *)&fsHeader, HeaderSize);
-
-        unsigned int current_loc = mInStream.tellg();
-
-        _Ofs::strBlockHeader blHeader;
-        _Ofs::BlockData blockData;
-        EntryHeaderV12 mainEntryOld;
-        _Ofs::strMainEntryHeader entryHeaderNew;
-        _Ofs::strExtendedEntryHeader extendedEntry;
-        _Ofs::IdDescMap::const_iterator it;
-        _Ofs::IdDescMap::iterator dait;
-        _Ofs::IdDescMap DirMap;
-        _Ofs::IdDescMap FileMap;
-        _Ofs::OfsEntryDesc RootDir;
-
-        RootDir.Id = -1;
-        RootDir.ParentId = -1;
-
-        DirMap.insert(_Ofs::IdDescMap::value_type(-1, &RootDir));
-
-        while((current_loc = mInStream.tellg()) < file_size)
-        {
-            mInStream.read((char*)&blHeader, sizeof(_Ofs::strBlockHeader));
-            if(blHeader.Signature[0] != fsHeader.BLOCK_HEADER_SIG[0] || blHeader.Signature[1] != fsHeader.BLOCK_HEADER_SIG[1])
-            {
-                    unsigned int pos = mInStream.tellg();
-                    mInStream.clear();
-                    mInStream.seekg( pos + 1 - sizeof(_Ofs::strBlockHeader));
-                    continue;
-            }
-
-            if(blHeader.Type & _Ofs::OFS_FREE_BLOCK)
-            {
-                mInStream.seekg(blHeader.Length, fstream::cur);
-            }
-            else if(blHeader.Type == _Ofs::OFS_MAIN_BLOCK)
-            {
-                mInStream.read((char*)&mainEntryOld, sizeof(EntryHeaderV12));
-                blockData.Type = blHeader.Type;
-                blockData.Start = mInStream.tellg();
-                blockData.Start -= sizeof(EntryHeaderV12);
-                blockData.Length = blHeader.Length;
-                blockData.NextBlock = mainEntryOld.NextBlock;
-
-                _Ofs::OfsEntryDesc *entryDesc = new _Ofs::OfsEntryDesc();
-
-                if(mainEntryOld.Flags & OFS_DIR)
-                {
-                    dait = DirMap.find(mainEntryOld.Id);
-                    if(dait == DirMap.end())
-                        DirMap.insert(_Ofs::IdDescMap::value_type(mainEntryOld.Id, entryDesc));
-                    else
-                    {
-                        delete entryDesc;
-                        entryDesc = dait->second;
-                    }
-                }
-                else
-                {
-                    dait = FileMap.find(mainEntryOld.Id);
-                    if(dait == FileMap.end())
-                        FileMap.insert(_Ofs::IdDescMap::value_type(mainEntryOld.Id, entryDesc));
-                    else
-                    {
-                        delete entryDesc;
-                        entryDesc = dait->second;
-                    }
-                }
-                    
-                entryDesc->Id = mainEntryOld.Id;
-                entryDesc->ParentId = mainEntryOld.ParentId;
-                entryDesc->Flags = mainEntryOld.Flags;
-                entryDesc->Name = mainEntryOld.Name;
-                entryDesc->FileSize = mainEntryOld.FileSize;
-                entryDesc->CreationTime = mainEntryOld.CreationTime;
-                entryDesc->UseCount = 0;
-                entryDesc->WriteLocked = false;
-                entryDesc->Uuid = mainEntryOld.Uuid;
-
-                it = DirMap.find(entryDesc->ParentId);
-                if(it == DirMap.end())
-                {
-                    _Ofs::OfsEntryDesc *dirDesc = new _Ofs::OfsEntryDesc();
-                    dirDesc->Id = entryDesc->ParentId;
-                    dirDesc->Name = "Error_NoName";
-                    dirDesc->Parent = 0;
-
-                    it = DirMap.insert(_Ofs::IdDescMap::value_type(dirDesc->Id, dirDesc)).first;
-                }
-
-                if(entryDesc->UsedBlocks.size() == 0)
-                    entryDesc->UsedBlocks.push_back(blockData);
-                else
-                    entryDesc->UsedBlocks[0] = blockData;
-
-                entryDesc->Parent = it->second;
-                it->second->Children.push_back(entryDesc);
-
-                mInStream.seekg(blockData.Length - sizeof(_Ofs::strMainEntryHeader), fstream::cur);
-            }
-            else if(blHeader.Type == _Ofs::OFS_EXTENDED_BLOCK)
-            {
-                mInStream.read((char*)&extendedEntry, sizeof(_Ofs::strExtendedEntryHeader));
- 
-                blockData.Type = blHeader.Type;
-                blockData.Start = mInStream.tellg();
-                blockData.Start -= sizeof(_Ofs::strExtendedEntryHeader);
-                blockData.Length = blHeader.Length;
-                blockData.NextBlock = extendedEntry.NextBlock;
-
-                it = FileMap.find(extendedEntry.Id);
-                if(it == FileMap.end())
-                {
-                    _Ofs::OfsEntryDesc *fileDesc = new _Ofs::OfsEntryDesc();
-                    fileDesc->Id = extendedEntry.Id;
-                    fileDesc->ParentId = extendedEntry.ParentId;
-                    fileDesc->Name = "Error_NoName";
-                    fileDesc->Parent = 0;
-
-                    it = FileMap.insert(_Ofs::IdDescMap::value_type(fileDesc->Id, fileDesc)).first;
-                }
-
-                while(it->second->UsedBlocks.size() <= extendedEntry.Index)
-                    it->second->UsedBlocks.push_back(blockData);
-
-                it->second->UsedBlocks[extendedEntry.Index] = blockData;
-
-                mInStream.seekg(blockData.Length - sizeof(_Ofs::strExtendedEntryHeader), fstream::cur);
-            }
-            else
-                return false;
-        }
-
-//--------------
-
-        OPEN_STREAM(mOutStream, outfile.c_str(), fstream::in | fstream::out | fstream::binary | fstream::trunc);
-        if(mOutStream.fail() || !mOutStream.is_open())
-        {
-            mInStream.close();
-            return false;
-        }
-
-        fsHeader.VERSION[0] = VERSION_MAJOR_0;
-        fsHeader.VERSION[1] = VERSION_MAJOR_1;
-        fsHeader.VERSION[2] = VERSION_MINOR;
-        fsHeader.VERSION[3] = VERSION_FIX;
-        
-        mOutStream.write((char *)&fsHeader, sizeof(_Ofs::strFileHeader));
-
-        _Ofs::IdDescMap::iterator dit = DirMap.begin();
-
-        memset(&blHeader, 0 , sizeof(_Ofs::strBlockHeader));
-        memset(&entryHeaderNew, 0 , sizeof(_Ofs::strMainEntryHeader));
-
-        blHeader.Signature[0] = fsHeader.BLOCK_HEADER_SIG[0];
-        blHeader.Signature[1] = fsHeader.BLOCK_HEADER_SIG[1];
-        blHeader.Type = _Ofs::OFS_MAIN_BLOCK;
-
-        while(dit != DirMap.end())
-        {
-            if(dit->second->Id == -1)
-            {
-                dit++;
-                continue;
-            }
-
-            blHeader.Length = sizeof(_Ofs::strMainEntryHeader);
-            mOutStream.write((char *)&blHeader, sizeof(_Ofs::strBlockHeader));
-
-            entryHeaderNew.Id = dit->second->Id;
-            entryHeaderNew.ParentId = dit->second->ParentId;
-            entryHeaderNew.Flags = dit->second->Flags;
-            entryHeaderNew.NextBlock = 0;
-            entryHeaderNew.FileSize = dit->second->FileSize;
-            entryHeaderNew.CreationTime = dit->second->CreationTime;
-
-            int sz = dit->second->Name.length();
-            if(sz > 255)
-                sz = 255;
-            memcpy(entryHeaderNew.Name, dit->second->Name.c_str(), sz);
-            entryHeaderNew.Name[sz] = 0;
-            entryHeaderNew.Uuid = dit->second->Uuid;
-
-            mOutStream.write((char *)&entryHeaderNew, sizeof(_Ofs::strMainEntryHeader));
-            
-            dit++;
-        }
-
-        dit = FileMap.begin();
-
-        char *buffer = new char[2 * MAX_BUFFER_SIZE];
-
-        while(dit != FileMap.end())
-        {
-            blHeader.Length = sizeof(_Ofs::strMainEntryHeader) + dit->second->FileSize;
-            mOutStream.write((char *)&blHeader, sizeof(_Ofs::strBlockHeader));
-
-            entryHeaderNew.Id = dit->second->Id;
-            entryHeaderNew.ParentId = dit->second->ParentId;
-            entryHeaderNew.Flags = dit->second->Flags;
-            entryHeaderNew.NextBlock = 0;
-            entryHeaderNew.FileSize = dit->second->FileSize;
-            entryHeaderNew.CreationTime = dit->second->CreationTime;
-
-            int sz = dit->second->Name.length();
-            if(sz > 255)
-                sz = 255;
-            memcpy(entryHeaderNew.Name, dit->second->Name.c_str(), sz);
-            entryHeaderNew.Name[sz] = 0;
-            entryHeaderNew.Uuid = dit->second->Uuid;
-
-            mOutStream.write((char *)&entryHeaderNew, sizeof(_Ofs::strMainEntryHeader));
-
-            unsigned int total = dit->second->FileSize;
-            unsigned int curBlock = 0;
-
-            unsigned int can_read = dit->second->UsedBlocks[0].Length - sizeof(EntryHeaderV12);
-
-            while(total > 0)
-            {
-                if(can_read > total)
-                {
-                    mInStream.clear();
-                    mInStream.seekg(dit->second->UsedBlocks[0].Start + sizeof(EntryHeaderV12), fstream::beg);
-                    mInStream.read(buffer, total);
-                    mOutStream.write(buffer, total);
-                    total = 0;
-                }
-                else
-                {
-                    mInStream.clear();
-                    mInStream.seekg(dit->second->UsedBlocks[0].Start + sizeof(EntryHeaderV12), fstream::beg);
-                    mInStream.read(buffer, can_read);
-                    mOutStream.write(buffer, can_read);
-                    total -= can_read;
-                    
-                    if(total > 0)
-                    {
-                        curBlock++;
-                        can_read = dit->second->UsedBlocks[curBlock].Length - sizeof(_Ofs::strExtendedEntryHeader);
-                    }
-                }
-            }
-            
-            dit++;
-        }
-
-        delete [] buffer;
-
-        _deallocateChildren(&RootDir);
-
-        mInStream.close();
-        mOutStream.close();
-
-        return true;
-    }
 
 //------------------------------------------------------------------------------
 

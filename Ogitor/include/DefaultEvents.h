@@ -182,6 +182,22 @@ namespace Ogitors
     };
 
     //-----------------------------------------------------------------------------------------
+
+    class OgitorExport SelectionChangeEvent : public IEvent
+    {
+    public:
+        SelectionChangeEvent(CMultiSelEditor* editor) : mMultiSelEditor(editor) {}
+        ~SelectionChangeEvent() {}
+
+        const event_id_type& getID() const { return mID; }
+        CMultiSelEditor* getMultiSelEditor() const {return mMultiSelEditor;}
+
+    private:
+        static event_id_type    mID;
+        CMultiSelEditor*        mMultiSelEditor;
+    };
+
+    //-----------------------------------------------------------------------------------------
 }
 
 #endif

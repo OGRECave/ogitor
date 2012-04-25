@@ -97,7 +97,7 @@ namespace Ogitors
         * Fetches full path to the Ogitor' Projects directory
         * @return full path to the Ogitor' Projects directory
         */
-        virtual Ogre::String getProjectsDirectory() = 0;
+        virtual Ogre::String GetProjectsDirectory() = 0;
         /**
         * Deletes specified file
         * @param file full path to the file, including file name
@@ -143,7 +143,7 @@ namespace Ogitors
         * @param title title of the dialog
         * @return name of selected directory
         */
-        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Open File" dialog
         * @param title title of the dialog
@@ -151,7 +151,7 @@ namespace Ogitors
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of selected file
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Save File" dialog
         * @param title title of the dialog
@@ -159,7 +159,7 @@ namespace Ogitors
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of the file to be saved
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Yes/No/Cancel" or "Okay/Cancel" dialog
         * @param msg message to convey to the user
@@ -315,7 +315,7 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue)
         */
-        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) { };
+        virtual Ogre::UTFString GetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString defaultValue) {return defaultValue;};
         /**
         * @copydoc OgitorsSystem::SetSetting(Ogre::UTFString group, Ogre::UTFString name, Ogre::UTFString value)
         */
@@ -343,7 +343,7 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::getProjectsDirectory()
         */
-        virtual Ogre::String getProjectsDirectory() {return "./";};
+        virtual Ogre::String GetProjectsDirectory() {return "./";};
         /**
         * @copydoc OgitorsSystem::DeleteFile(const Ogre::String&)
         */

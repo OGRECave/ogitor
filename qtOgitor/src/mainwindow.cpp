@@ -260,7 +260,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     QtOgitorSystem *system = static_cast<QtOgitorSystem*>(OgitorsSystem::getSingletonPtr());
     system->SetWindows(mOgreWidget, mSceneViewWidget, mLayerViewWidget, mGeneralPropertiesViewWidget, mCustomPropertiesViewWidget);
-    system->initTreeIcons();
+    system->InitTreeIcons();
 
     mTimer = new QTimer(this);
     mTimer->setInterval(0);
@@ -507,7 +507,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	{
 		mLastLoadedScene = OgitorsRoot::getSingletonPtr()->GetSceneName();
 	}
-    if(OgitorsRoot::getSingletonPtr()->TerminateScene())
+
+	if(OgitorsRoot::getSingletonPtr()->TerminateScene())
     {
         delete mOgitorAssistant;
 
@@ -721,6 +722,10 @@ void MainWindow::createSceneRenderWindow()
     renderWindowToolBar->addWidget(viewModeLabel);
     renderWindowToolBar->addWidget(mCameraViewModeBox);
 
+    mSnapGround = new QCheckBox(tr("Always Snap Ground"));
+    renderWindowToolBar->addSeparator();
+    renderWindowToolBar->addWidget(mSnapGround);
+
     mOgreWidget = new OgreWidget(renderWindowWidget, mHasFileArgs);
 
     QVBoxLayout *renderWindowLayout = new QVBoxLayout();
@@ -736,6 +741,7 @@ void MainWindow::createSceneRenderWindow()
     connect(mSnapMultiplierBox, SIGNAL( currentIndexChanged( int )), this, SLOT( snapMultiplierIndexChanged( int )));
     connect(mCameraViewModeBox, SIGNAL( currentIndexChanged( int )), this, SLOT( viewModeIndexChanged( int )));
     connect(mCameraSpeedSlider, SIGNAL( valueChanged( int )), this, SLOT( cameraSpeedValueChanged( int )));
+    connect(mSnapGround, SIGNAL( stateChanged( int )), this, SLOT( snapGroundChanged( int )));
 }
 //------------------------------------------------------------------------------
 void MainWindow::createHomeTab()
@@ -1100,9 +1106,8 @@ void MainWindow::setupStatusBar()
     mStatusBar->setObjectName(QString::fromUtf8("mStatusBar"));
     setStatusBar(mStatusBar);
 
-    mFPSLabel = new QLabel(tr("FPS : "));
+    mFPSLabel = new QLabel(tr("FPS: "));
     mFPSLabel->setMinimumWidth(87);
-
     mFPSSlider = new QSlider(Qt::Horizontal);
     mFPSSlider->setRange(0, 19);
     mFPSSlider->setTickInterval(1);
@@ -1110,14 +1115,18 @@ void MainWindow::setupStatusBar()
     mFPSSlider->setMaximumWidth(100);
     mFPSSliderLabel = new QLabel(tr("FPS (30)"));
     mFPSSlider->setSliderPosition(5);
-
-
-    mTriangleCountLabel = new QLabel(tr("Triangles : %1").arg(0));
-    mTriangleCountLabel->setMinimumWidth(100);
+    mSelectedObjectsCountLabel = new QLabel();
+    setSelectedObjectsCount(0);
+    mSelectedObjectsCountLabel->setMinimumWidth(150);
+    Ogitors::EventManager::getSingletonPtr()->connectEvent(Ogitors::EventManager::SELECTION_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(MainWindow, onSelectionChange));
+    mTriangleCountLabel = new QLabel(tr("Triangles visible: %1").arg(0));
+    mTriangleCountLabel->setMinimumWidth(120);
     mCamPosLabel = new QLabel(tr("Camera Position:"));
-    mCamPosLabel->setMinimumWidth(333);
+    mCamPosLabel->setMinimumWidth(300);
     mCamPosToolBar = new QToolBar();
     mCamPosToolBar->setIconSize(QSize(16, 16));
+    mCamPosToolBar->addWidget(mSelectedObjectsCountLabel);
+    mCamPosToolBar->addSeparator();
 #if OGRE_MEMORY_TRACKER
     mMemoryUsageLabel = new QLabel("MU : 0000MB");
     mMemoryUsageLabel->setMinimumWidth(87);
@@ -1280,6 +1289,11 @@ void MainWindow::setCameraPositions()
     }
 
     mCameraSpeedSlider->setValue(pOpt->CameraSpeed);
+}
+//------------------------------------------------------------------------------
+void MainWindow::setSelectedObjectsCount(int count)
+{
+    mSelectedObjectsCountLabel->setText(tr("%1 Object(s) selected").arg(count));
 }
 //------------------------------------------------------------------------------
 void MainWindow::updateRecentFiles()
@@ -1578,6 +1592,13 @@ void MainWindow::onTerrainEditorChange(Ogitors::IEvent* evt)
     }
 }
 //------------------------------------------------------------------------------------
+void MainWindow::onSelectionChange(Ogitors::IEvent* evt)
+{
+    SelectionChangeEvent *change_event = Ogitors::event_cast<SelectionChangeEvent*>(evt);
+
+    setSelectedObjectsCount(change_event->getMultiSelEditor()->getSelection().size());
+}
+//------------------------------------------------------------------------------------
 void MainWindow::autoSaveScene()
 {
     bool modified = OgitorsRoot::getSingletonPtr()->IsSceneModified();
@@ -1651,3 +1672,5 @@ void MainWindow::onFocusOnObject()
     }
 }
 //------------------------------------------------------------------------------------
+
+

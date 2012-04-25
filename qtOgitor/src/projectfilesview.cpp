@@ -103,7 +103,11 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActHidden->setCheckable(true);
     mActHidden->setChecked(false);
 
+    mActLinkFileSystem = new QAction(tr("Link File System"), this);
+    mActLinkFileSystem->setStatusTip(tr("Link a File System to current directory"));
+
     mMenu->addAction(mActAddFolder);
+    mMenu->addAction(mActLinkFileSystem);
     mMenu->addSeparator();
     mMenu->addAction(mActImportFile);
     mMenu->addAction(mActImportFolder);
@@ -127,6 +131,8 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActRename->setEnabled(false);
     mActReadOnly->setEnabled(false);
     mActHidden->setEnabled(false);
+    mActLinkFileSystem->setEnabled(false);
+
 
     connect(mActAddFolder,      SIGNAL(triggered()),    this,   SLOT(onAddFolder()));
     connect(mActImportFile,     SIGNAL(triggered()),    this,   SLOT(onImportFile()));
@@ -139,6 +145,7 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     connect(mActRename,         SIGNAL(triggered()),    this,   SLOT(onRename()));
     connect(mActReadOnly,       SIGNAL(triggered()),    this,   SLOT(onReadOnly()));
     connect(mActHidden,         SIGNAL(triggered()),    this,   SLOT(onHidden()));
+    connect(mActLinkFileSystem, SIGNAL(triggered()),    this,   SLOT(onLinkFileSystem()));
 
     mToolBar = new QToolBar();
     mToolBar->setIconSize(QSize(16, 16));
@@ -236,6 +243,14 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
     {
         QString path = selItems[0]->whatsThis(0);
  
+        OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+        unsigned int flags = 0;
+
+        if(path.endsWith("/"))
+            file->getDirFlags(path.toStdString().c_str(), flags);
+        else
+            file->getFileFlags(path.toStdString().c_str(), flags);
+
         if(path == "/")
         {
             mActMakeAsset->setEnabled(false);
@@ -246,29 +261,27 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             mActHidden->setEnabled(false);
             mActRename->setEnabled(false);
             mActDelete->setEnabled(false);
+            mActLinkFileSystem->setEnabled(true);
         }
         else
         {
             if(path.endsWith("/"))
+            {
                 mAddFileFolderPath = path.toStdString();
+                mActLinkFileSystem->setEnabled(true);
+            }
+            else
+                mActLinkFileSystem->setEnabled(false);
 
             mActMakeAsset->setEnabled(true);
             mActMakeAsset->setChecked(false);
             mActReadOnly->setChecked(true);
             mActHidden->setChecked(true);
-            mActReadOnly->setEnabled(true);
-            mActHidden->setEnabled(true);
-            mActRename->setEnabled(true);
-            mActDelete->setEnabled(true);
+            mActReadOnly->setEnabled(!(flags & OFS::OFS_LINK));
+            mActHidden->setEnabled(!(flags & OFS::OFS_LINK));
+            mActRename->setEnabled(!(flags & OFS::OFS_LINK));
+            mActDelete->setEnabled(!(flags & OFS::OFS_LINK));
         }
-
-        OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
-        unsigned int flags = 0;
-
-        if(path.endsWith("/"))
-            file->getDirFlags(path.toStdString().c_str(), flags);
-        else
-            file->getFileFlags(path.toStdString().c_str(), flags);
 
         mActReadOnly->setChecked(flags & OFS::OFS_READONLY);
         if(flags & OFS::OFS_READONLY)
@@ -294,6 +307,7 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
         mActHidden->setEnabled(false);
         mActRename->setEnabled(false);
         mActDelete->setEnabled(false);
+        mActLinkFileSystem->setEnabled(false);
     }
 
     mActImportFile->setEnabled(true);
@@ -311,6 +325,39 @@ void ProjectFilesViewWidget::onOfsWidgetBusyState(bool state)
     mActRefresh->setEnabled(!state);
     mActExtract->setEnabled(!state);
     mActDefrag->setEnabled(!state);
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onLinkFileSystem()
+{
+    QStringList selItems = mOfsTreeWidget->getSelectedItems();
+    Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() > 0 && ofsFile.valid())
+    {
+        Ogitors::UTFStringVector extlist;
+        extlist.push_back(OTR("Ogitor File System File"));
+        extlist.push_back("*.ofs");
+
+        Ogre::UTFString importfile = mSystem->GetSetting("system", "oldOpenPath", "");
+        importfile = mSystem->DisplayOpenDialog(OTR("Link File System"), extlist, importfile);
+        if(importfile == "") 
+            return;
+
+        mSystem->SetSetting("system", "oldOpenPath", importfile);
+
+        QString name = selItems.at(0);
+
+        Ogitors::LINKDATA data;
+
+        data.FileSystem = importfile;
+        data.Directory = name.toStdString();
+
+        if( ofsFile->linkFileSystem( data.FileSystem.c_str(), data.Directory.c_str()) == OFS::OFS_OK )
+            Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->FileSystemLinks.push_back( data );
+
+        mOfsTreeWidget->refreshWidget();
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onRefresh()
@@ -354,16 +401,16 @@ void ProjectFilesViewWidget::onDefrag()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onDelete()
 {
-    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
+    QStringList selItems = mOfsTreeWidget->getSelectedItems();
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     if(selItems.size() > 0 && ofsFile.valid())
     {
-        if(QMessageBox::information(QApplication::activeWindow(),"qtOgitor", tr("Are you sure you want to delete selected files?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Are you sure you want to delete selected files/folders?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
         {
             for(int i = 0;i < selItems.size();i++)
             {
-                QString name = selItems[i]->whatsThis(0);
+                QString name = selItems.at(i);
 
                 if(name.endsWith("/"))
                     ofsFile->deleteDirectory(name.toStdString().c_str(), true);
@@ -486,13 +533,13 @@ void ProjectFilesViewWidget::onImportFolder()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
 
-    Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "importOpenPath", "");
+    Ogre::UTFString defaultPath = mSystem->GetSetting("system", "importOpenPath", "");
     Ogre::String folderName = mSystem->DisplayDirectorySelector(OTR("Choose folder to import"), defaultPath);
 
     if (folderName == "")
         return;
 
-    mSystem->SetSetting("OgitorSystem", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(folderName));
+    mSystem->SetSetting("system", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(folderName));
 
     QStringList folders(folderName.c_str());
     if(!folders.empty())
@@ -503,13 +550,13 @@ void ProjectFilesViewWidget::onImportFile()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
     
-    Ogre::UTFString defaultPath = mSystem->GetSetting("OgitorSystem", "importOpenPath", "");
+    Ogre::UTFString defaultPath = mSystem->GetSetting("system", "importOpenPath", "");
     Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector(), defaultPath);
 
     if (fileName == "")
         return;
 
-    mSystem->SetSetting("OgitorSystem", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(fileName));
+    mSystem->SetSetting("system", "importOpenPath", Ogitors::OgitorsUtils::ExtractFilePath(fileName));
 
     QStringList files(fileName.c_str());
     if(!files.empty())
@@ -551,8 +598,17 @@ void ProjectFilesViewWidget::onMakeAsset()
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onAddFolder()
 {
-    QString selectItemName = mOfsTreeWidget->getSelected().c_str();
+    QString selectedItemName;
     QString newFolderName;
+    
+    QStringList selectItemList = mOfsTreeWidget->getSelectedItems();
+    if(selectItemList.size() > 1)
+    {
+        QMessageBox::information(QApplication::activeWindow(), "Ogitor", tr("Only select one parent folder!"));
+        return;
+    }
+    else
+        selectedItemName = selectItemList.at(0);
 
     // Search until a yet unused name has been found.
     bool nameFound = false;
@@ -566,21 +622,42 @@ void ProjectFilesViewWidget::onAddFolder()
             i++;
     }    
     
-    // If current selected item is a folder, create a subfolder. Otherwise create
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+    // If current selected item is a folder, create a sub folder. Otherwise create
     // the new folder as a sibling of the selected item.
-    if(selectItemName.right(1) == "/")
-        mOfsTreeWidget->addEmptyFolder(selectItemName, newFolderName);
+    if(selectedItemName.right(1) == "/")
+    {
+        QString sName = selectedItemName + newFolderName + "/";
+        ofsFile->createDirectory(sName.toStdString().c_str());
+        mOfsTreeWidget->refreshWidget();   
+
+        // setCurrentItem() needs to be called twice, because the first call might trigger
+        // the onExpand() slot of ofsTreeWidget, which will overwrite our desired selection.
+        // The second call will then not need any expansion work anymore and therefore 
+        //successfully set the desired selection.
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+    }
     else
     {
-        selectItemName = selectItemName.right(selectItemName.size() - (selectItemName.lastIndexOf("/") + 1));
-        QString parentName = mOfsTreeWidget->findItems(selectItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
-        mOfsTreeWidget->addEmptyFolder(parentName, newFolderName);
+        selectedItemName = selectedItemName.right(selectedItemName.size() - (selectedItemName.lastIndexOf("/") + 1));
+        QString parentName = mOfsTreeWidget->findItems(selectedItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
+        
+        QString sName = parentName + newFolderName + "/";
+        ofsFile->createDirectory(sName.toStdString().c_str());
+        mOfsTreeWidget->refreshWidget();
+        
+        // setCurrentItem() needs to be called twice, because the first call might trigger
+        // the onExpand() slot of ofsTreeWidget, which will overwrite our desired selection.
+        // The second call will then not need any expansion work anymore and therefore 
+        //successfully set the desired selection.
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
+        mOfsTreeWidget->setCurrentItem(mOfsTreeWidget->findItems(newFolderName, Qt::MatchRecursive).at(0));
     }
 }
-
+//----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::triggerRefresh()
 {
-mActRefresh->trigger();
+    mActRefresh->trigger();
 }
-
 //----------------------------------------------------------------------------------------
