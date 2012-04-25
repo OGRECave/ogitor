@@ -5,12 +5,16 @@ cmake_policy(SET CMP0003 NEW)
 project(OFS)
 
 set(OFS_SOURCE
-	source/ofs.cpp
+	source/ofs13.cpp
+	source/ofs14.cpp
 	source/ofs_converter.cpp
 )
 
 set(OFS_HEADERS
 	include/ofs.h
+	include/ofs13.h
+	include/ofs14.h
+	include/ofs_converter.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include

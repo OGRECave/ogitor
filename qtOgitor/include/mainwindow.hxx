@@ -129,6 +129,7 @@ public:
     QCheckBox*   moveX;
     QCheckBox*   moveY;
     QCheckBox*   moveZ;
+    QCheckBox*   mSnapGround;
     QComboBox*   mSnapMultiplierBox;
     QComboBox*   mCameraViewModeBox;
 
@@ -213,15 +214,15 @@ public:
     QMenu*    menuSelectSelectionList;
     QAction*  mSelectActions[20];
 
+    QSignalMapper *recentMapper;
+
     QSlider*  mCameraSpeedSlider;
     QSlider*  mFPSSlider;
     QLabel*   mFPSSliderLabel;
 #if OGRE_MEMORY_TRACKER
     QLabel*   mMemoryUsageLabel;
 #endif
-
-    QSignalMapper *recentMapper;
-
+    QLabel*   mSelectedObjectsCountLabel;
     QLabel*   mTriangleCountLabel;
     QLabel*   mFPSLabel;
     QLabel*   mCamPosLabel;
@@ -255,6 +256,7 @@ public:
 
     void                            setCameraPositions();
     void                            updateLoadTerminateActions(bool loaded);
+    void                            setSelectedObjectsCount(int count);
 
     void updateLog(QListWidgetItem* item);
     void scrollLogToBottom() {logWidget->scrollToBottom();};
@@ -318,6 +320,7 @@ public Q_SLOTS:
     void toggleFullScreen();
     void toggleSuperFullScreen();
     void snapMultiplierIndexChanged(int index);
+    void snapGroundChanged(int state);
     void viewModeIndexChanged(int index);
     void toggleToolBar(bool b);
     void exportSerializer(const QString& value);
@@ -407,6 +410,7 @@ private:
     void onSceneModifiedChange(Ogitors::IEvent* evt);
     void onUndoManagerNotification(Ogitors::IEvent* evt);
     void onTerrainEditorChange(Ogitors::IEvent* evt);
+    void onSelectionChange(Ogitors::IEvent* evt);
 
 private Q_SLOTS:
     void autoSaveScene();

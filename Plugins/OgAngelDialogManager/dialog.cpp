@@ -108,7 +108,7 @@ void RegisterDialogBindings(asIScriptEngine *engine)
 {
     int r;
 
-    r = engine->RegisterGlobalProperty("AngelGUI gui", 0);assert(r >= 0);
+    r = engine->RegisterGlobalProperty("AngelGUI gui", (void*)0xDEADBEEF);assert(r >= 0);
     r = engine->RegisterObjectMethod("AngelGUI", "Dialog@ createDialog(int, int)", asFUNCTION(createDialog), asCALL_CDECL_OBJLAST);assert(r >= 0);
     r = engine->RegisterObjectMethod("AngelGUI", "VBoxLayout@ createVBoxLayout()", asFUNCTION(createVBoxLayout), asCALL_CDECL_OBJLAST);assert(r >= 0);
     r = engine->RegisterObjectMethod("AngelGUI", "HBoxLayout@ createHBoxLayout()", asFUNCTION(createHBoxLayout), asCALL_CDECL_OBJLAST);assert(r >= 0);

@@ -275,7 +275,7 @@ namespace Ogitors
                 {
                     Ogre::Vector3 vTempPos;
 
-                    if(mViewKeyboard[mSpecial.SPK_SNAP] && GetHitPosition(mouseRay, vTempPos, multisel->getAsSingle()->getName()))
+                    if((mOgitorsRoot->GetSnapGroundState() || mViewKeyboard[mSpecial.SPK_SNAP]) && GetHitPosition(mouseRay, vTempPos, multisel->getAsSingle()->getName()))
                     {
                         vNewPos = vTempPos;
                         mLastDerivedPosition = vNewPos;

@@ -36,6 +36,8 @@
 #include "NodeEditor.h"
 #include "MultiSelEditor.h"
 #include "OgitorsSystem.h"
+#include "DefaultEvents.h"
+#include "EventManager.h"
 
 using namespace Ogitors;
 
@@ -107,6 +109,9 @@ void CMultiSelEditor::_clearSelection()
     mModifyList.clear();
 
     mDeletionInProgress = false;
+
+    SelectionChangeEvent evt(this);
+    EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //--------------------------------------------------------------------------------
 void CMultiSelEditor::setSelection(CBaseEditor *object)
@@ -123,6 +128,9 @@ void CMultiSelEditor::setSelection(CBaseEditor *object)
         mSystem->SelectTreeItem(mOgitorsRoot->GetRootEditor());
         mSystem->PresentPropertiesView(0);
     }
+
+    SelectionChangeEvent evt(this);
+    EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //--------------------------------------------------------------------------------
 void CMultiSelEditor::setSelection(NameObjectPairList &newselection)
@@ -142,6 +150,9 @@ void CMultiSelEditor::setSelection(NameObjectPairList &newselection)
     }
 
     _createModifyList();
+
+    SelectionChangeEvent evt(this);
+    EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //--------------------------------------------------------------------------------
 void CMultiSelEditor::setSelection(const ObjectVector& list)
@@ -161,6 +172,9 @@ void CMultiSelEditor::setSelection(const ObjectVector& list)
     }
 
     _createModifyList();
+
+    SelectionChangeEvent evt(this);
+    EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //--------------------------------------------------------------------------------
 void CMultiSelEditor::getSelection(ObjectVector& list)
@@ -263,6 +277,9 @@ void CMultiSelEditor::_createModifyList()
         mSystem->SelectTreeItem(this);
         mSystem->PresentPropertiesView(this);
     }
+
+    SelectionChangeEvent evt(this);
+    EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //--------------------------------------------------------------------------------
 void CMultiSelEditor::setDerivedPosition(Ogre::Vector3 val)

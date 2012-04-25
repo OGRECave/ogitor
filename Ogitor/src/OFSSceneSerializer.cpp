@@ -55,11 +55,12 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         extlist.push_back(OTR("Ogitor Scene File"));
         extlist.push_back("*.ofs");
 
-        importfile = mSystem->DisplayOpenDialog(OTR("Open"), extlist, "");
+        importfile = mSystem->GetSetting("system", "oldOpenPath", "");
+        importfile = mSystem->DisplayOpenDialog(OTR("Open"), extlist, importfile);
         if(importfile == "") 
             return SCF_CANCEL;
 
-        mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(importfile));
+        mSystem->SetSetting("system", "oldOpenPath", importfile);
     }
 
     importfile = OgitorsUtils::QualifyPath(importfile);
@@ -117,12 +118,12 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
     
     fileName += ".ogscene";
 
-    unsigned int file_size = 0;
+    OFS::ofs64 file_size = 0;
 
     if(mFile->getFileSize(fileName.c_str(), file_size) != OFS::OFS_OK)
         return SCF_ERRFILE;
 
-    char *file_data = new char[file_size + 1];
+    char *file_data = new char[(unsigned int)file_size + 1];
 
     OFS::OFSHANDLE projHandle;
 
@@ -291,12 +292,19 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
         extlist.push_back(OTR("Ogitor Scene File"));
         extlist.push_back("*.ofs");
 
-        fileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, "");
-        if(fileLocation == "") 
+        Ogre::String newfileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, fileLocation);
+        if(newfileLocation == "") 
             return SCF_CANCEL;
 
-        mSystem->SetSetting("OgitorSystem", "oldOpenPath", OgitorsUtils::ExtractFilePath(fileLocation));
-        forceSave = true;
+        mSystem->SetSetting("system", "oldOpenPath", newfileLocation);
+
+        if(Ogre::StringUtil::match(newfileLocation, fileLocation, false))
+        {
+            SaveAs = false;
+        } else {
+            forceSave = true;
+            fileLocation = newfileLocation;
+        }
     }
 
     fileName = OgitorsUtils::ExtractFileName(fileLocation);

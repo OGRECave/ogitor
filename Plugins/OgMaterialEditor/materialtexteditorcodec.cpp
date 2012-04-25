@@ -307,10 +307,12 @@ QString MaterialTextEditorCodec::getMaterialText(const Ogre::String& input, cons
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::onAddHighlighter()
 {
-    new MaterialHighlighter(MaterialTextEditorCodec::mKeyHighlightList,
-                            MaterialTextEditorCodec::mEnumHighlightList,
-                            MaterialTextEditorCodec::mDataTypeHighlightList, 
-                            mGenTexEdDoc->document());
+    QSettings settings;
+    if(settings.value("materialEditor/enableSyntaxHighlighting", true).toBool())    
+        new MaterialHighlighter(MaterialTextEditorCodec::mKeyHighlightList,
+                                MaterialTextEditorCodec::mEnumHighlightList,
+                                MaterialTextEditorCodec::mDataTypeHighlightList, 
+                                mGenTexEdDoc->document());
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::handleError(Ogre::ScriptCompiler *compiler, Ogre::uint32 code, const Ogre::String &file, int line, const Ogre::String &msg)
