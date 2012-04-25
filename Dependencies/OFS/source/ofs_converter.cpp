@@ -141,6 +141,7 @@ namespace OFS
                 if(allFiles[i].flags & OFS13::OFS_DIR)
                 {
                     destFile->createDirectoryUUID(allFiles[i].name.c_str(), *((OFS::UUID*)&allFiles[i].uuid));
+                    destFile->setDirFlags(allFiles[i].name.c_str(), allFiles[i].flags);
                 }
                 else
                 {
@@ -164,7 +165,10 @@ namespace OFS
                                 if(dest_file_created)
                                     destFile->write(out_handle, tmp_buffer, total);
                                 else
+                                {
                                     destFile->createFileUUID(out_handle, file_ofs_path.c_str(), *((OFS::UUID*)&allFiles[i].uuid), total, total, tmp_buffer);
+                                    destFile->setFileFlags(out_handle, allFiles[i].flags);
+                                }
 
                                 output_amount += total;
                                 total = 0;
@@ -177,6 +181,7 @@ namespace OFS
                                 else
                                 {
                                     destFile->createFileUUID(out_handle, file_ofs_path.c_str(), *((OFS::UUID*)&allFiles[i].uuid), MAX_BUFFER_SIZE, MAX_BUFFER_SIZE, tmp_buffer);
+                                    destFile->setFileFlags(out_handle, allFiles[i].flags);
                                     dest_file_created = true;
                                 }
 
