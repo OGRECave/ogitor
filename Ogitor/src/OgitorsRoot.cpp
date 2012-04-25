@@ -1433,9 +1433,19 @@ bool OgitorsRoot::OptionsReadFileSystemLinks(TiXmlElement *parent)
         data.FileSystem = ValidAttr(element->Attribute("filesystem"));
         data.Directory = ValidAttr(element->Attribute("directory"));
         
-        mProjectOptions.FileSystemLinks.push_back(data);
+        if( (*mProjectFile)->linkFileSystem(data.FileSystem.c_str(), data.Directory.c_str()) == OFS::OFS_OK)
+            mProjectOptions.FileSystemLinks.push_back(data);
+        else
+        {
+            Ogre::String msg = "Could not link File System \"";
+            msg += data.FileSystem;
+            msg += "\" to directory \"";
+            msg += data.Directory;
+            msg += "\"";
 
-        (*mProjectFile)->linkFileSystem(data.FileSystem.c_str(), data.Directory.c_str());
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, msg );
+        }
+
     } while(element = element->NextSiblingElement());
     
     return true;
