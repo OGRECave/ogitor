@@ -43,6 +43,7 @@ namespace Ogitors
         void            deleteObjects();
         
         NameObjectPairList getSelection() {return mSelectedObjects;};   
+        NameObjectPairList getModificationList() {return mModifyList;};   
         void getSelection(ObjectVector& list);
 
         virtual Ogre::AxisAlignedBox  getAABB();

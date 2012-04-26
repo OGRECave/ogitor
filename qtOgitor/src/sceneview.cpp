@@ -82,11 +82,23 @@ void SceneTreeWidget::dragMoveEvent(QDragMoveEvent *evt)
     {
         if(item)
         {
-            source = OgitorsRoot::getSingletonPtr()->FindObject(currentItem()->text(0).toStdString());
-            if(source && source->supports(CAN_DRAG))
+            allow = true;
+
+            CMultiSelEditor *multiSel = OgitorsRoot::getSingletonPtr()->GetSelection();
+
+            NameObjectPairList selected = multiSel->getModificationList();
+
+            for( NameObjectPairList::iterator it = selected.begin(); it != selected.end(); it++ )
             {
-                if(target != source && target->getParent() != source && !source->findChild(target->getName(), true))
-                    allow = true;
+                source = it->second;
+
+                if(source->supports(CAN_DRAG))
+                {
+                    if(target == source || source->findChild(target->getName(), true))
+                        allow = false;
+                }
+                else
+                    allow = false;
             }
         }
     }
@@ -117,16 +129,23 @@ void SceneTreeWidget::dropEvent(QDropEvent *evt)
 
     if(evt->source() == this)
     {
-        source = OgitorsRoot::getSingletonPtr()->FindObject(currentItem()->text(0).toStdString());
-        if(source && source->supports(CAN_DRAG))
-        {
-            if(target != source && target->getParent() != source && !source->findChild(target->getName(), true))
-            {    
-                allow = true;
-                //evt->setDropAction(Qt::MoveAction);
-                //QTreeWidget::dropEvent(evt);
+        OgitorsUndoManager *undoMgr = OgitorsUndoManager::getSingletonPtr();
         
-                OgitorsUndoManager *undoMgr = OgitorsUndoManager::getSingletonPtr();
+        CMultiSelEditor *multiSel = OgitorsRoot::getSingletonPtr()->GetSelection();
+
+        if(!multiSel->isSingle())
+            undoMgr->BeginCollection("Multiple Drag&Drop");
+
+        NameObjectPairList selected = multiSel->getModificationList();
+
+        for( NameObjectPairList::iterator it = selected.begin(); it != selected.end(); it++ )
+        {
+            source = it->second;
+
+            if(target != source && source->supports(CAN_DRAG) && !source->findChild(target->getName(), true))
+            {
+                allow = true;
+        
                 undoMgr->BeginCollection(source->getName() + "'s parent change");
                 Ogre::Vector3 old_pos = source->getDerivedPosition();
                 Ogre::Quaternion old_orient = source->getDerivedOrientation();
@@ -140,6 +159,9 @@ void SceneTreeWidget::dropEvent(QDropEvent *evt)
                 undoMgr->EndCollection(true);
             }
         }
+
+        if(!multiSel->isSingle())
+            undoMgr->EndCollection(true);
     }
     else if(evt->source() == mOgitorMainWindow->getEntityViewWidget()->getListWidget())
     {
