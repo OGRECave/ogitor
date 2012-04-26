@@ -72,6 +72,8 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
 
     Ogre::NameValuePairList params;
     params["check1"] = "true";
+    params["input1"] = "Scale";
+    params["input2"] = "Offset";
 
     if(!mSystem->DisplayImportHeightMapDialog(params))
         return;
