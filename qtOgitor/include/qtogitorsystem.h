@@ -107,7 +107,7 @@ public:
     void PresentPropertiesView(Ogitors::CBaseEditor* object);
 
     void SelectTreeItem(Ogitors::CBaseEditor *object);
-    void InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object,int iconid, unsigned int colour);
+    void InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object,int iconid, unsigned int colour, bool order = false);
     void *MoveTreeItem(void *newparent, void *object);
     void MoveLayerTreeItem(int newparent, Ogitors::CBaseEditor *object);
     void *CreateTreeRoot(Ogre::String name);
