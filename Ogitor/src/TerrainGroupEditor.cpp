@@ -149,6 +149,8 @@ bool CTerrainGroupEditor::getObjectContextMenu(UTFStringVector &menuitems)
     menuitems.push_back(OTR("Manage Terrain Pages") + ";:/icons/additional.svg");
     if(hasPages)
         menuitems.push_back(OTR("Scale/Offset Height Values") + ";:/icons/scale.svg");
+    else
+        menuitems.push_back("");
     
     menuitems.push_back("---");
     menuitems.push_back(OTR("Import Terrain From Heightmap")+ ";:/icons/import.svg");
