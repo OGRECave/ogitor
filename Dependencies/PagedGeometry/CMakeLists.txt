@@ -47,6 +47,8 @@ endif(UNIX)
 ogitor_add_library(PagedGeometry ${HEADER_FILES} ${SOURCE_FILES}  )
 set(LIBRARY_OUTPUT_PATH  ../lib)
 
+set_target_properties(PagedGeometry PROPERTIES FOLDER Dependencies) 
+
 set_target_properties(PagedGeometry PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
 set_target_properties(PagedGeometry PROPERTIES VERSION ${PG_VERSION} SOVERSION ${PG_VERSION_MAJOR})
 set_target_properties(PagedGeometry PROPERTIES COMPILE_DEFINITIONS PG_LIB)
