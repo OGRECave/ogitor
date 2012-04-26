@@ -33,6 +33,10 @@ project(PythonQt)
 #-----------------------------------------------------------------------------
 # Python libraries
 
+if(UNIX AND NOT APPLE)
+    set(PYTHON_LIBRARIES /usr/lib/python2.7/config/libpython2.7.so)
+endif(UNIX AND NOT APPLE)
+
 find_package(PythonLibs REQUIRED)
 include_directories("${PYTHON_INCLUDE_DIR}")
 add_definitions(-DPYTHONQT_USE_RELEASE_PYTHON_FALLBACK)
