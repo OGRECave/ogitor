@@ -57,10 +57,10 @@
 namespace OFS13
 {
 
-#define VERSION_MAJOR_0 '0'
-#define VERSION_MAJOR_1 '1'
-#define VERSION_MINOR   '3'
-#define VERSION_FIX     '0'
+const char VERSION_MAJOR_0  = '0';
+const char VERSION_MAJOR_1  = '1';
+const char VERSION_MINOR    = '3';
+const char VERSION_FIX      = '0';
 
 #define AUTO_MUTEX mutable boost::recursive_mutex OfsMutex;
 #define LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsMutex);

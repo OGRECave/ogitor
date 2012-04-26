@@ -794,10 +794,10 @@ void ExtractThread::extractFiles(QString path, const OFS::FileList& list)
     mutex.unlock();
 }
 //------------------------------------------------------------------------------------
-unsigned int ExtractThread::generateList(OFS::FileList& list)
+OFS::ofs64 ExtractThread::generateList(OFS::FileList& list)
 {
     unsigned int list_max = list.size();
-    unsigned int file_size = 0;
+    OFS::ofs64 file_size = 0;
     
     std::string tmpSaveCurrentDir;
     OFS::FileList subList;
@@ -1021,10 +1021,10 @@ void AddFilesThread::addFiles(const AddFilesList& list)
     mutex.unlock();
 }
 //------------------------------------------------------------------------------------
-unsigned int AddFilesThread::generateList(AddFilesList& list)
+OFS::ofs64 AddFilesThread::generateList(AddFilesList& list)
 {
     unsigned int list_max = list.size();
-    unsigned int file_size = 0;
+    OFS::ofs64 file_size = 0;
     
     AddFilesData data;
     AddFilesList subList;

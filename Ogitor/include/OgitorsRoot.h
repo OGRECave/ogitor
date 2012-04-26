@@ -302,6 +302,18 @@ namespace Ogitors
         */
         void            RegisterForPostSceneUpdates(CBaseEditor *object);
         /**
+        * Finds display order of given object
+        * @param name name of an object to locate
+        * @return display order of given object
+        */
+        unsigned int    GetDisplayOrder( const std::string& name );
+        /**
+        * Finds display order of given object
+        * @param object handle of an object to locate
+        * @return display order of given object
+        */
+        unsigned int    GetDisplayOrder( CBaseEditor *object );
+        /**
         * Locates child by a name or ID
         * @param name name of an object to locate
         * @param type type of object to locate
@@ -459,6 +471,12 @@ namespace Ogitors
         * @return true if options were read successfully, otherwise false
         */
         bool            OptionsReadDirectories(TiXmlElement *parent, Ogre::StringVector &pDir);
+        /**
+        * Loads file system links list from an XML element
+        * @param parent top XML element containing file system links XML elements 
+        * @return true if options were read successfully, otherwise false
+        */
+        bool            OptionsReadFileSystemLinks(TiXmlElement *parent);
         /**
         * Loads layer list from an XML element
         * @param parent top XML element containing layers XML elements 

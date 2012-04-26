@@ -107,13 +107,13 @@ void GenericTextEditorDocument::displayTextFromFile(QString docName, QString fil
 
         mIsOfsFile = true;
 
-        unsigned int cont_len = 0;
+        OFS::ofs64 cont_len = 0;
         mOfsPtr->getFileSize(mOfsFileHandle, cont_len);
 
-        char* buf = new char[cont_len + 1];
+        char* buf = new char[(unsigned int)cont_len + 1];
         buf[cont_len] = 0;
 
-        mOfsPtr->read(mOfsFileHandle, buf, cont_len);
+        mOfsPtr->read(mOfsFileHandle, buf, (unsigned int)cont_len);
         mOfsPtr->closeFile(mOfsFileHandle);
         
         displayText(filePath, buf, optionalData);

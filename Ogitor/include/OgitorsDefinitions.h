@@ -251,6 +251,12 @@ namespace Ogitors
        unsigned int SPK_ALWAYS_SELECT;              /** Always select key flag */
     };
 
+    struct LINKDATA
+    {
+        Ogre::String FileSystem;
+        Ogre::String Directory;
+    };
+
     /** Project options structure */
     struct PROJECTOPTIONS
     {
@@ -266,6 +272,7 @@ namespace Ogitors
       Ogre::String       PagedGeometryDirectory;    /** PagedGeometry data directory name (relative) */
       Ogre::String       SceneManagerConfigFile;    /** Scene manager configuration file name */   
       Ogre::StringVector ResourceDirectories;       /** A string list of resource directory(ies) */
+      std::vector<LINKDATA> FileSystemLinks;        /** A vector containing file system link(s) data */
       float              CameraSpeed;               /** Camera Speed in turns of units per second */
       Ogre::Vector3      CameraPositions[11];       /** Camera positions array (scene can have multiple cameras) */
       Ogre::Quaternion   CameraOrientations[11];    /** Camera orientations array (scene can have multiple cameras) */

@@ -164,7 +164,7 @@ bool CSkyxEditor::unLoad()
 //-----------------------------------------------------------------------------------------
 void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
 {
-    PROPERTY_PTR(mTimeMultiplier        , "options::timemultiplier"     , Ogre::Real,           0.08f,                                  0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsTimeMultiplier));
+    PROPERTY_PTR(mTimeMultiplier        , "options::timemultiplier"     , Ogre::Real,           0.01f,                                  0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsTimeMultiplier));
     
     // SkyX Basic Controller parameters
     PROPERTY_PTR(mTime                  , "options::time"               , Ogre::Vector3,        Ogre::Vector3(8.80f, 7.50f, 20.50f),    0, SETTER(Ogre::Vector3,        CSkyxEditor, _setOptionsTime));

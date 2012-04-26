@@ -38,10 +38,12 @@ namespace Ogitors
 {
     struct ObjectCopyData: public Ogre::GeneralAllocatedObject
     {
-        Ogre::String             mObjectName;
-        Ogre::String             mObjectTypeName;
-        OgitorsPropertyValueMap  mProperties;
-        OgitorsCustomPropertySet mCustomProperties;
+        Ogre::String                mObjectName;
+        Ogre::String                mObjectTypeName;
+        OgitorsPropertyValueMap     mProperties;
+        OgitorsCustomPropertySet    mCustomProperties;
+
+        std::vector<ObjectCopyData> mChildren;
     };
 
     typedef Ogre::vector<ObjectCopyData*>::type ClipboardBuffer;
@@ -201,5 +203,16 @@ namespace Ogitors
         ClipboardBuffer     mBuffer;                    /** Clipboard's internal buffer to hold multiple copy operations */
         ObjectTemplateMap   mGeneralTemplates;          /** General Scope Templates */
         ObjectTemplateMap   mProjectTemplates;          /** Project Scope Templates */
+
+        /**
+        * Internal Recursive Copy Operation
+        */
+        void _copyRecursive(ObjectCopyData* data, CBaseEditor* object);
+        
+        /**
+        * Internal Recursive Paste Operation
+        */
+        CBaseEditor *_pasteRecursive(ObjectCopyData* data, CBaseEditor *parent);
+
     };
 };

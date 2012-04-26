@@ -67,6 +67,8 @@ public Q_SLOTS:
     void onImportFile();
     void onMakeAsset();
     void onAddFolder();
+    void onLinkFileSystem();
+	void onUnlinkFileSystem( const QString & text );
 
 Q_SIGNALS:
     void needUpdate();
@@ -77,7 +79,8 @@ protected:
     QVBoxLayout*    mVBoxLayout;
     QToolBar*       mToolBar;
 
-    QMenu*          mMenu; 
+    QMenu*          mMenu;
+    QMenu*          mUnlinkFileSystem;
     
     QAction*        mActRefresh;
     QAction*        mActImportFolder;
@@ -90,6 +93,7 @@ protected:
     QAction*        mActRename;
     QAction*        mActReadOnly;
     QAction*        mActHidden;
+    QAction*        mActLinkFileSystem;
 };
 
 //------------------------------------------------------------------------------

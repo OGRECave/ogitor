@@ -399,7 +399,7 @@ namespace Ogre {
         : mOfs(_ofsptr), mFileHandle(_handle)
     {
         assert(_handle != NULL);
-        unsigned int sz = 0; 
+        OFS::ofs64 sz = 0; 
 
         _ofsptr->getFileSize(*_handle, sz);
         _ofsptr->getFileName(*_handle, mName);
