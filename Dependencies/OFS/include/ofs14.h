@@ -651,6 +651,11 @@ typedef off_t ofs64;
         */
         OfsResult    getDirectoryLinks(const char *directory, NameOfsPtrMap& list);
         /**
+        * Rebuild UUID Map by visiting every file in file table
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    rebuildUUIDMap();
+        /**
         * Creates a new directory
         * @param filename path for new directory
         * @param uuid uuid to be assigned to the directory
@@ -1036,6 +1041,9 @@ typedef off_t ofs64;
         /* Allocates a data block for use, either from free blocks or creates a new block, writes a short header */
         inline void   _allocateExtendedFileBlock(OfsEntryDesc *desc, ofs64 block_size, unsigned int data_size = 0, const char *data = NULL);
 
+        /* Fills UUID Map by recursively visiting children of given desc */
+        OfsResult     _rebuildUUIDMapRecursive(OfsEntryDesc *current);
+        /* Retrieves file system stats recursively */
         void          _getFileSystemStatsRecursive(OfsEntryDesc *desc, FileSystemStats& stats);
         /* Retrieves directory descriptor of a given path, null if not found */
         OfsEntryDesc* _getDirectoryDesc(const char *filename);

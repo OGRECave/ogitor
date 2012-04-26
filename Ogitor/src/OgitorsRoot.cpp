@@ -1447,6 +1447,8 @@ bool OgitorsRoot::OptionsReadFileSystemLinks(TiXmlElement *parent)
         }
 
     } while(element = element->NextSiblingElement());
+
+    (*mProjectFile)->rebuildUUIDMap();
     
     return true;
 }
