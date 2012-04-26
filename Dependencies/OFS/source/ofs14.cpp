@@ -284,9 +284,52 @@ namespace OFS
     }
 
 //------------------------------------------------------------------------------
+    
+    OfsResult _Ofs::_rebuildUUIDMapRecursive(OfsEntryDesc *current)
+    {
+        if(current->Uuid != UUID_ZERO)
+        {
+             assert(mUuidMap.find(current->Uuid) == mUuidMap.end());
+             mUuidMap.insert(UuidDescMap::value_type(current->Uuid, current));
+        }
+
+        for( unsigned int i = 0; i < current->Children.size(); i++ )
+        {
+            _rebuildUUIDMapRecursive( current->Children[i] );
+        }
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------
+
+    OfsResult _Ofs::rebuildUUIDMap()
+    {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::rebuildUUIDMap, Operation called on an already unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        mUuidMap.clear();
+        
+        return _rebuildUUIDMapRecursive( &mRootDir );
+    }
+
+//------------------------------------------------------------------------------
 
     OfsResult _Ofs::linkFileSystem(const char *filename, const char *directory)
     {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::linkFileSystem, Operation called on an already unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
         std::string dest_dir = directory;
         if(dest_dir[dest_dir.length() - 1] != '/')
             dest_dir += "/";
@@ -295,6 +338,9 @@ namespace OFS
 
         if(dirDesc == NULL)
             return OFS_INVALID_PATH;
+
+        if(dirDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
 
         NameOfsPtrMap::iterator it = dirDesc->Links.find( filename );
 
@@ -337,16 +383,6 @@ namespace OFS
                 dirDesc->Children.push_back( foreignDir->Children[i] );
             }
 
-            UuidDescMap::iterator uit = _ofsptr->mUuidMap.begin();
-
-            while( uit != _ofsptr->mUuidMap.end() )
-            {
-                if(mUuidMap.find(uit->first) == mUuidMap.end())
-                    mUuidMap.insert( UuidDescMap::value_type(uit->first, uit->second) );
-
-                uit++;
-            }
-
             dirDesc->Links.insert( NameOfsPtrMap::value_type( filename, _ofsptr ) );
         }
 
@@ -357,10 +393,21 @@ namespace OFS
 
     OfsResult _Ofs::unlinkFileSystem(const char *filename, const char *directory)
     {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::unlinkFileSystem, Operation called on an already unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
         OfsEntryDesc *dirDesc = _getDirectoryDesc(directory);
 
         if(dirDesc == NULL)
             return OFS_INVALID_PATH;
+
+        if(dirDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
 
         NameOfsPtrMap::iterator it = dirDesc->Links.find( filename );
 
@@ -393,17 +440,6 @@ namespace OFS
                 }
             }
 
-            UuidDescMap::iterator uit = (it->second)->mUuidMap.begin();
-
-            while( uit != (it->second)->mUuidMap.end() )
-            {
-                UuidDescMap::iterator bit = mUuidMap.find(uit->first);
-                if( bit != mUuidMap.end())
-                    mUuidMap.erase( bit );
-
-                uit++;
-            }
-
             dirDesc->Links.erase( it );
         }
 
@@ -414,6 +450,14 @@ namespace OFS
 
     OfsResult _Ofs::getDirectoryLinks(const char *directory, NameOfsPtrMap& list)
     {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::getDirectoryLinks, Operation called on an already unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
         OfsEntryDesc *dirDesc = _getDirectoryDesc(directory);
 
         if(dirDesc == NULL)

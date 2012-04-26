@@ -385,7 +385,11 @@ void ProjectFilesViewWidget::onLinkFileSystem()
         data.Directory = name.toStdString();
 
         if( ofsFile->linkFileSystem( data.FileSystem.c_str(), data.Directory.c_str()) == OFS::OFS_OK )
+        {
             Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->FileSystemLinks.push_back( data );
+            
+            ofsFile->rebuildUUIDMap();
+        }
 
         mOfsTreeWidget->refreshWidget();
     }
@@ -412,7 +416,9 @@ void ProjectFilesViewWidget::onUnlinkFileSystem( const QString & text )
 					break;
 				}
 			}
-		}
+
+            ofsFile->rebuildUUIDMap();
+        }
 
         mOfsTreeWidget->refreshWidget();
     }
