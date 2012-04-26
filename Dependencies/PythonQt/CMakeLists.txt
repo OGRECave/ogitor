@@ -34,7 +34,7 @@ project(PythonQt)
 # Python libraries
 
 if(UNIX AND NOT APPLE)
-    set(PYTHON_LIBRARIES /usr/lib/python2.7/config/libpython2.7.so)
+    set(PYTHON_LIBRARY /usr/lib/python2.7/config/libpython2.7.so)
 endif(UNIX AND NOT APPLE)
 
 find_package(PythonLibs REQUIRED)
