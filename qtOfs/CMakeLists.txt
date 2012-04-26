@@ -119,7 +119,11 @@ else(NOT QT4_FOUND)
 		install(TARGETS qtOfs
 			RUNTIME DESTINATION bin
 			CONFIGURATIONS Release)
+    elseif(UNIX AND NOT APPLE)
+        install(TARGETS qtOfs
+            RUNTIME DESTINATION bin)
 	endif(WIN32)
+
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:
