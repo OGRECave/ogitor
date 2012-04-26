@@ -78,9 +78,9 @@ public:
     void HideProgressDialog();
     void UpdateProgressDialog(int value);
 
-    Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath);
-    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
-    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath);
+    Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath = "");
+    Ogre::String DisplayOpenDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
+    Ogre::String DisplaySaveDialog(Ogre::UTFString title, Ogitors::UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "");
 
     Ogitors::DIALOGRET DisplayMessageDialog(Ogre::UTFString msg, Ogitors::DIALOGTYPE dlgType);
     void DisplayTerrainDialog();
@@ -107,7 +107,7 @@ public:
     void PresentPropertiesView(Ogitors::CBaseEditor* object);
 
     void SelectTreeItem(Ogitors::CBaseEditor *object);
-    void InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object,int iconid, unsigned int colour);
+    void InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object,int iconid, unsigned int colour, bool order = false);
     void *MoveTreeItem(void *newparent, void *object);
     void MoveLayerTreeItem(int newparent, Ogitors::CBaseEditor *object);
     void *CreateTreeRoot(Ogre::String name);

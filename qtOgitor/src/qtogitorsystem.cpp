@@ -981,7 +981,7 @@ void QtOgitorSystem::SelectTreeItem(Ogitors::CBaseEditor *object)
     }
 }
 //-------------------------------------------------------------------------------
-void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object, int iconid, unsigned int colour)
+void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBaseEditor *object, int iconid, unsigned int colour, bool order)
 {
     if(!parent || !object)
         return;
@@ -993,7 +993,29 @@ void QtOgitorSystem::InsertTreeItem(Ogitors::CBaseEditor *parent, Ogitors::CBase
     item->setIcon(0, QIcon( mIconList[iconid]));
     item->setTextColor(0, QColor(GetRED(colour), GetGREEN(colour), GetBLUE(colour)));
 
-    static_cast<QTreeWidgetItem*>(parent->getSceneTreeItemHandle())->addChild(item);
+    QTreeWidgetItem *parent_item = static_cast<QTreeWidgetItem*>(parent->getSceneTreeItemHandle());
+
+    if( order )
+    {
+        int pos = -1;
+
+        unsigned int obj_order = Ogitors::OgitorsRoot::getSingletonPtr()->GetDisplayOrder( object );
+
+        for( int j = 0; j < parent_item->childCount();j++)
+        {
+            unsigned int dest_order = Ogitors::OgitorsRoot::getSingletonPtr()->GetDisplayOrder( parent_item->child(j)->text(0).toStdString() );
+            if( dest_order < obj_order )
+                pos = j;
+            else if( dest_order == obj_order && parent_item->child(j)->text(0).compare(QString(object->getName().c_str())) < 0  )
+                pos = j;
+            else
+                break;
+        }
+
+        parent_item->insertChild( pos + 1, item );
+    }
+    else
+        parent_item->addChild(item);
 
     const Ogitors::OgitorsPropertyDef *definition = object->getProperties()->getProperty("layer")->getDefinition();
 

@@ -1028,7 +1028,7 @@ CBaseEditor *OgitorsRoot::CreateEditorObject(CBaseEditor *parent, const Ogre::St
 
     if(addtotreelist)
     {
-        mSystem->InsertTreeItem(parent,object,object->getTypeID(),object->getTextColourInt());
+        mSystem->InsertTreeItem( parent, object, object->getTypeID(), object->getTextColourInt(), true );
     }
 
     if(parent->getLocked())
@@ -1269,6 +1269,36 @@ void OgitorsRoot::RecurseFillTreeView(CBaseEditor *pEditor)
     }
 }
 //-----------------------------------------------------------------------------------------
+unsigned int OgitorsRoot::GetDisplayOrder( const std::string& name )
+{
+    CBaseEditor *object = FindObject( name );
+
+    if( object != NULL )
+    {
+        for(unsigned int z = 0; z < mObjectDisplayOrder.size(); z++)
+        {
+            if( mObjectDisplayOrder[z] == object->getEditorType() )
+                return z;
+        }
+    }
+
+    return 0xFFFFFFFF;
+}
+//-----------------------------------------------------------------------------------------
+unsigned int OgitorsRoot::GetDisplayOrder( CBaseEditor *object )
+{
+    if( object != NULL )
+    {
+        for(unsigned int z = 0; z < mObjectDisplayOrder.size(); z++)
+        {
+            if( mObjectDisplayOrder[z] == object->getEditorType() )
+                return z;
+        }
+    }
+
+    return 0xFFFFFFFF;
+}
+//-----------------------------------------------------------------------------------------
 void OgitorsRoot::FillTreeView()
 {
     mSystem->ClearTreeItems();
@@ -1290,6 +1320,7 @@ void OgitorsRoot::ClearProjectOptions()
     mProjectOptions.PagedGeometryDirectory = "PagedGeometry";
     mProjectOptions.SceneManagerConfigFile = "";
     mProjectOptions.ResourceDirectories.clear();
+    mProjectOptions.FileSystemLinks.clear();
     mProjectOptions.CameraSaveCount = 0;
     for(int i = 0;i < 10;i++)
     {
@@ -1337,6 +1368,7 @@ PROJECTOPTIONS OgitorsRoot::CreateDefaultProjectOptions()
     opt.CameraSaveCount = 0;
     opt.CameraSpeed = 1.0f;
     opt.ResourceDirectories.clear();
+    opt.FileSystemLinks.clear();
     opt.SelectionRectColour = Ogre::ColourValue(0.5f, 0, 1);
     opt.SelectionBBColour = Ogre::ColourValue(1, 1, 1);
     opt.HighlightBBColour = Ogre::ColourValue(0.91f, 0.19f, 0.19f);
@@ -1417,6 +1449,41 @@ bool OgitorsRoot::OptionsReadDirectories(TiXmlElement *parent, Ogre::StringVecto
     return true;
 }
 //----------------------------------------------------------------------------
+bool OgitorsRoot::OptionsReadFileSystemLinks(TiXmlElement *parent)
+{
+    TiXmlElement* element = 0;
+    
+    LINKDATA data;
+
+    element = parent->FirstChildElement();
+    
+    if(!element) return false;
+    
+    do
+    {
+        data.FileSystem = ValidAttr(element->Attribute("filesystem"));
+        data.Directory = ValidAttr(element->Attribute("directory"));
+        
+        if( (*mProjectFile)->linkFileSystem(data.FileSystem.c_str(), data.Directory.c_str()) == OFS::OFS_OK)
+            mProjectOptions.FileSystemLinks.push_back(data);
+        else
+        {
+            Ogre::String msg = "Could not link File System \"";
+            msg += data.FileSystem;
+            msg += "\" to directory \"";
+            msg += data.Directory;
+            msg += "\"";
+
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, msg );
+        }
+
+    } while(element = element->NextSiblingElement());
+
+    (*mProjectFile)->rebuildUUIDMap();
+    
+    return true;
+}
+//----------------------------------------------------------------------------
 bool OgitorsRoot::OptionsReadLayers(TiXmlElement *parent)
 {
     TiXmlElement* element = 0;
@@ -1453,6 +1520,7 @@ bool OgitorsRoot::LoadProjectOptions(TiXmlElement *optRoot)
         else if(eType == "MODELDIRECTORIES") OptionsReadDirectories(element,mProjectOptions.ResourceDirectories);
         else if(eType == "MATERIALDIRECTORIES") OptionsReadDirectories(element,mProjectOptions.ResourceDirectories);
         else if(eType == "RESOURCEDIRECTORIES") OptionsReadDirectories(element,mProjectOptions.ResourceDirectories);
+        else if(eType == "FILESYSTEMLINKS") OptionsReadFileSystemLinks(element);
         else if(eType == "CAMERASPEED") mProjectOptions.CameraSpeed = Ogre::StringConverter::parseReal(ValidAttr(element->Attribute("value"), "10"));
         else if(eType == "CAMERAPOSITIONS") OptionsReadCameraPositions(element);
         else if(eType == "LAYERS") OptionsReadLayers(element);
@@ -1738,6 +1806,8 @@ bool OgitorsRoot::TerminateScene()
         }
     }
 
+    PROJECTOPTIONS optSave = mProjectOptions;
+
     SetRunState(RS_STOPPED);
     SetEditorTool(TOOL_SELECT);
 
@@ -1774,6 +1844,11 @@ bool OgitorsRoot::TerminateScene()
     mMaterialNames.clear();
     mAutoTrackTargets.clear();
     mAutoTrackTargets.push_back(PropertyOption("None",Ogre::Any(Ogre::String("None"))));
+
+    for(unsigned int i = 0; i < optSave.FileSystemLinks.size();i++)
+    {
+        (*mProjectFile)->unlinkFileSystem(optSave.FileSystemLinks[i].FileSystem.c_str(), optSave.FileSystemLinks[i].Directory.c_str());
+    }
 
     (*mProjectFile).unmount();
 

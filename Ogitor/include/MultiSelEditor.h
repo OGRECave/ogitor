@@ -43,12 +43,13 @@ namespace Ogitors
         void            deleteObjects();
         
         NameObjectPairList getSelection() {return mSelectedObjects;};   
+        NameObjectPairList getModificationList() {return mModifyList;};   
         void getSelection(ObjectVector& list);
 
         virtual Ogre::AxisAlignedBox  getAABB();
         virtual Ogre::AxisAlignedBox  getWorldAABB() {return mWorldAABB;};
         virtual Ogre::SceneNode      *getNode() {return mNode;};
-        virtual Ogre::Vector3          getDerivedPosition() {return mNode->_getDerivedPosition();};
+        virtual Ogre::Vector3         getDerivedPosition() {return mNode->_getDerivedPosition();};
         virtual Ogre::Quaternion      getDerivedOrientation() {return mNode->_getDerivedOrientation();};
         virtual Ogre::Vector3         getDerivedScale() {return mNode->_getDerivedScale();};
 

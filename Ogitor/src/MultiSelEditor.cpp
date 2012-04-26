@@ -277,6 +277,9 @@ void CMultiSelEditor::_createModifyList()
         mSystem->SelectTreeItem(this);
         mSystem->PresentPropertiesView(this);
     }
+
+    SelectionChangeEvent evt(this);
+    EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //--------------------------------------------------------------------------------
 void CMultiSelEditor::setDerivedPosition(Ogre::Vector3 val)

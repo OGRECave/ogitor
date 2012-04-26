@@ -89,7 +89,7 @@ void OfsTreeWidget::fillTree(QTreeWidgetItem *pItem, std::string path)
 
         QTreeWidgetItem* item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(name.c_str())));
         item->setIcon(0, mOgitorMainWindow->mIconProvider.icon(QFileIconProvider::Folder));
-        item->setTextColor(0, Qt::black);
+        item->setTextColor(0, Qt::blue);
 
         std::string fullpath = path + name + "/";
         item->setWhatsThis(0, QString(fullpath.c_str()));
@@ -107,6 +107,9 @@ void OfsTreeWidget::fillTree(QTreeWidgetItem *pItem, std::string path)
                 textColor = QColor(255, 0, 0);
             else if(isHidden)
                 textColor = QColor(210, 210, 210);
+
+             if(list[i].flags & OFS::OFS_LINK)
+                 textColor.setBlue(255); 
 
             item->setTextColor(0, textColor);
         }
@@ -189,6 +192,9 @@ void OfsTreeWidget::fillTreeFiles(QTreeWidgetItem *pItem, std::string path)
                 textColor = QColor(255, 0, 0);
             else if(isHidden)
                 textColor = QColor(210, 210, 210);
+
+            if(list[i].flags & OFS::OFS_LINK)
+                textColor.setBlue(255); 
 
             item->setTextColor(0, textColor);
         }
@@ -274,7 +280,6 @@ void OfsTreeWidget::refreshWidget()
         if(it != mItemMap.end())
         {
             it->second->setExpanded(true);
-            onItemExpanded(it->second);
         }
     }
 

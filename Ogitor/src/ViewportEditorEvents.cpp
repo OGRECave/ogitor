@@ -586,8 +586,7 @@ namespace Ogitors
             mEditorAxis = 0;
             mVolumeSelecting = false;
         }
-
-        if(!mIsEditing)
+        else if(!mIsEditing)
         {
             if(mViewKeyboard[mSpecial.SPK_ALWAYS_SELECT] && terED && terED->getEditMode() > 0)
             {
@@ -974,31 +973,36 @@ namespace Ogitors
 
         if(mOgitorsRoot->GetSelection()->getAsSingle()->supports(CAN_FOCUS))
         {
-            Ogre::AxisAlignedBox bbox = mOgitorsRoot->GetSelection()->getAsSingle()->getWorldAABB();
+            CBaseEditor *focus_object = mOgitorsRoot->GetSelection()->getAsSingle();
 
-            if(bbox == Ogre::AxisAlignedBox::BOX_NULL)
-                return;
-
-            Ogre::Vector3 vSize = bbox.getHalfSize();
-            Ogre::Vector3 vCenter = bbox.getCenter(); 
-
-            vSize += Ogre::Vector3(vSize.z, vSize.z, vSize.z);
-
-            float dist = std::max(std::max(vSize.x,vSize.y),vSize.z) * 2.0f;
-
-            if(mOgitorsRoot->GetSelection()->getFirstObject()->getEditorType() == ETYPE_TERRAIN_PAGE)
+            if( focus_object->getEditorType() == ETYPE_TERRAIN_PAGE )
             {
-                mNewCamPosition = vCenter;
-                mNewCamPosition.y += vSize.y;
+                Ogre::Vector3 pos;
+
+                Ogre::Terrain *ter = static_cast<Ogre::Terrain*>(focus_object->getHandle());
+                pos = ter->getWorldAABB().getCenter();
+                pos.y = ter->getHeightAtTerrainPosition( 0.5f, 0.5f ) + 50.0f;
                 
-                if(mActiveCamera)
-                    mActiveCamera->lookAt(vCenter);
+                Ogre::Vector3 lookat = (mActiveCamera->getCamera()->getDerivedDirection() * 5.0f);
+                mNewCamPosition = pos - lookat;
             }
             else
             {
+                Ogre::AxisAlignedBox bbox = focus_object->getWorldAABB();
+
+                if(bbox == Ogre::AxisAlignedBox::BOX_NULL)
+                    return;
+
+                Ogre::Vector3 vSize = bbox.getHalfSize();
+                Ogre::Vector3 vCenter = bbox.getCenter(); 
+
+                vSize += Ogre::Vector3(vSize.z, vSize.z, vSize.z);
+
+                float dist = std::max(std::max(vSize.x,vSize.y),vSize.z) * 2.0f;
+
                 Ogre::Vector3 lookat = (mActiveCamera->getCamera()->getDerivedDirection() * dist);
                 mNewCamPosition = vCenter - lookat;
-            }            
+            }
         }
     }
     //-------------------------------------------------------------------------------

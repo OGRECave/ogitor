@@ -349,6 +349,15 @@ void OgitorsRoot::WriteProjectOptions(std::ostream &outstream, const PROJECTOPTI
     }
     outstream << "    </RESOURCEDIRECTORIES>\n";
 
+    outstream << "    <FILESYSTEMLINKS>\n";
+
+    for(i = 0;i < pOpt->FileSystemLinks.size();i++)
+    {
+        sprintf_s(buffer,5000,"      <LINK filesystem=\"%s\" directory=\"%s\"></LINK>\n", pOpt->FileSystemLinks[i].FileSystem.c_str(), pOpt->FileSystemLinks[i].Directory.c_str());
+        outstream << buffer;
+    }
+    outstream << "    </FILESYSTEMLINKS>\n";
+
     WriteCameraPositions(outstream, pOpt);
 
     outstream << "    <LAYERS>\n";

@@ -143,7 +143,7 @@ namespace Ogitors
         * @param title title of the dialog
         * @return name of selected directory
         */
-        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplayDirectorySelector(Ogre::UTFString title, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Open File" dialog
         * @param title title of the dialog
@@ -151,7 +151,7 @@ namespace Ogitors
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of selected file
         */
-        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplayOpenDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Save File" dialog
         * @param title title of the dialog
@@ -159,7 +159,7 @@ namespace Ogitors
         * @param defaultPath an optional parameter for specifying the path you wish the dialog to open at
         * @return name of the file to be saved
         */
-        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath) = 0;
+        virtual Ogre::String DisplaySaveDialog(Ogre::UTFString title, UTFStringVector ExtensionList, Ogre::UTFString defaultPath = "") = 0;
         /**
         * Displays "Yes/No/Cancel" or "Okay/Cancel" dialog
         * @param msg message to convey to the user
@@ -235,9 +235,10 @@ namespace Ogitors
         * @param object object handle 
         * @param iconid ID for new tree node item icon 
         * @param colour text color of new tree node item text
+        * @param order should we insert according to display order?
         * @return handle of new tree node item
         */
-        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour) = 0;
+        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour, bool order = false) = 0;
         /**
         * Moves tree item to new parent node
         * @param newparent new parent node handle
@@ -427,7 +428,7 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::InsertTreeItem(CBaseEditor *, CBaseEditor *, int, unsigned int)
         */
-        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour) {};
+        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour, bool order = false) {};
         /**
         * @copydoc OgitorsSystem::MoveTreeItem(void *, void *)
         */

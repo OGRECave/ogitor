@@ -212,11 +212,11 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
     OFS::OfsResult result = ofsFile->openFile(handle,pFilename);
 
     char* dest = 0;
-    unsigned int len;
+    OFS::ofs64 len;
 
     ofsFile->getFileSize(handle,len);
-    dest = new char[len];
-    ofsFile->read(handle,dest,len);
+    dest = new char[(unsigned int)len];
+    ofsFile->read(handle,dest,(unsigned int)len);
 
     TiXmlDocument doc;
     doc.Parse(dest);
