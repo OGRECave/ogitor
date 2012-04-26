@@ -127,6 +127,9 @@ bool CTerrainPageEditor::importHeightMap(Ogre::String filename, Ogre::Real fBias
     {
         Ogre::NameValuePairList params;
         params["check1"] = "true";
+        params["input1"] = "Scale";
+        params["input2"] = "Offset";
+
         if(!mSystem->DisplayImportHeightMapDialog(params))
             return false;
 
