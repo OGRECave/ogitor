@@ -302,6 +302,18 @@ namespace Ogitors
         */
         void            RegisterForPostSceneUpdates(CBaseEditor *object);
         /**
+        * Finds display order of given object
+        * @param name name of an object to locate
+        * @return display order of given object
+        */
+        unsigned int    GetDisplayOrder( const std::string& name );
+        /**
+        * Finds display order of given object
+        * @param object handle of an object to locate
+        * @return display order of given object
+        */
+        unsigned int    GetDisplayOrder( CBaseEditor *object );
+        /**
         * Locates child by a name or ID
         * @param name name of an object to locate
         * @param type type of object to locate

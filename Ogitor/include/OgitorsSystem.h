@@ -235,9 +235,10 @@ namespace Ogitors
         * @param object object handle 
         * @param iconid ID for new tree node item icon 
         * @param colour text color of new tree node item text
+        * @param order should we insert according to display order?
         * @return handle of new tree node item
         */
-        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour) = 0;
+        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour, bool order = false) = 0;
         /**
         * Moves tree item to new parent node
         * @param newparent new parent node handle
@@ -427,7 +428,7 @@ namespace Ogitors
         /**
         * @copydoc OgitorsSystem::InsertTreeItem(CBaseEditor *, CBaseEditor *, int, unsigned int)
         */
-        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour) {};
+        virtual void         InsertTreeItem(CBaseEditor *parent, CBaseEditor *object, int iconid, unsigned int colour, bool order = false) {};
         /**
         * @copydoc OgitorsSystem::MoveTreeItem(void *, void *)
         */

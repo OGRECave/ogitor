@@ -1027,7 +1027,7 @@ CBaseEditor *OgitorsRoot::CreateEditorObject(CBaseEditor *parent, const Ogre::St
 
     if(addtotreelist)
     {
-        mSystem->InsertTreeItem(parent,object,object->getTypeID(),object->getTextColourInt());
+        mSystem->InsertTreeItem( parent, object, object->getTypeID(), object->getTextColourInt(), true );
     }
 
     if(parent->getLocked())
@@ -1266,6 +1266,36 @@ void OgitorsRoot::RecurseFillTreeView(CBaseEditor *pEditor)
           }
       }
     }
+}
+//-----------------------------------------------------------------------------------------
+unsigned int OgitorsRoot::GetDisplayOrder( const std::string& name )
+{
+    CBaseEditor *object = FindObject( name );
+
+    if( object != NULL )
+    {
+        for(unsigned int z = 0; z < mObjectDisplayOrder.size(); z++)
+        {
+            if( mObjectDisplayOrder[z] == object->getEditorType() )
+                return z;
+        }
+    }
+
+    return 0xFFFFFFFF;
+}
+//-----------------------------------------------------------------------------------------
+unsigned int OgitorsRoot::GetDisplayOrder( CBaseEditor *object )
+{
+    if( object != NULL )
+    {
+        for(unsigned int z = 0; z < mObjectDisplayOrder.size(); z++)
+        {
+            if( mObjectDisplayOrder[z] == object->getEditorType() )
+                return z;
+        }
+    }
+
+    return 0xFFFFFFFF;
 }
 //-----------------------------------------------------------------------------------------
 void OgitorsRoot::FillTreeView()
