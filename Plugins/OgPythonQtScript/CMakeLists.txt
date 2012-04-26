@@ -24,10 +24,14 @@ else(NOT QT4_FOUND)
 
     include_directories(include)
 
-	# Extra Qt include directories for our braindead VC10. :)
-	include_directories($ENV{QTDIR}/include)
-	include_directories(${QT_QTCORE_INCLUDE_DIR})
-	include_directories(${QT_QTGUI_INCLUDE_DIR})
+    if(UNIX AND NOT APPLE)
+        # Extra Qt include directories for our braindead gcc. :)
+        include_directories(/usr/include/qt4)
+    endif(UNIX AND NOT APPLE)
+    # Extra Qt include directories for our braindead VC10. :)
+    include_directories($ENV{QTDIR}/include)
+    include_directories(${QT_QTCORE_INCLUDE_DIR})
+    include_directories(${QT_QTGUI_INCLUDE_DIR})
 
 	include_directories(${DEPENDENCIES_INCLUDES})
     include_directories(${OGITOR_INCLUDES})
