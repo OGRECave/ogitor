@@ -586,8 +586,7 @@ namespace Ogitors
             mEditorAxis = 0;
             mVolumeSelecting = false;
         }
-
-        if(!mIsEditing)
+        else if(!mIsEditing)
         {
             if(mViewKeyboard[mSpecial.SPK_ALWAYS_SELECT] && terED && terED->getEditMode() > 0)
             {
