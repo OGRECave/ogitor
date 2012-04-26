@@ -155,6 +155,8 @@ endif()
 ogitor_add_library(Angelscript STATIC ${ANGELSCRIPT_ADDON_SOURCE} ${ANGELSCRIPT_ADDON_HEADERS} ${ANGELSCRIPT_SOURCE} ${ANGELSCRIPT_HEADERS})
 set(LIBRARY_OUTPUT_PATH  ../lib)
 
+set_target_properties(Angelscript PROPERTIES FOLDER Dependencies) 
+
 if(WIN32)
 	set_target_properties(Angelscript PROPERTIES COMPILE_FLAGS "/MP")
 endif(WIN32)
