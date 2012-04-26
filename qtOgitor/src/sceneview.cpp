@@ -347,10 +347,9 @@ void SceneViewWidget::selectionChanged()
             if(curSelection->getEditorType() == ETYPE_MULTISEL)
                 enableCopyToTemplate = true;
             else
-            {
                 enableCopyToTemplate = enableCopy;
-                enableRename = true;
-            }
+
+            enableRename = curSelection->getProperty("name")->getDefinition()->canWrite();
 
             CViewportEditor *vpe = OgitorsRoot::getSingletonPtr()->GetViewport();
             if(!curSelection->isTerrainType() && vpe->GetEditorTool() >= TOOL_DEFORM)
@@ -386,10 +385,9 @@ void SceneViewWidget::selectionChanged()
             if(multiSel->getAsSingle() == multiSel && !multiSel->isEmpty())
                 enableCopyToTemplate = true;
             else
-            {
                 enableCopyToTemplate = enableCopy;
-                enableRename = true;
-            }
+
+            enableRename = multiSel->getAsSingle()->getProperty("name")->getDefinition()->canWrite();
         }
         else if(multiSel)
             multiSel->setSelection(0);
