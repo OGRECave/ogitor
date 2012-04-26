@@ -661,7 +661,13 @@ void MainWindow::createSceneRenderWindow()
     mCameraViewModeBox->setMaxVisibleItems(15);
 
     mSnapMultiplierBox = new QComboBox();
-    mSnapMultiplierBox->setFixedSize(44,20);
+    mSnapMultiplierBox->setMaxVisibleItems(16);
+    
+    QString test_str("x99");
+
+    QFontMetrics fm(mSnapMultiplierBox->font());
+    int text_width = fm.width(test_str) + 28;
+    mSnapMultiplierBox->setFixedSize(text_width, 20 );
     for(unsigned int s = 1;s < 17;s++)
         mSnapMultiplierBox->addItem(QString("x") + QString("%1").arg(s));
     mSnapMultiplierBox->setCurrentIndex(0);
