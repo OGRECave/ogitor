@@ -213,8 +213,8 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/pythonqt/src"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/pythonqt/src/generated_cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PythonQt/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PythonQt/src/generated_cpp"
 )
 set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
 
@@ -225,9 +225,9 @@ set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
 
-if(UNIX)
-    file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/share/ogitor/Help)
-endif(UNIX)
+#if(UNIX)
+#    file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/share/ogitor/Help)
+#endif(UNIX)
 
 # Unity build options
 # A Unity build includes all sources files in just a few actual compilation units
