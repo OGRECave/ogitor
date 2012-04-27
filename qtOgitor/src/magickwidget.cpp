@@ -8,7 +8,7 @@
 ///                              File
 ///
 /// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
-//
+///
 /// The MIT License
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,9 +69,9 @@ void MagickDisplayWidget::setImage(const QString& file)
 void MagickDisplayWidget::paintEvent(QPaintEvent* evt)
 {
     QPainter painter(this);
-    painter.setClipRect(0,0,width(),height());
-    painter.setBrush(QBrush(QColor(0,0,0)));
-    painter.fillRect(QRectF(0,0,width(),height()), QColor(0,0,0));
+    painter.setClipRect(0, 0, width(), height());
+    painter.setBrush(QBrush(QColor(0, 0, 0)));
+    painter.fillRect(QRectF(0, 0, width(), height()), QColor(0, 0, 0));
     
     if(mImage)
     {
@@ -85,8 +85,8 @@ void MagickDisplayWidget::paintEvent(QPaintEvent* evt)
     }
     else
     {
-        painter.setPen(QColor(210,210,210));
-        painter.drawText(QRectF(0,0,width(),height()),tr("Please load a mesh file..."),QTextOption(Qt::AlignVCenter | Qt::AlignHCenter));
+        painter.setPen(QColor(210, 210, 210));
+        painter.drawText(QRectF(0, 0, width(), height()), tr("Please load a mesh file..."), QTextOption(Qt::AlignVCenter | Qt::AlignHCenter));
     }
 }
 //-------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ void MagickDisplayWidget::dragEnterEvent(QDragEnterEvent *evt)
     void *source = (void*)(evt->source());
     void *lw = (void*)(mOgitorMainWindow->getEntityViewWidget()->getListWidget());
     
-   if(source == lw)
+    if(source == lw)
     {
         evt->acceptProposedAction();
     }
@@ -128,53 +128,15 @@ MagickWidget::MagickWidget(QWidget *parent): QWidget(parent), mDisplayWidget(0),
     QHBoxLayout *layout2 = new QHBoxLayout();
     layout2->setMargin(0);
 
-    /*groupManager = new QtGroupPropertyManager(this);
-    boolManager = new QtBoolPropertyManager(this);
-    intManager = new QtIntPropertyManager(this);
-    doubleManager = new QtDoublePropertyManager(this);
-    stringManager = new QtStringPropertyManager(this);
-    enumManager = new QtEnumPropertyManager(this);
-    colourManager = new QtColorPropertyManager(this);
-    quaternionManager = new QuaternionManager(this);
-    vector2Manager = new Vector2Manager(this);
-    vector3Manager = new Vector3Manager(this);
-    vector4Manager = new Vector4Manager(this);
-    QtCheckBoxFactory *checkBoxFactory = new QtCheckBoxFactory(this);
-    QtSpinBoxFactory *spinBoxFactory = new QtSpinBoxFactory(this);
-    QtDoubleSpinBoxFactory *doubleSpinBoxFactory = new QtDoubleSpinBoxFactory(this);
-    QtLineEditFactory *lineEditFactory = new QtLineEditFactory(this);
-    QtEnumEditorFactory *comboBoxFactory = new QtEnumEditorFactory(this);
-    QtColorEditorFactory *colourEditFactory = new QtColorEditorFactory(this);
-    QtVariantEditorFactory *variantEditFactory = new QtVariantEditorFactory(this);
-    QtVariantPropertyManager *varMan1 = quaternionManager;
-    QtVariantPropertyManager *varMan2 = vector2Manager;
-    QtVariantPropertyManager *varMan3 = vector3Manager;
-    QtVariantPropertyManager *varMan4 = vector4Manager;
-    
-    propertiesWidget = new QtTreePropertyBrowser(this);
-    propertiesWidget->setFactoryForManager(boolManager, checkBoxFactory);
-    propertiesWidget->setFactoryForManager(intManager, spinBoxFactory);
-    propertiesWidget->setFactoryForManager(doubleManager, doubleSpinBoxFactory);
-    propertiesWidget->setFactoryForManager(enumManager, comboBoxFactory);
-    propertiesWidget->setFactoryForManager(stringManager, lineEditFactory);
-    propertiesWidget->setFactoryForManager(colourManager, colourEditFactory);
-    propertiesWidget->setAlternatingRowColors(true);
-    propertiesWidget->setIndentation(10);
-    propertiesWidget->setFactoryForManager(varMan1, variantEditFactory);
-    propertiesWidget->setFactoryForManager(varMan2, variantEditFactory);
-    propertiesWidget->setFactoryForManager(varMan3, variantEditFactory);
-    propertiesWidget->setFactoryForManager(varMan4, variantEditFactory);*/
-
     mDisplayWidget = new MagickDisplayWidget(this);
     mToolBar = new QToolBar(this);
     mToolBar->setMinimumHeight(30);
     mToolBar->setFixedHeight(30);
-    mToolBar->setIconSize(QSize(24,24));
+    mToolBar->setIconSize(QSize(24, 24));
     mToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     
     createActions();
 
-    /*layout2->addWidget(propertiesWidget);*/
     layout2->addWidget(mDisplayWidget);
     layout2->setStretch(0, 0);
     layout2->setStretch(1, 1);
@@ -297,14 +259,14 @@ void MagickWidget::loadMesh(Ogre::MeshPtr pMesh)
 
     Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual("MeshMagickTex", 
                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, 
-                   512, 512, 0, Ogre::PF_R8G8B8A8 , Ogre::TU_RENDERTARGET );
+                   512, 512, 0, Ogre::PF_R8G8B8A8 , Ogre::TU_RENDERTARGET);
 
     Ogre::RenderTexture *rttTex = texture->getBuffer()->getRenderTarget();
     Ogre::SceneManager *mSceneMgr = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", "MeshMagickTexMgr");
 
     Ogre::Light *dirl = mSceneMgr->createLight("DisplayLight");
-    dirl->setDirection(-1,-1,-1);
-    dirl->setDiffuseColour(1,1,1);
+    dirl->setDirection(-1, -1, -1);
+    dirl->setDiffuseColour(1, 1, 1);
     dirl->setType(Ogre::Light::LT_DIRECTIONAL);
 
     Ogre::Camera* RTTCam = mSceneMgr->createCamera("MeshMagickCam");

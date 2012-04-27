@@ -40,21 +40,6 @@
 
 //-------------------------------------------------------------------------------------------
 
-//class QtTreePropertyBrowser;
-//class QtGroupPropertyManager;
-//class QtBoolPropertyManager;
-//class QtIntPropertyManager;
-//class QtDoublePropertyManager;
-//class QtStringPropertyManager;
-//class QtEnumPropertyManager;
-//class QtColorPropertyManager;
-//class QuaternionManager;
-//class Vector2Manager;
-//class Vector3Manager;
-//class Vector4Manager;
-//class QtProperty;
-//class TiXmlElement;
-
 class QToolBar;
 class QAction;
 
@@ -93,7 +78,6 @@ class MagickWidget : public QWidget/*, public Ogitors::DragDropHandler*/
 
 public:
     MagickWidget(QWidget *parent=0);
-
     virtual ~MagickWidget();
 
 public Q_SLOTS:
@@ -113,19 +97,6 @@ protected:
     QAction                 *actMove;
     QAction                 *actRotate;
     QAction                 *actScale;
-
- /*   QtTreePropertyBrowser   *propertiesWidget;
-    QtGroupPropertyManager  *groupManager;
-    QtBoolPropertyManager   *boolManager;
-    QtColorPropertyManager  *colourManager;
-    QtIntPropertyManager    *intManager;
-    QtDoublePropertyManager *doubleManager;
-    QtStringPropertyManager *stringManager;
-    QtEnumPropertyManager   *enumManager;
-    QuaternionManager       *quaternionManager;
-    Vector2Manager          *vector2Manager;
-    Vector3Manager          *vector3Manager;
-    Vector4Manager          *vector4Manager;*/
 
     QString                  mMeshFileName;
 
