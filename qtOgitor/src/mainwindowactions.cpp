@@ -282,13 +282,13 @@ void MainWindow::addActions()
     actToggleGrid->setChecked(true);
     actToggleGrid->setShortcut(QKeySequence("\""));
 
-    actToggleExplorer = explorerDockWidget->toggleViewAction();
-    actToggleLayer = layerDockWidget->toggleViewAction();
-    actToggleResources = resourcesDockWidget->toggleViewAction();
-    actToggleProperties = propertiesDockWidget->toggleViewAction();
-    actToggleTools = toolsDockWidget->toggleViewAction();
-    actToggleLog = logDockWidget->toggleViewAction();
-    actToggleProjectFiles = projectFilesDockWidget->toggleViewAction();
+    actToggleExplorer = mExplorerDockWidget->toggleViewAction();
+    actToggleLayer = mLayerDockWidget->toggleViewAction();
+    actToggleResources = mResourcesDockWidget->toggleViewAction();
+    actToggleProperties = mPropertiesDockWidget->toggleViewAction();
+    actToggleTools = mToolsDockWidget->toggleViewAction();
+    actToggleLog = mLogDockWidget->toggleViewAction();
+    actToggleProjectFiles = mProjectFilesDockWidget->toggleViewAction();
 
     actToggleTools->setIcon(QIcon(":/icons/objects.svg"));
     actToggleTools->setText(tr("Tools"));
@@ -354,7 +354,7 @@ void MainWindow::addActions()
     actLogShowDebug->setChecked(true);
 
     connect(actSearchLog, SIGNAL(triggered()), this, SLOT(searchLog()));
-    connect(actClearLog, SIGNAL(triggered()), logWidget, SLOT(clear()));
+    connect(actClearLog, SIGNAL(triggered()), mLogWidget, SLOT(clear()));
     connect(actLogShowWarnings, SIGNAL(triggered()), this, SLOT(toggleLogMessages()));
     connect(actLogShowErrors, SIGNAL(triggered()), this, SLOT(toggleLogMessages()));
     connect(actLogShowInfo, SIGNAL(triggered()), this, SLOT(toggleLogMessages()));
@@ -1190,9 +1190,9 @@ void MainWindow::decreaseGizmoScale()
 //------------------------------------------------------------------------------
 void MainWindow::toggleLogMessages()
 {
-    for (int i = 0; i < logWidget->count(); ++i)
+    for (int i = 0; i < mLogWidget->count(); ++i)
     {
-        QListWidgetItem* item = logWidget->item(i);
+        QListWidgetItem* item = mLogWidget->item(i);
         switch( item->type() )
         {
         case 4:
@@ -1222,22 +1222,22 @@ void MainWindow::searchLog()
     QString text = QInputDialog::getText(this, tr("Search Ogitor Messages"), tr("What : "));
     if (!text.isEmpty())
     {
-        QList<QListWidgetItem*> items = logWidget->findItems(text, Qt::MatchContains);
+        QList<QListWidgetItem*> items = mLogWidget->findItems(text, Qt::MatchContains);
         if (items.isEmpty())
             mStatusBar->showMessage(tr("%1 not found in Ogitor Messages").arg(text), 5000);
         else
         {
-            logDockWidget->setVisible(true);
+            mLogDockWidget->setVisible(true);
             int nextIndex = 0;
             for (int i = 0; i < items.size(); ++i)
             {
-                if (logWidget->row(items[i]) > logWidget->currentRow())
+                if (mLogWidget->row(items[i]) > mLogWidget->currentRow())
                 {
                     nextIndex = i;
                     break;
                 }
             }
-            logWidget->setCurrentRow(logWidget->row(items[nextIndex]));
+            mLogWidget->setCurrentRow(mLogWidget->row(items[nextIndex]));
         }
     }
 }
@@ -1562,7 +1562,7 @@ bool findScriptFile(QString &filename)
 //------------------------------------------------------------------------------
 void MainWindow::runScriptClicked()
 {
-    QString command = txtScriptInput->text();
+    QString command = mTxtScriptInput->text();
     command = command.trimmed();
     std::string commandString = command.toStdString();
 
@@ -1584,7 +1584,7 @@ void MainWindow::runScriptClicked()
         }
         else
         {
-            listScriptOutput->addItem(QString("Script %1 can not be found!").arg(command));
+            mListScriptOutput->addItem(QString("Script %1 can not be found!").arg(command));
         }
 
         if(canundo)
@@ -1602,15 +1602,15 @@ void MainWindow::runScriptClicked()
         }
         else
         {
-            listScriptOutput->addItem(QString("Script %1 can not be found!").arg(command));
+            mListScriptOutput->addItem(QString("Script %1 can not be found!").arg(command));
         }
     }
     else
     {
 		OgitorsScriptConsole::getSingletonPtr()->insertLine(commandString);
     }
-    txtScriptInput->StoreLine();
-    txtScriptInput->clear();
+    mTxtScriptInput->StoreLine();
+    mTxtScriptInput->clear();
 }
 //------------------------------------------------------------------------------
 void MainWindow::onAddScriptAction()
