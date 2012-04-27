@@ -1062,6 +1062,8 @@ void MainWindow::addMenus()
     menuView->addSeparator();
     menuView->addAction(actLoadLayout);
     menuView->addAction(actSaveLayout);
+    menuView->addSeparator();
+    menuView->addAction(actHideMenuBar);
 
     menuLog = new QMenu(tr("Messages"),mMenuBar);
     menuLog->setObjectName(QString::fromUtf8("menuLog"));
