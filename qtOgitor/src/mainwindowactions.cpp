@@ -68,6 +68,11 @@ using namespace Ogitors;
 //------------------------------------------------------------------------------
 void MainWindow::addActions()
 {
+    actHideMenuBar = new QAction(tr("Hide MenuBar"), this);
+    actHideMenuBar->setStatusTip(tr("Hide the menu bar and show as icon in the toolbar"));
+    actHideMenuBar->setCheckable( true );
+    actHideMenuBar->setChecked( false );
+
     actSaveLayout = new QAction(tr("Save Layout"), this);
     actSaveLayout->setStatusTip(tr("Save Current Layout to File"));
     actSaveLayout->setIcon(QIcon(":/icons/filesave.svg"));
@@ -413,6 +418,7 @@ void MainWindow::addActions()
 
     connect(selmapper, SIGNAL(mapped( int )), this, SLOT(selectActionTriggered( int )));
 
+    connect(actHideMenuBar, SIGNAL(triggered()), this, SLOT(hideMenuBar()));
     connect(actSaveLayout, SIGNAL(triggered()), this, SLOT(saveLayout()));
     connect(actLoadLayout, SIGNAL(triggered()), this, SLOT(loadLayout()));
     connect(actCamSave, SIGNAL(triggered()), this, SLOT(saveCamera()));
@@ -909,7 +915,9 @@ void MainWindow::toggleFullScreen()
     {
         actSuperFullScreen->setChecked(false);
 
-        mMenuBar->setVisible(true);
+        if( !actHideMenuBar->isChecked() )
+            mMenuBar->setVisible(true);
+
         for(unsigned int i = 0;i < mSubWindowStateSave.size();i++)
         {
              mSubWindowStateSave[i]->setVisible(true);
@@ -979,8 +987,11 @@ void MainWindow::toggleSuperFullScreen()
         {
              mSubWindowStateSave[i]->setVisible(true);
         }
+
         mSubWindowStateSave.clear();
-        mMenuBar->setVisible(true);
+
+        if( !actHideMenuBar->isChecked() )
+            mMenuBar->setVisible(true);
     }
 }
 //------------------------------------------------------------------------------
@@ -1736,6 +1747,37 @@ void MainWindow::onPlayerRunPause()
 void MainWindow::onPlayerStop()
 {
     OgitorsRoot::getSingletonPtr()->SetRunState(RS_STOPPED);
+}
+//------------------------------------------------------------------------------
+QAction *separatorAction;
+
+void MainWindow::hideMenuBar()
+{
+    if( actHideMenuBar->isChecked() )
+    {
+        mMenuBar->hide();
+        
+        QList<QAction*> actions = mMenuBar->actions();
+
+        menuCompactMenuBar = new QMenu(this);
+        menuCompactMenuBar->addActions( actions );
+        menuCompactMenuBar->menuAction()->setText(tr("Menu"));
+        menuCompactMenuBar->menuAction()->setStatusTip(tr("Menu"));
+        menuCompactMenuBar->menuAction()->setIcon(QIcon(":/icons/toolbar.svg"));
+
+        mFileToolBar->insertAction( actNew, menuCompactMenuBar->menuAction() );
+        separatorAction = mFileToolBar->insertSeparator( actNew );
+    }
+    else
+    {
+        delete menuCompactMenuBar;
+        menuCompactMenuBar = 0;
+
+        delete separatorAction;
+        separatorAction = 0;
+
+        mMenuBar->show();
+    }
 }
 //------------------------------------------------------------------------------
 void MainWindow::parseAndAppendContextMenuList(QMenu* contextMenu, Ogitors::UTFStringVector menuList, QObject* receiver)

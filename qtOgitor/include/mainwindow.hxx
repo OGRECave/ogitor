@@ -133,6 +133,7 @@ public:
     QComboBox*   mSnapMultiplierBox;
     QComboBox*   mCameraViewModeBox;
 
+    QAction*  actHideMenuBar;
     QAction*  actSaveLayout;
     QAction*  actLoadLayout;
     QAction*  actNew;
@@ -194,6 +195,7 @@ public:
     QAction*  actEditCopyToTemplate;
     QAction*  actEditCopyToTemplateWithChildren;
 
+    QMenu*    menuCompactMenuBar;
     QMenu*    menuFile;
     QMenu*    menuImport;
     QMenu*    menuExport;
@@ -289,6 +291,7 @@ public:
     static void parseAndAppendContextMenuList(QMenu* contextMenu, Ogitors::UTFStringVector menuList, QObject* receiver);
 
 public Q_SLOTS:
+    void hideMenuBar();
     void onAddScriptAction();
     void onExecuteScriptAction(int index);
     void runScriptClicked();
