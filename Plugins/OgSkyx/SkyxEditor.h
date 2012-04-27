@@ -79,7 +79,8 @@ namespace Ogitors
         OgitorsProperty<Ogre::Real>         *mTimeMultiplier;
 
         // SkyX Basic Controller parameters
-        OgitorsProperty<Ogre::Vector3>      *mTime;
+        OgitorsProperty<Ogre::Real>         *mCurrentTime;
+        OgitorsProperty<Ogre::Vector2>      *mTime;
         OgitorsProperty<Ogre::Vector2>      *mEastPosition;
         OgitorsProperty<Ogre::Real>         *mMoonPhase;
 
@@ -126,7 +127,8 @@ namespace Ogitors
         bool _setOptionsTimeMultiplier(OgitorsPropertyBase* property, const Ogre::Real& value);
 
         // SkyX Basic Controller parameters
-        bool _setOptionsTime(OgitorsPropertyBase* property, const Ogre::Vector3& value);
+        bool _setOptionsCurrentTime(OgitorsPropertyBase* property, const Ogre::Real& value);
+        bool _setOptionsTime(OgitorsPropertyBase* property, const Ogre::Vector2& value);
         bool _setOptionsEastPosition(OgitorsPropertyBase* property, const Ogre::Vector2& value);
         bool _setOptionsMoonPhase(OgitorsPropertyBase* property, const Ogre::Real& value);
 

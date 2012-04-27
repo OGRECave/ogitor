@@ -55,7 +55,7 @@ bool CSkyxEditor::update(float timePassed)
 {
     mHandle->update(timePassed);
     mHandle->notifyCameraRender(mOgitorsRoot->GetViewport()->getCameraEditor()->getCamera());
-    mProperties.setValue("options::time", mBasicController->getTime());
+    mProperties.setValue("options::currenttime", mBasicController->getTime().x);
 
     return false;
 }
@@ -90,7 +90,7 @@ void CSkyxEditor::_restoreState()
     opt.G                   = mG->get();
     mHandle->getAtmosphereManager()->setOptions(opt);
 
-    mBasicController->setTime(mTime->get());
+    mBasicController->setTime(Ogre::Vector3(mCurrentTime->get(), mTime->get().x, mTime->get().y));
     mBasicController->setEastDirection(mEastPosition->get());
     mBasicController->setMoonPhase(mMoonPhase->get());
 
@@ -167,7 +167,8 @@ void CSkyxEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mTimeMultiplier        , "options::timemultiplier"     , Ogre::Real,           0.01f,                                  0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsTimeMultiplier));
     
     // SkyX Basic Controller parameters
-    PROPERTY_PTR(mTime                  , "options::time"               , Ogre::Vector3,        Ogre::Vector3(8.80f, 7.50f, 20.50f),    0, SETTER(Ogre::Vector3,        CSkyxEditor, _setOptionsTime));
+    PROPERTY_PTR(mCurrentTime           , "options::currenttime"        , Ogre::Real,           8.80f,                                  0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsCurrentTime));
+    PROPERTY_PTR(mTime                  , "options::time"               , Ogre::Vector2,        Ogre::Vector2(7.50f, 20.50f),           0, SETTER(Ogre::Vector2,        CSkyxEditor, _setOptionsTime));
     PROPERTY_PTR(mEastPosition          , "options::eastposition"       , Ogre::Vector2,        Ogre::Vector2(0, 1),                    0, SETTER(Ogre::Vector2,        CSkyxEditor, _setOptionsEastPosition));
     PROPERTY_PTR(mMoonPhase             , "options::moonphase"          , Ogre::Real,           0,                                      0, SETTER(Ogre::Real,           CSkyxEditor, _setOptionsMoonPhase));
 
@@ -277,11 +278,15 @@ bool CSkyxEditor::_setOptionsOuterRadius(OgitorsPropertyBase* property, const Og
     return true;
 }
 //-----------------------------------------------------------------------------------------
-bool CSkyxEditor::_setOptionsTime(OgitorsPropertyBase* property, const Ogre::Vector3& value)
+bool CSkyxEditor::_setOptionsCurrentTime(OgitorsPropertyBase* property, const Ogre::Real& value)
 {
-    mTime->init(value);
-
-    mBasicController->setTime(value);
+    mBasicController->setTime(Ogre::Vector3(value, mTime->get().x, mTime->get().y));
+    return true;
+}
+//-----------------------------------------------------------------------------------------
+bool CSkyxEditor::_setOptionsTime(OgitorsPropertyBase* property, const Ogre::Vector2& value)
+{
+    mBasicController->setTime(Ogre::Vector3(mCurrentTime->get(), value.x, value.y));
     return true;
 }
 //-----------------------------------------------------------------------------------------
@@ -451,9 +456,9 @@ TiXmlElement *CSkyxEditor::exportDotScene(TiXmlElement *pParent)
 
     TiXmlElement *pTime = pSkyX->InsertEndChild(TiXmlElement("time"))->ToElement();
     pTime->SetAttribute("multiplier", Ogre::StringConverter::toString(mTimeMultiplier->get()).c_str());
-    pTime->SetAttribute("current", Ogre::StringConverter::toString(mTime->get().x).c_str());
-    pTime->SetAttribute("sunRise", Ogre::StringConverter::toString(mTime->get().y).c_str());
-    pTime->SetAttribute("sunSet",  Ogre::StringConverter::toString(mTime->get().z).c_str());
+    pTime->SetAttribute("current", Ogre::StringConverter::toString(mCurrentTime->get()).c_str());
+    pTime->SetAttribute("sunRise", Ogre::StringConverter::toString(mTime->get().x).c_str());
+    pTime->SetAttribute("sunSet",  Ogre::StringConverter::toString(mTime->get().y).c_str());
     
     TiXmlElement *pEastPosition = pSkyX->InsertEndChild(TiXmlElement("eastPosition"))->ToElement();
     pEastPosition->SetAttribute("X", Ogre::StringConverter::toString(mEastPosition->get().x).c_str());
@@ -485,9 +490,12 @@ CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
 
     OgitorsPropertyDef* definition = 0;
 
-    definition = AddPropertyDefinition("options::time",                 "Options::Time",                "", PROP_VECTOR3);
-    definition->setFieldNames("Current", "Sun Rise", "Sun Set");
-    definition->setRange(Ogre::Any(Ogre::Vector3(0, 0, 0)), Ogre::Any(Ogre::Vector3(24, 24, 24)), Ogre::Any(Ogre::Vector3(0.25f, 0.25f, 0.25f)));
+    definition = AddPropertyDefinition("options::currenttime",          "Options::Current Time",        "", PROP_REAL);
+    definition->setRange(Ogre::Any(0.0f), Ogre::Any(24.0f), Ogre::Any(0.25f));
+    definition->setTrackChanges(false);
+    definition = AddPropertyDefinition("options::time",                 "Options::Day Time",            "", PROP_VECTOR2);
+    definition->setFieldNames("Sun Rise", "Sun Set");
+    definition->setRange(Ogre::Any(Ogre::Vector2(0, 0)), Ogre::Any(Ogre::Vector2(24, 24)), Ogre::Any(Ogre::Vector2(0.25f, 0.25f)));
     definition = AddPropertyDefinition("options::timemultiplier",       "Options::Time Mult.",          "", PROP_REAL);
     definition->setRange(Ogre::Any(-1000.0f), Ogre::Any(1000.0f), Ogre::Any(0.25f));
     definition = AddPropertyDefinition("options::miemultiplier",        "Options::Mie Mult.",           "", PROP_REAL);
