@@ -74,7 +74,7 @@ namespace Ogitors
     //---------------------------------------------------------------------
     OgitorsPropertySet::OgitorsPropertySet() : mType(PROPSET_OBJECT), mRefCount(1)
     {
- 
+
     }
     //---------------------------------------------------------------------
     OgitorsPropertySet::~OgitorsPropertySet()
@@ -84,7 +84,7 @@ namespace Ogitors
             OGRE_DELETE i->second;
         }
         mPropertyMap.clear();
-        
+
         for (unsigned int c = 0; c < mPropertyConnections.size(); c++)
         {
             OGRE_DELETE mPropertyConnections[c];
@@ -145,7 +145,7 @@ namespace Ogitors
         }
     }
     //---------------------------------------------------------------------
-       void OgitorsPropertySet::propertyChangeTracker(const Ogitors::OgitorsPropertyBase* property, Ogre::Any value)
+    void OgitorsPropertySet::propertyChangeTracker(const Ogitors::OgitorsPropertyBase* property, Ogre::Any value)
     {
         OgitorsPropertyBase *prop = const_cast<OgitorsPropertyBase*>(property);
         for(unsigned int i = 0;i < mListeners.size();i++)
@@ -441,7 +441,7 @@ namespace Ogitors
 
         OgitorsPropertyDefMap::iterator defi;
         defi = mDefinitions.insert(OgitorsPropertyDefMap::value_type(name, OgitorsPropertyDef(name, name, name, pType))).first;
-        
+
         OgitorsPropertyBase *prop = 0;
 
         switch(pType)
@@ -475,7 +475,7 @@ namespace Ogitors
             break;
         default: assert(prop != 0 && "Invalid Custom Property Type");return 0;
         };
-        
+
         OgitorsPropertySet::addProperty(prop);
 
         return &(defi->second);
@@ -489,7 +489,7 @@ namespace Ogitors
 
         OgitorsPropertyDefMap::iterator defi;
         defi = mDefinitions.insert(OgitorsPropertyDefMap::value_type(name, OgitorsPropertyDef(name, name, name, value.propType))).first;
-        
+
         OgitorsPropertyBase *prop = 0;
 
         switch(value.propType)
@@ -532,7 +532,7 @@ namespace Ogitors
             break;
         default: assert(prop != 0 && "Invalid Custom Property Type");return 0;
         };
-        
+
         OgitorsPropertySet::addProperty(prop);
 
         return &(defi->second);
@@ -564,7 +564,7 @@ namespace Ogitors
 
             OgitorsPropertyDef *clonedef = clone.addProperty(prop->getName(), prop->getType());
             clone.getProperty(prop->getName())->setValue(prop->getValue());
-          
+
             if(options)
             {
                 if(def->getAutoOptionType() == AUTO_OPTIONS_NONE)
@@ -587,7 +587,7 @@ namespace Ogitors
     void OgitorsCustomPropertySet::initFromSet(OgitorsCustomPropertySet& set)
     {
         OgitorsUndoManager::getSingletonPtr()->AddUndo(OGRE_NEW CustomSetRebuiltUndo(this));
-        
+
         OgitorsPropertyDefMap::iterator it = mDefinitions.begin();
 
         while(it != mDefinitions.end())
@@ -604,7 +604,7 @@ namespace Ogitors
         {
             OGRE_DELETE i->second;
         }
-        
+
         for (unsigned int c = 0; c < mPropertyConnections.size(); c++)
         {
             OGRE_DELETE mPropertyConnections[c];
@@ -623,9 +623,9 @@ namespace Ogitors
 
             OgitorsPropertyDef *initdef = addProperty(prop->getName(), prop->getType());
             getProperty(prop->getName())->setValue(prop->getValue());
-            
+
             *initdef = *def;
-          
+
             if(options)
             {
                 if(def->getAutoOptionType() == AUTO_OPTIONS_NONE)
@@ -649,7 +649,7 @@ namespace Ogitors
     void OgitorsCustomPropertySet::addFromSet(OgitorsCustomPropertySet& set)
     {
         OgitorsUndoManager::getSingletonPtr()->AddUndo(OGRE_NEW CustomSetRebuiltUndo(this));
-        
+
         for(unsigned int i = 0;i < set.mPropertyVector.size();i++)
         {
             OgitorsPropertyBase         *prop    = set.mPropertyVector[i];
@@ -663,7 +663,7 @@ namespace Ogitors
             OgitorsPropertyDef *initdef = addProperty(prop->getName(), prop->getType());
             getProperty(prop->getName())->setValue(prop->getValue());
             *initdef = *def;
-          
+
             if(options)
             {
                 if(def->getAutoOptionType() == AUTO_OPTIONS_NONE)
@@ -718,7 +718,7 @@ namespace Ogitors
 
         OgitorsPropertyDefMap::iterator defi = mDefinitions.find(propname);
         assert(defi != mDefinitions.end());
-        
+
         if(defi->second.getAutoOptionType() == AUTO_OPTIONS_NONE)
         {
             PropertyOptionsVector *options = const_cast<PropertyOptionsVector*>(defi->second.getOptions());
@@ -733,47 +733,47 @@ namespace Ogitors
                 position = i;
                 break;
             }
-        
-        assert(position != -1);
-        
-        defi = mDefinitions.insert(OgitorsPropertyDefMap::value_type(propname, OgitorsPropertyDef(propname, propname, propname, pType))).first;
 
-        oldprop = 0;
+            assert(position != -1);
 
-        switch(pType)
-        {
-        case PROP_INT:
-            oldprop = OGRE_NEW OgitorsProperty<int>(&(defi->second), 0, 0, 0);
-            break;
-        case PROP_REAL:
-            oldprop = OGRE_NEW OgitorsProperty<Ogre::Real>(&(defi->second), 0, 0, 0);
-            break;
-        case PROP_STRING:
-            oldprop = OGRE_NEW OgitorsProperty<Ogre::String>(&(defi->second), "", 0, 0);
-            break;
-        case PROP_VECTOR2:
-            oldprop = OGRE_NEW OgitorsProperty<Ogre::Vector2>(&(defi->second), Ogre::Vector2::ZERO, 0, 0);
-            break;
-        case PROP_VECTOR3:
-            oldprop = OGRE_NEW OgitorsProperty<Ogre::Vector3>(&(defi->second), Ogre::Vector3::ZERO, 0, 0);
-            break;
-        case PROP_VECTOR4:
-            oldprop = OGRE_NEW OgitorsProperty<Ogre::Vector4>(&(defi->second), Ogre::Vector4::ZERO, 0, 0);
-            break;
-        case PROP_COLOUR:
-            oldprop = OGRE_NEW OgitorsProperty<Ogre::ColourValue>(&(defi->second), Ogre::ColourValue(0,0,0), 0, 0);
-            break;
-        case PROP_BOOL:
-            oldprop = OGRE_NEW OgitorsProperty<bool>(&(defi->second), false, 0, 0);
-            break;
-        case PROP_QUATERNION:
-            oldprop = OGRE_NEW OgitorsProperty<Ogre::Quaternion>(&(defi->second), Ogre::Quaternion::IDENTITY, 0, 0);
-            break;
-        default: assert(oldprop != 0 && "Invalid Custom Property Type");
-        };
+            defi = mDefinitions.insert(OgitorsPropertyDefMap::value_type(propname, OgitorsPropertyDef(propname, propname, propname, pType))).first;
 
-        mPropertyMap.insert(OgitorsPropertyMap::value_type(oldprop->getName(), oldprop));
-        mPropertyVector[position] = oldprop;
+            oldprop = 0;
+
+            switch(pType)
+            {
+            case PROP_INT:
+                oldprop = OGRE_NEW OgitorsProperty<int>(&(defi->second), 0, 0, 0);
+                break;
+            case PROP_REAL:
+                oldprop = OGRE_NEW OgitorsProperty<Ogre::Real>(&(defi->second), 0, 0, 0);
+                break;
+            case PROP_STRING:
+                oldprop = OGRE_NEW OgitorsProperty<Ogre::String>(&(defi->second), "", 0, 0);
+                break;
+            case PROP_VECTOR2:
+                oldprop = OGRE_NEW OgitorsProperty<Ogre::Vector2>(&(defi->second), Ogre::Vector2::ZERO, 0, 0);
+                break;
+            case PROP_VECTOR3:
+                oldprop = OGRE_NEW OgitorsProperty<Ogre::Vector3>(&(defi->second), Ogre::Vector3::ZERO, 0, 0);
+                break;
+            case PROP_VECTOR4:
+                oldprop = OGRE_NEW OgitorsProperty<Ogre::Vector4>(&(defi->second), Ogre::Vector4::ZERO, 0, 0);
+                break;
+            case PROP_COLOUR:
+                oldprop = OGRE_NEW OgitorsProperty<Ogre::ColourValue>(&(defi->second), Ogre::ColourValue(0,0,0), 0, 0);
+                break;
+            case PROP_BOOL:
+                oldprop = OGRE_NEW OgitorsProperty<bool>(&(defi->second), false, 0, 0);
+                break;
+            case PROP_QUATERNION:
+                oldprop = OGRE_NEW OgitorsProperty<Ogre::Quaternion>(&(defi->second), Ogre::Quaternion::IDENTITY, 0, 0);
+                break;
+            default: assert(oldprop != 0 && "Invalid Custom Property Type");
+            };
+
+            mPropertyMap.insert(OgitorsPropertyMap::value_type(oldprop->getName(), oldprop));
+            mPropertyVector[position] = oldprop;
     }
     //---------------------------------------------------------------------
 }
