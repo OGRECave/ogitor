@@ -866,22 +866,22 @@ void QtOgitorSystem::PresentPropertiesView(Ogitors::CBaseEditor *object)
         QWidget *widget = static_cast<QWidget*>(object->getCustomToolsWindow());
         try
         {
-            mOgitorMainWindow->toolsDockWidget->setWidget(widget);
-            mOgitorMainWindow->toolsDockWidget->raise();
+            mOgitorMainWindow->mToolsDockWidget->setWidget(widget);
+            mOgitorMainWindow->mToolsDockWidget->raise();
 
             return;
         }
         catch(...)
         {
-            mOgitorMainWindow->toolsDockWidget->setWidget(NULL);
+            mOgitorMainWindow->mToolsDockWidget->setWidget(NULL);
         }
     }
     else
     {
-        mOgitorMainWindow->toolsDockWidget->setWidget(NULL);
+        mOgitorMainWindow->mToolsDockWidget->setWidget(NULL);
     }
 
-    mOgitorMainWindow->propertiesDockWidget->raise();
+    mOgitorMainWindow->mPropertiesDockWidget->raise();
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::HasTreeView()

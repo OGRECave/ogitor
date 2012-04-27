@@ -95,43 +95,45 @@ class MainWindow : public QMainWindow, Ogre::LogListener
     Q_OBJECT
 
 public:
-    OgreWidget*  mOgreWidget;
-    QMenuBar*    mMenuBar;
-    QStatusBar*  mStatusBar;
-    QTabWidget*  mEditorTab;
-    QToolBox*    mPropertiesToolBox;
-    QToolBox*    mExplorerToolBox;
-    QToolBox*    mResourcesToolBox;
-    QWidget*     mTerrainTab;
-    QListWidget* logWidget;
-    QWidget*     mScriptConsoleWidget;
-    QListWidget* listScriptOutput;
-    LineEditWithHistory* txtScriptInput;
-    QDockWidget* explorerDockWidget;
-    QDockWidget* layerDockWidget;
-    QDockWidget* resourcesDockWidget;
-    QDockWidget* propertiesDockWidget;
-    QDockWidget* toolsDockWidget;
-    QDockWidget* projectFilesDockWidget;
-    QTabWidget*  mLogTabs;
-    QDockWidget* logDockWidget;
-    TerrainToolsWidget* mTerrainToolsWidget;
+    OgreWidget*             mOgreWidget;
+    QMenuBar*               mMenuBar;
+    QStatusBar*             mStatusBar;
+    QTabWidget*             mEditorTab;
+    QToolBox*               mPropertiesToolBox;
+    QToolBox*               mExplorerToolBox;
+    QStackedWidget*         mResourcesStackedWidget;
+    QWidget*                mTerrainTab;
+    QListWidget*            mLogWidget;
+    QWidget*                mScriptConsoleWidget;
+    QListWidget*            mListScriptOutput;
+    LineEditWithHistory*    mTxtScriptInput;
+    QDockWidget*            mExplorerDockWidget;
+    QDockWidget*            mLayerDockWidget;
+    QDockWidget*            mResourcesDockWidget;
+    QToolBar*               mResourcesStackedToolBar;
+    QSignalMapper*          mResourcesStackedMapper;
+    QDockWidget*            mPropertiesDockWidget;
+    QDockWidget*            mToolsDockWidget;
+    QDockWidget*            mProjectFilesDockWidget;
+    QTabWidget*             mLogTabs;
+    QDockWidget*            mLogDockWidget;
+    TerrainToolsWidget*     mTerrainToolsWidget;
 
-    QToolBar*    mFileToolBar;
-    QToolBar*    mHelpToolBar;
-    QToolBar*    mEditToolBar;
-    QToolBar*    mViewToolBar;
-    ActionToolbar* mScriptActionsBar;
-    QToolBar*    mPlayerToolbar;
-    QAction*     actPlayerRunPause;
-    QAction*     actPlayerStop;
-    QAction*     actAddScriptToToolbar;
-    QCheckBox*   moveX;
-    QCheckBox*   moveY;
-    QCheckBox*   moveZ;
-    QCheckBox*   mSnapGround;
-    QComboBox*   mSnapMultiplierBox;
-    QComboBox*   mCameraViewModeBox;
+    QToolBar*           mFileToolBar;
+    QToolBar*           mHelpToolBar;
+    QToolBar*           mEditToolBar;
+    QToolBar*           mViewToolBar;
+    ActionToolbar*      mScriptActionsBar;
+    QToolBar*           mPlayerToolbar;
+    QAction*            actPlayerRunPause;
+    QAction*            actPlayerStop;
+    QAction*            actAddScriptToToolbar;
+    QCheckBox*          moveX;
+    QCheckBox*          moveY;
+    QCheckBox*          moveZ;
+    QCheckBox*          mSnapGround;
+    QComboBox*          mSnapMultiplierBox;
+    QComboBox*          mCameraViewModeBox;
 
     QAction*  actHideMenuBar;
     QAction*  actSaveLayout;
@@ -261,7 +263,7 @@ public:
     void                            setSelectedObjectsCount(int count);
 
     void updateLog(QListWidgetItem* item);
-    void scrollLogToBottom() {logWidget->scrollToBottom();};
+    void scrollLogToBottom() {mLogWidget->scrollToBottom();};
 
     void showSubWindows();
     void hideSubWindows();
@@ -382,6 +384,7 @@ private:
     std::vector<ScriptActionData>   mScriptActions;
     QSignalMapper*                  mScriptActionMap;
     QTimer                          *mAutoBackupTimer;
+    int                             mNextResToolbarMapIndex;
 
     void createScriptActionsToolbar();
     void closeEvent(QCloseEvent *event);
