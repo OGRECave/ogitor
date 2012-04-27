@@ -618,7 +618,7 @@ void MainWindow::showHelp()
 void MainWindow::newScene()
 {
     const char NewSceneDefinition[] = "  <OBJECT typename=\"%s\" scenemanagertype=\"%s\" name=\"SceneManager\"> <PROPERTY id=\"configfile\" type=\"7\" value=\"%s\"></PROPERTY></OBJECT>\n"
-                                      "</OGITORSCENE>\n";
+        "</OGITORSCENE>\n";
 
     Ogitors::OgitorsRoot *ogRoot = OgitorsRoot::getSingletonPtr();
     Ogitors::OgitorsSystem *system = OgitorsSystem::getSingletonPtr();
@@ -739,13 +739,13 @@ void MainWindow::closeScene()
         if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Terrain is still making background calculations.") + "\n" + tr("Closing at this time may take much longer and cause temporary freeze.") + "\n" + tr("Do you want to continue?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
             return;
     }
-    
+
     OgitorsRoot::getSingletonPtr()->TerminateScene();
 }
 //------------------------------------------------------------------------------
 void MainWindow::exitApp()
 {
-	qApp->closeAllWindows();
+    qApp->closeAllWindows();
 }
 //------------------------------------------------------------------------------
 void MainWindow::saveScene(const QString& exportfile)
@@ -776,7 +776,7 @@ void MainWindow::setToolSelect()
     if(vpe)
         vpe->SetEditorTool(TOOL_SELECT);
     if(OgitorsRoot::getSingletonPtr()->GetTerrainEditor())
-            OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
+        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
 }
 //------------------------------------------------------------------------------
 void MainWindow::setToolMove()
@@ -789,7 +789,7 @@ void MainWindow::setToolMove()
     if(vpe)
         vpe->SetEditorTool(TOOL_MOVE);
     if(OgitorsRoot::getSingletonPtr()->GetTerrainEditor())
-            OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
+        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
 }
 //------------------------------------------------------------------------------
 void MainWindow::setToolRotate()
@@ -802,7 +802,7 @@ void MainWindow::setToolRotate()
     if(vpe)
         vpe->SetEditorTool(TOOL_ROTATE);
     if(OgitorsRoot::getSingletonPtr()->GetTerrainEditor())
-            OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
+        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
 }
 //------------------------------------------------------------------------------
 void MainWindow::setToolScale()
@@ -815,7 +815,7 @@ void MainWindow::setToolScale()
     if(vpe)
         vpe->SetEditorTool(TOOL_SCALE);
     if(OgitorsRoot::getSingletonPtr()->GetTerrainEditor())
-            OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
+        OgitorsRoot::getSingletonPtr()->GetTerrainEditor()->setEditMode(EM_NONE);
 }
 //------------------------------------------------------------------------------
 void MainWindow::setToolDeform()
@@ -920,7 +920,7 @@ void MainWindow::toggleFullScreen()
 
         for(unsigned int i = 0;i < mSubWindowStateSave.size();i++)
         {
-             mSubWindowStateSave[i]->setVisible(true);
+            mSubWindowStateSave[i]->setVisible(true);
         }
         mSubWindowStateSave.clear();
     }
@@ -939,7 +939,7 @@ void MainWindow::toggleFullScreen()
 
         if(wasMaximized)
             setWindowState(Qt::WindowMaximized);
-            //showMaximized();
+        //showMaximized();
     }
 }
 //------------------------------------------------------------------------------
@@ -981,11 +981,11 @@ void MainWindow::toggleSuperFullScreen()
 
         if(wasMaximized)
             setWindowState(Qt::WindowMaximized);
-            //showMaximized();
+        //showMaximized();
 
         for(unsigned int i = 0;i < mSubWindowStateSave.size();i++)
         {
-             mSubWindowStateSave[i]->setVisible(true);
+            mSubWindowStateSave[i]->setVisible(true);
         }
 
         mSubWindowStateSave.clear();
@@ -1059,32 +1059,32 @@ void MainWindow::importSerializer(const QString& value)
 //------------------------------------------------------------------------------
 void MainWindow::incCamera()
 {
-   CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
-   if(ovp)
-   {
-       ovp->MultiplyCameraSpeed(1.5f);
-       mCameraSpeedSlider->setToolTip(QString("%1").arg((int)ovp->GetCameraSpeed()));
-       mCameraSpeedSlider->setSliderPosition(std::min((int)ovp->GetCameraSpeed(), 100));
-   }
+    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
+    if(ovp)
+    {
+        ovp->MultiplyCameraSpeed(1.5f);
+        mCameraSpeedSlider->setToolTip(QString("%1").arg((int)ovp->GetCameraSpeed()));
+        mCameraSpeedSlider->setSliderPosition(std::min((int)ovp->GetCameraSpeed(), 100));
+    }
 }
 //------------------------------------------------------------------------------
 void MainWindow::decCamera()
 {
-   CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
-   if(ovp)
-   {
-       ovp->MultiplyCameraSpeed(1.0f / 1.5f);
-       mCameraSpeedSlider->setToolTip(QString("%1").arg((int)ovp->GetCameraSpeed()));
-       mCameraSpeedSlider->setSliderPosition(std::min((int)ovp->GetCameraSpeed(), 100));
-   }
+    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
+    if(ovp)
+    {
+        ovp->MultiplyCameraSpeed(1.0f / 1.5f);
+        mCameraSpeedSlider->setToolTip(QString("%1").arg((int)ovp->GetCameraSpeed()));
+        mCameraSpeedSlider->setSliderPosition(std::min((int)ovp->GetCameraSpeed(), 100));
+    }
 }
 //------------------------------------------------------------------------------
 void MainWindow::cameraSpeedValueChanged ( int value )
 {
-   CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
-   if(ovp)
-       ovp->SetCameraSpeed( (float)value );
-   mCameraSpeedSlider->setToolTip(QString("%1").arg(value));
+    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
+    if(ovp)
+        ovp->SetCameraSpeed( (float)value );
+    mCameraSpeedSlider->setToolTip(QString("%1").arg(value));
 }
 //------------------------------------------------------------------------------
 void MainWindow::saveCamera()
@@ -1100,7 +1100,7 @@ void MainWindow::saveCamera()
 
     QString menustr;
     menustr = QString(tr("Camera %1: <%2, %3, %4>")).arg(pOpt->CameraSaveCount).arg(pOpt->CameraPositions[pOpt->CameraSaveCount].x)
-                                                    .arg(pOpt->CameraPositions[pOpt->CameraSaveCount].y).arg(pOpt->CameraPositions[pOpt->CameraSaveCount].z);
+        .arg(pOpt->CameraPositions[pOpt->CameraSaveCount].y).arg(pOpt->CameraPositions[pOpt->CameraSaveCount].z);
     menuCameraPositions[pOpt->CameraSaveCount]->setTitle(menustr);
     pOpt->CameraSaveCount++;
 
@@ -1126,7 +1126,7 @@ void MainWindow::deleteCamera(int id)
 
         QString menustr;
         menustr = QString(tr("Camera %1: <%2, %3, %4>")).arg(i).arg(pOpt->CameraPositions[i].x)
-                                                        .arg(pOpt->CameraPositions[i].y).arg(pOpt->CameraPositions[i].z);
+            .arg(pOpt->CameraPositions[i].y).arg(pOpt->CameraPositions[i].z);
         menuCameraPositions[i]->setTitle(menustr);
     }
     menuCameraPositions[pOpt->CameraSaveCount - 1]->setTitle(tr("(Empty Slot)"));
@@ -1136,16 +1136,16 @@ void MainWindow::deleteCamera(int id)
 //------------------------------------------------------------------------------------
 void MainWindow::setCameraPolyMode(int value)
 {
-   CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
-   if(ovp && ovp->getCameraEditor())
-   {
-       switch(value)
-       {
-       case 0:ovp->getCameraEditor()->setPolygonMode(Ogre::PM_SOLID);break;
-       case 1:ovp->getCameraEditor()->setPolygonMode(Ogre::PM_WIREFRAME);break;
-       case 2:ovp->getCameraEditor()->setPolygonMode(Ogre::PM_POINTS);break;
-       }
-   }
+    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
+    if(ovp && ovp->getCameraEditor())
+    {
+        switch(value)
+        {
+        case 0:ovp->getCameraEditor()->setPolygonMode(Ogre::PM_SOLID);break;
+        case 1:ovp->getCameraEditor()->setPolygonMode(Ogre::PM_WIREFRAME);break;
+        case 2:ovp->getCameraEditor()->setPolygonMode(Ogre::PM_POINTS);break;
+        }
+    }
 }
 //------------------------------------------------------------------------------
 void MainWindow::cameraAction(int id)
@@ -1477,9 +1477,9 @@ void MainWindow::saveLayout()
 {
     QString path = QFileDialog::getSaveFileName(QApplication::activeWindow(), tr("Save Layout"), "", tr("Layout Files (*.oglayout)"), 0
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    , QFileDialog::DontUseNativeDialog );
+        , QFileDialog::DontUseNativeDialog );
 #else
-    );
+        );
 #endif
     if(path != "")
     {
@@ -1491,9 +1491,9 @@ void MainWindow::loadLayout()
 {
     QString path = QFileDialog::getOpenFileName(QApplication::activeWindow(), tr("Load Layout"), "", tr("Layout Files (*.oglayout)"), 0
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    , QFileDialog::DontUseNativeDialog );
+        , QFileDialog::DontUseNativeDialog );
 #else
-    );
+        );
 #endif
     if(path != "")
     {
@@ -1607,7 +1607,7 @@ void MainWindow::runScriptClicked()
     }
     else
     {
-		OgitorsScriptConsole::getSingletonPtr()->insertLine(commandString);
+        OgitorsScriptConsole::getSingletonPtr()->insertLine(commandString);
     }
     mTxtScriptInput->StoreLine();
     mTxtScriptInput->clear();
@@ -1639,22 +1639,22 @@ void MainWindow::onExecuteScriptAction(int index)
 //------------------------------------------------------------------------------
 void MainWindow::_saveScriptActions()
 {
-        QSettings settings;
+    QSettings settings;
 
-        settings.beginGroup("ScriptActions");
-        int pos = 0;
-        for(unsigned int i = 0;i < mScriptActions.size();i++)
-        {
-            if(!mScriptActions[i].active)
-                continue;
+    settings.beginGroup("ScriptActions");
+    int pos = 0;
+    for(unsigned int i = 0;i < mScriptActions.size();i++)
+    {
+        if(!mScriptActions[i].active)
+            continue;
 
-            settings.setValue(QString("IconPath%1").arg(pos), mScriptActions[i].icon);
-            settings.setValue(QString("ScriptPath%1").arg(pos), mScriptActions[i].script);
-            ++pos;
-        }
+        settings.setValue(QString("IconPath%1").arg(pos), mScriptActions[i].icon);
+        settings.setValue(QString("ScriptPath%1").arg(pos), mScriptActions[i].script);
+        ++pos;
+    }
 
-        settings.setValue("ActionCount", pos);
-        settings.endGroup();
+    settings.setValue("ActionCount", pos);
+    settings.endGroup();
 }
 //------------------------------------------------------------------------------
 void MainWindow::_addScriptAction(const QString& iconpath, const QString& scriptpath)
@@ -1756,7 +1756,7 @@ void MainWindow::hideMenuBar()
     if( actHideMenuBar->isChecked() )
     {
         mMenuBar->hide();
-        
+
         QList<QAction*> actions = mMenuBar->actions();
 
         menuCompactMenuBar = new QMenu(this);
@@ -1826,14 +1826,14 @@ void MainWindow::parseAndAppendContextMenuList(QMenu* contextMenu, Ogitors::UTFS
                     inSubMenu = false;
                     item = contextMenu->addAction(ConvertToQString(vList[0]), signalMapper, SLOT(map()), 0);
                 }
-                
+
                 if(vList.size() > 1)
                     item->setIcon(QIcon(ConvertToQString(vList[1])));
                 if(vList.size() > 2 && ConvertToQString(vList[2]).toInt() == 0)
                     item->setEnabled(false);
                 signalMapper->setMapping(item, mapslot);
             }
-            
+
             counter++;
         }
         vTmpList.clear();
