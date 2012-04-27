@@ -184,7 +184,9 @@ OgitorPreferencesWidget::OgitorPreferencesWidget(Ogre::String prefSectionName, Q
             for(t = 0;t < it->second.mScriptInterpreters.size();t++)
             {
                 subItem =  new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(it->second.mScriptInterpreters[t].c_str())));
-                subItem->setIcon(0, QIcon(":/icons/bullet.svg"));
+                //FIXME: Should have a means of choosing what icon to show..
+                subItem->setIcon(0, QIcon(":/icons/Python-logo-notext.svg"));
+                //subItem->setIcon(0, QIcon(":/icons/angelscript.svg"));
                 catItem->addChild(subItem);
             }
         }

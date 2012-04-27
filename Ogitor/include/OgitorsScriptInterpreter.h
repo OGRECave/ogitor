@@ -67,6 +67,10 @@ namespace Ogitors
         virtual const std::string getTypeString() = 0;
         // return Interpreter Init Message
         virtual const std::string getInitMessage() = 0;
+        // return Interpreter Script Icon
+        virtual const std::string getScriptIcon() = 0;
+        // return Interpreter Script Extension //TODO: this could be a stringvector?
+        virtual const std::string getScriptExtension() = 0;
         //Initialization
         virtual void Init() = 0;
         //Create a new instance of the interpreter
@@ -123,6 +127,10 @@ namespace Ogitors
         const std::string getTypeString() { return "Dummy"; };
         // return Interpreter Init Message
         const std::string getInitMessage() { return "WARNING: Dummy Interpreter Active!"; };
+        // return Interpreter Script Icon
+        virtual const std::string getScriptIcon() { return ":/icons/script.svg"; }
+        // return Interpreter Script Extension
+        virtual const std::string getScriptExtension() { return "script"; }
         //Initialization
         void Init() {};
         //Return engine specific handle

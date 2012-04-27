@@ -30,6 +30,8 @@ set(LIBRARY_OUTPUT_PATH  ../lib)
 
 set_target_properties(OFS PROPERTIES COMPILE_DEFINITIONS "OFS_EXPORT")
 
+set_target_properties(OFS PROPERTIES FOLDER Plugins) 
+
 if(WIN32)
 	set_target_properties(OFS PROPERTIES COMPILE_FLAGS "/MP")
 endif(WIN32)

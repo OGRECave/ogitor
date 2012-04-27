@@ -548,9 +548,10 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
     PluginList.clear();
 
-    if(mScriptInterpreterList["AngelScript"] != 0)
+    //FIXME: How do we decide what interpreter to use?
+    if(mScriptInterpreterList["PythonQt"] != 0)
     {
-        mScriptInterpreter = mScriptInterpreterList["AngelScript"];
+        mScriptInterpreter = mScriptInterpreterList["PythonQt"];
         mScriptInterpreter->Init();
     }
     else
