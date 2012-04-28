@@ -1049,6 +1049,8 @@ typedef off_t ofs64;
         OfsEntryDesc* _getDirectoryDesc(const char *filename);
         /* Retrieves file descriptor of a given file in a given directory, null if not found */
         OfsEntryDesc* _getFileDesc(OfsEntryDesc *dir_desc, std::string filename);
+        /* Retrieves file descriptor of a given child in a given directory, null if not found */
+        OfsEntryDesc* _findChild(OfsEntryDesc *dir_desc, std::string child_name);
         /* Retrieves filename from a given path */
         std::string   _extractFileName(const char *filename);
         /* Internal createDirectory implementation */
