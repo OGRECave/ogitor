@@ -1135,7 +1135,7 @@ void *QtOgitorSystem::CreateTreeRoot(Ogre::String name)
     return (void*)item;
 }
 //-------------------------------------------------------------------------------
-void QtOgitorSystem::SetTreeItemColour(Ogitors::CBaseEditor *object, unsigned int colour )
+void QtOgitorSystem::SetTreeItemColour(Ogitors::CBaseEditor *object, unsigned int colour)
 {
     if(!object)
         return;
@@ -1143,13 +1143,18 @@ void QtOgitorSystem::SetTreeItemColour(Ogitors::CBaseEditor *object, unsigned in
     QTreeWidgetItem* witem = static_cast<QTreeWidgetItem*>(object->getSceneTreeItemHandle());
     if(witem)
     {
-        witem->setTextColor(0,QColor(GetRED(colour),GetGREEN(colour),GetBLUE(colour)));
+        witem->setTextColor(0,QColor(GetRED(colour), GetGREEN(colour), GetBLUE(colour)));
+
+        if(object->getLocked())
+            witem->setData(0, Qt::UserRole, ":/icons/lock.svg");
+        else
+            witem->setData(0, Qt::UserRole, "");
     }
 
     witem = static_cast<QTreeWidgetItem*>(object->getLayerTreeItemHandle());
     if(witem)
     {
-        witem->setTextColor(0,QColor(GetRED(colour),GetGREEN(colour),GetBLUE(colour)));
+        witem->setTextColor(0,QColor(GetRED(colour), GetGREEN(colour), GetBLUE(colour)));
     }
 }
 //-------------------------------------------------------------------------------
