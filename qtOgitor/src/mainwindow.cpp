@@ -285,6 +285,8 @@ MainWindow::MainWindow(QString args, QWidget *parent)
     hideSubWindows();
 #endif
 
+    onSwitchStackedResources(0);
+
     EventManager::getSingletonPtr()->connectEvent(EventManager::MODIFIED_STATE_CHANGE,      this, true, 0, true, 0, EVENT_CALLBACK(MainWindow, onSceneModifiedChange));
     EventManager::getSingletonPtr()->connectEvent(EventManager::UNDOMANAGER_NOTIFICATION,   this, true, 0, true, 0, EVENT_CALLBACK(MainWindow, onUndoManagerNotification));
     EventManager::getSingletonPtr()->connectEvent(EventManager::RUN_STATE_CHANGE,           this, true, 0, true, 0, EVENT_CALLBACK(MainWindow, onSceneRunStateChange));
@@ -609,31 +611,26 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mResourcesStackedToolBar->setIconSize(QSize(16, 16));
     mResourcesStackedToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    QToolButton* objectsButton = new QToolButton(this);
-    QToolButton* entitiesButton = new QToolButton(this);
-    QToolButton* templatesButton = new QToolButton(this);
-    objectsButton->setIcon(QIcon(":/icons/objects.svg"));
-    entitiesButton->setIcon(QIcon(":/icons/entity.svg"));
-    templatesButton->setIcon(QIcon(":/icons/template.svg"));
-    objectsButton->setToolTip(tr("Object"));
-    entitiesButton->setToolTip(tr("Meshes"));
-    templatesButton->setToolTip(tr("Templates"));
-    objectsButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    entitiesButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    templatesButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    mResourcesStackedToolBar->addWidget(objectsButton);
-    mResourcesStackedToolBar->addWidget(entitiesButton);
-    mResourcesStackedToolBar->addWidget(templatesButton);      
-
+    QAction *stackedAction;
     mResourcesStackedMapper = new QSignalMapper(parent);
-    connect(objectsButton,  SIGNAL(clicked()), mResourcesStackedMapper, SLOT(map()));
-    connect(entitiesButton, SIGNAL(clicked()), mResourcesStackedMapper, SLOT(map()));
-    connect(templatesButton, SIGNAL(clicked()), mResourcesStackedMapper, SLOT(map()));
-    mResourcesStackedMapper->setMapping(objectsButton,  0);
-    mResourcesStackedMapper->setMapping(entitiesButton, 1);
-    mResourcesStackedMapper->setMapping(templatesButton, 2);
-    mNextResToolbarMapIndex = 3;
-    connect(mResourcesStackedMapper, SIGNAL(mapped(int)), mResourcesStackedWidget, SLOT(setCurrentIndex(int)));
+    mResourcesStackedActions = new QActionGroup(this);
+    stackedAction = mResourcesStackedActions->addAction(QIcon(":/icons/objects.svg"), tr("Objects"));
+    stackedAction->setCheckable(true);
+    stackedAction->setChecked(true);
+    connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+    mResourcesStackedMapper->setMapping(stackedAction,  0);
+    stackedAction = mResourcesStackedActions->addAction(QIcon(":/icons/entity.svg"), tr("Meshes"));
+    stackedAction->setCheckable(true);
+    connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+    mResourcesStackedMapper->setMapping(stackedAction,  1);
+    stackedAction = mResourcesStackedActions->addAction(QIcon(":/icons/template.svg"), tr("Templates"));
+    stackedAction->setCheckable(true);
+    connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+    mResourcesStackedMapper->setMapping(stackedAction,  2);
+
+    connect(mResourcesStackedMapper, SIGNAL(mapped(int)), this, SLOT(onSwitchStackedResources(int)));
+
+    mResourcesStackedToolBar->addActions(mResourcesStackedActions->actions());
 
     stackedWidgetInnerDummy->addToolBar(Qt::BottomToolBarArea, mResourcesStackedToolBar);
     stackedWidgetInnerDummy->setCentralWidget(mResourcesStackedWidget);
@@ -964,15 +961,13 @@ void MainWindow::createCustomDockWidgets()
                     }
                     else if(stackedWidget)
                     {
-                        QToolButton* button = new QToolButton(stackedWidget);
-                        button->setIcon(QIcon(dockwidgets[i].mIcon.c_str()));
-                        button->setToolTip(QString(dockwidgets[i].mCaption.c_str()));
-                        button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-                        mResourcesStackedToolBar->addWidget(button);
+                        QAction* button = mResourcesStackedActions->addAction(QIcon(dockwidgets[i].mIcon.c_str()), QString(dockwidgets[i].mCaption.c_str()));
+                        button->setCheckable(true);
 
-                        connect(button, SIGNAL(clicked()), mResourcesStackedMapper, SLOT(map()));
-                        mResourcesStackedMapper->setMapping(button, mNextResToolbarMapIndex);
-                        mNextResToolbarMapIndex += 1;
+                        connect(button, SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+                        mResourcesStackedMapper->setMapping(button, mResourcesStackedActions->actions().size() - 1);
+
+                        mResourcesStackedToolBar->addAction(button);
 
                         stackedWidget->addWidget(widget);
                     }                    

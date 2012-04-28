@@ -197,6 +197,8 @@ public:
     QAction*  actEditCopyToTemplate;
     QAction*  actEditCopyToTemplateWithChildren;
 
+    QActionGroup* mResourcesStackedActions; 
+
     QMenu*    menuCompactMenuBar;
     QMenu*    menuFile;
     QMenu*    menuImport;
@@ -357,6 +359,7 @@ public Q_SLOTS:
     void onPlayerRunPause();
     void onPlayerStop();
     void onFocusOnObject();
+    void onSwitchStackedResources(int index);
 
 private:
     SceneViewWidget                 *mSceneViewWidget;
@@ -384,7 +387,6 @@ private:
     std::vector<ScriptActionData>   mScriptActions;
     QSignalMapper*                  mScriptActionMap;
     QTimer                          *mAutoBackupTimer;
-    int                             mNextResToolbarMapIndex;
 
     void createScriptActionsToolbar();
     void closeEvent(QCloseEvent *event);
