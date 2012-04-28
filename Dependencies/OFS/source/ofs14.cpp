@@ -378,10 +378,15 @@ namespace OFS
                 return OFS_INVALID_PATH;
             }
 
+            std::vector<OfsEntryDesc*> add_list;
+
             for( unsigned int i = 0; i < foreignDir->Children.size(); i++ )
             {
-                dirDesc->Children.push_back( foreignDir->Children[i] );
+                if(_findChild(dirDesc, foreignDir->Children[i]->Name ) == NULL )
+                    add_list.push_back( foreignDir->Children[i] );
             }
+
+            dirDesc->Children.insert( dirDesc->Children.end(), add_list.begin(), add_list.end() );
 
             dirDesc->Links.insert( NameOfsPtrMap::value_type( filename, _ofsptr ) );
         }
@@ -1188,6 +1193,20 @@ namespace OFS
 
 //------------------------------------------------------------------------------
     
+    _Ofs::OfsEntryDesc* _Ofs::_findChild(OfsEntryDesc *dir_desc, std::string child_name)
+    {
+        for(unsigned int i = 0;i < dir_desc->Children.size();i++)
+        {
+            if(dir_desc->Children[i]->Name == child_name)
+            {
+                return dir_desc->Children[i];
+            }
+        }
+        return NULL;
+    }
+
+//------------------------------------------------------------------------------
+
     std::string   _Ofs::_extractFileName(const char *filename)
     {
         const char *pos = filename;
