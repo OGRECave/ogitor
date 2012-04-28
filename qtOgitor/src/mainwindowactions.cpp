@@ -1749,6 +1749,14 @@ void MainWindow::onPlayerStop()
     OgitorsRoot::getSingletonPtr()->SetRunState(RS_STOPPED);
 }
 //------------------------------------------------------------------------------
+void MainWindow::onSwitchStackedResources(int index)
+{
+    mResourcesStackedWidget->setCurrentIndex( index );
+
+    QString newTitle = tr("Resources") + QString(" - ") + mResourcesStackedActions->checkedAction()->text();
+    mResourcesDockWidget->setWindowTitle( newTitle );
+}
+//------------------------------------------------------------------------------
 QAction *separatorAction;
 
 void MainWindow::hideMenuBar()
