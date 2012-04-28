@@ -179,6 +179,10 @@ if(UNIX)
   endif(OGITOR_PLATFORM_X64 AND NOT APPLE)
 endif(UNIX)
 
+if(NOT OGITOR_PLATFORM_X64)
+    add_definitions(-D_FILE_OFFSET_BITS=64)
+endif(NOT OGITOR_PLATFORM_X64)
+
 include_directories(${OGRE_INCLUDE_DIRS})
 include_directories(${OGRE_Terrain_INCLUDE_DIR})
 include_directories(${OGRE_Paging_INCLUDE_DIR})
