@@ -320,6 +320,22 @@ SceneViewWidget::~SceneViewWidget()
 {
 }
 //----------------------------------------------------------------------------------------
+void SceneViewWidget::setEditRenameState()
+{
+    bool enableRename = false;
+    OgitorsRoot *ogRoot = OgitorsRoot::getSingletonPtr();
+    CBaseEditor *curSelection = 0;
+
+    CMultiSelEditor *multiSel = OgitorsRoot::getSingletonPtr()->GetSelection();
+        
+    if(multiSel)
+    {
+        enableRename = multiSel->getAsSingle()->getProperty("name")->getDefinition()->canWrite();
+    }
+
+    mOgitorMainWindow->actEditRename->setEnabled(enableRename);
+}
+//----------------------------------------------------------------------------------------
 void SceneViewWidget::selectionChanged()
 {
     bool enableCopy = false;

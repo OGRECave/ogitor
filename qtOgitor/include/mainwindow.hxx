@@ -247,6 +247,7 @@ public:
     void readSettings(QString filename = "");
     void writeSettings(QString filename = "");
 
+	SceneViewWidget                 *getSceneViewWidget() {return mSceneViewWidget;};
     EntityViewWidget                *getEntityViewWidget() {return mEntityViewWidget;};
     ObjectsViewWidget               *getObjectsViewWidget() {return mObjectsViewWidget;};
     TemplateViewWidget              *getTemplatesViewWidget() {return mTemplatesViewWidget;};
@@ -360,6 +361,7 @@ public Q_SLOTS:
     void onPlayerStop();
     void onFocusOnObject();
     void onSwitchStackedResources(int index);
+    void onProjectFilesVisibilityChanged(bool visible);
 
 private:
     SceneViewWidget                 *mSceneViewWidget;
