@@ -46,6 +46,8 @@ else(NOT QT4_FOUND)
         ./src/entityview.cpp
         ./include/eucliddialog.hxx
         ./src/eucliddialog.cpp
+	   ./include/extendedTreeView.hxx
+	   ./src/extendedTreeView.cpp
         ./include/importheightmapdialog.hxx
         ./src/importheightmapdialog.cpp
         ./include/layerview.hxx
@@ -111,6 +113,7 @@ else(NOT QT4_FOUND)
         ./include/createterraindialog.hxx
         ./include/entityview.hxx
         ./include/eucliddialog.hxx
+	   ./include/extendedTreeView.hxx
         ./include/importheightmapdialog.hxx
         ./include/layerview.hxx
         ./include/lineeditwithhistory.hxx
