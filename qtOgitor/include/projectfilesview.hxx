@@ -50,6 +50,7 @@ public:
     void prepareView();
     void clearView();
     void triggerRefresh();
+	bool isFocusTarget();
 
 public Q_SLOTS:
     void itemDoubleClicked(QTreeWidgetItem* item, int column);
@@ -69,6 +70,7 @@ public Q_SLOTS:
     void onAddFolder();
     void onLinkFileSystem();
 	void onUnlinkFileSystem( const QString & text );
+	void onSelectionChanged();
 
 Q_SIGNALS:
     void needUpdate();
@@ -90,7 +92,6 @@ protected:
     QAction*        mActExtract;
     QAction*        mActDefrag;
     QAction*        mActDelete;
-    QAction*        mActRename;
     QAction*        mActReadOnly;
     QAction*        mActHidden;
     QAction*        mActLinkFileSystem;

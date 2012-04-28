@@ -62,6 +62,7 @@ public:
 
     inline QTreeWidget *getTreeWidget() {return treeWidget;}
     void setSelectionUpdate(bool value) { selectionUpdateInProgress = value; }
+	void setEditRenameState();
 public Q_SLOTS:
     void selectionChanged();
 protected:

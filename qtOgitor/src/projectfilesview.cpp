@@ -88,10 +88,6 @@ QWidget(parent), mOfsTreeWidget(0)
     mActMakeAsset->setCheckable(true);
     mActMakeAsset->setChecked(false);
 
-    mActRename = new QAction(tr("Rename"), this);
-    mActRename->setStatusTip(tr("Rename Selected File/Folder"));
-    mActRename->setIcon(QIcon(":/icons/editrename.svg"));
-
     mActReadOnly = new QAction(tr("Read Only"), this);
     mActReadOnly->setStatusTip(tr("Set/UnSet File/Folder as Read Only"));
     mActReadOnly->setIcon(QIcon(":/icons/lock.svg"));
@@ -118,7 +114,6 @@ QWidget(parent), mOfsTreeWidget(0)
     mMenu->addSeparator();
     mMenu->addAction(mActMakeAsset);
     mMenu->addSeparator();
-    mMenu->addAction(mActRename);
     mMenu->addAction(mActReadOnly);
     mMenu->addAction(mActHidden);
     mMenu->addSeparator();
@@ -132,7 +127,6 @@ QWidget(parent), mOfsTreeWidget(0)
     mActExtract->setEnabled(false);
     mActDefrag->setEnabled(false);
     mActDelete->setEnabled(false);
-    mActRename->setEnabled(false);
     mActReadOnly->setEnabled(false);
     mActHidden->setEnabled(false);
     mActLinkFileSystem->setEnabled(false);
@@ -147,7 +141,6 @@ QWidget(parent), mOfsTreeWidget(0)
     connect(mActExtract,        SIGNAL(triggered()),    this,   SLOT(onExtract()));
     connect(mActDefrag,         SIGNAL(triggered()),    this,   SLOT(onDefrag()));
     connect(mActDelete,         SIGNAL(triggered()),    this,   SLOT(onDelete()));
-    connect(mActRename,         SIGNAL(triggered()),    this,   SLOT(onRename()));
     connect(mActReadOnly,       SIGNAL(triggered()),    this,   SLOT(onReadOnly()));
     connect(mActHidden,         SIGNAL(triggered()),    this,   SLOT(onHidden()));
     connect(mActLinkFileSystem, SIGNAL(triggered()),    this,   SLOT(onLinkFileSystem()));
@@ -175,6 +168,14 @@ ProjectFilesViewWidget::~ProjectFilesViewWidget()
     mToolBar = 0;
 }
 //----------------------------------------------------------------------------------------
+bool ProjectFilesViewWidget::isFocusTarget()
+{
+	if( mOfsTreeWidget != NULL )
+		return mOfsTreeWidget->hasFocus();
+
+	return false;
+}
+//----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::prepareView()
 {
     mOfsTreeWidget = new OfsTreeWidget(this, OfsTreeWidget::CAP_FULL_FUNCTIONS);
@@ -190,6 +191,7 @@ void ProjectFilesViewWidget::prepareView()
     connect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
     connect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested(const QPoint &)));
     connect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
+	connect(mOfsTreeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::clearView()
@@ -199,6 +201,7 @@ void ProjectFilesViewWidget::clearView()
         disconnect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
         disconnect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested(const QPoint &)));
         disconnect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
+	    disconnect(mOfsTreeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
 
         delete mOfsTreeWidget;
         mOfsTreeWidget = 0;
@@ -210,6 +213,33 @@ void ProjectFilesViewWidget::clearView()
     mActAddFolder->setEnabled(false);
     mActExtract->setEnabled(false);
     mActDefrag->setEnabled(false);
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onSelectionChanged()
+{
+	if( mOfsTreeWidget == NULL )
+		return;
+
+	bool rename = false;
+
+	QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
+
+    if(selItems.size() > 0)
+    {
+        QString path = selItems[0]->whatsThis(0);
+        OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+        unsigned int flags = 0;
+
+        if(path.endsWith("/"))
+            file->getDirFlags(path.toStdString().c_str(), flags);
+        else
+            file->getFileFlags(path.toStdString().c_str(), flags);
+
+        if(path != "/")
+            rename = !(flags & OFS::OFS_LINK);
+    }
+
+	mOgitorMainWindow->actEditRename->setEnabled( rename );
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
@@ -271,7 +301,6 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             mActHidden->setChecked(false);
             mActReadOnly->setEnabled(false);
             mActHidden->setEnabled(false);
-            mActRename->setEnabled(false);
             mActDelete->setEnabled(false);
             mActLinkFileSystem->setEnabled(true);
         }
@@ -291,7 +320,6 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             mActHidden->setChecked(true);
             mActReadOnly->setEnabled(!(flags & OFS::OFS_LINK));
             mActHidden->setEnabled(!(flags & OFS::OFS_LINK));
-            mActRename->setEnabled(!(flags & OFS::OFS_LINK));
             mActDelete->setEnabled(!(flags & OFS::OFS_LINK));
         }
 
@@ -335,13 +363,19 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
         mActHidden->setChecked(false);
         mActReadOnly->setEnabled(false);
         mActHidden->setEnabled(false);
-        mActRename->setEnabled(false);
         mActDelete->setEnabled(false);
         mActLinkFileSystem->setEnabled(false);
     }
 
     mActImportFile->setEnabled(true);
     mActImportFolder->setEnabled(true);
+
+	if( mMenu->actions().at(0) !=  mOgitorMainWindow->actEditRename)
+	{
+		mMenu->insertAction(mActAddFolder, mOgitorMainWindow->actEditRename);
+		mMenu->insertSeparator(mActAddFolder);
+	}
+
 
     QPoint globalPos = mOfsTreeWidget->mapToGlobal(pos);
     mMenu->exec(globalPos);

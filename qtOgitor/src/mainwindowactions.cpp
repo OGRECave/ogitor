@@ -44,6 +44,7 @@
 #include "aboutdialog.hxx"
 #include "sceneview.hxx"
 #include "layerview.hxx"
+#include "projectfilesview.hxx"
 #include "propertiesviewgeneral.hxx"
 #include "propertiesviewcustom.hxx"
 #include "entityview.hxx"
@@ -199,7 +200,7 @@ void MainWindow::addActions()
     actEditDelete->setIcon(QIcon(":/icons/trash.svg"));
 
     actEditRename = new QAction(tr("Rename"), this);
-    actEditRename->setStatusTip(tr("Rename Selected Object"));
+    actEditRename->setStatusTip(tr("Rename Selected Item"));
     actEditRename->setIcon(QIcon(":/icons/editrename.svg"));
     actEditRename->setShortcut(QKeySequence("F2"));
 
@@ -1360,6 +1361,12 @@ void MainWindow::editDelete()
 //------------------------------------------------------------------------------
 void MainWindow::editRename()
 {
+	if( mProjectFilesViewWidget->isFocusTarget() )
+	{
+		mProjectFilesViewWidget->onRename();
+		return;
+	}
+
     CBaseEditor *object = OgitorsRoot::getSingletonPtr()->GetSelection()->getFirstObject();
     if(object)
     {
@@ -1747,6 +1754,14 @@ void MainWindow::onPlayerRunPause()
 void MainWindow::onPlayerStop()
 {
     OgitorsRoot::getSingletonPtr()->SetRunState(RS_STOPPED);
+}
+//------------------------------------------------------------------------------
+void MainWindow::onProjectFilesVisibilityChanged(bool visible)
+{
+	if( visible )
+		mProjectFilesViewWidget->onSelectionChanged();
+	else
+		mSceneViewWidget->setEditRenameState();
 }
 //------------------------------------------------------------------------------
 void MainWindow::onSwitchStackedResources(int index)

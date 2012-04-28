@@ -647,6 +647,8 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mProjectFilesDockWidget->setWidget(mProjectFilesViewWidget);
     parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), mProjectFilesDockWidget);
 
+	connect( mProjectFilesDockWidget, SIGNAL( visibilityChanged(bool) ), this, SLOT( onProjectFilesVisibilityChanged(bool) ));
+
     parent->tabifyDockWidget(mPropertiesDockWidget, mResourcesDockWidget);
     parent->tabifyDockWidget(mPropertiesDockWidget, mToolsDockWidget);
     parent->tabifyDockWidget(mExplorerDockWidget, mLayerDockWidget);
