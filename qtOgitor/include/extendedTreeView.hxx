@@ -30,61 +30,40 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef SCENEVIEW_HXX
-#define SCENEVIEW_HXX
+#ifndef EXTENDED_TREE_VIEW_HXX
+#define EXTENDED_TREE_VIEW_HXX
 
 #include <QtGui/QWidget>
 #include <QtGui/QTreeWidget>
-
-#include "extendedTreeView.hxx"
+#include <QtGui/QStyledItemDelegate>
 
 //-----------------------------------------------------------------------------------------
 
-class SceneTreeWidget : public ExtendedTreeWidget
+class ExtendedItemDelegate : public QStyledItemDelegate
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
-    SceneTreeWidget(QWidget *parent = 0);
-    virtual ~SceneTreeWidget() {};
+    ExtendedItemDelegate(QWidget* parent);
 
-public Q_SLOTS:
-    void contextMenu(int id);
-    void pasteFromClipboardBuffer(int id);
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const; 
 
-protected:
-    void contextMenuEvent(QContextMenuEvent *evt);
-    void dragEnterEvent(QDragEnterEvent *evt);
-    void dragMoveEvent(QDragMoveEvent *evt);
-    void dropEvent(QDropEvent *evt);
-    void keyPressEvent(QKeyEvent *evt);
-    void mouseDoubleClickEvent(QMouseEvent *evt);
+private:
 };
 
 //-----------------------------------------------------------------------------------------
 
-class SceneViewWidget : public QWidget 
+class ExtendedTreeWidget : public QTreeWidget
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
-    explicit SceneViewWidget(QWidget *parent = 0);
-    virtual ~SceneViewWidget();
+    ExtendedTreeWidget(QWidget* parent);
 
-    inline QTreeWidget *getTreeWidget() {return treeWidget;}
-    void setSelectionUpdate(bool value) {selectionUpdateInProgress = value;}
-	void setEditRenameState();
+private:
 
-public Q_SLOTS:
-    void selectionChanged();
-
-protected:
-    SceneTreeWidget *treeWidget;
-    bool             selectionUpdateInProgress;
 };
 
 //-----------------------------------------------------------------------------------------
 
-#endif // SCENEVIEW_HXX
-
-//-----------------------------------------------------------------------------------------
+#endif

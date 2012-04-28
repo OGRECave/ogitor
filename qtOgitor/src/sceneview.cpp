@@ -44,7 +44,7 @@
 
 using namespace Ogitors;
 //----------------------------------------------------------------------------------------
-SceneTreeWidget::SceneTreeWidget(QWidget *parent) : QTreeWidget(parent) 
+SceneTreeWidget::SceneTreeWidget(QWidget *parent) : ExtendedTreeWidget(parent) 
 {
     setColumnCount(1);
     setHeaderHidden(true);
