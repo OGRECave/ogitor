@@ -170,6 +170,10 @@ set(OGITOR_PLATFORM_X64 FALSE)
 endif ()
 
 if(UNIX)
+  if(NOT OGITOR_PLATFORM_X64)
+    add_definitions(-D_FILE_OFFSET_BITS=64)
+  endif(NOT OGITOR_PLATFORM_X64)
+
   # Fix x64 issues on Linux
   if(OGITOR_PLATFORM_X64 AND NOT APPLE)
       add_definitions(-fPIC)
@@ -178,10 +182,6 @@ if(UNIX)
       set(LIB_SUFFIX "")
   endif(OGITOR_PLATFORM_X64 AND NOT APPLE)
 endif(UNIX)
-
-if(NOT OGITOR_PLATFORM_X64)
-    add_definitions(-D_FILE_OFFSET_BITS=64)
-endif(NOT OGITOR_PLATFORM_X64)
 
 include_directories(${OGRE_INCLUDE_DIRS})
 include_directories(${OGRE_Terrain_INCLUDE_DIR})
