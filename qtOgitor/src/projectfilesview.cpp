@@ -90,7 +90,6 @@ QWidget(parent), mOfsTreeWidget(0)
 
     mActReadOnly = new QAction(tr("Read Only"), this);
     mActReadOnly->setStatusTip(tr("Set/UnSet File/Folder as Read Only"));
-    mActReadOnly->setIcon(QIcon(":/icons/lock.svg"));
     mActReadOnly->setCheckable(true);
     mActReadOnly->setChecked(false);
 
@@ -297,8 +296,6 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
         {
             mActMakeAsset->setEnabled(false);
             mActMakeAsset->setChecked(false);
-            mActReadOnly->setChecked(false);
-            mActHidden->setChecked(false);
             mActReadOnly->setEnabled(false);
             mActHidden->setEnabled(false);
             mActDelete->setEnabled(false);
@@ -310,32 +307,32 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             {
                 mAddFileFolderPath = path.toStdString();
                 mActLinkFileSystem->setEnabled(!(flags & OFS::OFS_LINK));
+                mActMakeAsset->setEnabled(true);
+                mActMakeAsset->setChecked(false);
+
+                Ogre::StringVector dirs = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories;
+                Ogre::StringVector::iterator it;
+
+                for(it = dirs.begin(); it != dirs.end(); it++)
+                {
+                    if((*it) == path.toStdString())
+                        mActMakeAsset->setChecked(true);
+                }
             }
             else
+            {
                 mActLinkFileSystem->setEnabled(false);
+                mActMakeAsset->setEnabled(true);
+                mActMakeAsset->setChecked(false);
+            }
 
-            mActMakeAsset->setEnabled(true);
-            mActMakeAsset->setChecked(false);
-            mActReadOnly->setChecked(true);
-            mActHidden->setChecked(true);
             mActReadOnly->setEnabled(!(flags & OFS::OFS_LINK));
             mActHidden->setEnabled(!(flags & OFS::OFS_LINK));
             mActDelete->setEnabled(!(flags & OFS::OFS_LINK));
         }
 
         mActReadOnly->setChecked(flags & OFS::OFS_READONLY);
-        if(flags & OFS::OFS_READONLY)
-            mActReadOnly->setIcon(QIcon(":icons/unlock.svg"));
         mActHidden->setChecked(flags & OFS::OFS_HIDDEN);
-
-        Ogre::StringVector dirs = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories;
-        Ogre::StringVector::iterator it;
-
-        for(it = dirs.begin(); it != dirs.end(); it++)
-        {
-            if((*it) == path.toStdString())
-                mActMakeAsset->setChecked(true);
-        }
 
         mUnlinkFileSystem->clear();
 
@@ -359,10 +356,10 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
     {
         mActMakeAsset->setEnabled(false);
         mActMakeAsset->setChecked(false);
-        mActReadOnly->setChecked(false);
-        mActHidden->setChecked(false);
         mActReadOnly->setEnabled(false);
+        mActReadOnly->setChecked(false);
         mActHidden->setEnabled(false);
+        mActHidden->setChecked(false);
         mActDelete->setEnabled(false);
         mActLinkFileSystem->setEnabled(false);
     }
@@ -375,7 +372,6 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
 		mMenu->insertAction(mActAddFolder, mOgitorMainWindow->actEditRename);
 		mMenu->insertSeparator(mActAddFolder);
 	}
-
 
     QPoint globalPos = mOfsTreeWidget->mapToGlobal(pos);
     mMenu->exec(globalPos);
