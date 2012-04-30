@@ -322,7 +322,7 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
             else
             {
                 mActLinkFileSystem->setEnabled(false);
-                mActMakeAsset->setEnabled(true);
+                mActMakeAsset->setEnabled(false);
                 mActMakeAsset->setChecked(false);
             }
 
