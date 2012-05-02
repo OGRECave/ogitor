@@ -40,6 +40,21 @@
 class OfsTreeWidget;
 
 //------------------------------------------------------------------------------
+struct selectStats
+{
+        bool mActMakeAssetEnabled;
+        bool mActMakeAssetChecked;
+        bool mActReadOnlyEnabled;
+        bool mActReadOnlyChecked;
+        bool mActHiddenEnabled;
+        bool mActHiddenChecked;
+        bool mActDeleteEnabled;
+        bool mActLinkFileSystemEnabled;
+        bool mActImportFileEnabled;
+        bool mActImportFolderEnabled;
+        bool mActAddEmptyFolderEnabled;
+        bool mActEmptyRecycleBinEnabled;
+};
 
 class ProjectFilesViewWidget : public QWidget
 {
@@ -71,6 +86,7 @@ public Q_SLOTS:
     void onLinkFileSystem();
 	void onUnlinkFileSystem( const QString & text );
 	void onSelectionChanged();
+    void onEmptyRecycleBin();
 
 Q_SIGNALS:
     void needUpdate();
@@ -95,6 +111,9 @@ protected:
     QAction*        mActReadOnly;
     QAction*        mActHidden;
     QAction*        mActLinkFileSystem;
+    QAction*        mActEmptyRecycleBin;
+
+    void modifyStats( selectStats& stats, QTreeWidgetItem* item);
 };
 
 //------------------------------------------------------------------------------

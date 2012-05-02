@@ -43,6 +43,7 @@
 OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, QStringList initialSelection) : QTreeWidget(parent), mCapabilities(capabilities) 
 {
     mSelectedItems = initialSelection;
+    mRecycleBinParent = NULL;
 
     setColumnCount(1);
     setHeaderHidden(true);
@@ -205,6 +206,67 @@ void OfsTreeWidget::fillTreeFiles(QTreeWidgetItem *pItem, std::string path)
     }
 }
 //----------------------------------------------------------------------------------------
+void OfsTreeWidget::fillRecycleBin(QTreeWidgetItem *pItem)
+{
+    OFS::FileList list = mFile->listRecycleBinFiles();
+
+    if( list.size() > 0 )
+        pItem->setIcon(0, QIcon(":/icons/recyclebin_full.svg"));
+    else
+        pItem->setIcon(0, QIcon(":/icons/recyclebin_empty.svg"));
+
+    std::sort(list.begin(), list.end(), OFS::FileEntry::Compare);
+
+    for(unsigned int i = 0;i < list.size();i++)
+    {
+        Ogre::String name = list[i].name;
+        Ogre::String ext_name = name;
+
+        QIcon icon = mUnknownFileIcon;
+
+        if( list[i].flags & OFS::OFS_DIR )
+            icon = mOgitorMainWindow->mIconProvider.icon(QFileIconProvider::Folder);
+        else
+        {
+            int ext_pos = ext_name.find_last_of(".");
+
+            if(ext_pos > 0)
+            {
+                ext_name.erase(0, ext_pos);
+            
+                FileIconMap::iterator it = mOgitorMainWindow->mFileIconMap.find(ext_name);
+                if(it == mOgitorMainWindow->mFileIconMap.end())
+                {
+                    std::string filename = "./qtOgitor_icontest";
+                    filename += ext_name;
+
+                    std::fstream stream;
+                    stream.open(filename.c_str(), std::fstream::in | std::fstream::out | std::fstream::binary | std::fstream::trunc);
+                    stream.close();
+
+                    QFileInfo info(QString(filename.c_str()));
+                    icon = mOgitorMainWindow->mIconProvider.icon(info);
+                    if(icon.isNull())
+                        icon = mUnknownFileIcon;
+                    
+                    mOgitorMainWindow->mFileIconMap.insert(FileIconMap::value_type(ext_name, icon));
+
+                    QFile::remove(QString(filename.c_str()));
+                }
+                else
+                    icon = it->second;
+            }
+        }
+
+        QTreeWidgetItem* item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(name.c_str())));
+        item->setIcon(0, icon);
+        item->setTextColor(0, Qt::black);
+        item->setWhatsThis(0, QString(name.c_str()));
+
+        pItem->addChild(item);
+    }
+}
+//----------------------------------------------------------------------------------------
 void OfsTreeWidget::refreshWidget()
 {
     disconnect(this, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
@@ -246,6 +308,19 @@ void OfsTreeWidget::refreshWidget()
 
     if(mCapabilities & CAP_SHOW_FILES)
         fillTreeFiles(pItem, "/");
+
+    if(mCapabilities & CAP_SHOW_RECYCLEBIN)
+    {
+        QTreeWidgetItem* rItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("<Recycle Bin>")));
+        rItem->setIcon(0, QIcon(":/icons/recyclebin_empty.svg"));
+        rItem->setTextColor(0, Qt::black);
+        rItem->setFont(0, fnt);
+        rItem->setWhatsThis(0, QString("/"));
+
+        addTopLevelItem(rItem);
+
+        fillRecycleBin(rItem);
+    }
 
     expandItem(pItem);
 
@@ -302,7 +377,7 @@ void OfsTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 {
     std::vector<QTreeWidgetItem*> deleteList;
 
-    if(item != NULL && item != topLevelItem(0))
+    if(item != NULL && item != topLevelItem(0) && item != mRecycleBinParent && item->parent() != mRecycleBinParent)
     {
         int total = item->childCount();
 
@@ -342,7 +417,7 @@ void OfsTreeWidget::onItemCollapsed(QTreeWidgetItem* item)
 //----------------------------------------------------------------------------------------
 void OfsTreeWidget::onItemExpanded(QTreeWidgetItem* item)
 {
-    if(item != NULL && item != topLevelItem(0))
+    if(item != NULL && item != topLevelItem(0) && item != mRecycleBinParent && item->parent() != mRecycleBinParent)
     {
         int total = item->childCount();
 

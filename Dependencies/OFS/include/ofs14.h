@@ -62,6 +62,10 @@ const char VERSION_MAJOR_1  = '1';
 const char VERSION_MINOR    = '4';
 const char VERSION_FIX      = '0';
 
+const int ROOT_DIRECTORY_ID = -1;
+const int RECYCLEBIN_DIRECTORY_ID = -2;
+
+
 #define AUTO_MUTEX mutable boost::recursive_mutex OfsMutex;
 #define LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsMutex);
 #define STATIC_AUTO_MUTEX_DECL(a) boost::recursive_mutex a::OfsStaticMutex;
@@ -326,6 +330,7 @@ typedef off_t ofs64;
     
     struct FileEntry
     {
+        int          id;
         std::string  name;
         unsigned int flags;
         UUID         uuid; 
@@ -712,6 +717,17 @@ typedef off_t ofs64;
         */
         OfsResult    moveDirectory(const char *dirname, const char *dest);
         /**
+        * Moves a given file/directory to recycle-bin
+        * @param path source path of file/directory to move
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    moveToRecycleBin(const char *path);
+        /**
+        * Deletes all Files in recyle bin and frees the space used
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    emptyRecycleBin();
+        /**
         * Creates a new file
         * @param handle File Handle, once the file is created, this handle will point to it
         * @param filename path of file to be created
@@ -778,6 +794,11 @@ typedef off_t ofs64;
         * @return Total file size of returned files
         */
         ofs64 listFilesRecursive(const std::string& path, FileList& list);
+        /**
+        * List files/folders in the recycle bin
+        * @return List of files matching the filter
+        */
+        FileList     listRecycleBinFiles();
         /**
         * Retrieves Name of the file
         * @param handle handle to the file
@@ -998,6 +1019,7 @@ typedef off_t ofs64;
         FileStream                mStream;              // Handle of underlying file system
         strFileHeader             mHeader;              // File System Header
         OfsEntryDesc              mRootDir;             // Root directory definition
+        OfsEntryDesc              mRecycleBinRoot;      // Recycle Bin's Root directory definition
         BlockDataVector           mFreeBlocks;          // Vector holding free(available) blocks in file system 
         IdHandleMap               mActiveFiles;         // Map holding currently open files
         UuidDescMap               mUuidMap;             // Map holding entry descriptors indexed with UUID
@@ -1063,6 +1085,8 @@ typedef off_t ofs64;
         OfsResult     _deleteFile(OfsEntryDesc *file);
         /* Internal setFileFlags implementation */
         inline void   _setFileFlags(OfsEntryDesc *file, unsigned int flags);
+        /* Internal  function to free files in recycle bin */
+        inline void   _deleteRecycleBinDesc(OfsEntryDesc *desc);
 
         /* Searches given filename in the list of file system instances, 
          * returns it if found or creates a new one and adds it to the list otherwise */
