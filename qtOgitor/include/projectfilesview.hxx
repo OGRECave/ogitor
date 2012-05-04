@@ -54,6 +54,7 @@ struct selectStats
         bool mActImportFolderEnabled;
         bool mActAddEmptyFolderEnabled;
         bool mActEmptyRecycleBinEnabled;
+        bool mActRestoreFromRecycleBinEnabled;
 };
 
 class ProjectFilesViewWidget : public QWidget
@@ -87,6 +88,7 @@ public Q_SLOTS:
 	void onUnlinkFileSystem( const QString & text );
 	void onSelectionChanged();
     void onEmptyRecycleBin();
+    void onRestoreFromRecycleBin();
 
 Q_SIGNALS:
     void needUpdate();
@@ -112,6 +114,7 @@ protected:
     QAction*        mActHidden;
     QAction*        mActLinkFileSystem;
     QAction*        mActEmptyRecycleBin;
+    QAction*        mActRestoreFromRecycleBin;
 
     void modifyStats( selectStats& stats, QTreeWidgetItem* item);
 };

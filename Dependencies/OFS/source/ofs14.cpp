@@ -1061,6 +1061,11 @@ namespace OFS
                 else
                     entryDesc->UsedBlocks[0] = blockData;
 
+                if(entryDesc->ParentId == RECYCLEBIN_DIRECTORY_ID)
+                    entryDesc->OldParentId = mainEntry.OldParentId;
+                else
+                    entryDesc->OldParentId = ROOT_DIRECTORY_ID;
+                
                 entryDesc->Parent = it->second;
                 it->second->Children.push_back(entryDesc);
 
@@ -1269,6 +1274,7 @@ namespace OFS
         dir->Id = mHeader.LAST_ID++;
         dir->ParentId = parent->Id;
         dir->Flags = OFS_DIR;
+        dir->OldParentId = ROOT_DIRECTORY_ID;
         dir->Name = name;
         dir->FileSize = 0;
         dir->Parent = parent;
@@ -1286,6 +1292,7 @@ namespace OFS
         fileHeader.Id = dir->Id;
         fileHeader.ParentId = dir->ParentId;
         fileHeader.Flags = dir->Flags;
+        fileHeader.OldParentId = ROOT_DIRECTORY_ID;
         fileHeader.NextBlock = 0;
         fileHeader.FileSize = 0;
         fileHeader.CreationTime = dir->CreationTime;
@@ -1365,6 +1372,7 @@ namespace OFS
         file->Id = mHeader.LAST_ID++;
         file->ParentId = parent->Id;
         file->Flags = OFS_FILE;
+        file->OldParentId = ROOT_DIRECTORY_ID;
         file->Name = name;
         file->FileSize = file_size;
         file->Parent = parent;
@@ -1383,6 +1391,7 @@ namespace OFS
         fileHeader.Id = file->Id;
         fileHeader.ParentId = file->ParentId;
         fileHeader.Flags = file->Flags;
+        fileHeader.OldParentId = ROOT_DIRECTORY_ID;
         fileHeader.NextBlock = 0;
         fileHeader.FileSize = file->FileSize;
         fileHeader.CreationTime = file->CreationTime;
@@ -1968,6 +1977,7 @@ namespace OFS
                     fileHeader.Id = fileDesc->Id;
                     fileHeader.ParentId = fileDesc->ParentId;
                     fileHeader.Flags = fileDesc->Flags;
+                    fileHeader.OldParentId = ROOT_DIRECTORY_ID;
                     fileHeader.NextBlock = 0;
                     fileHeader.FileSize = 0;
                     fileHeader.CreationTime = fileDesc->CreationTime;
@@ -2048,6 +2058,7 @@ namespace OFS
                 fileHeader.Id = fileDesc->Id;
                 fileHeader.ParentId = fileDesc->ParentId;
                 fileHeader.Flags = fileDesc->Flags;
+                fileHeader.OldParentId = ROOT_DIRECTORY_ID;
                 fileHeader.NextBlock = 0;
                 fileHeader.FileSize = 0;
                 fileHeader.CreationTime = fileDesc->CreationTime;
@@ -3567,12 +3578,15 @@ namespace OFS
             }
         }
 
+        dirDesc->OldParentId = dirDesc->ParentId;
         dirDesc->Parent = &mRecycleBinRoot;
         dirDesc->ParentId = mRecycleBinRoot.Id;
         mRecycleBinRoot.Children.push_back( dirDesc );
 
         mStream.seek(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), OFS_SEEK_BEGIN);
         mStream.write((char*)&(dirDesc->ParentId), sizeof(unsigned int));
+        mStream.seek(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, OldParentId), OFS_SEEK_BEGIN);
+        mStream.write((char*)&(dirDesc->OldParentId), sizeof(unsigned int));
         mStream.flush();
 
         for(unsigned int i = 0;i < saveTrigs.size();i++)
@@ -3595,7 +3609,96 @@ namespace OFS
     }
 
 //------------------------------------------------------------------------------------------
-    
+
+    _Ofs::OfsEntryDesc* _Ofs::_findDescById( _Ofs::OfsEntryDesc* base, int id )
+    {
+        std::vector<OfsEntryDesc*> list;
+        OfsEntryDesc* desc;
+
+        for( unsigned int i = 0; i < base->Children.size(); i++)
+        {
+            desc = base->Children[i];
+            if( (desc->Flags & OFS_DIR) && !(desc->Flags & OFS_LINK))
+            {
+                if( desc->Id == id  )
+                    return desc;
+                else
+                    list.push_back( desc );
+            }
+        }
+
+        for( unsigned int i = 0; i < list.size(); i++)
+        {
+            desc = _findDescById( base->Children[i], id );
+            if( desc != NULL ) 
+                return desc;
+        }
+
+        return NULL;
+    }
+
+//------------------------------------------------------------------------------------------
+
+    OfsResult _Ofs::restoreFromRecycleBin(int id)
+    {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::restoreFromRecycleBin, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        OfsEntryDesc *sourceDesc = NULL, *destDesc = NULL;
+
+        for( unsigned int i = 0; i < mRecycleBinRoot.Children.size(); i++)
+        {
+            if( mRecycleBinRoot.Children[i]->Id == id )
+            {
+                sourceDesc = mRecycleBinRoot.Children[i];
+                break;
+            }
+        }
+
+        if( sourceDesc == NULL )
+            return OFS_FILE_NOT_FOUND;
+
+        destDesc = _findDescById( &mRootDir, sourceDesc->OldParentId );
+
+        if( destDesc == NULL )
+            destDesc = &mRootDir;
+
+        for( unsigned int i = 0; i < destDesc->Children.size(); i++)
+        {
+            if( destDesc->Children[i]->Name == sourceDesc->Name )
+                return OFS_ACCESS_DENIED;
+        }
+
+        for( unsigned int i = 0; i < mRecycleBinRoot.Children.size(); i++)
+        {
+            if( mRecycleBinRoot.Children[i]->Id == id )
+            {
+                mRecycleBinRoot.Children.erase(mRecycleBinRoot.Children.begin() + i);
+                break;
+            }
+        }
+
+        sourceDesc->OldParentId = ROOT_DIRECTORY_ID;
+        sourceDesc->Parent = destDesc;
+        sourceDesc->ParentId = destDesc->Id;
+        destDesc->Children.push_back( sourceDesc );
+
+        mStream.seek(sourceDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), OFS_SEEK_BEGIN);
+        mStream.write((char*)&(sourceDesc->ParentId), sizeof(unsigned int));
+        mStream.seek(sourceDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, OldParentId), OFS_SEEK_BEGIN);
+        mStream.write((char*)&(sourceDesc->OldParentId), sizeof(unsigned int));
+        mStream.flush();
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------------------
+
     void _Ofs::_deleteRecycleBinDesc(OfsEntryDesc *desc)
     {
         unsigned int i;

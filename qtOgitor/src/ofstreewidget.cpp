@@ -261,7 +261,8 @@ void OfsTreeWidget::fillRecycleBin(QTreeWidgetItem *pItem)
         QTreeWidgetItem* item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(name.c_str())));
         item->setIcon(0, icon);
         item->setTextColor(0, Qt::black);
-        item->setWhatsThis(0, QString(name.c_str()));
+        item->setWhatsThis(0, QString("%1").arg(list[i].id));
+        item->setToolTip(0, QString(name.c_str()) + QString(" (%1)").arg(list[i].id));
 
         pItem->addChild(item);
     }
