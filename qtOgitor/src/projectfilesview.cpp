@@ -86,6 +86,10 @@ QWidget(parent), mOfsTreeWidget(0)
     mActEmptyRecycleBin->setStatusTip(tr("Delete contents of Recycle Bin"));
     mActEmptyRecycleBin->setIcon(QIcon(":/icons/recyclebin_empty.svg"));
 
+    mActRestoreFromRecycleBin = new QAction(tr("Restore from Recycle Bin"), this);
+    mActRestoreFromRecycleBin->setStatusTip(tr("Restore file/folder to old location"));
+    mActRestoreFromRecycleBin->setIcon(QIcon(":/icons/refresh.svg"));
+
     mActMakeAsset = new QAction(tr("Make scene asset"), this);
     mActMakeAsset->setStatusTip(tr("Make the resource usable as a scene asset"));
     mActMakeAsset->setIcon(QIcon(":/icons/objects.svg"));
@@ -109,6 +113,7 @@ QWidget(parent), mOfsTreeWidget(0)
     mUnlinkFileSystem->setStatusTip(tr("Remove Link to the selected File System"));
 
     mMenu->addAction(mActEmptyRecycleBin);
+    mMenu->addAction(mActRestoreFromRecycleBin);
     mMenu->addAction(mActAddFolder);
     mMenu->addAction(mActLinkFileSystem);
     mMenu->addMenu(mUnlinkFileSystem);
@@ -149,6 +154,7 @@ QWidget(parent), mOfsTreeWidget(0)
     connect(mActHidden,         SIGNAL(triggered()),    this,   SLOT(onHidden()));
     connect(mActLinkFileSystem, SIGNAL(triggered()),    this,   SLOT(onLinkFileSystem()));
     connect(mActEmptyRecycleBin, SIGNAL(triggered()),    this,   SLOT(onEmptyRecycleBin()));
+    connect(mActRestoreFromRecycleBin, SIGNAL(triggered()),    this,   SLOT(onRestoreFromRecycleBin()));
 
     mToolBar = new QToolBar();
     mToolBar->setIconSize(QSize(16, 16));
@@ -229,7 +235,7 @@ void ProjectFilesViewWidget::onSelectionChanged()
 
 	QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
 
-    if(selItems.size() == 1)
+    if(selItems.size() == 1 && selItems[0]->parent() != mOfsTreeWidget->topLevelItem(1))
     {
         QString path = selItems[0]->whatsThis(0);
         OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
@@ -287,8 +293,13 @@ void ProjectFilesViewWidget::modifyStats( selectStats& stats, QTreeWidgetItem* i
     {
         memset( &stats, 0, sizeof(selectStats) );
 
+        stats.mActRestoreFromRecycleBinEnabled = true;
+
         return;
     }
+
+    stats.mActEmptyRecycleBinEnabled = false;
+    stats.mActRestoreFromRecycleBinEnabled = false;
 
     OFS::_Ofs::NameOfsPtrMap fsLinks;
 
@@ -390,7 +401,8 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
     stats.mActImportFileEnabled = true;
     stats.mActImportFolderEnabled = true;
     stats.mActAddEmptyFolderEnabled = true;
-    stats.mActEmptyRecycleBinEnabled = false;
+    stats.mActEmptyRecycleBinEnabled = true;
+    stats.mActRestoreFromRecycleBinEnabled = true;
 
     for( int s = 0; s < selItems.size() ; s++ )
     {
@@ -462,6 +474,7 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
     mActImportFolder->setEnabled( stats.mActImportFolderEnabled );
     mActAddFolder->setEnabled( stats.mActAddEmptyFolderEnabled );
     mActEmptyRecycleBin->setVisible( stats.mActEmptyRecycleBinEnabled );
+    mActRestoreFromRecycleBin->setVisible( stats.mActRestoreFromRecycleBinEnabled );
 
     QPoint globalPos = mOfsTreeWidget->mapToGlobal(pos);
     mMenu->exec(globalPos);
@@ -550,6 +563,32 @@ void ProjectFilesViewWidget::onEmptyRecycleBin()
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     ofsFile->emptyRecycleBin();
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onRestoreFromRecycleBin()
+{
+    QStringList selItems = mOfsTreeWidget->getSelectedItems();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() > 0 && ofsFile.valid())
+    {
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Are you sure you want to restore selected files/folders?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+        {
+            for(int i = 0;i < selItems.size();i++)
+            {
+                int id = selItems.at(i).toInt();
+
+                OFS::OfsResult ret = ofsFile->restoreFromRecycleBin( id );
+
+                if( ret == OFS::OFS_ACCESS_DENIED )
+                {
+                    QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Restore failed for selected item(s) due to name collision."), QMessageBox::Ok);
+                }
+            }
+
+            mOfsTreeWidget->refreshWidget();            
+        }
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onRefresh()

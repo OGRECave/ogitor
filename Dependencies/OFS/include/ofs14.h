@@ -487,7 +487,8 @@ typedef off_t ofs64;
             int          Id;              /* Id of the Owner Entry */
             int          ParentId;        /* Id of the Owner Entry's Parent Directory, -1 if root directory */
             unsigned int Flags;           /* File Flags */
-            unsigned int RESERVED[3];     /* RESERVED */
+            int          OldParentId;     /* Id of the Owner Entry's Old Parent Directory, -1 if root directory */
+            unsigned int RESERVED[2];     /* RESERVED */
             ofs64        FileSize;        /* Entry's File Size, 0 for Directories */
             ofs64        NextBlock;       /* File Position of Next Block owned by this entry */
             char         Name[256];       /* Entry's Name */
@@ -535,6 +536,7 @@ typedef off_t ofs64;
             int           Id;                     /* Id of the Owner Entry */
             int           ParentId;               /* Id of the Owner Entry's Parent Directory, -1 if root directory */
             unsigned int  Flags;                  /* File Flags */
+            int           OldParentId;            /* Id of the Owner Entry's Parent Directory, -1 if root directory */
             UUID          Uuid;                   /* UUID of Entry */
             time_t        CreationTime;           /* Entry's Creation Time */
             ofs64         FileSize;               /* Entry's File Size, 0 for Directories */
@@ -722,6 +724,13 @@ typedef off_t ofs64;
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    moveToRecycleBin(const char *path);
+        /**
+        * Restores a given file/directory from recycle-bin
+        * @param id ID of file/directory to restore, we dont use names 
+        *           since there may be multiple items with same name
+        * @return Result of operation, OFS_OK if successful
+        */
+        OfsResult    restoreFromRecycleBin(int id);
         /**
         * Deletes all Files in recyle bin and frees the space used
         * @return Result of operation, OFS_OK if successful
@@ -1087,6 +1096,9 @@ typedef off_t ofs64;
         inline void   _setFileFlags(OfsEntryDesc *file, unsigned int flags);
         /* Internal  function to free files in recycle bin */
         inline void   _deleteRecycleBinDesc(OfsEntryDesc *desc);
+        /* Internal  function to find an entry by id */
+        OfsEntryDesc* _Ofs::_findDescById( OfsEntryDesc* base, int id );
+
 
         /* Searches given filename in the list of file system instances, 
          * returns it if found or creates a new one and adds it to the list otherwise */
