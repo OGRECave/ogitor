@@ -1097,7 +1097,7 @@ typedef off_t ofs64;
         /* Internal  function to free files in recycle bin */
         inline void   _deleteRecycleBinDesc(OfsEntryDesc *desc);
         /* Internal  function to find an entry by id */
-        OfsEntryDesc* _Ofs::_findDescById( OfsEntryDesc* base, int id );
+        OfsEntryDesc* _findDescById( OfsEntryDesc* base, int id );
 
 
         /* Searches given filename in the list of file system instances, 
