@@ -153,6 +153,7 @@ public:
         CAP_SHOW_FILES       = 1,
         CAP_ALLOW_DROPS      = 2,
         CAP_SHOW_COLORS      = 4,
+        CAP_SHOW_RECYCLEBIN  = 8,
         CAP_FULL_FUNCTIONS   = 0xFFFF
     };
 
@@ -185,6 +186,7 @@ protected:
     QIcon             mUnknownFileIcon;
     AddFilesThread   *mAddFilesThread;
     ExtractorThread  *mExtractorThread;
+    QTreeWidgetItem  *mRecycleBinParent;
 
     void dragEnterEvent(QDragEnterEvent *evt);
     void dragMoveEvent(QDragMoveEvent *evt);
@@ -192,6 +194,7 @@ protected:
     
     void fillTree(QTreeWidgetItem *pItem, std::string path);
     void fillTreeFiles(QTreeWidgetItem *pItem, std::string path);
+    void fillRecycleBin(QTreeWidgetItem *pItem);
     QStringList getFilenames(const QMimeData * data);
 };
 

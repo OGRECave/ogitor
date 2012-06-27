@@ -866,22 +866,23 @@ void QtOgitorSystem::PresentPropertiesView(Ogitors::CBaseEditor *object)
         QWidget *widget = static_cast<QWidget*>(object->getCustomToolsWindow());
         try
         {
-            mOgitorMainWindow->toolsDockWidget->setWidget(widget);
-            mOgitorMainWindow->toolsDockWidget->raise();
+            mOgitorMainWindow->mToolsDockWidget->setWidget(widget);
+            mOgitorMainWindow->mToolsDockWidget->show();
+            mOgitorMainWindow->mToolsDockWidget->raise();
 
             return;
         }
         catch(...)
         {
-            mOgitorMainWindow->toolsDockWidget->setWidget(NULL);
+            mOgitorMainWindow->mToolsDockWidget->setWidget(NULL);
         }
     }
     else
     {
-        mOgitorMainWindow->toolsDockWidget->setWidget(NULL);
+        mOgitorMainWindow->mToolsDockWidget->setWidget(NULL);
     }
 
-    mOgitorMainWindow->propertiesDockWidget->raise();
+    mOgitorMainWindow->mToolsDockWidget->hide();
 }
 //-------------------------------------------------------------------------------
 bool QtOgitorSystem::HasTreeView()
@@ -1135,7 +1136,7 @@ void *QtOgitorSystem::CreateTreeRoot(Ogre::String name)
     return (void*)item;
 }
 //-------------------------------------------------------------------------------
-void QtOgitorSystem::SetTreeItemColour(Ogitors::CBaseEditor *object, unsigned int colour )
+void QtOgitorSystem::SetTreeItemColour(Ogitors::CBaseEditor *object, unsigned int colour)
 {
     if(!object)
         return;
@@ -1143,13 +1144,18 @@ void QtOgitorSystem::SetTreeItemColour(Ogitors::CBaseEditor *object, unsigned in
     QTreeWidgetItem* witem = static_cast<QTreeWidgetItem*>(object->getSceneTreeItemHandle());
     if(witem)
     {
-        witem->setTextColor(0,QColor(GetRED(colour),GetGREEN(colour),GetBLUE(colour)));
+        witem->setTextColor(0,QColor(GetRED(colour), GetGREEN(colour), GetBLUE(colour)));
+
+        if(object->getLocked())
+            witem->setData(0, Qt::UserRole, ":/icons/lock.svg");
+        else
+            witem->setData(0, Qt::UserRole, "");
     }
 
     witem = static_cast<QTreeWidgetItem*>(object->getLayerTreeItemHandle());
     if(witem)
     {
-        witem->setTextColor(0,QColor(GetRED(colour),GetGREEN(colour),GetBLUE(colour)));
+        witem->setTextColor(0,QColor(GetRED(colour), GetGREEN(colour), GetBLUE(colour)));
     }
 }
 //-------------------------------------------------------------------------------

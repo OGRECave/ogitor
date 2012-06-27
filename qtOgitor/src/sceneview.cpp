@@ -44,7 +44,7 @@
 
 using namespace Ogitors;
 //----------------------------------------------------------------------------------------
-SceneTreeWidget::SceneTreeWidget(QWidget *parent) : QTreeWidget(parent) 
+SceneTreeWidget::SceneTreeWidget(QWidget *parent) : ExtendedTreeWidget(parent) 
 {
     setColumnCount(1);
     setHeaderHidden(true);
@@ -318,6 +318,22 @@ SceneViewWidget::SceneViewWidget(QWidget *parent) :
 //----------------------------------------------------------------------------------------
 SceneViewWidget::~SceneViewWidget()
 {
+}
+//----------------------------------------------------------------------------------------
+void SceneViewWidget::setEditRenameState()
+{
+    bool enableRename = false;
+    OgitorsRoot *ogRoot = OgitorsRoot::getSingletonPtr();
+    CBaseEditor *curSelection = 0;
+
+    CMultiSelEditor *multiSel = OgitorsRoot::getSingletonPtr()->GetSelection();
+        
+    if(multiSel)
+    {
+        enableRename = multiSel->getAsSingle()->getProperty("name")->getDefinition()->canWrite();
+    }
+
+    mOgitorMainWindow->actEditRename->setEnabled(enableRename);
 }
 //----------------------------------------------------------------------------------------
 void SceneViewWidget::selectionChanged()

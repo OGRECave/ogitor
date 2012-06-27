@@ -82,6 +82,8 @@
         <file>icons/properties.svg</file>
         <file>icons/qtOgitor.ico</file>
         <file>icons/qtOgitor.png</file>
+        <file>icons/recyclebin_empty.svg</file>
+        <file>icons/recyclebin_full.svg</file>
         <file>icons/redo.svg</file>
         <file>icons/refresh.svg</file>
         <file>icons/relight.svg</file>

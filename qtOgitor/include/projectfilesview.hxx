@@ -40,6 +40,22 @@
 class OfsTreeWidget;
 
 //------------------------------------------------------------------------------
+struct selectStats
+{
+        bool mActMakeAssetEnabled;
+        bool mActMakeAssetChecked;
+        bool mActReadOnlyEnabled;
+        bool mActReadOnlyChecked;
+        bool mActHiddenEnabled;
+        bool mActHiddenChecked;
+        bool mActDeleteEnabled;
+        bool mActLinkFileSystemEnabled;
+        bool mActImportFileEnabled;
+        bool mActImportFolderEnabled;
+        bool mActAddEmptyFolderEnabled;
+        bool mActEmptyRecycleBinEnabled;
+        bool mActRestoreFromRecycleBinEnabled;
+};
 
 class ProjectFilesViewWidget : public QWidget
 {
@@ -50,6 +66,7 @@ public:
     void prepareView();
     void clearView();
     void triggerRefresh();
+	bool isFocusTarget();
 
 public Q_SLOTS:
     void itemDoubleClicked(QTreeWidgetItem* item, int column);
@@ -69,6 +86,9 @@ public Q_SLOTS:
     void onAddFolder();
     void onLinkFileSystem();
 	void onUnlinkFileSystem( const QString & text );
+	void onSelectionChanged();
+    void onEmptyRecycleBin();
+    void onRestoreFromRecycleBin();
 
 Q_SIGNALS:
     void needUpdate();
@@ -90,10 +110,13 @@ protected:
     QAction*        mActExtract;
     QAction*        mActDefrag;
     QAction*        mActDelete;
-    QAction*        mActRename;
     QAction*        mActReadOnly;
     QAction*        mActHidden;
     QAction*        mActLinkFileSystem;
+    QAction*        mActEmptyRecycleBin;
+    QAction*        mActRestoreFromRecycleBin;
+
+    void modifyStats( selectStats& stats, QTreeWidgetItem* item);
 };
 
 //------------------------------------------------------------------------------

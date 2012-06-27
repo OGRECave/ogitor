@@ -83,14 +83,14 @@ public:
     void getBuffer(LogDataVector& buffer)
     {
         OGRE_LOCK_AUTO_MUTEX
-        buffer = mData;
+            buffer = mData;
         mData.clear();
     };
     void append(int lvl, const Ogre::String& msg)
     {
         OGRE_LOCK_AUTO_MUTEX
-        if(mOgitorMainWindow && mOgitorMainWindow->getOgreWidget() && mOgitorMainWindow->getOgreWidget()->isSizing())
-            return;
+            if(mOgitorMainWindow && mOgitorMainWindow->getOgreWidget() && mOgitorMainWindow->getOgreWidget()->isSizing())
+                return;
 
         int level = lvl;
         if(level != 3)
@@ -105,11 +105,11 @@ public:
     };
 private:
     OGRE_AUTO_MUTEX
-    LogDataVector mData;
+        LogDataVector mData;
 };
 
 OgitorAssistant::OgitorAssistant()
-    : proc(0)
+: proc(0)
 {
 }
 
@@ -156,22 +156,22 @@ bool OgitorAssistant::startOgitorAssistant()
         QStringList args;
 #if defined(Q_WS_X11)
         args << QLatin1String("-collectionFile")
-        << QLatin1String(std::string(Ogitors::Globals::INSTALL_PREFIX).c_str())
-        + QLatin1String("/share/ogitor")
-        + QLatin1String("/Help/collection_ogitor.qhc")
-        << QLatin1String("-enableRemoteControl");
+            << QLatin1String(std::string(Ogitors::Globals::RESOURCE_PATH).c_str())
+
+            + QLatin1String("/Help/collection_ogitor.qhc")
+            << QLatin1String("-enableRemoteControl");
 #else
         args << QLatin1String("-collectionFile")
-        << QLatin1String(Ogitors::OgitorsUtils::GetExePath().c_str())
-        + QLatin1String("/Help/collection_ogitor.qhc")
-        << QLatin1String("-enableRemoteControl");
+            << QLatin1String(Ogitors::OgitorsUtils::GetExePath().c_str())
+            + QLatin1String("/Help/collection_ogitor.qhc")
+            << QLatin1String("-enableRemoteControl");
 #endif
 
         proc->start(app, args);
 
         if (!proc->waitForStarted()) {
             QMessageBox::critical(0, QObject::tr("Ogitor Help System"),
-            QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
+                QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
             return false;
         }
     }
@@ -180,7 +180,7 @@ bool OgitorAssistant::startOgitorAssistant()
 
 //------------------------------------------------------------------------------
 MainWindow::MainWindow(QString args, QWidget *parent)
-    : QMainWindow(parent), mOgreWidget(0), mLastTime(0), mArgsFile(args), mHasFileArgs(false), mLastLoadedScene(""), mPrefManager(0), mSubWindowsVisible(true)
+: QMainWindow(parent), mOgreWidget(0), mLastTime(0), mArgsFile(args), mHasFileArgs(false), mLastLoadedScene(""), mPrefManager(0), mSubWindowsVisible(true)
 {
     mOgitorMainWindow = this;
 
@@ -286,6 +286,8 @@ MainWindow::MainWindow(QString args, QWidget *parent)
     hideSubWindows();
 #endif
 
+    onSwitchStackedResources(0);
+
     EventManager::getSingletonPtr()->connectEvent(EventManager::MODIFIED_STATE_CHANGE,      this, true, 0, true, 0, EVENT_CALLBACK(MainWindow, onSceneModifiedChange));
     EventManager::getSingletonPtr()->connectEvent(EventManager::UNDOMANAGER_NOTIFICATION,   this, true, 0, true, 0, EVENT_CALLBACK(MainWindow, onUndoManagerNotification));
     EventManager::getSingletonPtr()->connectEvent(EventManager::RUN_STATE_CHANGE,           this, true, 0, true, 0, EVENT_CALLBACK(MainWindow, onSceneRunStateChange));
@@ -361,7 +363,7 @@ void MainWindow::showSubWindows()
 
     for(unsigned int i = 0;i < mSubWindowStateSave.size();i++)
     {
-         mSubWindowStateSave[i]->setVisible(true);
+        mSubWindowStateSave[i]->setVisible(true);
     }
     mSubWindowStateSave.clear();
 
@@ -435,12 +437,12 @@ void MainWindow::hideSubWindows()
 void MainWindow::readSettings(QString filename)
 {
     QSettings *settings;
-	bool invalid_win_rect = false;
+    bool invalid_win_rect = false;
 
     if(filename.isEmpty())
-	{
+    {
         settings = new QSettings();
-	}
+    }
     else
         settings = new QSettings(filename, QSettings::IniFormat);
 
@@ -448,8 +450,8 @@ void MainWindow::readSettings(QString filename)
     restoreState(settings->value("Layout").toByteArray());
     bool maximized = settings->value("MainWindowMaximized", false).toBool();
     QRect rect = settings->value("MainWindowGeometry").toRect();
-	if(rect.isEmpty())
-		invalid_win_rect = true;
+    if(rect.isEmpty())
+        invalid_win_rect = true;
     settings->endGroup();
 
     settings->beginGroup("messagefilters");
@@ -470,8 +472,8 @@ void MainWindow::readSettings(QString filename)
 
     delete settings;
 
-	if(invalid_win_rect)
-		return readSettings(":/layouts/initial.oglayout");
+    if(invalid_win_rect)
+        return readSettings(":/layouts/initial.oglayout");
 }
 //------------------------------------------------------------------------------
 void MainWindow::writeSettings(QString filename)
@@ -497,7 +499,7 @@ void MainWindow::writeSettings(QString filename)
     settings->setValue("FilterInfo", actLogShowInfo->isChecked());
     settings->setValue("FilterDebug", actLogShowDebug->isChecked());
     settings->endGroup();
-	settings->setValue("preferences/lastLoadedScene", mLastLoadedScene.c_str());
+    settings->setValue("preferences/lastLoadedScene", mLastLoadedScene.c_str());
 
     delete settings;
 }
@@ -505,11 +507,11 @@ void MainWindow::writeSettings(QString filename)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
-	{
-		mLastLoadedScene = OgitorsRoot::getSingletonPtr()->GetSceneName();
-	}
+    {
+        mLastLoadedScene = OgitorsRoot::getSingletonPtr()->GetSceneName();
+    }
 
-	if(OgitorsRoot::getSingletonPtr()->TerminateScene())
+    if(OgitorsRoot::getSingletonPtr()->TerminateScene())
     {
         delete mOgitorAssistant;
 
@@ -544,12 +546,12 @@ void MainWindow::retranslateUi()
     QString appTitle = "qtOgitor ";
     appTitle += Ogitors::Globals::OGITOR_VERSION.c_str();
     setWindowTitle(appTitle);
-    explorerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Explorer", 0, QApplication::UnicodeUTF8));
-    layerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Groups", 0, QApplication::UnicodeUTF8));
-    resourcesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Resources", 0, QApplication::UnicodeUTF8));
-    propertiesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Properties", 0, QApplication::UnicodeUTF8));
-    toolsDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Tools", 0, QApplication::UnicodeUTF8));
-    projectFilesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Files", 0, QApplication::UnicodeUTF8));
+    mExplorerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Explorer", 0, QApplication::UnicodeUTF8));
+    mLayerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Groups", 0, QApplication::UnicodeUTF8));
+    mResourcesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Resources", 0, QApplication::UnicodeUTF8));
+    mPropertiesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Properties", 0, QApplication::UnicodeUTF8));
+    mToolsDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Tools", 0, QApplication::UnicodeUTF8));
+    mProjectFilesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Files", 0, QApplication::UnicodeUTF8));
     menuFile->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
 }
 //------------------------------------------------------------------------------
@@ -560,18 +562,18 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mExplorerToolBox = new QToolBox(parent);
     mExplorerToolBox->addItem(mSceneViewWidget, QIcon(":/icons/scene.svg"), tr("Scene"));
 
-    explorerDockWidget = new QDockWidget(parent);
-    explorerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-    explorerDockWidget->setObjectName(QString::fromUtf8("explorerDockWidget"));
-    explorerDockWidget->setWidget(mExplorerToolBox);
-    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), explorerDockWidget);
+    mExplorerDockWidget = new QDockWidget(parent);
+    mExplorerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    mExplorerDockWidget->setObjectName(QString::fromUtf8("explorerDockWidget"));
+    mExplorerDockWidget->setWidget(mExplorerToolBox);
+    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), mExplorerDockWidget);
 
     mLayerViewWidget = new LayerViewWidget(parent);
-    layerDockWidget = new QDockWidget(parent);
-    layerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-    layerDockWidget->setObjectName(QString::fromUtf8("layerDockWidget"));
-    layerDockWidget->setWidget(mLayerViewWidget);
-    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), layerDockWidget);
+    mLayerDockWidget = new QDockWidget(parent);
+    mLayerDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    mLayerDockWidget->setObjectName(QString::fromUtf8("layerDockWidget"));
+    mLayerDockWidget->setWidget(mLayerViewWidget);
+    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), mLayerDockWidget);
 
     mGeneralPropertiesViewWidget = new GeneralPropertiesViewWidget(parent);
     mCustomPropertiesViewWidget = new CustomPropertiesViewWidget(parent);
@@ -580,11 +582,11 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mPropertiesToolBox->addItem(mGeneralPropertiesViewWidget, QIcon(":/icons/properties.svg"), tr("General") + " " + tr("Properties"));
     mPropertiesToolBox->addItem(mCustomPropertiesViewWidget, QIcon(":/icons/properties.svg"), tr("Custom") + " " + tr("Properties"));
 
-    propertiesDockWidget = new QDockWidget(parent);
-    propertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-    propertiesDockWidget->setObjectName(QString::fromUtf8("propertiesDockWidget"));
-    propertiesDockWidget->setWidget(mPropertiesToolBox);
-    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), propertiesDockWidget);
+    mPropertiesDockWidget = new QDockWidget(parent);
+    mPropertiesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    mPropertiesDockWidget->setObjectName(QString::fromUtf8("propertiesDockWidget"));
+    mPropertiesDockWidget->setWidget(mPropertiesToolBox);
+    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), mPropertiesDockWidget);
 
     mObjectsViewWidget = new ObjectsViewWidget(parent);
     mEntityViewWidget = new EntityViewWidget(parent);
@@ -592,36 +594,70 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mTemplatesViewWidget = new TemplateViewWidget(parent);
     mProjectFilesViewWidget = new ProjectFilesViewWidget(parent);
 
-    mResourcesToolBox = new QToolBox(parent);
-    mResourcesToolBox->addItem(mObjectsViewWidget, QIcon(":/icons/objects.svg"), tr("Objects"));
-    mResourcesToolBox->addItem(mEntityViewWidget, QIcon(":/icons/entity.svg"), tr("Meshes"));
-    mResourcesToolBox->addItem(mTemplatesViewWidget, QIcon(":/icons/template.svg"), tr("Templates"));
+    mResourcesDockWidget = new QDockWidget(parent);
+    mResourcesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    mResourcesDockWidget->setObjectName(QString::fromUtf8("resourcesDockWidget"));
+    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), mResourcesDockWidget);
 
-    resourcesDockWidget = new QDockWidget(parent);
-    resourcesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-    resourcesDockWidget->setObjectName(QString::fromUtf8("resourcesDockWidget"));
-    resourcesDockWidget->setWidget(mResourcesToolBox);
-    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), resourcesDockWidget);
+    QMainWindow* stackedWidgetInnerDummy = new QMainWindow(mResourcesDockWidget);
+    stackedWidgetInnerDummy->setWindowFlags(Qt::Widget); 
 
-    toolsDockWidget = new QDockWidget(parent);
-    toolsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-    toolsDockWidget->setObjectName(QString::fromUtf8("toolsDockWidget"));
-    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), toolsDockWidget);
+    mResourcesStackedWidget = new QStackedWidget(parent);
+    mResourcesStackedWidget->addWidget(mObjectsViewWidget);
+    mResourcesStackedWidget->addWidget(mEntityViewWidget);
+    mResourcesStackedWidget->addWidget(mTemplatesViewWidget);
 
-    projectFilesDockWidget = new QDockWidget(parent);
-    projectFilesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-    projectFilesDockWidget->setObjectName(QString::fromUtf8("projectFilesDockWidget"));
-    projectFilesDockWidget->setWidget(mProjectFilesViewWidget);
-    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), projectFilesDockWidget);
+    mResourcesStackedToolBar = new QToolBar(stackedWidgetInnerDummy);
+    mResourcesStackedToolBar->setMovable(false);
+    mResourcesStackedToolBar->setIconSize(QSize(16, 16));
+    mResourcesStackedToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    parent->tabifyDockWidget(propertiesDockWidget, resourcesDockWidget);
-    parent->tabifyDockWidget(propertiesDockWidget, toolsDockWidget);
-    parent->tabifyDockWidget(explorerDockWidget, layerDockWidget);
-    parent->tabifyDockWidget(explorerDockWidget, projectFilesDockWidget);
-    propertiesDockWidget->raise();
-    explorerDockWidget->raise();
-	QSizePolicy size_pol;
-	size_pol.setVerticalPolicy(QSizePolicy::Expanding);
+    QAction *stackedAction;
+    mResourcesStackedMapper = new QSignalMapper(parent);
+    mResourcesStackedActions = new QActionGroup(this);
+    stackedAction = mResourcesStackedActions->addAction(QIcon(":/icons/objects.svg"), tr("Objects"));
+    stackedAction->setCheckable(true);
+    stackedAction->setChecked(true);
+    connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+    mResourcesStackedMapper->setMapping(stackedAction,  0);
+    stackedAction = mResourcesStackedActions->addAction(QIcon(":/icons/entity.svg"), tr("Meshes"));
+    stackedAction->setCheckable(true);
+    connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+    mResourcesStackedMapper->setMapping(stackedAction,  1);
+    stackedAction = mResourcesStackedActions->addAction(QIcon(":/icons/template.svg"), tr("Templates"));
+    stackedAction->setCheckable(true);
+    connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+    mResourcesStackedMapper->setMapping(stackedAction,  2);
+
+    connect(mResourcesStackedMapper, SIGNAL(mapped(int)), this, SLOT(onSwitchStackedResources(int)));
+
+    mResourcesStackedToolBar->addActions(mResourcesStackedActions->actions());
+
+    stackedWidgetInnerDummy->addToolBar(Qt::BottomToolBarArea, mResourcesStackedToolBar);
+    stackedWidgetInnerDummy->setCentralWidget(mResourcesStackedWidget);
+    mResourcesDockWidget->setWidget(stackedWidgetInnerDummy);
+
+    mToolsDockWidget = new QDockWidget(parent);
+    mToolsDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    mToolsDockWidget->setObjectName(QString::fromUtf8("toolsDockWidget"));
+    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(2), mToolsDockWidget);
+
+    mProjectFilesDockWidget = new QDockWidget(parent);
+    mProjectFilesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    mProjectFilesDockWidget->setObjectName(QString::fromUtf8("projectFilesDockWidget"));
+    mProjectFilesDockWidget->setWidget(mProjectFilesViewWidget);
+    parent->addDockWidget(static_cast<Qt::DockWidgetArea>(1), mProjectFilesDockWidget);
+
+	connect( mProjectFilesDockWidget, SIGNAL( visibilityChanged(bool) ), this, SLOT( onProjectFilesVisibilityChanged(bool) ));
+
+    parent->tabifyDockWidget(mPropertiesDockWidget, mResourcesDockWidget);
+    parent->tabifyDockWidget(mPropertiesDockWidget, mToolsDockWidget);
+    parent->tabifyDockWidget(mExplorerDockWidget, mLayerDockWidget);
+    parent->tabifyDockWidget(mExplorerDockWidget, mProjectFilesDockWidget);
+    mPropertiesDockWidget->raise();
+    mExplorerDockWidget->raise();
+    QSizePolicy size_pol;
+    size_pol.setVerticalPolicy(QSizePolicy::Expanding);
 
     createCustomDockWidgets();
 
@@ -663,7 +699,7 @@ void MainWindow::createSceneRenderWindow()
 
     mSnapMultiplierBox = new QComboBox();
     mSnapMultiplierBox->setMaxVisibleItems(16);
-    
+
     QString test_str("x99");
 
     QFontMetrics fm(mSnapMultiplierBox->font());
@@ -909,23 +945,39 @@ void MainWindow::createCustomDockWidgets()
             if(widget)
             {
                 QToolBox *toolbox = 0;
+                QStackedWidget *stackedWidget = 0;
                 if(dockwidgets[i].mParent == DOCK_PROPERTIES)
                     toolbox = mPropertiesToolBox;
                 else if(dockwidgets[i].mParent == DOCK_RESOURCES)
-                    toolbox = mResourcesToolBox;
+                    stackedWidget = mResourcesStackedWidget;
 
                 try
                 {
                     widget->setObjectName(QString(dockwidgets[i].mCaption.c_str()));
 
-                    if(dockwidgets[i].mIcon != "")
-                        toolbox->addItem(widget, QIcon(dockwidgets[i].mIcon.c_str()), QString(dockwidgets[i].mCaption.c_str()));
-                    else
-                        toolbox->addItem(widget, QString(dockwidgets[i].mCaption.c_str()));
+                    if(toolbox)
+                    {
+                        if(dockwidgets[i].mIcon != "")
+                            toolbox->addItem(widget, QIcon(dockwidgets[i].mIcon.c_str()), QString(dockwidgets[i].mCaption.c_str()));
+                        else
+                            toolbox->addItem(widget, QString(dockwidgets[i].mCaption.c_str()));
+                    }
+                    else if(stackedWidget)
+                    {
+                        QAction* button = mResourcesStackedActions->addAction(QIcon(dockwidgets[i].mIcon.c_str()), QString(dockwidgets[i].mCaption.c_str()));
+                        button->setCheckable(true);
+
+                        connect(button, SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
+                        mResourcesStackedMapper->setMapping(button, mResourcesStackedActions->actions().size() - 1);
+
+                        mResourcesStackedToolBar->addAction(button);
+
+                        stackedWidget->addWidget(widget);
+                    }                    
                 }
                 catch(...)
                 {
-                    QMessageBox::warning(QApplication::activeWindow(), "qtOgitor", QString(tr("Invalid DockWidget ID:%1")).arg(QString(dockwidgets[i].mCaption.c_str())), QMessageBox::Ok);
+                    QMessageBox::warning(QApplication::activeWindow(), "qtOgitor", QString(tr("Invalid DockWidget ID: %1")).arg(QString(dockwidgets[i].mCaption.c_str())), QMessageBox::Ok);
                 }
             }
         }
@@ -1041,8 +1093,8 @@ void MainWindow::addMenus()
     menuSelectSelectionList = menuTools->addMenu(tr("Activate Selection List"));
     for(int sa = 0;sa < 10;sa++)
     {
-       menuDefineSelectionList->addAction(mSelectActions[sa]);
-       menuSelectSelectionList->addAction(mSelectActions[sa + 10]);
+        menuDefineSelectionList->addAction(mSelectActions[sa]);
+        menuSelectSelectionList->addAction(mSelectActions[sa + 10]);
     }
 
     menuView = new QMenu(tr("View"),mMenuBar);
@@ -1076,12 +1128,12 @@ void MainWindow::addMenus()
     menuLog->addAction(actLogShowInfo);
     menuLog->addAction(actLogShowDebug);
 
-    logWidget->addAction(actSearchLog);
-    logWidget->addAction(actClearLog);
-    logWidget->addAction(actLogShowErrors);
-    logWidget->addAction(actLogShowWarnings);
-    logWidget->addAction(actLogShowInfo);
-    logWidget->addAction(actLogShowDebug);
+    mLogWidget->addAction(actSearchLog);
+    mLogWidget->addAction(actClearLog);
+    mLogWidget->addAction(actLogShowErrors);
+    mLogWidget->addAction(actLogShowWarnings);
+    mLogWidget->addAction(actLogShowInfo);
+    mLogWidget->addAction(actLogShowDebug);
 
     menuCamera = new QMenu(tr("Camera"), mMenuBar);
     menuCamera->setObjectName(QString::fromUtf8("menuCamera"));
@@ -1193,20 +1245,20 @@ void MainWindow::messageLogged(const Ogre::String &message, Ogre::LogMessageLeve
 //------------------------------------------------------------------------------
 void MainWindow::setupLog()
 {
-    logDockWidget = new QDockWidget(this);
-    logDockWidget->setAllowedAreas(Qt::BottomDockWidgetArea);
-    logDockWidget->setObjectName(QString::fromUtf8("logDockWidget"));
-    logDockWidget->setWindowTitle(QApplication::translate("qtOgitor", "Ogitor Console", 0, QApplication::UnicodeUTF8));
+    mLogDockWidget = new QDockWidget(this);
+    mLogDockWidget->setAllowedAreas(Qt::BottomDockWidgetArea);
+    mLogDockWidget->setObjectName(QString::fromUtf8("logDockWidget"));
+    mLogDockWidget->setWindowTitle(QApplication::translate("qtOgitor", "Ogitor Console", 0, QApplication::UnicodeUTF8));
 
-    logWidget = new QListWidget();
-    logWidget->setObjectName(QString::fromUtf8("logWidget"));
-    logWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
-    logWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    logWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    logWidget->setWordWrap(true);
+    mLogWidget = new QListWidget();
+    mLogWidget->setObjectName(QString::fromUtf8("logWidget"));
+    mLogWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+    mLogWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    mLogWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mLogWidget->setWordWrap(true);
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    sizePolicy.setHeightForWidth(logWidget->sizePolicy().hasHeightForWidth());
-    logWidget->setSizePolicy(sizePolicy);
+    sizePolicy.setHeightForWidth(mLogWidget->sizePolicy().hasHeightForWidth());
+    mLogWidget->setSizePolicy(sizePolicy);
 
     mScriptConsoleWidget = new QWidget();
     QVBoxLayout* verticalLayout = new QVBoxLayout(mScriptConsoleWidget);
@@ -1215,32 +1267,32 @@ void MainWindow::setupLog()
     verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
     QHBoxLayout* horizontalLayout = new QHBoxLayout();
     horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-    txtScriptInput = new LineEditWithHistory(mScriptConsoleWidget);
-    txtScriptInput->setObjectName(QString::fromUtf8("txtScriptInput"));
-    horizontalLayout->addWidget(txtScriptInput);
+    mTxtScriptInput = new LineEditWithHistory(mScriptConsoleWidget);
+    mTxtScriptInput->setObjectName(QString::fromUtf8("txtScriptInput"));
+    horizontalLayout->addWidget(mTxtScriptInput);
     QPushButton* btnRunScript = new QPushButton(tr("Execute"), mScriptConsoleWidget);
     btnRunScript->setObjectName(QString::fromUtf8("btnRunScript"));
     connect(btnRunScript, SIGNAL(clicked()), this, SLOT(runScriptClicked()));
-    connect(txtScriptInput, SIGNAL(returnPressed()), this, SLOT(runScriptClicked()));
+    connect(mTxtScriptInput, SIGNAL(returnPressed()), this, SLOT(runScriptClicked()));
     horizontalLayout->addWidget(btnRunScript);
     verticalLayout_2->addLayout(horizontalLayout);
-    listScriptOutput = new QListWidget(mScriptConsoleWidget);
-    listScriptOutput->setObjectName(QString::fromUtf8("listScriptOutput"));
-    listScriptOutput->setContextMenuPolicy(Qt::ActionsContextMenu);
-    listScriptOutput->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    listScriptOutput->setSelectionBehavior(QAbstractItemView::SelectRows);
-    listScriptOutput->setWordWrap(true);
-    listScriptOutput->setSizePolicy(sizePolicy);
-    verticalLayout_2->addWidget(listScriptOutput);
+    mListScriptOutput = new QListWidget(mScriptConsoleWidget);
+    mListScriptOutput->setObjectName(QString::fromUtf8("listScriptOutput"));
+    mListScriptOutput->setContextMenuPolicy(Qt::ActionsContextMenu);
+    mListScriptOutput->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    mListScriptOutput->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mListScriptOutput->setWordWrap(true);
+    mListScriptOutput->setSizePolicy(sizePolicy);
+    verticalLayout_2->addWidget(mListScriptOutput);
     verticalLayout->addLayout(verticalLayout_2);
-    mLogTabs = new QTabWidget(logDockWidget);
-    mLogTabs->addTab(logWidget, tr("Log"));
+    mLogTabs = new QTabWidget(mLogDockWidget);
+    mLogTabs->addTab(mLogWidget, tr("Log"));
     mLogTabs->addTab(mScriptConsoleWidget, tr("Script Console"));
 
-    logDockWidget->setWidget(mLogTabs);
-    logDockWidget->setVisible(false);
+    mLogDockWidget->setWidget(mLogTabs);
+    mLogDockWidget->setVisible(false);
 
-    addDockWidget(static_cast<Qt::DockWidgetArea>(8), logDockWidget);
+    addDockWidget(static_cast<Qt::DockWidgetArea>(8), mLogDockWidget);
 
     Ogre::LogManager::getSingleton().getDefaultLog()->addListener(this);
 }
@@ -1249,7 +1301,7 @@ void MainWindow::updateLog(QListWidgetItem* item)
 {
     Q_ASSERT(item);
     item->setBackgroundColor(QColor("#000000"));
-    logWidget->addItem(item);
+    mLogWidget->addItem(item);
     switch( item->type() )
     {
     case 4:
@@ -1289,7 +1341,7 @@ void MainWindow::setCameraPositions()
     {
         QString menustr;
         menustr = QString(tr("Camera %1: <%2, %3, %4>")).arg(i).arg(pOpt->CameraPositions[i].x)
-                                                        .arg(pOpt->CameraPositions[i].y).arg(pOpt->CameraPositions[i].z);
+            .arg(pOpt->CameraPositions[i].y).arg(pOpt->CameraPositions[i].z);
         menuCameraPositions[i]->setTitle(menustr);
     }
     for(int i = pOpt->CameraSaveCount;i < 10;i++)
@@ -1389,7 +1441,7 @@ void MainWindow::timerLoop()
     }
 
     if(messages.size() > 0)
-        logWidget->scrollToBottom();
+        mLogWidget->scrollToBottom();
 
     Ogre::StringVector conMessages;
     lastConsolePos = OgitorsScriptConsole::getSingletonPtr()->getOutput(lastConsolePos, conMessages);
@@ -1398,11 +1450,11 @@ void MainWindow::timerLoop()
     {
         QListWidgetItem *itemScript = new QListWidgetItem(QString(conMessages[i].c_str()));
         itemScript->setBackgroundColor(QColor("#000000"));
-        listScriptOutput->addItem(itemScript);
+        mListScriptOutput->addItem(itemScript);
     }
 
     if(conMessages.size() > 0)
-        listScriptOutput->scrollToBottom();
+        mListScriptOutput->scrollToBottom();
 
 #if OGRE_MEMORY_TRACKER
     unsigned int total = Ogre::MemoryTracker::get().getTotalMemoryAllocated() / (1024 * 1024);
@@ -1652,7 +1704,7 @@ void MainWindow::autoSaveScene()
                     oldestFilePath = fileListBackup[i].filePath();
                 }
 
-            QFile::remove(oldestFilePath);
+                QFile::remove(oldestFilePath);
         }
     }
 
@@ -1681,5 +1733,3 @@ void MainWindow::onFocusOnObject()
     }
 }
 //------------------------------------------------------------------------------------
-
-
