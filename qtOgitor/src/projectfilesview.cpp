@@ -47,7 +47,7 @@
 
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
-    QWidget(parent), mOfsTreeWidget(0)
+QWidget(parent), mOfsTreeWidget(0)
 {
     mVBoxLayout = new QVBoxLayout(this);
     mVBoxLayout->setMargin(0);
@@ -57,7 +57,7 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActRefresh = new QAction(tr("Refresh"), this);
     mActRefresh->setStatusTip(tr("Refresh file contents"));
     mActRefresh->setIcon(QIcon(":/icons/refresh.svg"));
-     
+
     mActExtract = new QAction(tr("Extract To..."), this);
     mActExtract->setStatusTip(tr("Extract file contents to.."));
     mActExtract->setIcon(QIcon(":/icons/extract.svg"));
@@ -82,19 +82,22 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActImportFile->setStatusTip(tr("Import a single file into your Ogitor project"));
     mActImportFile->setIcon(QIcon(":/icons/additional.svg"));
 
+    mActEmptyRecycleBin = new QAction(tr("Empty Recycle Bin"), this);
+    mActEmptyRecycleBin->setStatusTip(tr("Delete contents of Recycle Bin"));
+    mActEmptyRecycleBin->setIcon(QIcon(":/icons/recyclebin_empty.svg"));
+
+    mActRestoreFromRecycleBin = new QAction(tr("Restore from Recycle Bin"), this);
+    mActRestoreFromRecycleBin->setStatusTip(tr("Restore file/folder to old location"));
+    mActRestoreFromRecycleBin->setIcon(QIcon(":/icons/refresh.svg"));
+
     mActMakeAsset = new QAction(tr("Make scene asset"), this);
     mActMakeAsset->setStatusTip(tr("Make the resource usable as a scene asset"));
     mActMakeAsset->setIcon(QIcon(":/icons/objects.svg"));
     mActMakeAsset->setCheckable(true);
     mActMakeAsset->setChecked(false);
 
-    mActRename = new QAction(tr("Rename"), this);
-    mActRename->setStatusTip(tr("Rename Selected File/Folder"));
-    mActRename->setIcon(QIcon(":/icons/editrename.svg"));
-
     mActReadOnly = new QAction(tr("Read Only"), this);
     mActReadOnly->setStatusTip(tr("Set/UnSet File/Folder as Read Only"));
-    mActReadOnly->setIcon(QIcon(":/icons/lock.svg"));
     mActReadOnly->setCheckable(true);
     mActReadOnly->setChecked(false);
 
@@ -106,8 +109,11 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActLinkFileSystem = new QAction(tr("Link File System"), this);
     mActLinkFileSystem->setStatusTip(tr("Link a File System to current directory"));
 
-    mUnlinkFileSystem = new QMenu(tr("un-Link File System(s)"));
+    mUnlinkFileSystem = new QMenu(tr("Un-Link File System"));
+    mUnlinkFileSystem->setStatusTip(tr("Remove Link to the selected File System"));
 
+    mMenu->addAction(mActEmptyRecycleBin);
+    mMenu->addAction(mActRestoreFromRecycleBin);
     mMenu->addAction(mActAddFolder);
     mMenu->addAction(mActLinkFileSystem);
     mMenu->addMenu(mUnlinkFileSystem);
@@ -117,7 +123,6 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mMenu->addSeparator();
     mMenu->addAction(mActMakeAsset);
     mMenu->addSeparator();
-    mMenu->addAction(mActRename);
     mMenu->addAction(mActReadOnly);
     mMenu->addAction(mActHidden);
     mMenu->addSeparator();
@@ -131,7 +136,6 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     mActExtract->setEnabled(false);
     mActDefrag->setEnabled(false);
     mActDelete->setEnabled(false);
-    mActRename->setEnabled(false);
     mActReadOnly->setEnabled(false);
     mActHidden->setEnabled(false);
     mActLinkFileSystem->setEnabled(false);
@@ -146,10 +150,11 @@ ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
     connect(mActExtract,        SIGNAL(triggered()),    this,   SLOT(onExtract()));
     connect(mActDefrag,         SIGNAL(triggered()),    this,   SLOT(onDefrag()));
     connect(mActDelete,         SIGNAL(triggered()),    this,   SLOT(onDelete()));
-    connect(mActRename,         SIGNAL(triggered()),    this,   SLOT(onRename()));
     connect(mActReadOnly,       SIGNAL(triggered()),    this,   SLOT(onReadOnly()));
     connect(mActHidden,         SIGNAL(triggered()),    this,   SLOT(onHidden()));
     connect(mActLinkFileSystem, SIGNAL(triggered()),    this,   SLOT(onLinkFileSystem()));
+    connect(mActEmptyRecycleBin, SIGNAL(triggered()),    this,   SLOT(onEmptyRecycleBin()));
+    connect(mActRestoreFromRecycleBin, SIGNAL(triggered()),    this,   SLOT(onRestoreFromRecycleBin()));
 
     mToolBar = new QToolBar();
     mToolBar->setIconSize(QSize(16, 16));
@@ -174,10 +179,18 @@ ProjectFilesViewWidget::~ProjectFilesViewWidget()
     mToolBar = 0;
 }
 //----------------------------------------------------------------------------------------
+bool ProjectFilesViewWidget::isFocusTarget()
+{
+	if( mOfsTreeWidget != NULL )
+		return mOfsTreeWidget->hasFocus();
+
+	return false;
+}
+//----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::prepareView()
 {
     mOfsTreeWidget = new OfsTreeWidget(this, OfsTreeWidget::CAP_FULL_FUNCTIONS);
-    
+
     mActRefresh->setEnabled(true);
     mActAddFolder->setEnabled(true);
     mActExtract->setEnabled(true);
@@ -189,6 +202,7 @@ void ProjectFilesViewWidget::prepareView()
     connect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
     connect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested(const QPoint &)));
     connect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
+	connect(mOfsTreeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::clearView()
@@ -198,7 +212,8 @@ void ProjectFilesViewWidget::clearView()
         disconnect(mOfsTreeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem *, int)));
         disconnect(mOfsTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onOfsWidgetCustomContextMenuRequested(const QPoint &)));
         disconnect(mOfsTreeWidget, SIGNAL(busyState(bool)), this, SLOT(onOfsWidgetBusyState(bool)));
-        
+	    disconnect(mOfsTreeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
+
         delete mOfsTreeWidget;
         mOfsTreeWidget = 0;
 
@@ -209,6 +224,33 @@ void ProjectFilesViewWidget::clearView()
     mActAddFolder->setEnabled(false);
     mActExtract->setEnabled(false);
     mActDefrag->setEnabled(false);
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onSelectionChanged()
+{
+	if( mOfsTreeWidget == NULL )
+		return;
+
+	bool rename = false;
+
+	QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
+
+    if(selItems.size() == 1 && selItems[0]->parent() != mOfsTreeWidget->topLevelItem(1))
+    {
+        QString path = selItems[0]->whatsThis(0);
+        OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+        unsigned int flags = 0;
+
+        if(path.endsWith("/"))
+            file->getDirFlags(path.toStdString().c_str(), flags);
+        else
+            file->getFileFlags(path.toStdString().c_str(), flags);
+
+        if(path != "/")
+            rename = !(flags & OFS::OFS_LINK);
+    }
+
+	mOgitorMainWindow->actEditRename->setEnabled( rename );
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
@@ -229,7 +271,7 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column
         mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
         return;
     }
-    
+
     if(mOgitorMainWindow->getGenericImageEditor()->findMatchingCodecFactory(path) != 0)
     {
         mOgitorMainWindow->getGenericImageEditor()->displayImageFromFile(path);
@@ -237,115 +279,207 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column
     }
 }
 //----------------------------------------------------------------------------------------
-void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint & pos)
+void ProjectFilesViewWidget::modifyStats( selectStats& stats, QTreeWidgetItem* item)
 {
-    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
- 
-    mAddFileFolderPath = "/";
-
-	QSignalMapper * mapper = new QSignalMapper(this);
-
-    if(selItems.size() > 0)
+    if( item == mOfsTreeWidget->topLevelItem(1) )
     {
-        OFS::_Ofs::NameOfsPtrMap fsLinks;
+        memset( &stats, 0, sizeof(selectStats) );
 
-        QString path = selItems[0]->whatsThis(0);
- 
-        OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
-        unsigned int flags = 0;
+        stats.mActEmptyRecycleBinEnabled = true;
 
-        if(path.endsWith("/"))
-        {
-            file->getDirFlags(path.toStdString().c_str(), flags);
-            file->getDirectoryLinks( path.toStdString().c_str(), fsLinks );
-        }
-        else
-            file->getFileFlags(path.toStdString().c_str(), flags);
+        return;
+    }
+    else if( item->parent() == mOfsTreeWidget->topLevelItem(1) )
+    {
+        memset( &stats, 0, sizeof(selectStats) );
 
-        if(path == "/")
-        {
-            mActMakeAsset->setEnabled(false);
-            mActMakeAsset->setChecked(false);
-            mActReadOnly->setChecked(false);
-            mActHidden->setChecked(false);
-            mActReadOnly->setEnabled(false);
-            mActHidden->setEnabled(false);
-            mActRename->setEnabled(false);
-            mActDelete->setEnabled(false);
-            mActLinkFileSystem->setEnabled(true);
-        }
-        else
-        {
-            if(path.endsWith("/"))
-            {
-                mAddFileFolderPath = path.toStdString();
-                mActLinkFileSystem->setEnabled(!(flags & OFS::OFS_LINK));
-            }
-            else
-                mActLinkFileSystem->setEnabled(false);
+        stats.mActRestoreFromRecycleBinEnabled = true;
 
-            mActMakeAsset->setEnabled(true);
-            mActMakeAsset->setChecked(false);
-            mActReadOnly->setChecked(true);
-            mActHidden->setChecked(true);
-            mActReadOnly->setEnabled(!(flags & OFS::OFS_LINK));
-            mActHidden->setEnabled(!(flags & OFS::OFS_LINK));
-            mActRename->setEnabled(!(flags & OFS::OFS_LINK));
-            mActDelete->setEnabled(!(flags & OFS::OFS_LINK));
-        }
+        return;
+    }
 
-        mActReadOnly->setChecked(flags & OFS::OFS_READONLY);
-        if(flags & OFS::OFS_READONLY)
-            mActReadOnly->setIcon(QIcon(":icons/unlock.svg"));
-        mActHidden->setChecked(flags & OFS::OFS_HIDDEN);
-       
-        Ogre::StringVector dirs = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories;
-        Ogre::StringVector::iterator it;
+    stats.mActEmptyRecycleBinEnabled = false;
+    stats.mActRestoreFromRecycleBinEnabled = false;
 
-        for(it = dirs.begin(); it != dirs.end(); it++)
-        {
-            if((*it) == path.toStdString())
-                mActMakeAsset->setChecked(true);
-        }
+    OFS::_Ofs::NameOfsPtrMap fsLinks;
 
-        mUnlinkFileSystem->clear();
+    QString path = item->whatsThis(0);
 
-        OFS::_Ofs::NameOfsPtrMap::iterator fit = fsLinks.begin();
-        
-        while( fit != fsLinks.end() )
-        {
-            QAction *act = mUnlinkFileSystem->addAction(QString(fit->first.c_str()));
+    OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+    unsigned int flags = 0;
 
-            connect(act, SIGNAL(triggered()), mapper, SLOT(map()));
-            mapper->setMapping(act, QString(fit->first.c_str()) );
+    if(path.endsWith("/"))
+    {
+        file->getDirFlags(path.toStdString().c_str(), flags);
+        file->getDirectoryLinks(path.toStdString().c_str(), fsLinks);
+    }
+    else
+        file->getFileFlags(path.toStdString().c_str(), flags);
 
-            fit++;
-        }
-
-		connect(mapper, SIGNAL(mapped( const QString & )), this, SLOT(onUnlinkFileSystem( const QString & )));
-
-        mUnlinkFileSystem->setEnabled( fsLinks.size() > 0 );
+    if(path == "/")
+    {
+        stats.mActMakeAssetEnabled = false;
+        stats.mActMakeAssetChecked = false;
+        stats.mActReadOnlyEnabled = false;
+        stats.mActReadOnlyChecked = false;
+        stats.mActHiddenEnabled = false;
+        stats.mActHiddenChecked = false;
+        stats.mActDeleteEnabled = false;
     }
     else
     {
-        mActMakeAsset->setEnabled(false);
-        mActMakeAsset->setChecked(false);
-        mActReadOnly->setChecked(false);
-        mActHidden->setChecked(false);
-        mActReadOnly->setEnabled(false);
-        mActHidden->setEnabled(false);
-        mActRename->setEnabled(false);
-        mActDelete->setEnabled(false);
-        mActLinkFileSystem->setEnabled(false);
+        if(path.endsWith("/"))
+        {
+            if( flags & OFS::OFS_LINK )
+            {
+                stats.mActLinkFileSystemEnabled = false;
+                stats.mActImportFileEnabled = false;
+                stats.mActImportFolderEnabled = false;
+            }
+
+            Ogre::StringVector dirs = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories;
+            Ogre::StringVector::iterator it;
+
+            bool asset_state = false;
+
+            for(it = dirs.begin(); it != dirs.end(); it++)
+            {
+                if((*it) == path.toStdString())
+                    asset_state = true;
+            }
+
+            if( asset_state == false )
+                stats.mActMakeAssetChecked = false;
+        }
+        else
+        {
+            stats.mActLinkFileSystemEnabled = false;
+            stats.mActMakeAssetEnabled = false;
+            stats.mActMakeAssetChecked = false;
+            stats.mActImportFileEnabled = false;
+            stats.mActImportFolderEnabled = false;
+            stats.mActAddEmptyFolderEnabled = false;
+        }
+
+        if( flags & OFS::OFS_LINK )
+        {
+            stats.mActReadOnlyEnabled = false;
+            stats.mActHiddenEnabled = false;
+            stats.mActDeleteEnabled = false;
+            stats.mActAddEmptyFolderEnabled = false;
+            stats.mActImportFileEnabled = false;
+            stats.mActImportFolderEnabled = false;
+        }
+
+        if( !(flags & OFS::OFS_READONLY) )
+            stats.mActReadOnlyChecked = false;
+
+        if( !(flags & OFS::OFS_HIDDEN) )
+            stats.mActHiddenChecked = false;
+
+    }
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint & pos)
+{
+    QList<QTreeWidgetItem*> selItems = mOfsTreeWidget->selectedItems();
+
+    mAddFileFolderPath = "/";
+
+    QSignalMapper * mapper = new QSignalMapper(this);
+
+    selectStats stats;
+
+    stats.mActMakeAssetEnabled = true;
+    stats.mActMakeAssetChecked = true;
+    stats.mActReadOnlyEnabled = true;
+    stats.mActReadOnlyChecked = true;
+    stats.mActHiddenEnabled = true;
+    stats.mActHiddenChecked = true;
+    stats.mActDeleteEnabled = true;
+    stats.mActLinkFileSystemEnabled = true;
+    stats.mActImportFileEnabled = true;
+    stats.mActImportFolderEnabled = true;
+    stats.mActAddEmptyFolderEnabled = true;
+    stats.mActEmptyRecycleBinEnabled = true;
+    stats.mActRestoreFromRecycleBinEnabled = true;
+
+    for( int s = 0; s < selItems.size() ; s++ )
+    {
+        modifyStats(stats, selItems[s]);
     }
 
-    mActImportFile->setEnabled(true);
-    mActImportFolder->setEnabled(true);
+
+    OFS::OfsPtr& file = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    mUnlinkFileSystem->clear();
+    mUnlinkFileSystem->setEnabled(false);
+
+    if(selItems.size() == 0)
+    {
+        memset( &stats, 0, sizeof(selectStats));
+    }
+    else if(selItems.size() == 1)
+    {
+        if( stats.mActLinkFileSystemEnabled )
+        {
+            OFS::_Ofs::NameOfsPtrMap fsLinks;
+            file->getDirectoryLinks(selItems[0]->whatsThis(0).toStdString().c_str(), fsLinks);
+   
+            OFS::_Ofs::NameOfsPtrMap::iterator fit = fsLinks.begin();
+
+            while( fit != fsLinks.end() )
+            {
+                QAction *act = mUnlinkFileSystem->addAction(QString(fit->first.c_str()));
+
+                connect(act, SIGNAL(triggered()), mapper, SLOT(map()));
+                mapper->setMapping(act, QString(fit->first.c_str()) );
+
+                fit++;
+            }
+
+            connect(mapper, SIGNAL(mapped(const QString &)), this, SLOT(onUnlinkFileSystem(const QString &)));
+
+            mUnlinkFileSystem->setEnabled(fsLinks.size() > 0);
+        }
+
+        mAddFileFolderPath = selItems[0]->whatsThis(0).toStdString();
+    }
+    else
+    {
+        stats.mActAddEmptyFolderEnabled = false;
+        stats.mActImportFileEnabled = false;
+        stats.mActImportFolderEnabled = false;
+        stats.mActMakeAssetEnabled = false;
+        stats.mActLinkFileSystemEnabled = false;
+        stats.mActEmptyRecycleBinEnabled = false;
+    }
+
+	if( mMenu->actions().at(0) !=  mOgitorMainWindow->actEditRename)
+	{
+		mMenu->insertAction(mActEmptyRecycleBin, mOgitorMainWindow->actEditRename);
+		mMenu->insertSeparator(mActEmptyRecycleBin);
+	}
+
+
+    mActMakeAsset->setEnabled( stats.mActMakeAssetEnabled );
+    mActMakeAsset->setChecked( stats.mActMakeAssetChecked & stats.mActMakeAssetEnabled );
+    mActReadOnly->setEnabled( stats.mActReadOnlyEnabled );
+    mActReadOnly->setChecked( stats.mActReadOnlyChecked & stats.mActReadOnlyEnabled );
+    mActHidden->setEnabled( stats.mActHiddenEnabled );
+    mActHidden->setChecked( stats.mActHiddenChecked & stats.mActHiddenEnabled );
+    mActDelete->setEnabled( stats.mActDeleteEnabled );
+    mActLinkFileSystem->setEnabled( stats.mActLinkFileSystemEnabled );
+    mActImportFile->setEnabled( stats.mActImportFileEnabled );
+    mActImportFolder->setEnabled( stats.mActImportFolderEnabled );
+    mActAddFolder->setEnabled( stats.mActAddEmptyFolderEnabled );
+    mActEmptyRecycleBin->setVisible( stats.mActEmptyRecycleBinEnabled );
+    mActRestoreFromRecycleBin->setVisible( stats.mActRestoreFromRecycleBinEnabled );
 
     QPoint globalPos = mOfsTreeWidget->mapToGlobal(pos);
     mMenu->exec(globalPos);
 
-	delete mapper;
+    delete mapper;
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onOfsWidgetBusyState(bool state)
@@ -387,7 +521,7 @@ void ProjectFilesViewWidget::onLinkFileSystem()
         if( ofsFile->linkFileSystem( data.FileSystem.c_str(), data.Directory.c_str()) == OFS::OFS_OK )
         {
             Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->FileSystemLinks.push_back( data );
-            
+
             ofsFile->rebuildUUIDMap();
         }
 
@@ -404,23 +538,56 @@ void ProjectFilesViewWidget::onUnlinkFileSystem( const QString & text )
     {
         QString name = selItems.at(0);
 
-		if( ofsFile->unlinkFileSystem( text.toStdString().c_str(), name.toStdString().c_str()) == OFS::OFS_OK )
-		{
-			std::vector<Ogitors::LINKDATA> & links = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->FileSystemLinks;
+        if( ofsFile->unlinkFileSystem( text.toStdString().c_str(), name.toStdString().c_str()) == OFS::OFS_OK )
+        {
+            std::vector<Ogitors::LINKDATA> & links = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->FileSystemLinks;
 
-			for( unsigned int i = 0; i < links.size(); i++ )
-			{
-				if( links[i].FileSystem == text.toStdString() && links[i].Directory == name.toStdString() )
-				{
-					links.erase( links.begin() + i );
-					break;
-				}
-			}
+            for( unsigned int i = 0; i < links.size(); i++ )
+            {
+                if( links[i].FileSystem == text.toStdString() && links[i].Directory == name.toStdString() )
+                {
+                    links.erase( links.begin() + i );
+                    break;
+                }
+            }
 
             ofsFile->rebuildUUIDMap();
         }
 
         mOfsTreeWidget->refreshWidget();
+    }
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onEmptyRecycleBin()
+{
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    ofsFile->emptyRecycleBin();
+}
+//----------------------------------------------------------------------------------------
+void ProjectFilesViewWidget::onRestoreFromRecycleBin()
+{
+    QStringList selItems = mOfsTreeWidget->getSelectedItems();
+    OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
+
+    if(selItems.size() > 0 && ofsFile.valid())
+    {
+        if(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Are you sure you want to restore selected files/folders?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+        {
+            for(int i = 0;i < selItems.size();i++)
+            {
+                int id = selItems.at(i).toInt();
+
+                OFS::OfsResult ret = ofsFile->restoreFromRecycleBin( id );
+
+                if( ret == OFS::OFS_ACCESS_DENIED )
+                {
+                    QMessageBox::information(QApplication::activeWindow(), "qtOgitor", tr("Restore failed for selected item(s) due to name collision."), QMessageBox::Ok);
+                }
+            }
+
+            mOfsTreeWidget->refreshWidget();            
+        }
     }
 }
 //----------------------------------------------------------------------------------------
@@ -447,7 +614,7 @@ void ProjectFilesViewWidget::onDefrag()
     {
         QString fileName = ofsFile->getFileSystemName().c_str();
         QString tmpFile = fileName + ".tmp";
-        
+
         // Step-1 defragment the file to temp file
         OFS::LogCallBackFunction callback = ofsCallback;
         ofsFile->defragFileSystemTo(tmpFile.toStdString().c_str(), &callback);
@@ -476,12 +643,9 @@ void ProjectFilesViewWidget::onDelete()
             {
                 QString name = selItems.at(i);
 
-                if(name.endsWith("/"))
-                    ofsFile->deleteDirectory(name.toStdString().c_str(), true);
-                else
-                    ofsFile->deleteFile(name.toStdString().c_str());
+                ofsFile->moveToRecycleBin( name.toStdString().c_str() );
             }
-            
+
             mOfsTreeWidget->refreshWidget();            
         }
     }
@@ -505,7 +669,7 @@ void ProjectFilesViewWidget::onRename()
                 ofsFile->renameDirectory(name.toStdString().c_str(), text.toStdString().c_str());
             else
                 ofsFile->renameFile(name.toStdString().c_str(), text.toStdString().c_str());
-            
+
             mOfsTreeWidget->refreshWidget();            
         } 
     }
@@ -523,11 +687,11 @@ void ProjectFilesViewWidget::onReadOnly()
             QString name = selItems[i]->whatsThis(0);
 
             unsigned int new_flag = 0;
-            
+
             if(name.endsWith("/"))
             {
                 ofsFile->getDirFlags(name.toStdString().c_str(), new_flag);
-                
+
                 if(mActReadOnly->isChecked())
                     new_flag |= OFS::OFS_READONLY;
                 else
@@ -538,7 +702,7 @@ void ProjectFilesViewWidget::onReadOnly()
             else
             {
                 ofsFile->getFileFlags(name.toStdString().c_str(), new_flag);
-                
+
                 if(mActReadOnly->isChecked())
                     new_flag |= OFS::OFS_READONLY;
                 else
@@ -547,7 +711,7 @@ void ProjectFilesViewWidget::onReadOnly()
                 ofsFile->setFileFlags(name.toStdString().c_str(), new_flag);
             }
         }
-            
+
         mOfsTreeWidget->refreshWidget();            
     }
 }
@@ -564,11 +728,11 @@ void ProjectFilesViewWidget::onHidden()
             QString name = selItems[i]->whatsThis(0);
 
             unsigned int new_flag = 0;
-            
+
             if(name.endsWith("/"))
             {
                 ofsFile->getDirFlags(name.toStdString().c_str(), new_flag);
-                
+
                 if(mActHidden->isChecked())
                     new_flag |= OFS::OFS_HIDDEN;
                 else
@@ -579,7 +743,7 @@ void ProjectFilesViewWidget::onHidden()
             else
             {
                 ofsFile->getFileFlags(name.toStdString().c_str(), new_flag);
-                
+
                 if(mActHidden->isChecked())
                     new_flag |= OFS::OFS_HIDDEN;
                 else
@@ -588,7 +752,7 @@ void ProjectFilesViewWidget::onHidden()
                 ofsFile->setFileFlags(name.toStdString().c_str(), new_flag);
             }
         }
-            
+
         mOfsTreeWidget->refreshWidget();            
     }
 }
@@ -613,7 +777,7 @@ void ProjectFilesViewWidget::onImportFolder()
 void ProjectFilesViewWidget::onImportFile()
 {
     Ogitors::OgitorsSystem *mSystem = Ogitors::OgitorsSystem::getSingletonPtr();
-    
+
     Ogre::UTFString defaultPath = mSystem->GetSetting("system", "importOpenPath", "");
     Ogre::String fileName = mSystem->DisplayOpenDialog(OTR("Choose file to import"), Ogitors::UTFStringVector(), defaultPath);
 
@@ -650,7 +814,7 @@ void ProjectFilesViewWidget::onMakeAsset()
 
     if(!found)
         Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories.push_back(name.toStdString());
-    
+
     Ogitors::OgitorsRoot::getSingletonPtr()->ReloadUserResources();
     mOgitorMainWindow->getEntityViewWidget()->prepareView();
     mOgitorMainWindow->getTemplatesViewWidget()->prepareView();
@@ -664,7 +828,7 @@ void ProjectFilesViewWidget::onAddFolder()
 {
     QString selectedItemName;
     QString newFolderName;
-    
+
     QStringList selectItemList = mOfsTreeWidget->getSelectedItems();
     if(selectItemList.size() > 1)
     {
@@ -685,7 +849,7 @@ void ProjectFilesViewWidget::onAddFolder()
         else
             i++;
     }    
-    
+
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
     // If current selected item is a folder, create a sub folder. Otherwise create
     // the new folder as a sibling of the selected item.
@@ -706,11 +870,11 @@ void ProjectFilesViewWidget::onAddFolder()
     {
         selectedItemName = selectedItemName.right(selectedItemName.size() - (selectedItemName.lastIndexOf("/") + 1));
         QString parentName = mOfsTreeWidget->findItems(selectedItemName, Qt::MatchRecursive).at(0)->parent()->whatsThis(0);
-        
+
         QString sName = parentName + newFolderName + "/";
         ofsFile->createDirectory(sName.toStdString().c_str());
         mOfsTreeWidget->refreshWidget();
-        
+
         // setCurrentItem() needs to be called twice, because the first call might trigger
         // the onExpand() slot of ofsTreeWidget, which will overwrite our desired selection.
         // The second call will then not need any expansion work anymore and therefore 

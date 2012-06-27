@@ -216,11 +216,18 @@ namespace OFS
     {
         mFileName           = "";
         mRootDir.Owner     = this;
-        mRootDir.Id         = -1;
-        mRootDir.ParentId   = -1;
+        mRootDir.Id         = ROOT_DIRECTORY_ID;
+        mRootDir.ParentId   = ROOT_DIRECTORY_ID;
         mRootDir.Flags      = OFS_DIR;
         mRootDir.FileSize   = 0;
         mRootDir.Parent     = NULL;
+
+        mRecycleBinRoot.Owner      = this;
+        mRecycleBinRoot.Id         = RECYCLEBIN_DIRECTORY_ID;
+        mRecycleBinRoot.ParentId   = RECYCLEBIN_DIRECTORY_ID;
+        mRecycleBinRoot.Flags      = OFS_DIR;
+        mRecycleBinRoot.FileSize   = 0;
+        mRecycleBinRoot.Parent     = NULL;
     }
 
 //------------------------------------------------------------------------------
@@ -378,10 +385,15 @@ namespace OFS
                 return OFS_INVALID_PATH;
             }
 
+            std::vector<OfsEntryDesc*> add_list;
+
             for( unsigned int i = 0; i < foreignDir->Children.size(); i++ )
             {
-                dirDesc->Children.push_back( foreignDir->Children[i] );
+                if(_findChild(dirDesc, foreignDir->Children[i]->Name ) == NULL )
+                    add_list.push_back( foreignDir->Children[i] );
             }
+
+            dirDesc->Children.insert( dirDesc->Children.end(), add_list.begin(), add_list.end() );
 
             dirDesc->Links.insert( NameOfsPtrMap::value_type( filename, _ofsptr ) );
         }
@@ -880,6 +892,7 @@ namespace OFS
         mFileName = "";
         mRootDir.UsedBlocks.clear();
         _deallocateChildren(&mRootDir);
+        _deallocateChildren(&mRecycleBinRoot);
 
         mFreeBlocks.clear();
         mActiveFiles.clear();
@@ -933,7 +946,8 @@ namespace OFS
         IdDescMap DirMap;
         IdDescMap FileMap;
 
-        DirMap.insert(IdDescMap::value_type(-1, &mRootDir));
+        DirMap.insert(IdDescMap::value_type(mRootDir.Id, &mRootDir));
+        DirMap.insert(IdDescMap::value_type(mRecycleBinRoot.Id, &mRecycleBinRoot));
 
         ofs64 skipped = 0;
 
@@ -1025,7 +1039,7 @@ namespace OFS
                 entryDesc->WriteLocked = false;
                 entryDesc->Uuid = mainEntry.Uuid;
 
-                if(mainEntry.Uuid != UUID_ZERO)
+                if((mainEntry.ParentId != RECYCLEBIN_DIRECTORY_ID) && (mainEntry.Uuid != UUID_ZERO))
                 {
                     assert(mUuidMap.find(mainEntry.Uuid) == mUuidMap.end());
                     mUuidMap.insert(UuidDescMap::value_type(mainEntry.Uuid, entryDesc));
@@ -1047,6 +1061,11 @@ namespace OFS
                 else
                     entryDesc->UsedBlocks[0] = blockData;
 
+                if(entryDesc->ParentId == RECYCLEBIN_DIRECTORY_ID)
+                    entryDesc->OldParentId = mainEntry.OldParentId;
+                else
+                    entryDesc->OldParentId = ROOT_DIRECTORY_ID;
+                
                 entryDesc->Parent = it->second;
                 it->second->Children.push_back(entryDesc);
 
@@ -1188,6 +1207,20 @@ namespace OFS
 
 //------------------------------------------------------------------------------
     
+    _Ofs::OfsEntryDesc* _Ofs::_findChild(OfsEntryDesc *dir_desc, std::string child_name)
+    {
+        for(unsigned int i = 0;i < dir_desc->Children.size();i++)
+        {
+            if(dir_desc->Children[i]->Name == child_name)
+            {
+                return dir_desc->Children[i];
+            }
+        }
+        return NULL;
+    }
+
+//------------------------------------------------------------------------------
+
     std::string   _Ofs::_extractFileName(const char *filename)
     {
         const char *pos = filename;
@@ -1241,6 +1274,7 @@ namespace OFS
         dir->Id = mHeader.LAST_ID++;
         dir->ParentId = parent->Id;
         dir->Flags = OFS_DIR;
+        dir->OldParentId = ROOT_DIRECTORY_ID;
         dir->Name = name;
         dir->FileSize = 0;
         dir->Parent = parent;
@@ -1258,6 +1292,7 @@ namespace OFS
         fileHeader.Id = dir->Id;
         fileHeader.ParentId = dir->ParentId;
         fileHeader.Flags = dir->Flags;
+        fileHeader.OldParentId = ROOT_DIRECTORY_ID;
         fileHeader.NextBlock = 0;
         fileHeader.FileSize = 0;
         fileHeader.CreationTime = dir->CreationTime;
@@ -1337,6 +1372,7 @@ namespace OFS
         file->Id = mHeader.LAST_ID++;
         file->ParentId = parent->Id;
         file->Flags = OFS_FILE;
+        file->OldParentId = ROOT_DIRECTORY_ID;
         file->Name = name;
         file->FileSize = file_size;
         file->Parent = parent;
@@ -1355,6 +1391,7 @@ namespace OFS
         fileHeader.Id = file->Id;
         fileHeader.ParentId = file->ParentId;
         fileHeader.Flags = file->Flags;
+        fileHeader.OldParentId = ROOT_DIRECTORY_ID;
         fileHeader.NextBlock = 0;
         fileHeader.FileSize = file->FileSize;
         fileHeader.CreationTime = file->CreationTime;
@@ -1445,17 +1482,6 @@ namespace OFS
                     }
                 }
 
-                UuidDescMap::iterator uit = (it->second)->mUuidMap.begin();
-
-                while( uit != (it->second)->mUuidMap.end() )
-                {
-                    UuidDescMap::iterator bit = mUuidMap.find(uit->first);
-                    if( bit != mUuidMap.end())
-                        mUuidMap.erase( bit );
-
-                    uit++;
-                }
-
                 it++;
             }
 
@@ -1512,6 +1538,14 @@ namespace OFS
         }
 
         _markUnused(dir->UsedBlocks[0]);
+
+        if( dir->Uuid != UUID_ZERO )
+        {
+            UuidDescMap::iterator uit = mUuidMap.find(dir->Uuid);
+
+            if( uit != mUuidMap.end() )
+               mUuidMap.erase( uit );
+        }
 
         delete dir;
 
@@ -1602,6 +1636,14 @@ namespace OFS
         for(unsigned int i = 0;i < file->UsedBlocks.size();i++)
         {
             _markUnused(file->UsedBlocks[i]);
+        }
+
+        if( file->Uuid != UUID_ZERO )
+        {
+            UuidDescMap::iterator uit = mUuidMap.find(file->Uuid);
+
+            if( uit != mUuidMap.end() )
+               mUuidMap.erase( uit );
         }
 
         delete file;
@@ -1935,6 +1977,7 @@ namespace OFS
                     fileHeader.Id = fileDesc->Id;
                     fileHeader.ParentId = fileDesc->ParentId;
                     fileHeader.Flags = fileDesc->Flags;
+                    fileHeader.OldParentId = ROOT_DIRECTORY_ID;
                     fileHeader.NextBlock = 0;
                     fileHeader.FileSize = 0;
                     fileHeader.CreationTime = fileDesc->CreationTime;
@@ -2015,6 +2058,7 @@ namespace OFS
                 fileHeader.Id = fileDesc->Id;
                 fileHeader.ParentId = fileDesc->ParentId;
                 fileHeader.Flags = fileDesc->Flags;
+                fileHeader.OldParentId = ROOT_DIRECTORY_ID;
                 fileHeader.NextBlock = 0;
                 fileHeader.FileSize = 0;
                 fileHeader.CreationTime = fileDesc->CreationTime;
@@ -2305,6 +2349,7 @@ namespace OFS
         {
             if(dirDesc->Children[i]->Flags & file_flags)
             {
+                entry.id = dirDesc->Children[i]->Id;
                 entry.name = dirDesc->Children[i]->Name;
                 entry.flags = dirDesc->Children[i]->Flags;
                 entry.uuid = dirDesc->Children[i]->Uuid;
@@ -2314,6 +2359,38 @@ namespace OFS
 
                 output.push_back(entry);
             }
+        }
+
+        return output;
+    }
+
+//------------------------------------------------------------------------------
+
+    FileList _Ofs::listRecycleBinFiles()
+    {
+        LOCK_AUTO_MUTEX
+
+        FileList output;
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::listRecycleBinFiles, Operation called on an unmounted file system.");
+            return output;
+        }
+
+        FileEntry entry;
+
+        for(unsigned int i = 0;i < mRecycleBinRoot.Children.size();i++)
+        {
+            entry.id = mRecycleBinRoot.Children[i]->Id;
+            entry.name = mRecycleBinRoot.Children[i]->Name;
+            entry.flags = mRecycleBinRoot.Children[i]->Flags;
+            entry.uuid = mRecycleBinRoot.Children[i]->Uuid;
+            entry.file_size = mRecycleBinRoot.Children[i]->FileSize;
+            entry.create_time = mRecycleBinRoot.Children[i]->CreationTime;
+            entry.modified_time = mRecycleBinRoot.Children[i]->CreationTime;
+
+            output.push_back(entry);
         }
 
         return output;
@@ -2642,6 +2719,7 @@ namespace OFS
 
         if(dirDesc != NULL)
         {
+            entry.id = dirDesc->Id;
             entry.name = dirDesc->Name;
             entry.flags = dirDesc->Flags;
             entry.uuid = dirDesc->Uuid;
@@ -2678,6 +2756,7 @@ namespace OFS
 
         if(fileDesc != NULL)
         {
+            entry.id = fileDesc->Id;
             entry.name = fileDesc->Name;
             entry.flags = fileDesc->Flags;
             entry.uuid = fileDesc->Uuid;
@@ -2709,6 +2788,7 @@ namespace OFS
             return OFS_INVALID_FILE;
         }
 
+        entry.id = handle.mEntryDesc->Id;
         entry.name = handle.mEntryDesc->Name;
         entry.flags = handle.mEntryDesc->Flags;
         entry.uuid = handle.mEntryDesc->Uuid;
@@ -3446,6 +3526,215 @@ namespace OFS
         }
 
         return ret;
+    }
+
+//------------------------------------------------------------------------------------------
+    
+    OfsResult _Ofs::moveToRecycleBin(const char *path)
+    {
+        assert(path != NULL);
+
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::moveToRecycleBin, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        OfsEntryDesc *dirDesc = _getDirectoryDesc(path);
+
+        if(dirDesc == NULL)
+            return OFS_FILE_NOT_FOUND;
+
+        std::string fName = _extractFileName(path);
+
+        if( fName.size() > 0 )
+        {
+            OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
+
+            if(fileDesc == NULL)
+                return OFS_FILE_NOT_FOUND;
+
+            dirDesc = fileDesc;
+        }
+            
+        if(dirDesc->Flags & OFS_LINK)
+            return OFS_ACCESS_DENIED;
+
+        std::vector<_Ofs::CallBackData> saveTrigs = dirDesc->Triggers;
+
+        IdHandleMap::const_iterator it = mActiveFiles.find(dirDesc->Id);
+
+        if(it != mActiveFiles.end())
+            return OFS_ACCESS_DENIED;
+
+        for(unsigned int i = 0;i < dirDesc->Parent->Children.size();i++)
+        {
+            if(dirDesc->Parent->Children[i]->Id == dirDesc->Id)
+            {
+                dirDesc->Parent->Children.erase(dirDesc->Parent->Children.begin() + i);
+                break;
+            }
+        }
+
+        dirDesc->OldParentId = dirDesc->ParentId;
+        dirDesc->Parent = &mRecycleBinRoot;
+        dirDesc->ParentId = mRecycleBinRoot.Id;
+        mRecycleBinRoot.Children.push_back( dirDesc );
+
+        mStream.seek(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), OFS_SEEK_BEGIN);
+        mStream.write((char*)&(dirDesc->ParentId), sizeof(unsigned int));
+        mStream.seek(dirDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, OldParentId), OFS_SEEK_BEGIN);
+        mStream.write((char*)&(dirDesc->OldParentId), sizeof(unsigned int));
+        mStream.flush();
+
+        for(unsigned int i = 0;i < saveTrigs.size();i++)
+        {
+            if(saveTrigs[i].type == CLBK_DELETE)
+            {
+                saveTrigs[i].func(saveTrigs[i].data, 0, path);
+            }
+        }
+
+        for(unsigned int i = 0;i < mTriggers.size();i++)
+        {
+            if(mTriggers[i].type == CLBK_DELETE)
+            {
+                mTriggers[i].func(mTriggers[i].data, 0, path);
+            }
+        }
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------------------
+
+    _Ofs::OfsEntryDesc* _Ofs::_findDescById( _Ofs::OfsEntryDesc* base, int id )
+    {
+        std::vector<OfsEntryDesc*> list;
+        OfsEntryDesc* desc;
+
+        for( unsigned int i = 0; i < base->Children.size(); i++)
+        {
+            desc = base->Children[i];
+            if( (desc->Flags & OFS_DIR) && !(desc->Flags & OFS_LINK))
+            {
+                if( desc->Id == id  )
+                    return desc;
+                else
+                    list.push_back( desc );
+            }
+        }
+
+        for( unsigned int i = 0; i < list.size(); i++)
+        {
+            desc = _findDescById( base->Children[i], id );
+            if( desc != NULL ) 
+                return desc;
+        }
+
+        return NULL;
+    }
+
+//------------------------------------------------------------------------------------------
+
+    OfsResult _Ofs::restoreFromRecycleBin(int id)
+    {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::restoreFromRecycleBin, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        OfsEntryDesc *sourceDesc = NULL, *destDesc = NULL;
+
+        for( unsigned int i = 0; i < mRecycleBinRoot.Children.size(); i++)
+        {
+            if( mRecycleBinRoot.Children[i]->Id == id )
+            {
+                sourceDesc = mRecycleBinRoot.Children[i];
+                break;
+            }
+        }
+
+        if( sourceDesc == NULL )
+            return OFS_FILE_NOT_FOUND;
+
+        destDesc = _findDescById( &mRootDir, sourceDesc->OldParentId );
+
+        if( destDesc == NULL )
+            destDesc = &mRootDir;
+
+        for( unsigned int i = 0; i < destDesc->Children.size(); i++)
+        {
+            if( destDesc->Children[i]->Name == sourceDesc->Name )
+                return OFS_ACCESS_DENIED;
+        }
+
+        for( unsigned int i = 0; i < mRecycleBinRoot.Children.size(); i++)
+        {
+            if( mRecycleBinRoot.Children[i]->Id == id )
+            {
+                mRecycleBinRoot.Children.erase(mRecycleBinRoot.Children.begin() + i);
+                break;
+            }
+        }
+
+        sourceDesc->OldParentId = ROOT_DIRECTORY_ID;
+        sourceDesc->Parent = destDesc;
+        sourceDesc->ParentId = destDesc->Id;
+        destDesc->Children.push_back( sourceDesc );
+
+        mStream.seek(sourceDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, ParentId), OFS_SEEK_BEGIN);
+        mStream.write((char*)&(sourceDesc->ParentId), sizeof(unsigned int));
+        mStream.seek(sourceDesc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, OldParentId), OFS_SEEK_BEGIN);
+        mStream.write((char*)&(sourceDesc->OldParentId), sizeof(unsigned int));
+        mStream.flush();
+
+        return OFS_OK;
+    }
+
+//------------------------------------------------------------------------------------------
+
+    void _Ofs::_deleteRecycleBinDesc(OfsEntryDesc *desc)
+    {
+        unsigned int i;
+
+        for(i = 0;i < desc->UsedBlocks.size();i++)
+        {
+            _markUnused(desc->UsedBlocks[i]);
+        }
+
+
+        for(i = 0; i < desc->Children.size(); i++)
+        {
+            _deleteRecycleBinDesc(desc->Children[i]);
+        }
+    }
+
+//------------------------------------------------------------------------------------------
+
+    OfsResult _Ofs::emptyRecycleBin()
+    {
+        LOCK_AUTO_MUTEX
+
+        if(!mActive)
+        {
+            OFS_EXCEPT("_Ofs::emptyRecycleBin, Operation called on an unmounted file system.");
+            return OFS_IO_ERROR;
+        }
+
+        for( unsigned int i = 0; i < mRecycleBinRoot.Children.size(); i++)
+        {
+            _deleteRecycleBinDesc(mRecycleBinRoot.Children[i]);
+        }
+
+        _deallocateChildren(&mRecycleBinRoot);
+
+        return OFS_OK;
     }
 
 //------------------------------------------------------------------------------------------

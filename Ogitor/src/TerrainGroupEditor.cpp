@@ -534,6 +534,7 @@ void CTerrainGroupEditor::createProperties(OgitorsPropertyValueMap &params)
 //-----------------------------------------------------------------------------------------
 bool CTerrainGroupEditor::_setMapSize(OgitorsPropertyBase* property, const int& value)
 {
+    mHandle->freeTemporaryResources();
     mHandle->setTerrainSize(value);
 
     return true;

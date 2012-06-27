@@ -30,61 +30,35 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#ifndef SCENEVIEW_HXX
-#define SCENEVIEW_HXX
-
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
-
 #include "extendedTreeView.hxx"
+#include <QtGui/QPainter>
 
 //-----------------------------------------------------------------------------------------
-
-class SceneTreeWidget : public ExtendedTreeWidget
+ExtendedItemDelegate::ExtendedItemDelegate(QWidget* parent) : QStyledItemDelegate(parent)
 {
-    Q_OBJECT;
 
-public:
-    SceneTreeWidget(QWidget *parent = 0);
-    virtual ~SceneTreeWidget() {};
-
-public Q_SLOTS:
-    void contextMenu(int id);
-    void pasteFromClipboardBuffer(int id);
-
-protected:
-    void contextMenuEvent(QContextMenuEvent *evt);
-    void dragEnterEvent(QDragEnterEvent *evt);
-    void dragMoveEvent(QDragMoveEvent *evt);
-    void dropEvent(QDropEvent *evt);
-    void keyPressEvent(QKeyEvent *evt);
-    void mouseDoubleClickEvent(QMouseEvent *evt);
-};
-
+}
 //-----------------------------------------------------------------------------------------
-
-class SceneViewWidget : public QWidget 
+void ExtendedItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    Q_OBJECT;
+    painter->save();    
 
-public:
-    explicit SceneViewWidget(QWidget *parent = 0);
-    virtual ~SceneViewWidget();
+    QStyleOptionViewItemV4 newOption(option);
+    QString iconPath = index.data(Qt::UserRole).toString();
+    if(!iconPath.isEmpty())
+    {
+        QIcon icon(iconPath);
+        painter->drawPixmap(option.rect.topLeft(), icon.pixmap(16, 16));
+        newOption.rect.setX(option.rect.x() + 15);
+    }
+    
+    QStyledItemDelegate::paint(painter, newOption, index);
 
-    inline QTreeWidget *getTreeWidget() {return treeWidget;}
-    void setSelectionUpdate(bool value) {selectionUpdateInProgress = value;}
-	void setEditRenameState();
-
-public Q_SLOTS:
-    void selectionChanged();
-
-protected:
-    SceneTreeWidget *treeWidget;
-    bool             selectionUpdateInProgress;
-};
-
+    painter->restore();
+}
 //-----------------------------------------------------------------------------------------
-
-#endif // SCENEVIEW_HXX
-
+ExtendedTreeWidget::ExtendedTreeWidget(QWidget* parent) : QTreeWidget(parent)
+{
+    setItemDelegate(new ExtendedItemDelegate(parent));
+}
 //-----------------------------------------------------------------------------------------
