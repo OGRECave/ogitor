@@ -10,14 +10,24 @@ find_package(Qt4 REQUIRED)
 if(NOT QT4_FOUND)
     message(SEND_ERROR "Failed to find Qt 4.5 or greater.")
 else(NOT QT4_FOUND)
+    include(${QT_USE_FILE})
+    set(CMAKE_PACKAGE_QTGUI TRUE)
 
     set(HEADER_FILES
         PythonqtInterpreter.h
+        PythonqtScriptrunner.h
     )
 
     set(SOURCE_FILES
         PythonqtInterpreter.cpp
+        PythonqtScriptrunner.cpp
     )
+
+    set(MOC_SRCS2
+        PythonqtScriptrunner.h
+    )
+
+    qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2})
 
     set(OgPythonQtScript_VERSION 0)
     set(OgPythonQtScript_VERSION_MAJOR 1)
@@ -32,10 +42,11 @@ else(NOT QT4_FOUND)
     include_directories($ENV{QTDIR}/include)
     include_directories(${QT_QTCORE_INCLUDE_DIR})
     include_directories(${QT_QTGUI_INCLUDE_DIR})
-
-	include_directories(${DEPENDENCIES_INCLUDES})
-    include_directories(${OGITOR_INCLUDES})
     include_directories(${PYTHON_INCLUDE_DIR})
+
+    include_directories(include)
+    include_directories(${DEPENDENCIES_INCLUDES})
+    include_directories(${OGITOR_INCLUDES})
     message(STATUS "${OGITOR_INCLUDES}")
 
     include_directories(.)
@@ -43,7 +54,7 @@ else(NOT QT4_FOUND)
     link_directories(${DEPENDENCIES_LIBPATH})
 
     link_libraries( ${OGRE_LIBRARIES} Ogitor PythonQt)
-    add_library(OgPythonQtScript SHARED ${HEADER_FILES} ${SOURCE_FILES})
+    add_library(OgPythonQtScript SHARED ${HEADER_FILES} ${SOURCE_FILES} ${MOC_SRCS})
     set(LIBRARY_OUTPUT_PATH ../lib)
 
     add_dependencies(OgPythonQtScript Ogitor)
