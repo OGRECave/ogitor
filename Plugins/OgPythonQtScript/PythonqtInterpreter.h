@@ -45,28 +45,13 @@
 
 #include <string>
 
-#include "PythonQt.h"
+// The following include is for KDevelop "intellisense"
+#include <OgitorsScriptInterpreter.h>
+
 
 namespace Ogitors
 {
-    class PythonQtOutput: public QObject
-    {
-    public:
-        
-        PythonQtOutput();
-        virtual ~PythonQtOutput();
-
-        //! output redirection
-        void stdOut(const QString& s);
-        //! output redirection
-        void stdErr(const QString& s);
-        //! flush output that was not yet printed
-        void flushStdOut();
-        
-        QString _stdOut;
-        QString _stdErr;
-        bool _hadError;
-    };
+    class OgPythonQtScriptRunner;
     
     class PluginExport PythonqtInterpreter: public OgitorsScriptInterpreter
     {
@@ -76,41 +61,40 @@ namespace Ogitors
         virtual ~PythonqtInterpreter();
 
         // return Interpreter Type String
-        virtual const std::string getTypeString() { return "PythonQt"; }
+        virtual const std::string getTypeString() { return "PythonQt"; };
         // return Interpreter Init Message
         virtual const std::string getInitMessage();
         // return Interpreter Script Icon
-        virtual const std::string getScriptIcon() { return ":/icons/Python-logo-notext.svg"; }
+        virtual const std::string getScriptIcon() { return ":/icons/Python-logo-notext.svg"; };
         // return Interpreter Script Extension
-        virtual const std::string getScriptExtension() { return "as"; }
+        virtual const std::string getScriptExtension() { return "py"; };
         //Initialization
-		virtual void Init() {};
+		void Init() {};
         //Create a new instance of the interpreter
-        virtual PythonqtInterpreter* createNewInstance() { return OGRE_NEW PythonqtInterpreter(); }
+        virtual OgitorsScriptInterpreter* createNewInstance() { return OGRE_NEW PythonqtInterpreter(); };
         //Return engine specific handle
-        virtual void * getHandle() { return mMainContext; }
+        void * getHandle() { return mMainContext; };
         // build a string
-        virtual Ogre::StringVector buildString(std::string &section, std::string &arg);
+        Ogre::StringVector buildString(std::string &section, std::string &arg);
         // execute a string as script
-        virtual Ogre::StringVector execString(std::string &section, std::string &arg);
+        Ogre::StringVector execString(std::string &section, std::string &arg);
         // execute a script from file
-        virtual Ogre::StringVector runScript(std::string &section, std::string &file);
+        Ogre::StringVector runScript(std::string &section, std::string &file);
         // add function
-        virtual Ogre::StringVector addFunction(std::string &section, std::string &arg);
+        Ogre::StringVector addFunction(std::string &section, std::string &arg);
         // list functions
-        virtual Ogre::StringVector listFunctions(std::string &section);
+        Ogre::StringVector listFunctions(std::string &section);
         // compile a module from a script file
-        virtual Ogre::StringVector compileModule(std::string &section, std::string &file);
+        Ogre::StringVector compileModule(std::string &section, std::string &file);
         // compile a module from memory
-        virtual Ogre::StringVector compileModule(std::string &section, const char *source);
+        Ogre::StringVector compileModule(std::string &section, const char *source);
         // run a previously compiled update function
-        virtual Ogre::StringVector runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time);
+        Ogre::StringVector runUpdateFunction(std::string &section, CBaseEditor *object, Ogre::Real time);
         // release resources associated with handle
-        virtual void releaseHandle(unsigned int handle);
+        void releaseHandle(unsigned int handle);
 
     private:
-        PythonQtObjectPtr mMainContext;
-        PythonQtOutput* mPythonQtOutput;
+        OgPythonQtScriptRunner* mMainContext;
     };
 }
 
