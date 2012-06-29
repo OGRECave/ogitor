@@ -10,12 +10,13 @@ OgPythonQtScriptRunner::OgPythonQtScriptRunner()
     Py_InitializeEx(0);
     
     PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut | PythonQt::PythonAlreadyInitialized);
-    //PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
+
     PythonQt_init_QtBindings();
+
     mMainModule = PythonQt::self()->getMainModule();
+
     connect(PythonQt::self(), SIGNAL(pythonStdOut(const QString&)), this, SLOT(stdOut(const QString&)));
     connect(PythonQt::self(), SIGNAL(pythonStdErr(const QString&)), this, SLOT(stdErr(const QString&)));
-    PyRun_SimpleString("print 'hello'");
 }
 //----------------------------------------------------------------------------
 OgPythonQtScriptRunner::~OgPythonQtScriptRunner()
@@ -24,7 +25,9 @@ OgPythonQtScriptRunner::~OgPythonQtScriptRunner()
 }
 const std::string OgPythonQtScriptRunner::getInitMessage()
 {
-    return std::string("PythonQt Interpreter version shit from QObject powered runner");
+    std::string str = "PythonQt Interpreter using Python ";
+    str += Py_GetVersion();
+    return str;
 }
 void OgPythonQtScriptRunner::stdOut(const QString& s)
 {
