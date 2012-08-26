@@ -726,13 +726,13 @@ typedef off_t ofs64;
         OfsResult    moveToRecycleBin(const char *path);
         /**
         * Restores a given file/directory from recycle-bin
-        * @param id ID of file/directory to restore, we dont use names 
+        * @param id ID of file/directory to restore, we don't use names 
         *           since there may be multiple items with same name
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    restoreFromRecycleBin(int id);
         /**
-        * Deletes all Files in recyle bin and frees the space used
+        * Deletes all Files in recycle bin and frees the space used
         * @return Result of operation, OFS_OK if successful
         */
         OfsResult    emptyRecycleBin();
@@ -1097,8 +1097,7 @@ typedef off_t ofs64;
         /* Internal  function to free files in recycle bin */
         inline void   _deleteRecycleBinDesc(OfsEntryDesc *desc);
         /* Internal  function to find an entry by id */
-        OfsEntryDesc* _findDescById( OfsEntryDesc* base, int id );
-
+        OfsEntryDesc* _findDescById(OfsEntryDesc* base, int id);
 
         /* Searches given filename in the list of file system instances, 
          * returns it if found or creates a new one and adds it to the list otherwise */
