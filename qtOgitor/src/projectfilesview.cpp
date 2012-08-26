@@ -563,6 +563,8 @@ void ProjectFilesViewWidget::onEmptyRecycleBin()
     OFS::OfsPtr& ofsFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
 
     ofsFile->emptyRecycleBin();
+
+    mOfsTreeWidget->refreshWidget();   
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onRestoreFromRecycleBin()
