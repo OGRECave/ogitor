@@ -1131,7 +1131,7 @@ void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreeli
 
         if(viewport->getViewportIndex() == 1)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Cannot delete the main viewport!!"), DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Cannot delete the main viewport!"), DLGTYPE_OK);
             return;
         }
 

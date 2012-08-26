@@ -1021,7 +1021,7 @@ namespace Ogitors
                 Ogre::UTFString strWarn;
                 Ogre::String strName = selected->getName();
                 if(selected->isNodeType())
-                    strWarn =  OTR("Are you sure you want to delete %s and all of its children?");
+                    strWarn = OTR("Are you sure you want to delete %s and all of its children?");
                 else if(selected->getEditorType() == ETYPE_MULTISEL)
                     strWarn = OTR("Are you sure you want to delete all selected objects?");
                 else
@@ -1058,11 +1058,11 @@ namespace Ogitors
                     msed->deleteObjects();
                 }
                 else
-                    mOgitorsRoot->DestroyEditorObject(delED,true,true);
+                    mOgitorsRoot->DestroyEditorObject(delED, true, true);
 
                 mEditorAxis = 0;
-            } // if wxID_YES
-        } // if something is selected
+            } 
+        }
     }
     //-------------------------------------------------------------------------------
     void CViewportEditor::ProcessKeyActions(unsigned int timesince)
