@@ -116,7 +116,7 @@ namespace Ogitors
         */
         inline virtual void        *getHandle() {return 0;};
         /**
-        * Fetches a flag for the bitmask to decide if an editor object has the queried editing option capability
+        * Fetches a flag for the bit mask to decide if an editor object has the queried editing option capability
         * @param flags flags to test editor flags against
         * @return true if object has that capability, false otherwise
         */
@@ -165,22 +165,22 @@ namespace Ogitors
         * Fetches editor object name
         * @return editor object name
         */
-        inline Ogre::String  getName() {return mName->get();};
+        inline Ogre::String         getName() {return mName->get();};
         /**
         * Fetches editor object update script name
         * @return editor object update script name
         */
-        Ogre::String  getUpdateScript()  { return mUpdateScript->get(); };
+        Ogre::String                getUpdateScript()  { return mUpdateScript->get(); };
         /**
         * Fetches editor object script resource handle
         * @return editor object script resource handle
         */
-        unsigned int  getScriptResourceHandle() { return mScriptResourceHandle; };
+        unsigned int                getScriptResourceHandle() { return mScriptResourceHandle; };
         /**
         * Sets editor object script resource handle
         * @param handle new editor object script resource handle
         */
-        void  setScriptResourceHandle(unsigned int handle) { mScriptResourceHandle = handle; };
+        void                        setScriptResourceHandle(unsigned int handle) { mScriptResourceHandle = handle; };
         /**
         * Fetches editor object layer
         * @return editor object layer
@@ -190,13 +190,13 @@ namespace Ogitors
         * Fetches editor object unique id
         * @return editor object unique id
         */
-        inline unsigned int getObjectID() { return mObjectID->get(); }
+        inline unsigned int         getObjectID() { return mObjectID->get(); }
         /**
         * Sets editor object unique id
         * @param id editor object unique id
         * @remarks NEVER USE IF YOU DONT KNOW WHAT YOU ARE DOING!!!
         */
-        void setObjectID(unsigned int id);
+        void                        setObjectID(unsigned int id);
         /**
         * Fetches locking condition for editor object
         * @return locking condition for editor object
@@ -233,7 +233,7 @@ namespace Ogitors
         */
         void                        destroy(bool informparent = false);
         /**
-        * Returns a list with object's name and all of its childrens names recursively
+        * Returns a list with object's name and all of its children names recursively
         * @param list the list to be filled with names
         */
         void                        getNameList(Ogre::StringVector& list);
@@ -284,20 +284,20 @@ namespace Ogitors
         */
         OgitorsCustomPropertySet   *getCustomProperties() { return &mCustomProperties; }
         /**
-        VIRTUAL FUNCTIONS: Overriden By Editor Objects to suit their needs
+        VIRTUAL FUNCTIONS: Overridden By Editor Objects to suit their needs
         **/
 
         /**
         * Processes parameters list, initializing the internal properties according to values in the given list
         * @param params parameters list
         */
-        virtual void     createProperties(OgitorsPropertyValueMap &params);
+        virtual void                createProperties(OgitorsPropertyValueMap &params);
         /**
         * General purpose update function used by OgitorsRoot @see OgitorsRoot::Update
         * @param timePassed delta of time
         * @return true if update modified the scene, otherwise false
         */
-        virtual bool     update(float timePassed) {return false;};
+        virtual bool                update(float timePassed) {return false;};
         /**
         * General purpose update function used by OgitorsRoot
         * @param SceneMngr scene manager handle
@@ -306,7 +306,7 @@ namespace Ogitors
         * @return must always return false
         * @remarks the return value may be used in the future
         */
-        virtual bool     postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *Camera, Ogre::RenderWindow *RenderWindow) {return false;};
+        virtual bool                postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *Camera, Ogre::RenderWindow *RenderWindow) {return false;};
         /**
         * Creates editor object
         * @return true if this object is successfully, otherwise false (also forces object's parent to load too)
@@ -361,7 +361,7 @@ namespace Ogitors
         virtual void             onPropertyContextMenu(Ogre::String propertyName, int menuresult) {};
         /**
         * Fetches a context-based object menu (right-click on the scene)
-        * @param menuitem menu items the menu contains
+        * @param menu item menu items the menu contains
         * @return true if menu has entries, otherwise false
         */
         virtual bool             getObjectContextMenu(UTFStringVector &menuitems) {menuitems.clear();return false;};
@@ -383,7 +383,7 @@ namespace Ogitors
         */
         virtual bool            isSerializable() {return true;};
         /**
-        * Tests if editor object is of node type (Overriden by editor class if it has node capabilities)
+        * Tests if editor object is of node type (Overridden by editor class if it has node capabilities)
         * @return true if editor object has node capabilities, otherwise false
         */
         virtual bool            isNodeType() {return false;};
@@ -393,7 +393,7 @@ namespace Ogitors
         */
         virtual bool            isAutoTrackTarget() {return false;};
         /**
-        * Tests if editor object is of terrain type (Overriden by editor class if it has terrain capabilities)
+        * Tests if editor object is of terrain type (Overridden by editor class if it has terrain capabilities)
         * @return true if editor object has terrain capabilities, otherwise false
         */
         virtual bool            isTerrainType() {return false;};
@@ -546,7 +546,7 @@ namespace Ogitors
         Ogre::SceneNode         *mBoxParentNode;            /** Custom bounding box' parent node */
         Ogre::SceneNode         *mBBoxNode;                 /** Custom bounding Box node */
         OBBoxRenderable*         mOBBoxRenderable;          /** Custom bounding box handle */
-        Ogre::AxisAlignedBox     mOBBoxData;                /** A copy of previos AABB size */
+        Ogre::AxisAlignedBox     mOBBoxData;                /** A copy of previous AABB size */
         OgitorsCustomPropertySet mCustomProperties;         /** Editor custom properties list */
         OgitorsPropertySet       mProperties;               /** Editor properties list */
         void                    *mSceneTreeItemHandle;      /** Treeview item handle */
@@ -588,7 +588,7 @@ namespace Ogitors
         */
         bool             _setName(OgitorsPropertyBase* property, const Ogre::String& value);
         /**
-        * Behaviour implementation  when name is changed
+        * Behavior implementation  when name is changed
         * @param name new editor name
         */
         virtual bool     setNameImpl(Ogre::String name);
@@ -598,7 +598,7 @@ namespace Ogitors
         */
         bool _setLayer(OgitorsPropertyBase* property, const unsigned int& value);
         /**
-        * Behaviour implementation  when layer is changed
+        * Behavior implementation  when layer is changed
         * @param name layer id
         */
         virtual bool setLayerImpl(unsigned int newlayer);
@@ -608,7 +608,7 @@ namespace Ogitors
         */
         bool             _setModified(OgitorsPropertyBase* property, const bool& bModified);
         /**
-        * Sets update scriptfor editor object
+        * Sets update script for editor object
         * @param scriptfile the script file to be used
         */
         bool             _setUpdateScript(OgitorsPropertyBase* property, const Ogre::String& scriptfile);
@@ -675,7 +675,7 @@ namespace Ogitors
         */
         void             createBoundingBox();
         /**
-        * Adjusts bounding box after transformation has occured (rotation, translation, scale)
+        * Adjusts bounding box after transformation has occurred (rotation, translation, scale)
         * @return
         */
         void             adjustBoundingBox();
@@ -776,13 +776,11 @@ namespace Ogitors
         * @return a unique object name
         */
         Ogre::String CreateUniqueID(const Ogre::String& name);
-
         /**
         * This function supplies a widget that displays object specific tools
         * @param window Handle to any custom tools widget that objects created by this factory want to show
         */
         void setCustomToolsWindow(void *window) { mToolsWindow = window; };
-
         /**
         * This function supplies a widget which extends the current properties view
         * @param window Handle to any custom "property widget" that objects created by this factory want to show
