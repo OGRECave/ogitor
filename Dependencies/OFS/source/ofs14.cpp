@@ -1491,6 +1491,16 @@ namespace OFS
 
             std::sort(mFreeBlocks.begin(), mFreeBlocks.end(), BlockCompare);
 
+            std::string fName = _extractFileName(path);
+            OfsEntryDesc *fileDesc = _getFileDesc(dirDesc, fName);
+            for(unsigned int i = 0;i < mTriggers.size();i++)
+            {
+                if(mTriggers[i].type == CLBK_DELETE)
+                {
+                    mTriggers[i].func(mTriggers[i].data, fileDesc, 0);
+                }
+            }
+
             return ret;
         }
         else
