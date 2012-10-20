@@ -263,7 +263,7 @@ void CBillboardSetEditor::_addBillboard()
     PROPERTY(sCount2 + "::colour", Ogre::ColourValue, Ogre::ColourValue(1,1,1), count, SETTER(Ogre::ColourValue, CBillboardSetEditor, _setBillboardColour)); 
     PROPERTY(sCount2 + "::rotation", Ogre::Real     , 0                  , count, SETTER(Ogre::Real, CBillboardSetEditor, _setBillboardRotation)); 
     PROPERTY(sCount2 + "::texcoordindex", int       , 0                  , count, SETTER(int, CBillboardSetEditor, _setBillboardTexCoordIndex)); 
-    PROPERTY(sCount2 + "::texrect", Ogre::Vector4   , Ogre::Vector4::ZERO, count, SETTER(Ogre::Vector4, CBillboardSetEditor, _setBillboardTexRect)); 
+    PROPERTY(sCount2 + "::texrect", Ogre::Vector4   , Ogre::Vector4(0,0,1,1), count, SETTER(Ogre::Vector4, CBillboardSetEditor, _setBillboardTexRect));
 
     mBillboardCount->set(mBillboardCount->get() + 1);
 }
@@ -310,7 +310,7 @@ bool CBillboardSetEditor::load(bool async)
             mProperties.getValue(propname + "::colour", cval);
             pBillboard->setColour(cval);
             mProperties.getValue(propname + "::dimensions", v2val);
-             pBillboard->setDimensions(v2val.x, v2val.y);
+            pBillboard->setDimensions(v2val.x, v2val.y);
             mProperties.getValue(propname + "::rotation", rval);
             pBillboard->setRotation(Ogre::Degree(rval));
             mProperties.getValue(propname + "::texcoordindex", ival);
@@ -379,7 +379,7 @@ void CBillboardSetEditor::createProperties(OgitorsPropertyValueMap &params)
         PROPERTY(sCount2 + "::colour", Ogre::ColourValue, Ogre::ColourValue(1,1,1), ix, SETTER(Ogre::ColourValue, CBillboardSetEditor, _setBillboardColour)); 
         PROPERTY(sCount2 + "::rotation", Ogre::Real     , 0                  , ix, SETTER(Ogre::Real, CBillboardSetEditor, _setBillboardRotation)); 
         PROPERTY(sCount2 + "::texcoordindex", int       , 0                  , ix, SETTER(int, CBillboardSetEditor, _setBillboardTexCoordIndex)); 
-        PROPERTY(sCount2 + "::texrect", Ogre::Vector4   , Ogre::Vector4::ZERO, ix, SETTER(Ogre::Vector4, CBillboardSetEditor, _setBillboardTexRect)); 
+        PROPERTY(sCount2 + "::texrect", Ogre::Vector4   , Ogre::Vector4(0,0,1,1), ix, SETTER(Ogre::Vector4, CBillboardSetEditor, _setBillboardTexRect)); 
     }
     
     mProperties.initValueMap(params);
