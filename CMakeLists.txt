@@ -336,7 +336,7 @@ ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 # plugins
 add_subdirectory(Plugins/OgCaelum)
 add_subdirectory(Plugins/OgHydrax)
-add_subdirectory(Plugins/OgSkyx)
+add_subdirectory(Plugins/OgSkyX)
 add_subdirectory(Plugins/DotSceneSerializer)
 add_subdirectory(Plugins/OgModularZone)
 add_subdirectory(Plugins/OgMaterialEditor)
