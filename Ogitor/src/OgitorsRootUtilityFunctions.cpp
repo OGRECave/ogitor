@@ -728,10 +728,124 @@ void OgitorsRoot::UpdateGizmo()
         }
 
         Ogre::Vector3 position;
-        if(mMultiSelection->getAsSingle()->usesHelper())
+        if(mMultiSelection->getAsSingle()->usesHelper()) {
             position = mMultiSelection->getAsSingle()->getHelper()->getNode()->_getDerivedPosition();
-        else
+        } else {
             position = mMultiSelection->getAsSingle()->getDerivedPosition();
+        }
+
+        /* Rescale the Axis Gizmo so that it is always facing the ogitor camera regardless of
+        view direction. */ 
+        Ogre::Vector3 dist = position - viewport->getCameraEditor()->getDerivedPosition();
+        if (dist.x > 0 && dist.z > 0)
+        {
+            if (CViewportEditor::GetEditorTool() == TOOL_ROTATE)
+            {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale(-1, 1,-1);
+                    mGizmoZ->setScale( 1,-1, 1);
+                    mGizmoY->setScale( 1,-1,-1);
+                } else {
+                    mGizmoX->setScale(-1,-1,-1);
+                    mGizmoZ->setScale( 1,-1,-1);
+                    mGizmoY->setScale( 1,-1,-1);
+                }
+            } else {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale(-1, 1,-1);
+                    mGizmoZ->setScale(-1,-1,-1);
+                    mGizmoY->setScale( 1,-1,-1);
+                } else {
+                    mGizmoX->setScale(-1,-1,-1);
+                    mGizmoZ->setScale(-1,-1,-1);
+                    mGizmoY->setScale(-1,-1,-1);
+                }
+            }
+        }
+        else if (dist.x > 0 && dist.z < 0)
+        {
+            if (CViewportEditor::GetEditorTool() == TOOL_ROTATE)
+            {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale(-1, 1, 1);
+                    mGizmoZ->setScale( 1,-1, 1);
+                    mGizmoY->setScale( 1, 1,-1);
+                } else {
+                    mGizmoX->setScale( 1,-1, 1);
+                    mGizmoZ->setScale( 1,-1,-1);
+                    mGizmoY->setScale( 1, 1,-1);
+                }
+            } else {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale(-1, 1,-1);
+                    mGizmoZ->setScale( 1,-1, 1);
+                    mGizmoY->setScale( 1, 1, 1);
+                } else {
+                    mGizmoX->setScale(-1,-1,-1);
+                    mGizmoZ->setScale( 1,-1, 1);
+                    mGizmoY->setScale(-1, 1, 1);
+                }
+            }
+        }
+        else if (dist.x < 0 && dist.z > 0)
+        {
+            if (CViewportEditor::GetEditorTool() == TOOL_ROTATE)
+            {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale(-1, 1,-1);
+                    mGizmoZ->setScale(-1, 1, 1);
+                    mGizmoY->setScale( 1,-1, 1);
+                } else {
+                    mGizmoX->setScale(-1,-1,-1);
+                    mGizmoZ->setScale(-1, 1,-1);
+                    mGizmoY->setScale( 1,-1, 1);
+                }
+            } else {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale( 1, 1, 1);
+                    mGizmoZ->setScale(-1, 1, 1);
+                    mGizmoY->setScale( 1,-1, 1);
+                } else {
+                    mGizmoX->setScale( 1,-1, 1);
+                    mGizmoZ->setScale(-1, 1, 1);
+                    mGizmoY->setScale(-1,-1,-1);
+                }
+            }
+        }
+        else
+        {
+            if (CViewportEditor::GetEditorTool() == TOOL_ROTATE)
+            {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale( 1, 1, 1);
+                    mGizmoZ->setScale( 1, 1, 1);
+                    mGizmoY->setScale( 1, 1, 1);
+                } else {
+                    mGizmoX->setScale(-1,-1, 1);
+                    mGizmoZ->setScale( 1, 1,-1);
+                    mGizmoY->setScale( 1, 1, 1);
+                }
+            } else {
+                if (dist.y < 0)
+                {
+                    mGizmoX->setScale( 1, 1, 1);
+                    mGizmoZ->setScale( 1, 1, 1);
+                    mGizmoY->setScale( 1, 1, 1);
+                } else {
+                    mGizmoX->setScale( 1,-1, 1);
+                    mGizmoZ->setScale( 1, 1, 1);
+                    mGizmoY->setScale(-1, 1,-1);
+                }
+            }
+        }
+
 
         Ogre::Vector4 rect;
         viewport->getRect(rect);
