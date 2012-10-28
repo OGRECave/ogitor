@@ -1,0 +1,39 @@
+#!/bin/bash
+
+echo "TRANSLATIONS = \\"
+uis=`find $1/qtOgitor/languages -name "ogitor*.ts"`
+for a in $uis; do
+      echo "    " $a \\;
+      done
+echo
+
+
+echo "FORMS = \\"
+uis=`find $1/qtOgitor -name "*.ui"`
+for a in $uis; do
+      echo "    " $a \\;
+      done
+echo
+
+echo "HEADERS = \\"
+srcs=`find $1/qtOgitor/include -name "*.hxx"`
+for a in $srcs; do
+      echo "    " $a \\;
+      done
+srcs=`find $1/qtOgitor/qtpropertybrowser-2.5/src -name "*.h"`
+for a in $srcs; do
+      echo "    " $a \\;
+      done
+echo
+
+echo "SOURCES = \\"
+srcs=`find $1/qtOgitor/src -name "*.cpp"`
+for a in $srcs; do
+      echo "    " $a \\;
+      done
+srcs=`find $1/qtOgitor/qtpropertybrowser-2.5/src -name "*.cpp"`
+for a in $srcs; do
+      echo "    " $a \\;
+      done
+echo
+echo
