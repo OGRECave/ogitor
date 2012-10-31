@@ -174,15 +174,11 @@ void CTerrainGroupEditor::onObjectContextMenu(int menuresult)
     {
         Ogre::NameValuePairList params;
 
-        params["title"] = "Scale/Offset values";
-        params["input1"] = "Scale";
-        params["input2"] = "Offset";
-
         if(!mSystem->DisplayImportHeightMapDialog(params))
             return;
 
-        Ogre::Real fScale = Ogre::StringConverter::parseReal(params["input1"]);
-        Ogre::Real fOffset = Ogre::StringConverter::parseReal(params["input2"]);
+        Ogre::Real fScale = Ogre::StringConverter::parseReal(params["scale"]);
+        Ogre::Real fOffset = Ogre::StringConverter::parseReal(params["bias"]);
 
         _modifyHeights(fScale, fOffset);
     }
