@@ -983,8 +983,8 @@ void CTerrainPageEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mTempModified, "tempmodified", bool, false, 0, 0);
     PROPERTY_PTR(mTempDensityModified, "tempdensitymodified", bool, false, 0, 0);
     PROPERTY_PTR(mLayerWorldSize[0], "layer0::worldsize", Ogre::Real, 10.0f, 0, SETTER(Ogre::Real, CTerrainPageEditor, _setLayerWorldSize));
-    PROPERTY_PTR(mLayerDiffuse[0], "layer0::diffusespecular", Ogre::String, "dirt_grayrocky_diffusespecular.dds", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerDiffuseMap));
-    PROPERTY_PTR(mLayerNormal[0], "layer0::normalheight", Ogre::String, "dirt_grayrocky_normalheight.dds", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerNormalMap));
+    PROPERTY_PTR(mLayerDiffuse[0], "layer0::diffusespecular", Ogre::String, "", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerDiffuseMap));
+    PROPERTY_PTR(mLayerNormal[0], "layer0::normalheight", Ogre::String, "", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerNormalMap));
 
     int count = 0;
     OgitorsPropertyValueMap::const_iterator it = params.find("layercount");

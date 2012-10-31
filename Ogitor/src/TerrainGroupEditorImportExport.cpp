@@ -57,10 +57,10 @@ using namespace Ogitors;
 void CTerrainGroupEditor::importFullTerrainFromHeightMap()
 {
     UTFStringVector extlist;
-    extlist.push_back(OTR("Raw 32bit Float File"));
-    extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
     extlist.push_back(OTR("PNG Grayscale"));
     extlist.push_back("*.png");
+    extlist.push_back(OTR("Raw 32bit Float File"));
+    extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
 
     Ogre::UTFString defaultPath = mSystem->GetSetting("system", "ExportTerrainPath", "");
 
@@ -71,17 +71,14 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
     mSystem->SetSetting("system", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
 
     Ogre::NameValuePairList params;
-    params["check1"] = "true";
-    params["input1"] = "Scale";
-    params["input2"] = "Offset";
-
     if(!mSystem->DisplayImportHeightMapDialog(params))
         return;
     
-    Ogre::Real fScale = Ogre::StringConverter::parseReal(params["input1"]);
-    Ogre::Real fBias = Ogre::StringConverter::parseReal(params["input2"]);
-
-    bool flipV = Ogre::StringConverter::parseBool(params["inputCheckV"]);
+    Ogre::Real fScale = Ogre::StringConverter::parseReal(params["scale"]);
+    Ogre::Real fBias = Ogre::StringConverter::parseReal(params["bias"]);
+    Ogre::String normal = params["normal"];
+    Ogre::String diffuse = params["diffuse"];
+    bool flipV = Ogre::StringConverter::parseBool(params["inverted"]);
 
     float *data = 0;
     float *flipBV = 0;
@@ -122,22 +119,6 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
         imgW = imgH = sqrt((float)vertexNum);
     }
 
-    if(flipV)
-    {
-        flipBV = OGRE_ALLOC_T(float, imgW, Ogre::MEMCATEGORY_GEOMETRY);
-
-        int linelength = imgW * sizeof(float);
-
-        for(int fj = 0;fj < imgH;fj++)
-        {
-            memcpy(flipBV, data + (fj * linelength), linelength);
-            memcpy(data + (fj * linelength), data + ((imgH - fj - 1) * linelength), linelength);
-            memcpy(data + ((imgH - fj - 1) * linelength), flipBV, linelength);
-        }
-
-        OGRE_FREE(flipBV, Ogre::MEMCATEGORY_GEOMETRY);
-    }
-
     int msize = mMapSize->get() - 1;
     int XCount = (imgW - 1) / msize;
     int YCount = (imgH - 1) / msize;
@@ -174,10 +155,10 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
             pvalue.val = Ogre::Any(y - (YCount / 2));
             creationparams["pagey"] = pvalue;
             pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(Ogre::String("dirt_grayrocky_diffusespecular.dds"));
+            pvalue.val = diffuse;
             creationparams["layer0::diffusespecular"] = pvalue;
             pvalue.propType = PROP_STRING;
-            pvalue.val = Ogre::Any(Ogre::String("dirt_grayrocky_normalheight.dds"));
+            pvalue.val = normal;
             creationparams["layer0::normalheight"] = pvalue;
             pvalue.propType = PROP_REAL;
             pvalue.val = Ogre::Any((Ogre::Real)100.0f);
@@ -190,6 +171,9 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
                 for(int ix = 0;ix <= msize;ix++)
                 {
                     cval = data[(((y * msize) + iy) * imgW) + (x * msize) + ix];
+                    if (flipV)
+                        cval *= -1;
+
                     dataptr[(iy * (msize + 1)) + ix] = fBias + (cval * fScale);
                 }
             }

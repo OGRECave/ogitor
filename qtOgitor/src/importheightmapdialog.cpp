@@ -30,15 +30,55 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
+#include <QtCore/QtCore>
 #include <QtGui/QFileDialog>
 #include "importheightmapdialog.hxx"
+#include "Ogitors.h"
 
 ImportHeightMapDialog::ImportHeightMapDialog(QWidget *parent) :
     QDialog(parent, Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint)
 {
     setupUi(this);
-    mInputScale->setText("1");
+    mInputScale->setText("256");
     mInputBias->setText("0");
+
+    QSettings settings(QSettings::UserScope, "preferences/terrainmanager");
+
+    Ogitors::OgitorsRoot *ogitorRoot = Ogitors::OgitorsRoot::getSingletonPtr();
+    Ogitors::PropertyOptionsVector* diffuseList = ogitorRoot->GetTerrainDiffuseTextureNames();
+    Ogre::String lastUsedDiffuse = settings.value("lastDiffuseUsed", "").toString().toStdString();
+
+    unsigned int i, index = 1;
+    for(i = 0;i < diffuseList->size(); i++)
+    {
+        if (lastUsedDiffuse == (*diffuseList)[i].mKey)
+            index = i;
+
+        mDiffuseCombo->addItem((*diffuseList)[i].mKey.c_str());
+    }
+
+    if (lastUsedDiffuse.empty())
+        index = 1;
+
+    if(diffuseList->size())
+        mDiffuseCombo->setCurrentIndex(index);
+
+    index = 1;
+    Ogre::String lastNormalUsed = settings.value("lastNormalUsed", "").toString().toStdString();
+    Ogitors::PropertyOptionsVector* normalList = ogitorRoot->GetTerrainNormalTextureNames();
+    for(i = 0;i < normalList->size(); i++)
+    {
+        if (lastNormalUsed == (*normalList)[i].mKey)
+            index = i;
+
+        mNormalCombo->addItem((*normalList)[i].mKey.c_str());
+    }
+
+    if (lastNormalUsed.empty())
+        index = 1;
+
+    if(normalList->size())
+        mNormalCombo->setCurrentIndex(index);
 }
 
 ImportHeightMapDialog::~ImportHeightMapDialog()
