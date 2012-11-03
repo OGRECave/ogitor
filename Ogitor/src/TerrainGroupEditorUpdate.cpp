@@ -275,9 +275,45 @@ void CTerrainGroupEditor::_splat(CTerrainPageEditor *handle, Ogre::Vector3 &edit
     }
     else if(mLayer == 0)
     {
-        Ogre::String msg = "You cannot use that texture pn " + handle->getName() + " since that is already the texture of the base layer.";
-        mSystem->DisplayMessageDialog(OTR(msg), DLGTYPE_OK);
-        return;
+        Ogre::TerrainLayerBlendMap *mBlendMaps[128];
+        float *mBlendDatas[128];
+        int mLayerMax = terrain->getLayerCount();
+
+        for(int l = 1;l < mLayerMax;l++)
+        {
+            mBlendMaps[l] = terrain->getLayerBlendMap(l);
+            mBlendDatas[l] = mBlendMaps[l]->getBlendPointer();
+        }
+
+        float maxVal;
+        int u;
+        int num;
+
+        for(u = mLayerMax-1;u > 0;u--)
+        {
+            mLayer = u;
+            maxVal = 0.0f;
+
+            for(int j = maprect.top;j < maprect.bottom;j++)
+            {
+                int mapPos = (j * mBlendMapSize) + maprect.left;
+
+                for(int i = maprect.left;i < maprect.right;i++)
+                {
+                    maxVal += mBlendDatas[u][mapPos];
+                }
+            }
+
+            num = (maprect.top*mBlendMapSize);
+            num = (num+maprect.right)-(num+maprect.left);
+            if (maxVal > num)
+                break;
+        }
+
+        if (mLayer == 0)
+            return;
+
+        mEditDirection = true;
     }
 
     handle->_notifyModification(mLayer, maprect);
