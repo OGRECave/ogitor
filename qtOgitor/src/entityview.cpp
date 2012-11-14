@@ -190,6 +190,7 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
         {
             OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error Preparing Mesh : ") + addstr, DLGTYPE_OK);
             ite++;
+            continue;
         }
 
         mSceneMgr->getRootSceneNode()->attachObject(mEntity);
