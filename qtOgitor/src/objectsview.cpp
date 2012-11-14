@@ -117,7 +117,10 @@ void ObjectsViewWidget::prepareView()
         if(it->second && it->second->mAddToObjectList)
         {
             if(it->second->mIcon != "")
-            filename = Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/" + it->second->mIcon;
+                filename = Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/" + it->second->mIcon;
+            else
+                filename = ":/icons/objects.svg";
+
 
             itemname = it->second->mTypeName;
 

@@ -63,7 +63,7 @@ static asQWORD CallX64(const asQWORD *args, const asQWORD *floatArgs, const int 
 
 		"# Make sure the stack pointer is 16byte aligned so the\n"
 		"# whole program optimizations will work properly\n"
-		"# TODO: optimize: Can this be optimized with fewer instructions?\n"
+		"# TODO: runtime optimize: Can this be optimized with fewer instructions?\n"
 		"mov %%rsp,%%rsi\n"
 		"sub %%rdi,%%rsi\n"
 		"and $0x8,%%rsi\n"
@@ -171,7 +171,7 @@ static asQWORD GetReturnedDouble()
 
 asQWORD CallSystemFunctionNative(asCContext *context, asCScriptFunction *descr, void *obj, asDWORD *args, void *retPointer, asQWORD &/*retQW2*/)
 {
-	asCScriptEngine *engine = context->engine;
+	asCScriptEngine *engine = context->m_engine;
 	asSSystemFunctionInterface *sysFunc = descr->sysFuncIntf;
 
 	asQWORD  retQW             = 0;

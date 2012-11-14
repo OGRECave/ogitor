@@ -246,8 +246,8 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
 
     // Find the function that is to be called.
     asIScriptModule *mod = mEngine->GetModule(section.c_str());
-    int funcId = mod->GetFunctionIdByDecl("void main()");
-    if( funcId < 0 )
+    asIScriptFunction *funcId = mod->GetFunctionByDecl("void main()");
+    if( funcId == NULL )
     {
         // The function couldn't be found. Instruct the script writer
         // to include the expected function in the script.
@@ -467,7 +467,7 @@ Ogre::StringVector AngelScriptInterpreter::runUpdateFunction(std::string &sectio
         newdef.sleep = 0.0f;
         newdef.delay = 0.0f;
         newdef.module = mEngine->GetModule(section.c_str());
-        newdef.funcID = newdef.module->GetFunctionIdByDecl("void update()");
+        newdef.funcID = newdef.module->GetFunctionByDecl("void update()");
         newdef.context = mEngine->CreateContext();
         newdef.context->SetExceptionCallback(asFUNCTION(ExceptionCallback), this, asCALL_CDECL);
         mObjectContexts[objectresourcehandle] = newdef;
@@ -538,15 +538,7 @@ Ogre::StringVector AngelScriptInterpreter::addFunction(std::string &section, std
     }
     else
     {
-        // The script engine supports function overloads, but to simplify the
-        // console we'll disallow multiple functions with the same name
-        if( mod->GetFunctionIdByName(func->GetName()) == asMULTIPLE_FUNCTIONS )
-        {
-            mod->RemoveFunction(func->GetId());
-            ret.push_back("Another function with that name already exists.");
-        }
-        else
-            ret.push_back("Function added.");
+        ret.push_back("Function added.");
     }
 
     // We must release the function object
@@ -565,8 +557,7 @@ Ogre::StringVector AngelScriptInterpreter::listFunctions(std::string &section)
     // List the application registered functions
     for( n = 0; n < (asUINT)mEngine->GetGlobalFunctionCount(); n++ )
     {
-        int id = mEngine->GetGlobalFunctionIdByIndex(n);
-		asIScriptFunction *func = mEngine->GetFunctionById(id);
+		asIScriptFunction *func = mEngine->GetGlobalFunctionByIndex(n);
 
         // Skip the functions that start with _ as these are not meant to be called explicitly by the user
         if( func->GetName()[0] != '_' )
