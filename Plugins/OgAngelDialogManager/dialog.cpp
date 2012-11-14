@@ -142,10 +142,10 @@ void ScriptButton::onClick()
     if(!click_func_name.empty())
     {
         asIScriptModule *module = getDialogManagerActiveModule();
-        int func_ID = module->GetFunctionIdByDecl(click_func_name.c_str());
+        asIScriptFunction *funcID = module->GetFunctionByDecl(click_func_name.c_str());
 
         asIScriptContext *ctx = DialogManagerScriptEngine->CreateContext();
-        ctx->Prepare(func_ID);
+        ctx->Prepare( funcID );
         ctx->Execute();
         ctx->Release();
     }

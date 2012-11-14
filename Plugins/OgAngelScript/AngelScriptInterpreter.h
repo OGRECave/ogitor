@@ -55,11 +55,11 @@ namespace Ogitors
 
     struct ContextDef
     {
-        asIScriptModule*  module;
-        int               funcID;
-        asIScriptContext* context;
-        float             sleep;
-        float             delay;
+        asIScriptModule*   module;
+        asIScriptFunction* funcID;
+        asIScriptContext*  context;
+        float              sleep;
+        float              delay;
     };
 
     typedef Ogre::map<unsigned int, ContextDef>::type ObjectContextMap;

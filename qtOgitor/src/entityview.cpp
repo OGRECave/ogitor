@@ -182,7 +182,16 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
     {
         Ogre::String addstr = ite->first;
 
-        mEntity = mSceneMgr->createEntity("scbDisplay", addstr);
+        try
+        {
+            mEntity = mSceneMgr->createEntity("scbDisplay", addstr);
+        }
+        catch(...)
+        {
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error Preparing Mesh : ") + addstr, DLGTYPE_OK);
+            ite++;
+        }
+
         mSceneMgr->getRootSceneNode()->attachObject(mEntity);
 
         Ogre::Vector3 vSize = mEntity->getBoundingBox().getHalfSize();

@@ -11,25 +11,103 @@ using namespace std;
 
 BEGIN_AS_NAMESPACE
 
+#if AS_USE_STRINGPOOL == 1
+
 // By keeping the literal strings in a pool the application
 // performance is improved as there are less string copies created.
-// In case the AngelScript engine is recreated the memory pool
-// will be cleaned out by RegisterStdString to avoid errors as
-// AngelScript may reuse pointers for different string values.
-static map<const char *, string> g_pool;
+
+// The string pool will be kept as user data in the engine. We'll
+// need a specific type to identify the string pool user data.
+// We just define a number here that we assume nobody else is using for 
+// object type user data. The add-ons have reserved the numbers 1000 
+// through 1999 for this purpose, so we should be fine.
+const asPWORD STRING_POOL = 1001;
+
 static const string &StringFactory(asUINT length, const char *s)
 {
+	static string dummy;
+
+	// Each engine instance has its own string pool
+	asIScriptContext *ctx = asGetActiveContext();
+	if( ctx == 0 )
+	{
+		// The string factory can only be called from a script
+		assert( ctx );
+		return dummy;
+	}
+	asIScriptEngine *engine = ctx->GetEngine();
+
+	// TODO: runtime optimize: Use unordered_map if C++11 is supported, i.e. MSVC10+, gcc 4.?+
+	map<const char *, string> *pool = reinterpret_cast< map<const char *, string>* >(engine->GetUserData(STRING_POOL));
+
+	if( !pool )
+	{
+		// The string pool hasn't been created yet, so we'll create it now
+		asAcquireExclusiveLock();
+
+		// Make sure the string pool wasn't created while we were waiting for the lock
+		pool = reinterpret_cast< map<const char *, string>* >(engine->GetUserData(STRING_POOL));
+		if( !pool )
+		{
+			#if defined(AS_MARMALADE) || defined(MARMALADE)
+			pool = new map<const char *, string>;
+			#else
+			pool = new (nothrow) map<const char *, string>;
+			#endif
+			if( pool == 0 )
+			{
+				ctx->SetException("Out of memory");
+				asReleaseExclusiveLock();
+				return dummy;
+			}
+			engine->SetUserData(pool, STRING_POOL);
+		}
+
+		asReleaseExclusiveLock();
+	}
+
+	// We can't let other threads modify the pool while we query it
+	asAcquireSharedLock();
+
 	// First check if a string object hasn't been created already
 	map<const char *, string>::iterator it;
-	it = g_pool.find(s);
-	if( it != g_pool.end() )
+	it = pool->find(s);
+	if( it != pool->end() )
+	{
+		asReleaseSharedLock();
 		return it->second;
+	}
 
-	// Create a new string object
-	g_pool.insert(map<const char *, string>::value_type(s, s));
-	it = g_pool.find(s);
+	asReleaseSharedLock();
+
+	// Acquire an exclusive lock so we can add the new string to the pool
+	asAcquireExclusiveLock();
+
+	// Make sure the string wasn't created while we were waiting for the exclusive lock
+	it = pool->find(s);
+	if( it == pool->end() )
+	{
+		// Create a new string object
+		it = pool->insert(map<const char *, string>::value_type(s, string(s, length))).first;
+	}
+
+	asReleaseExclusiveLock();
 	return it->second;
 }
+
+static void CleanupEngineStringPool(asIScriptEngine *engine)
+{
+	map<const char *, string> *pool = reinterpret_cast< map<const char *, string>* >(engine->GetUserData(STRING_POOL));
+	if( pool )
+		delete pool;
+}
+
+#else
+static string StringFactory(asUINT length, const char *s)
+{
+	return string(s, length);
+}
+#endif
 
 static void ConstructString(string *thisPointer)
 {
@@ -44,6 +122,27 @@ static void CopyConstructString(const string &other, string *thisPointer)
 static void DestructString(string *thisPointer)
 {
 	thisPointer->~string();
+}
+
+static string &AddAssignStringToString(const string &str, string &dest)
+{
+	// We don't register the method directly because some compilers 
+	// and standard libraries inline the definition, resulting in the 
+	// linker being unable to find the declaration.
+	// Example: CLang/LLVM with XCode 4.3 on OSX 10.7
+	dest += str;
+	return dest;
+}
+
+// bool string::isEmpty()
+// bool string::empty() // if AS_USE_STLNAMES == 1
+static bool StringIsEmpty(const string &str)
+{
+	// We don't register the method directly because some compilers 
+	// and standard libraries inline the definition, resulting in the 
+	// linker being unable to find the declaration
+	// Example: CLang/LLVM with XCode 4.3 on OSX 10.7
+	return str.empty();
 }
 
 static string &AssignUIntToString(unsigned int i, string &dest)
@@ -265,7 +364,8 @@ static string formatInt(asINT64 value, const string &options, asUINT width)
 
 	string buf;
 	buf.resize(width+20);
-#if _MSC_VER >= 1400 && !defined(AS_MARMALADE)// MSVC 8.0 / 2005
+#if _MSC_VER >= 1400 && !defined(AS_MARMALADE) && !defined(MARMALADE)
+	// MSVC 8.0 / 2005 or newer
 	sprintf_s(&buf[0], buf.size(), fmt.c_str(), width, value);
 #else
 	sprintf(&buf[0], fmt.c_str(), width, value);
@@ -300,7 +400,8 @@ static string formatFloat(double value, const string &options, asUINT width, asU
 
 	string buf;
 	buf.resize(width+precision+50);
-#if _MSC_VER >= 1400 && !defined(AS_MARMALADE)// MSVC 8.0 / 2005
+#if _MSC_VER >= 1400 && !defined(AS_MARMALADE) && !defined(MARMALADE)
+	// MSVC 8.0 / 2005 or newer
 	sprintf_s(&buf[0], buf.size(), fmt.c_str(), width, precision, value);
 #else
 	sprintf(&buf[0], fmt.c_str(), width, precision, value);
@@ -410,27 +511,47 @@ static string StringSubString(asUINT start, int count, const string &str)
 	return ret;
 }
 
+// String equality comparison.
+// Returns true iff lhs is equal to rhs.
+//
+// For some reason gcc 4.7 has difficulties resolving the 
+// asFUNCTIONPR(operator==, (const string &, const string &) 
+// makro, so this wrapper was introduced as work around.
+static bool StringEquals(const std::string& lhs, const std::string& rhs)
+{
+    return lhs == rhs;
+}
+
 void RegisterStdString_Native(asIScriptEngine *engine)
 {
 	int r;
 
-	// Clean the memory pool
-	g_pool.clear();
 
 	// Register the string type
 	r = engine->RegisterObjectType("string", sizeof(string), asOBJ_VALUE | asOBJ_APP_CLASS_CDAK); assert( r >= 0 );
 
+#if AS_USE_STRINGPOOL == 1
 	// Register the string factory
 	r = engine->RegisterStringFactory("const string &", asFUNCTION(StringFactory), asCALL_CDECL); assert( r >= 0 );
+
+	// Register the cleanup callback for the string pool
+	engine->SetEngineUserDataCleanupCallback(CleanupEngineStringPool, STRING_POOL);
+#else
+	// Register the string factory
+	r = engine->RegisterStringFactory("string", asFUNCTION(StringFactory), asCALL_CDECL); assert( r >= 0 );
+#endif
 
 	// Register the object operator overloads
 	r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f()",                    asFUNCTION(ConstructString), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 	r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f(const string &in)",    asFUNCTION(CopyConstructString), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 	r = engine->RegisterObjectBehaviour("string", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructString),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
 	r = engine->RegisterObjectMethod("string", "string &opAssign(const string &in)", asMETHODPR(string, operator =, (const string&), string&), asCALL_THISCALL); assert( r >= 0 );
-	r = engine->RegisterObjectMethod("string", "string &opAddAssign(const string &in)", asMETHODPR(string, operator+=, (const string&), string&), asCALL_THISCALL); assert( r >= 0 );
+	// Need to use a wrapper on Mac OS X 10.7/XCode 4.3 and CLang/LLVM, otherwise the linker fails
+	r = engine->RegisterObjectMethod("string", "string &opAddAssign(const string &in)", asFUNCTION(AddAssignStringToString), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+//	r = engine->RegisterObjectMethod("string", "string &opAddAssign(const string &in)", asMETHODPR(string, operator+=, (const string&), string&), asCALL_THISCALL); assert( r >= 0 );
 
-	//FIXME: r = engine->RegisterObjectMethod("string", "bool opEquals(const string &in) const", asFUNCTIONPR(operator ==, (const string &, const string &), bool), asCALL_CDECL_OBJFIRST); assert( r >= 0 );
+	// Need to use a wrapper for operator== otherwise gcc 4.7 fails to compile
+	r = engine->RegisterObjectMethod("string", "bool opEquals(const string &in) const", asFUNCTIONPR(StringEquals, (const string &, const string &), bool), asCALL_CDECL_OBJFIRST); assert( r >= 0 );
 	r = engine->RegisterObjectMethod("string", "int opCmp(const string &in) const", asFUNCTION(StringCmp), asCALL_CDECL_OBJFIRST); assert( r >= 0 );
 	r = engine->RegisterObjectMethod("string", "string opAdd(const string &in) const", asFUNCTIONPR(operator +, (const string &, const string &), string), asCALL_CDECL_OBJFIRST); assert( r >= 0 );
 
@@ -439,6 +560,9 @@ void RegisterStdString_Native(asIScriptEngine *engine)
 	r = engine->RegisterObjectMethod("string", "void resize(uint)", asFUNCTION(StringResize), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 	r = engine->RegisterObjectMethod("string", "uint get_length() const", asFUNCTION(StringLength), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 	r = engine->RegisterObjectMethod("string", "void set_length(uint)", asFUNCTION(StringResize), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	// Need to use a wrapper on Mac OS X 10.7/XCode 4.3 and CLang/LLVM, otherwise the linker fails
+//	r = engine->RegisterObjectMethod("string", "bool isEmpty() const", asMETHOD(string, empty), asCALL_THISCALL); assert( r >= 0 );
+	r = engine->RegisterObjectMethod("string", "bool isEmpty() const", asFUNCTION(StringIsEmpty), asCALL_CDECL_OBJLAST); assert( r >= 0 );
 
 	// Register the index operator, both as a mutator and as an inspector
 	// Note that we don't register the operator[] directly, as it doesn't do bounds checking
@@ -476,22 +600,45 @@ void RegisterStdString_Native(asIScriptEngine *engine)
 	r = engine->RegisterGlobalFunction("int64 parseInt(const string &in, uint base = 10, uint &out byteCount = 0)", asFUNCTION(parseInt), asCALL_CDECL); assert(r >= 0);
 	r = engine->RegisterGlobalFunction("double parseFloat(const string &in, uint &out byteCount = 0)", asFUNCTION(parseFloat), asCALL_CDECL); assert(r >= 0);
 
+#if AS_USE_STLNAMES == 1
+	// Same as length
+	r = engine->RegisterObjectMethod("string", "uint size() const", asFUNCTION(StringLength), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	// Same as isEmpty
+	r = engine->RegisterObjectMethod("string", "bool empty() const", asFUNCTION(StringIsEmpty), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	// Same as findFirst
+	r = engine->RegisterObjectMethod("string", "int find(const string &in, uint start = 0) const", asFUNCTION(StringFindFirst), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+	// Same as findLast
+	r = engine->RegisterObjectMethod("string", "int rfind(const string &in, int start = -1) const", asFUNCTION(StringFindLast), asCALL_CDECL_OBJLAST); assert( r >= 0 );
+#endif
+
 	// TODO: Implement the following
 	// findFirstOf
 	// findLastOf
 	// findFirstNotOf
 	// findLastNotOf
-	// replace - replaces a text found in the string
+	// findAndReplace - replaces a text found in the string
 	// replaceRange - replaces a range of bytes in the string
 	// trim/trimLeft/trimRight
 	// multiply/times/opMul/opMul_r - takes the string and multiplies it n times, e.g. "-".multiply(5) returns "-----"
 }
 
+#if AS_USE_STRINGPOOL == 1
 static void StringFactoryGeneric(asIScriptGeneric *gen) {
   asUINT length = gen->GetArgDWord(0);
   const char *s = (const char*)gen->GetArgAddress(1);
+
+  // Return a reference to a string
   gen->SetReturnAddress(const_cast<string*>(&StringFactory(length, s)));
 }
+#else
+static void StringFactoryGeneric(asIScriptGeneric *gen) {
+  asUINT length = gen->GetArgDWord(0);
+  const char *s = (const char*)gen->GetArgAddress(1);
+
+  // Return a string value
+  new (gen->GetAddressOfReturnLocation()) string(StringFactory(length, s));
+}
+#endif
 
 static void ConstructStringGeneric(asIScriptGeneric * gen) {
   new (gen->GetObject()) string();
@@ -733,14 +880,19 @@ void RegisterStdString_Generic(asIScriptEngine *engine)
 {
 	int r;
 
-	// Clean the memory pool
-	g_pool.clear();
-
 	// Register the string type
 	r = engine->RegisterObjectType("string", sizeof(string), asOBJ_VALUE | asOBJ_APP_CLASS_CDAK); assert( r >= 0 );
 
+#if AS_USE_STRINGPOOL == 1
 	// Register the string factory
 	r = engine->RegisterStringFactory("const string &", asFUNCTION(StringFactoryGeneric), asCALL_GENERIC); assert( r >= 0 );
+
+	// Register the cleanup callback for the string pool
+	engine->SetEngineUserDataCleanupCallback(CleanupEngineStringPool, STRING_POOL);
+#else
+	// Register the string factory
+	r = engine->RegisterStringFactory("string", asFUNCTION(StringFactoryGeneric), asCALL_GENERIC); assert( r >= 0 );
+#endif
 
 	// Register the object operator overloads
 	r = engine->RegisterObjectBehaviour("string", asBEHAVE_CONSTRUCT,  "void f()",                    asFUNCTION(ConstructStringGeneric), asCALL_GENERIC); assert( r >= 0 );
