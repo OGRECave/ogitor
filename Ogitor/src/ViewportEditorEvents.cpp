@@ -492,7 +492,7 @@ namespace Ogitors
         {
             SaveEditorStates(mouseRay);
 
-            if(mViewKeyboard[mSpecial.SPK_CLONE] && mViewKeyboard[mSpecial.SPK_ADD_TO_SELECTION] && GetEditorTool() == TOOL_MOVE  && multisel->getAsSingle()->supports(CAN_CLONE))
+            if(mViewKeyboard[mSpecial.SPK_CLONE] && mViewKeyboard[mSpecial.SPK_ALWAYS_SELECT] && GetEditorTool() == TOOL_MOVE  && multisel->getAsSingle()->supports(CAN_CLONE))
             {
                 mEditorToolEx = TOOL_EX_INSTANCECLONE;
             }
