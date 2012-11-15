@@ -379,11 +379,13 @@ if(UNIX)
 endif()
 
 # Install cmake Find scripts
-FILE(GLOB ogitor_cmake_scripts "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
-install(FILES ${ogitor_cmake_scripts}
-    DESTINATION "${CMAKE_ROOT}/Modules"
-    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
-)
+if(UNIX)
+    FILE(GLOB ogitor_cmake_scripts "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
+    install(FILES ${ogitor_cmake_scripts}
+        DESTINATION "${CMAKE_ROOT}/Modules"
+        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+    )
+endif()
 
 # uninstall target
 configure_file(
