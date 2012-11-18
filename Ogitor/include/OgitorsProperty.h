@@ -493,14 +493,19 @@ namespace Ogitors
         void slotTargetChange(const OgitorsPropertyBase* property, const Ogre::Any val)
         {
             T newVal = Ogre::any_cast<T>(val);
-            if(mSetter)
-            {
-
-                if(!((*mSetter)(this, newVal)))
-                    return;
-            }
+            
             mOldValue = mValue;
             mValue = newVal;
+            
+            if(mSetter)
+            {
+                if(!((*mSetter)(this, newVal)))
+                {
+                    mValue = mOldValue;
+                    return;
+                }
+            }
+
             mSignal.invoke(this, val);
         }
 

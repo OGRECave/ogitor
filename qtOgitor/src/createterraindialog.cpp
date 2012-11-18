@@ -36,7 +36,6 @@
 #include "OgitorsSystem.h"
 #include "BaseEditor.h"
 #include "OgitorsRoot.h"
-#include "OgitorsSystem.h"
 #include "CameraEditor.h"
 #include "ViewportEditor.h"
 #include "TerrainEditor.h"
@@ -50,8 +49,6 @@ CreateTerrainDialog::CreateTerrainDialog(QWidget *parent, Ogre::String lastUsedD
 
     unsigned int i, index = 1;
     Ogitors::PropertyOptionsVector *mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
-    if(mapDiffuse->size() == 0)
-        mapDiffuse = Ogitors::OgitorsRoot::GetTerrainDiffuseTextureNames();
     for(i = 0;i < mapDiffuse->size();i++)
     {
         if (lastUsedDiffuse == (*mapDiffuse)[i].mKey)
@@ -67,8 +64,6 @@ CreateTerrainDialog::CreateTerrainDialog(QWidget *parent, Ogre::String lastUsedD
 
     index = 1;
     Ogitors::PropertyOptionsVector *mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
-    if(mapNormal->size() == 0)
-        mapNormal = Ogitors::OgitorsRoot::GetTerrainNormalTextureNames();
     for(i = 0;i < mapNormal->size();i++)
     {
         if (lastUsedNormal == (*mapNormal)[i].mKey)

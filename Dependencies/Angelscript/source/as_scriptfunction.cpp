@@ -102,7 +102,7 @@ void RegisterScriptFunction(asCScriptEngine *engine)
 	int r = 0;
 	UNUSED_VAR(r); // It is only used in debug mode
 	engine->functionBehaviours.engine = engine;
-	engine->functionBehaviours.flags = asOBJ_REF | asOBJ_GC;
+	engine->functionBehaviours.flags = asOBJ_REF | asOBJ_GC | asOBJ_SCRIPT_FUNCTION;
 	engine->functionBehaviours.name = "_builtin_function_";
 #ifndef AS_MAX_PORTABILITY
 	r = engine->RegisterBehaviourToObjectType(&engine->functionBehaviours, asBEHAVE_ADDREF, "void f()", asMETHOD(asCScriptFunction,AddRef), asCALL_THISCALL); asASSERT( r >= 0 );
@@ -148,11 +148,20 @@ asCScriptFunction::asCScriptFunction(asCScriptEngine *engine, asCModule *mod, as
 	id                     = 0;
 	accessMask             = 0xFFFFFFFF;
 	isShared               = false;
+	variableSpace          = 0;
+	nameSpace              = engine->nameSpaces[0];
 
-	// TODO: optimize: The engine could notify the GC just before it wants to
-	//                 discard the function. That way the GC won't waste time
-	//                 trying to determine if the functions are garbage before
-	//                 they can actually be considered garbage.
+	// TODO: runtime optimize: The engine could notify the GC just before it wants to
+	//                         discard the function. That way the GC won't waste time
+	//                         trying to determine if the functions are garbage before
+	//                         they can actually be considered garbage.
+	//                         Should have a method called Orphan(void *owner). The module
+	//                         should call this method instead of Release() when freeing
+	//                         its reference to the object. The script function would then
+	//                         check if module that is calling Orphan is the owner, and if 
+	//                         so notify the GC. If the module that is calling method isn't
+	//                         the owner, then the script function would simply call Release 
+	//                         as normal.
 	// Notify the GC of script functions
 	if( funcType == asFUNC_SCRIPT )
 		engine->gc.AddScriptObjectToGC(this, &engine->functionBehaviours);
@@ -194,7 +203,7 @@ void asCScriptFunction::DestroyInternal()
 	// Release all references the function holds to other objects
 	ReleaseReferences();
 	parameterTypes.SetLength(0);
-	returnType == asCDataType::CreatePrimitive(ttVoid, false);
+	returnType = asCDataType::CreatePrimitive(ttVoid, false);
 	byteCode.SetLength(0);
 
 	for( asUINT n = 0; n < variables.GetLength(); n++ )
@@ -238,6 +247,34 @@ int asCScriptFunction::Release() const
 }
 
 // interface
+int asCScriptFunction::GetTypeId() const
+{
+	// This const cast is ok, the object won't be modified
+	asCDataType dt = asCDataType::CreateFuncDef(const_cast<asCScriptFunction*>(this));
+	return engine->GetTypeIdFromDataType(dt);
+}
+
+// interface
+bool asCScriptFunction::IsCompatibleWithTypeId(int typeId) const
+{
+	asCDataType dt = engine->GetDataTypeFromTypeId(typeId);
+
+	// Make sure the type is a function
+	asCScriptFunction *func = dt.GetFuncDef();
+	if( func == 0 )
+		return false;
+
+	if( !IsSignatureExceptNameEqual(func) )
+		return false;
+
+	// If this is a class method, then only return true if the object type is the same
+	if( objectType != func->objectType )
+		return false;
+
+	return true;
+}
+
+// interface
 const char *asCScriptFunction::GetModuleName() const
 {
 	if( module )
@@ -272,7 +309,7 @@ const char *asCScriptFunction::GetName() const
 // interface
 const char *asCScriptFunction::GetNamespace() const
 {
-	return nameSpace.AddressOf();
+	return nameSpace->name.AddressOf();
 }
 
 // interface
@@ -333,7 +370,7 @@ asCString asCScriptFunction::GetDeclarationStr(bool includeObjectName, bool incl
 	if( objectType && includeObjectName )
 	{
 		if( includeNamespace )
-			str += objectType->nameSpace + "::";
+			str += objectType->nameSpace->name + "::";
 			
 		if( objectType->name != "" )
 			str += objectType->name + "::";
@@ -342,7 +379,7 @@ asCString asCScriptFunction::GetDeclarationStr(bool includeObjectName, bool incl
 	}
 	else if( includeNamespace )
 	{
-		str += nameSpace + "::";
+		str += nameSpace->name + "::";
 	}
 	if( name == "" )
 		str += "_unnamed_function_(";
@@ -488,8 +525,7 @@ const char *asCScriptFunction::GetVarDecl(asUINT index) const
 	if( index >= variables.GetLength() )
 		return 0;
 
-	asASSERT(threadManager);
-	asCString *tempString = &threadManager->GetLocalData()->string;
+	asCString *tempString = &asCThreadManager::GetLocalData()->string;
 	*tempString = variables[index]->type.Format();
 	*tempString += " " + variables[index]->name;
 
@@ -500,6 +536,11 @@ const char *asCScriptFunction::GetVarDecl(asUINT index) const
 void asCScriptFunction::AddVariable(asCString &name, asCDataType &type, int stackOffset)
 {
 	asSScriptVariable *var = asNEW(asSScriptVariable);
+	if( var == 0 )
+	{
+		// Out of memory
+		return;
+	}
 	var->name                 = name;
 	var->type                 = type;
 	var->stackOffset          = stackOffset;
@@ -552,6 +593,12 @@ bool asCScriptFunction::IsSignatureExceptNameEqual(const asCDataType &retType, c
 }
 
 // internal
+bool asCScriptFunction::IsSignatureExceptNameAndReturnTypeEqual(const asCScriptFunction *func) const
+{
+	return IsSignatureExceptNameAndReturnTypeEqual(func->parameterTypes, func->inOutFlags, func->objectType, func->isReadOnly);
+}
+
+// internal
 bool asCScriptFunction::IsSignatureExceptNameAndReturnTypeEqual(const asCArray<asCDataType> &paramTypes, const asCArray<asETypeModifiers> &paramInOut, const asCObjectType *objType, bool readOnly) const
 {
 	if( this->isReadOnly        != readOnly       ) return false;
@@ -597,6 +644,7 @@ void asCScriptFunction::AddReferences()
 		case asBC_OBJTYPE:
 		case asBC_FREE:
 		case asBC_REFCPY:
+		case asBC_RefCpyV:
 			{
                 asCObjectType *objType = (asCObjectType*)asBC_PTRARG(&byteCode[n]);
 				objType->AddRef();
@@ -617,6 +665,7 @@ void asCScriptFunction::AddReferences()
 
 		// Global variables
 		case asBC_PGA:
+		case asBC_PshGPtr:
 		case asBC_LDG:
 		case asBC_PshG4:
 		case asBC_LdGRdR4:
@@ -704,6 +753,7 @@ void asCScriptFunction::ReleaseReferences()
 		case asBC_OBJTYPE:
 		case asBC_FREE:
 		case asBC_REFCPY:
+		case asBC_RefCpyV:
 			{
 				asCObjectType *objType = (asCObjectType*)asBC_PTRARG(&byteCode[n]);
 				if( objType ) 
@@ -736,6 +786,7 @@ void asCScriptFunction::ReleaseReferences()
 
 		// Global variables
 		case asBC_PGA:
+		case asBC_PshGPtr:
 		case asBC_LDG:
 		case asBC_PshG4:
 		case asBC_LdGRdR4:
@@ -843,8 +894,7 @@ asIScriptEngine *asCScriptFunction::GetEngine() const
 // interface
 const char *asCScriptFunction::GetDeclaration(bool includeObjectName, bool includeNamespace) const
 {
-	asASSERT(threadManager);
-	asCString *tempString = &threadManager->GetLocalData()->string;
+	asCString *tempString = &asCThreadManager::GetLocalData()->string;
 	*tempString = GetDeclarationStr(includeObjectName, includeNamespace);
 	return tempString->AddressOf();
 }
@@ -930,12 +980,15 @@ void *asCScriptFunction::GetUserData() const
 }
 
 // internal
+// TODO: cleanup: This method should probably be a member of the engine
 asCGlobalProperty *asCScriptFunction::GetPropertyByGlobalVarPtr(void *gvarPtr)
 {
-	for( asUINT g = 0; g < engine->globalProperties.GetLength(); g++ )
-		if( engine->globalProperties[g] && engine->globalProperties[g]->GetAddressOfValue() == gvarPtr )
-			return engine->globalProperties[g];
-
+	asSMapNode<void*, asCGlobalProperty*> *node;
+	if( engine->varAddressMap.MoveTo(&node, gvarPtr) )
+	{
+		asASSERT(gvarPtr == node->value->GetAddressOfValue());
+		return node->value;
+	}
 	return 0;
 }
 
@@ -979,6 +1032,7 @@ void asCScriptFunction::EnumReferences(asIScriptEngine *)
 		case asBC_OBJTYPE:
 		case asBC_FREE:
 		case asBC_REFCPY:
+		case asBC_RefCpyV:
 			{
                 asCObjectType *objType = (asCObjectType*)asBC_PTRARG(&byteCode[n]);
 				engine->GCEnumCallback(objType);
@@ -1016,6 +1070,7 @@ void asCScriptFunction::EnumReferences(asIScriptEngine *)
 
 		// Global variables
 		case asBC_PGA:
+		case asBC_PshGPtr:
 		case asBC_LDG:
 		case asBC_PshG4:
 		case asBC_LdGRdR4:
@@ -1068,6 +1123,7 @@ void asCScriptFunction::ReleaseAllHandles(asIScriptEngine *)
 		case asBC_OBJTYPE:
 		case asBC_FREE:
 		case asBC_REFCPY:
+		case asBC_RefCpyV:
 			{
 				asCObjectType *objType = (asCObjectType*)asBC_PTRARG(&byteCode[n]);
 				if( objType )

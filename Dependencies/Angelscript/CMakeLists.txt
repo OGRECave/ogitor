@@ -79,6 +79,7 @@ set(ANGELSCRIPT_HEADERS
 	source/as_scriptfunction.h
 	source/as_scriptnode.h
 	source/as_scriptobject.h
+	source/as_symboltable.h
 	source/as_string.h
 	source/as_string_util.h
 	source/as_texts.h
