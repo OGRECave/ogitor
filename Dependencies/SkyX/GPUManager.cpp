@@ -20,7 +20,7 @@ Place - Suite 330, Boston, MA 02111-1307, USA, or go to
 http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
-#include "Prerequisites.h"
+
 #include "GPUManager.h"
 
 #include "SkyX.h"
@@ -59,7 +59,7 @@ namespace SkyX
 
 		GroundPass->setSceneBlending(SBT);
 
-		///TODO
+		/// TODO
         mGroundPasses.push_back(GroundPass);
 
 		mSkyX->getAtmosphereManager()->_update(mSkyX->getAtmosphereManager()->getOptions(), true);
@@ -78,6 +78,22 @@ namespace SkyX
 		{
 			mGroundPasses.at(k)->setFragmentProgram(fp_name);
 		}
+
+		bool gammaCorrection = mSkyX->getLightingMode() == SkyX::LM_HDR;
+
+		// SkyX_Starfield.png
+		static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(getSkydomeMaterialName()))
+			->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setHardwareGammaEnabled(gammaCorrection);
+
+		// SkyX_Moon.png and SkyX_MoonHalo.png
+		static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(getMoonMaterialName()))
+			->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setHardwareGammaEnabled(gammaCorrection);
+		static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(getMoonMaterialName()))
+			->getTechnique(0)->getPass(0)->getTextureUnitState(1)->setHardwareGammaEnabled(gammaCorrection);
+
+		_setTextureHWGammaCorrection("SkyX_Starfield.png", gammaCorrection);
+		_setTextureHWGammaCorrection("SkyX_Moon.png", gammaCorrection);
+		_setTextureHWGammaCorrection("SkyX_MoonHalo.png", gammaCorrection);
 	}
 
 	void GPUManager::setGpuProgramParameter(const GpuProgram &GpuP,  const Ogre::String &Name, const int &Value, const bool& UpdateGroundPasses)
@@ -327,5 +343,30 @@ namespace SkyX
 		Ogre::String starfield = (mSkyX->isStarfieldEnabled()) ? "STARFIELD_" : "";
 
 		return (mSkyX->getLightingMode() == SkyX::LM_LDR) ? "SkyX_Skydome_" + starfield + "LDR" : "SkyX_Skydome_" + starfield + "HDR";
+	}
+
+	void GPUManager::_setTextureHWGammaCorrection(const Ogre::String& n, const bool& g)
+	{
+		Ogre::TexturePtr tex = Ogre::TextureManager::getSingleton().getByName(n);
+
+		if (!tex.isNull())
+		{
+			if (g)
+			{
+				if (!tex->isHardwareGammaEnabled())
+				{
+					tex->setHardwareGammaEnabled(true);
+					tex->reload();
+				}
+			}
+			else
+			{
+				if (tex->isHardwareGammaEnabled())
+				{
+					tex->setHardwareGammaEnabled(false);
+					tex->reload();
+				}
+			}
+		}
 	}
 }

@@ -20,7 +20,7 @@ Place - Suite 330, Boston, MA 02111-1307, USA, or go to
 http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
-#include "Prerequisites.h"
+
 #include "BasicController.h"
 
 namespace SkyX
@@ -105,7 +105,7 @@ namespace SkyX
 		}
 		else
 		{
-			if (X<A)
+			if (X<=A)
 			{
 				if (XB < (24-AB_)/2)
 				{

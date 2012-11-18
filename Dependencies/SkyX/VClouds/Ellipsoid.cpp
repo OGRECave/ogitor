@@ -20,7 +20,7 @@ Place - Suite 330, Boston, MA 02111-1307, USA, or go to
 http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
-#include "Prerequisites.h"
+
 #include "VClouds/Ellipsoid.h"
 
 namespace SkyX { namespace VClouds
@@ -45,6 +45,11 @@ namespace SkyX { namespace VClouds
 
 	const float Ellipsoid::_getLength(const int &x, const int &y, const int &z) const
 	{
+		if (x == mX && y == mY && z == mZ)
+		{
+			return 0.0f;
+		}
+
 		//  x^2   y^2   z^2
 		//  /   + /   + /    = 1  (Ellipsoid ecuation)
 		//  a^2   b^2   c^2

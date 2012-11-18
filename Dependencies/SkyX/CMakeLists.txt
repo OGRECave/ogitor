@@ -64,10 +64,10 @@ set_target_properties(SkyX PROPERTIES SOLUTION_FOLDER Dependencies)
 target_link_libraries(SkyX ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
 # specify a precompiled header to use
-use_precompiled_header(SkyX
-  "${CMAKE_CURRENT_SOURCE_DIR}/Prerequisites.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/Prerequisites.cpp"
-)
+# use_precompiled_header(SkyX
+# "${CMAKE_CURRENT_SOURCE_DIR}/Prerequisites.h"
+#  "${CMAKE_CURRENT_SOURCE_DIR}/Prerequisites.cpp"
+#)
 
 if(WIN32)
 	add_custom_command(TARGET SkyX PRE_BUILD

@@ -65,7 +65,7 @@ namespace SkyX
 		struct RenderQueueGroups
 		{
 			/** Constructor
-			    @param s Skydome render queue group
+			    @param s Skydome render queue group (Note: Moon = skydome_render_queue+1)
 				@param vc VClouds render queue group
 				@param vcl VClouds lightnings render queue group
 			 */
@@ -74,7 +74,7 @@ namespace SkyX
 			{
 			}
 
-			/// Skydome render queue group
+			/// Skydome render queue group (Note: Moon = skydome_render_queue+1)
 			Ogre::uint8 skydome;
 			/// VClouds render queue group
 			Ogre::uint8 vclouds;
@@ -86,7 +86,8 @@ namespace SkyX
 		    SkyX is designed for true HDR rendering, but there is a big number of applications
 			which don't use HDR rendering, due to this fact a little exponential tone-mapping 
 			algoritm is applied to SkyX materials if LM_LDR is selected. (See: AtmosphereManager::Options::Exposure)
-			Select LM_HDR if your app is designed for true HDR rendering.
+			Select LM_HDR if your app is designed for true HDR rendering. In HDR mode, we assume you're ussing a
+			full linear rendering pipeline, so all textures are gamma corrected if needed.
 		 */
 		enum LightingMode
 		{
@@ -257,9 +258,10 @@ namespace SkyX
 		/** Set lighting mode
 		    @param lm Lighting mode
 			@remarks SkyX is designed for true HDR rendering, but there're a lot of applications
-			that doesn't use HDR rendering, due to this a little exponential tone-mapping 
-			algoritm is applied to SkyX materials if LM_LDR is selected. (See: AtmosphereManager::Options::Exposure)
-			Select LM_HDR if your app is designed for true HDR rendering.
+				     that doesn't use HDR rendering, due to this a little exponential tone-mapping 
+			         algoritm is applied to SkyX materials if LM_LDR is selected. (See: AtmosphereManager::Options::Exposure)
+		         	 Select LM_HDR if your app is designed for true HDR rendering. In HDR mode, we assume you're ussing a
+					 full linear rendering pipeline, so all textures are gamma corrected if needed.
 		 */
 		void setLightingMode(const LightingMode& lm);
 

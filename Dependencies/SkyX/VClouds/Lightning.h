@@ -63,7 +63,7 @@ namespace SkyX { namespace VClouds{
 		/** Constructor
 		    @param sm Scene manager
 			@param sn Scene node
-			@param or Lighting origin
+			@param orig Lighting origin
 			@param dir Lighting direction
 			@param l Lighting lenth
 			@param d Divisions

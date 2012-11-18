@@ -124,6 +124,12 @@ namespace SkyX
 		}
 		
 	private:
+		/** Set texture HW gamma correction
+		    @param n Texture name
+			@param g True to enable gamma correction, false to disable it
+		 */
+		void _setTextureHWGammaCorrection(const Ogre::String& n, const bool& g);
+
 		/// Skydome material
 		Ogre::MaterialPtr mSkydomeMaterial;
 		/// Ground pass vector
