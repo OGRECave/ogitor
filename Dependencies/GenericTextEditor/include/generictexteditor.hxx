@@ -79,8 +79,10 @@ public:
     void onModifiedStateChanged(Ogitors::IEvent* evt);
     void onLoadStateChanged(Ogitors::IEvent* evt);
 
-    GenericTextEditorDocument* getActiveDocument() { return mActiveDocument; }
+    GenericTextEditorDocument* getActiveDocument() {return mActiveDocument;}
     void setActiveDocument(GenericTextEditorDocument* document);
+
+    void enableSaveButton(bool enabled) {mActSave->setEnabled(enabled);};
 
 signals:
     void currentChanged(int);
