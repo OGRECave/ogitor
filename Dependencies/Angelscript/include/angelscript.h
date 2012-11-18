@@ -58,8 +58,8 @@ BEGIN_AS_NAMESPACE
 
 // AngelScript version
 
-#define ANGELSCRIPT_VERSION        22300
-#define ANGELSCRIPT_VERSION_STRING "2.23.0"
+#define ANGELSCRIPT_VERSION        22501
+#define ANGELSCRIPT_VERSION_STRING "2.25.1"
 
 // Data types
 
@@ -145,10 +145,12 @@ enum asEObjTypeFlags
 	asOBJ_APP_CLASS_ALLINTS          = 0x8000,
 	asOBJ_APP_CLASS_ALLFLOATS        = 0x10000,
 	asOBJ_NOCOUNT                    = 0x20000,
-	asOBJ_MASK_VALID_FLAGS           = 0x3FFFF,
+	asOBJ_APP_CLASS_ALIGN8           = 0x40000,
+	asOBJ_MASK_VALID_FLAGS           = 0x7FFFF,
 	asOBJ_SCRIPT_OBJECT              = 0x80000,
 	asOBJ_SHARED                     = 0x100000,
-	asOBJ_NOINHERIT                  = 0x200000
+	asOBJ_NOINHERIT                  = 0x200000,
+	asOBJ_SCRIPT_FUNCTION            = 0x400000
 };
 
 // Behaviours
@@ -212,7 +214,8 @@ enum asERetCodes
 	asILLEGAL_BEHAVIOUR_FOR_TYPE           = -23,
 	asWRONG_CALLING_CONV                   = -24,
 	asBUILD_IN_PROGRESS                    = -25,
-	asINIT_GLOBAL_VARS_FAILED              = -26
+	asINIT_GLOBAL_VARS_FAILED              = -26,
+	asOUT_OF_MEMORY                        = -27
 };
 
 // Context states
@@ -256,8 +259,11 @@ enum asETokenClass
 	asTC_WHITESPACE = 5
 };
 
+#ifdef AS_DEPRECATED
+// Deprecated since 2.24.0 - 2012-05-25
 // Prepare flags
 const int asPREPARE_PREVIOUS = -1;
+#endif
 
 // Type id flags
 enum asETypeIdFlags
@@ -328,7 +334,7 @@ enum asEFuncType
 typedef unsigned char  asBYTE;
 typedef unsigned short asWORD;
 typedef unsigned int   asUINT;
-#if defined(_MSC_VER) && _MSC_VER <= 1200 // MSVC6 
+#if (defined(_MSC_VER) && _MSC_VER <= 1200) || defined(AS_MARMALADE) || defined(MARMALADE)
 	// size_t is not really correct, since it only guaranteed to be large enough to hold the segment size.
 	// For example, on 16bit systems the size_t may be 16bits only even if pointers are 32bit. But nobody
 	// is likely to use MSVC6 to compile for 16bit systems anymore, so this should be ok.
@@ -349,6 +355,13 @@ typedef unsigned int   asUINT;
     typedef unsigned __int64 asQWORD;
     typedef __int64 asINT64;
   #endif
+#endif
+
+// Is the target a 64bit system?
+#if defined(__LP64__) || defined(__amd64__) || defined(__x86_64__) || defined(_M_X64)
+	#ifndef AS_64BIT_PTR
+		#define AS_64BIT_PTR
+	#endif
 #endif
 
 typedef void (*asFUNCTION_t)();
@@ -479,7 +492,13 @@ extern "C"
 	AS_API asIScriptContext * asGetActiveContext();
 
 	// Thread support
-	AS_API int asThreadCleanup();
+	AS_API void asPrepareMultithread();
+	AS_API void asUnprepareMultithread();
+	AS_API void asAcquireExclusiveLock();
+	AS_API void asReleaseExclusiveLock();
+	AS_API void asAcquireSharedLock();
+	AS_API void asReleaseSharedLock();
+	AS_API int  asThreadCleanup();
 
 	// Memory management
 	AS_API int asSetGlobalMemoryFunctions(asALLOCFUNC_t allocFunc, asFREEFUNC_t freeFunc);
@@ -512,7 +531,10 @@ public:
 	// Global functions
 	virtual int                RegisterGlobalFunction(const char *declaration, const asSFuncPtr &funcPointer, asDWORD callConv) = 0;
 	virtual asUINT             GetGlobalFunctionCount() const = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-05-20
 	virtual int                GetGlobalFunctionIdByIndex(asUINT index) const = 0;
+#endif
 	virtual asIScriptFunction *GetGlobalFunctionByIndex(asUINT index) const = 0;
 	virtual asIScriptFunction *GetGlobalFunctionByDecl(const char *declaration) const = 0;
 
@@ -584,7 +606,12 @@ public:
 	virtual asIScriptContext *CreateContext() = 0;
 	virtual void             *CreateScriptObject(int typeId) = 0;
 	virtual void             *CreateScriptObjectCopy(void *obj, int typeId) = 0;
+	virtual void             *CreateUninitializedScriptObject(int typeId) = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-06-07
 	virtual void              CopyScriptObject(void *dstObj, void *srcObj, int typeId) = 0;
+#endif
+	virtual void              AssignScriptObject(void *dstObj, void *srcObj, int typeId) = 0;
 	virtual void              ReleaseScriptObject(void *obj, int typeId) = 0;
 	virtual void              ReleaseScriptObject(void *obj, const asIObjectType *type) = 0;
 	virtual void              AddRefScriptObject(void *obj, int typeId) = 0;
@@ -601,13 +628,13 @@ public:
 	virtual void GCEnumCallback(void *reference) = 0;
 
 	// User data
-	virtual void *SetUserData(void *data) = 0;
-	virtual void *GetUserData() const = 0;
-	virtual void  SetEngineUserDataCleanupCallback(asCLEANENGINEFUNC_t callback) = 0;
+	virtual void *SetUserData(void *data, asPWORD type = 0) = 0;
+	virtual void *GetUserData(asPWORD type = 0) const = 0;
+	virtual void  SetEngineUserDataCleanupCallback(asCLEANENGINEFUNC_t callback, asPWORD type = 0) = 0;
 	virtual void  SetModuleUserDataCleanupCallback(asCLEANMODULEFUNC_t callback) = 0;
 	virtual void  SetContextUserDataCleanupCallback(asCLEANCONTEXTFUNC_t callback) = 0;
 	virtual void  SetFunctionUserDataCleanupCallback(asCLEANFUNCTIONFUNC_t callback) = 0;
-	virtual void  SetObjectTypeUserDataCleanupCallback(asCLEANOBJECTTYPEFUNC_t callback) = 0;
+	virtual void  SetObjectTypeUserDataCleanupCallback(asCLEANOBJECTTYPEFUNC_t callback, asPWORD type = 0) = 0;
 
 protected:
 	virtual ~asIScriptEngine() {}
@@ -630,13 +657,19 @@ public:
 
 	// Functions
 	virtual asUINT             GetFunctionCount() const = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-05-20
 	virtual int                GetFunctionIdByIndex(asUINT index) const = 0;
 	virtual int                GetFunctionIdByName(const char *name) const = 0;
 	virtual int                GetFunctionIdByDecl(const char *decl) const = 0;
+#endif
 	virtual asIScriptFunction *GetFunctionByIndex(asUINT index) const = 0;
 	virtual asIScriptFunction *GetFunctionByDecl(const char *decl) const = 0;
 	virtual asIScriptFunction *GetFunctionByName(const char *name) const = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-05-20
 	virtual int                RemoveFunction(int funcId) = 0;
+#endif
 	virtual int                RemoveFunction(asIScriptFunction *func) = 0;
 
 	// Global variables
@@ -652,6 +685,7 @@ public:
 	// Type identification
 	virtual asUINT         GetObjectTypeCount() const = 0;
 	virtual asIObjectType *GetObjectTypeByIndex(asUINT index) const = 0;
+	virtual asIObjectType *GetObjectTypeByName(const char *name) const = 0;
 	virtual int            GetTypeIdByDecl(const char *decl) const = 0;
 
 	// Enums
@@ -669,14 +703,14 @@ public:
 	virtual int         GetImportedFunctionIndexByDecl(const char *decl) const = 0;
 	virtual const char *GetImportedFunctionDeclaration(asUINT importIndex) const = 0;
 	virtual const char *GetImportedFunctionSourceModule(asUINT importIndex) const = 0;
-	virtual int         BindImportedFunction(asUINT importIndex, int funcId) = 0;
+	virtual int         BindImportedFunction(asUINT importIndex, asIScriptFunction *func) = 0;
 	virtual int         UnbindImportedFunction(asUINT importIndex) = 0;
 	virtual int         BindAllImportedFunctions() = 0;
 	virtual int         UnbindAllImportedFunctions() = 0;
 
 	// Bytecode saving and loading
-	virtual int SaveByteCode(asIBinaryStream *out) const = 0;
-	virtual int LoadByteCode(asIBinaryStream *in) = 0;
+	virtual int SaveByteCode(asIBinaryStream *out, bool stripDebugInfo = false) const = 0;
+	virtual int LoadByteCode(asIBinaryStream *in, bool *wasDebugInfoStripped = 0) = 0;
 
 	// User data
 	virtual void *SetUserData(void *data) = 0;
@@ -698,13 +732,21 @@ public:
 
 	// Execution
 	virtual int             Prepare(asIScriptFunction *func) = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-05-25
 	virtual int             Prepare(int funcId) = 0;
+#endif
 	virtual int             Unprepare() = 0;
-	virtual int             SetObject(void *obj) = 0;
 	virtual int             Execute() = 0;
 	virtual int             Abort() = 0;
 	virtual int             Suspend() = 0;
 	virtual asEContextState GetState() const = 0;
+	virtual int             PushState() = 0;
+	virtual int             PopState() = 0;
+	virtual bool            IsNested(asUINT *nestCount = 0) const = 0;
+
+	// Object pointer for calling class methods
+	virtual int   SetObject(void *obj) = 0;
 
 	// Arguments
 	virtual int   SetArgByte(asUINT arg, asBYTE value) = 0;
@@ -739,7 +781,7 @@ public:
 	// Debugging
 	virtual int                SetLineCallback(asSFuncPtr callback, void *obj, int callConv) = 0;
 	virtual void               ClearLineCallback() = 0;
-	virtual asUINT             GetCallstackSize() = 0;
+	virtual asUINT             GetCallstackSize() const = 0;
 	virtual asIScriptFunction *GetFunction(asUINT stackLevel = 0) = 0;
 	virtual int                GetLineNumber(asUINT stackLevel = 0, int *column = 0, const char **sectionName = 0) = 0;
 	virtual int                GetVarCount(asUINT stackLevel = 0) = 0;
@@ -765,9 +807,12 @@ class asIScriptGeneric
 public:
 	// Miscellaneous
 	virtual asIScriptEngine   *GetEngine() const = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-05-25
 	virtual int                GetFunctionId() const = 0;
-	virtual asIScriptFunction *GetFunction() const = 0;
 	virtual void              *GetFunctionUserData() const = 0;
+#endif
+	virtual asIScriptFunction *GetFunction() const = 0;
 
 	// Object
 	virtual void   *GetObject() = 0;
@@ -855,16 +900,22 @@ public:
 
 	// Factories
 	virtual asUINT             GetFactoryCount() const = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-05-25
 	virtual int                GetFactoryIdByIndex(asUINT index) const = 0;
 	virtual int                GetFactoryIdByDecl(const char *decl) const = 0;
+#endif
 	virtual asIScriptFunction *GetFactoryByIndex(asUINT index) const = 0;
 	virtual asIScriptFunction *GetFactoryByDecl(const char *decl) const = 0;
 
 	// Methods
 	virtual asUINT             GetMethodCount() const = 0;
+#ifdef AS_DEPRECATED
+	// Deprecated since 2.24.0 - 2012-05-25
 	virtual int                GetMethodIdByIndex(asUINT index, bool getVirtual = true) const = 0;
 	virtual int                GetMethodIdByName(const char *name, bool getVirtual = true) const = 0;
 	virtual int                GetMethodIdByDecl(const char *decl, bool getVirtual = true) const = 0;
+#endif
 	virtual asIScriptFunction *GetMethodByIndex(asUINT index, bool getVirtual = true) const = 0;
 	virtual asIScriptFunction *GetMethodByName(const char *name, bool getVirtual = true) const = 0;
 	virtual asIScriptFunction *GetMethodByDecl(const char *decl, bool getVirtual = true) const = 0;
@@ -875,12 +926,12 @@ public:
 	virtual const char *GetPropertyDeclaration(asUINT index) const = 0;
 
 	// Behaviours
-	virtual asUINT GetBehaviourCount() const = 0;
-	virtual int    GetBehaviourByIndex(asUINT index, asEBehaviours *outBehaviour) const = 0;
+	virtual asUINT             GetBehaviourCount() const = 0;
+	virtual asIScriptFunction *GetBehaviourByIndex(asUINT index, asEBehaviours *outBehaviour) const = 0;
 
 	// User data
-	virtual void *SetUserData(void *data) = 0;
-	virtual void *GetUserData() const = 0;
+	virtual void *SetUserData(void *data, asPWORD type = 0) = 0;
+	virtual void *GetUserData(asPWORD type = 0) const = 0;
 
 protected:
 	virtual ~asIObjectType() {}
@@ -895,12 +946,15 @@ public:
 	virtual int              AddRef() const = 0;
 	virtual int              Release() const = 0;
 
+	// Miscellaneous
 	virtual int              GetId() const = 0;
 	virtual asEFuncType      GetFuncType() const = 0;
 	virtual const char      *GetModuleName() const = 0;
 	virtual const char      *GetScriptSectionName() const = 0;
 	virtual const char      *GetConfigGroup() const = 0;
 	virtual asDWORD          GetAccessMask() const = 0;
+
+	// Function signature
 	virtual asIObjectType   *GetObjectType() const = 0;
 	virtual const char      *GetObjectName() const = 0;
 	virtual const char      *GetName() const = 0;
@@ -911,10 +965,13 @@ public:
 	virtual bool             IsFinal() const = 0;
 	virtual bool             IsOverride() const = 0;
 	virtual bool             IsShared() const = 0;
-
 	virtual asUINT           GetParamCount() const = 0;
 	virtual int              GetParamTypeId(asUINT index, asDWORD *flags = 0) const = 0;
 	virtual int              GetReturnTypeId() const = 0;
+
+	// Type id for function pointers 
+	virtual int              GetTypeId() const = 0;
+	virtual bool             IsCompatibleWithTypeId(int typeId) const = 0;
 
 	// Debug information
 	virtual asUINT           GetVarCount() const = 0;
@@ -949,7 +1006,7 @@ public:
 // Use our own memset() and memcpy() implementations for better portability
 inline void asMemClear(void *_p, size_t size)
 {
-	char *p = (char *)_p;
+	char *p = reinterpret_cast<char *>(_p);
 	const char *e = p + size;
 	for( ; p < e; p++ )
 		*p = 0;
@@ -957,8 +1014,8 @@ inline void asMemClear(void *_p, size_t size)
 
 inline void asMemCopy(void *_d, const void *_s, size_t size)
 {
-	char *d = (char *)_d;
-	const char *s = (const char *)_s;
+	char *d = reinterpret_cast<char *>(_d);
+	const char *s = reinterpret_cast<const char *>(_s);
 	const char *e = s + size;
 	for( ; s < e; d++, s++ )
 		*d = *s;
@@ -972,8 +1029,15 @@ inline asSFuncPtr asFunctionPtr(T func)
 	asSFuncPtr p;
 	asMemClear(&p, sizeof(p));
 
-	// Casting to PWORD to support constant 0 without compiler warnings
-	p.ptr.f.func = (asFUNCTION_t)(asPWORD)func;
+#ifdef AS_64BIT_PTR
+	// The size_t cast is to avoid a compiler warning with asFUNCTION(0) 
+	// on 64bit, as 0 is interpreted as a 32bit int value
+	p.ptr.f.func = reinterpret_cast<asFUNCTION_t>(size_t(func));
+#else
+	// MSVC6 doesn't like the size_t cast above so I
+	// solved this with a separate code for 32bit.
+	p.ptr.f.func = reinterpret_cast<asFUNCTION_t>(func);
+#endif
 
 	// Mark this as a global function
 	p.flag = 2;
@@ -987,7 +1051,7 @@ inline asSFuncPtr asFunctionPtr<asGENFUNC_t>(asGENFUNC_t func)
 {
 	asSFuncPtr p;
 	asMemClear(&p, sizeof(p));
-	p.ptr.f.func = (asFUNCTION_t)func;
+	p.ptr.f.func = reinterpret_cast<asFUNCTION_t>(func);
 
 	// Mark this as a generic function
 	p.flag = 1;
@@ -1080,9 +1144,8 @@ struct asSMethodPtr<SINGLE_PTR_SIZE+2*sizeof(int)>
 
 		// Microsoft has a terrible optimization on class methods with virtual inheritance.
 		// They are hardcoding an important offset, which is not coming in the method pointer.
-#ifdef _MSC_VER
-		if( sizeof(void*) == 4 )
-		{
+
+#if defined(_MSC_VER) && !defined(AS_64BIT_PTR)
 			// Method pointers for virtual inheritance is not supported,
 			// as it requires the location of the vbase table, which is 
 			// only available to the C++ compiler, but not in the method
@@ -1100,8 +1163,7 @@ struct asSMethodPtr<SINGLE_PTR_SIZE+2*sizeof(int)>
 
 			// Copy the virtual table index to the 4th dword so that AngelScript
 			// can properly detect and deny the use of methods with virtual inheritance.
-			*(((asDWORD*)&p)+3) = *(((asDWORD*)&p)+2);
-		}
+			*(static_cast<asDWORD*>(&p)+3) = *(static_cast<asDWORD*>(&p)+2);
 #endif
 
 		return p;
@@ -1172,16 +1234,16 @@ class asIJITCompiler
 {
 public:
 	virtual int  CompileFunction(asIScriptFunction *function, asJITFunction *output) = 0;
-    virtual void ReleaseJITFunction(asJITFunction func) = 0;
+	virtual void ReleaseJITFunction(asJITFunction func) = 0;
 public:
-    virtual ~asIJITCompiler() {}
+	virtual ~asIJITCompiler() {}
 };
 
 // Byte code instructions
 enum asEBCInstr
 {
-	asBC_POP			= 0,
-	asBC_PUSH			= 1,
+	asBC_PopPtr			= 0,
+	asBC_PshGPtr		= 1,
 	asBC_PshC4			= 2,
 	asBC_PshV4			= 3,
 	asBC_PSF			= 4,
@@ -1356,22 +1418,26 @@ enum asEBCInstr
 	asBC_ChkNullS		= 173,
 	asBC_ClrHi			= 174,
 	asBC_JitEntry		= 175,
-	asBC_CallPtr        = 176,
-	asBC_FuncPtr        = 177,
-	asBC_LoadThisR      = 178,
-	asBC_PshV8          = 179,
+	asBC_CallPtr		= 176,
+	asBC_FuncPtr		= 177,
+	asBC_LoadThisR		= 178,
+	asBC_PshV8			= 179,
 	asBC_DIVu			= 180,
 	asBC_MODu			= 181,
 	asBC_DIVu64			= 182,
 	asBC_MODu64			= 183,
-	asBC_LoadRObjR      = 184,
-	asBC_LoadVObjR      = 185,
+	asBC_LoadRObjR		= 184,
+	asBC_LoadVObjR		= 185,
+	asBC_RefCpyV		= 186,
+	asBC_JLowZ			= 187,
+	asBC_JLowNZ			= 188,
 
-	asBC_MAXBYTECODE	= 186,
+	asBC_MAXBYTECODE	= 189,
 
 	// Temporary tokens. Can't be output to the final program
-	asBC_VarDecl        = 251,
-	asBC_Block          = 252,
+	asBC_DiscardVar		= 250,
+	asBC_VarDecl		= 251,
+	asBC_Block			= 252,
 	asBC_ObjInfo		= 253,
 	asBC_LINE			= 254,
 	asBC_LABEL			= 255
@@ -1455,12 +1521,12 @@ struct asSBCInfo
 #endif
 
 #define asBCINFO(b,t,s) {asBC_##b, asBCTYPE_##t, s, #b}
-#define asBCINFO_DUMMY(b) {asEBCInstr(b), asBCTYPE_INFO, 0, "BC_" #b}
+#define asBCINFO_DUMMY(b) {asBC_MAXBYTECODE, asBCTYPE_INFO, 0, "BC_" #b}
 
 const asSBCInfo asBCInfo[256] =
 {
-	asBCINFO(POP,		W_ARG,			0xFFFF),
-	asBCINFO(PUSH,		W_ARG,			0xFFFF),
+	asBCINFO(PopPtr,	NO_ARG,			-AS_PTR_SIZE),
+	asBCINFO(PshGPtr,	PTR_ARG,		AS_PTR_SIZE),
 	asBCINFO(PshC4,		DW_ARG,			1),
 	asBCINFO(PshV4,		rW_ARG,			1),
 	asBCINFO(PSF,		rW_ARG,			AS_PTR_SIZE),
@@ -1532,8 +1598,8 @@ const asSBCInfo asBCInfo[256] =
 	asBCINFO(CHKREF,	NO_ARG,			0),
 	asBCINFO(GETOBJREF,	W_ARG,			0),
 	asBCINFO(GETREF,	W_ARG,			0),
-	asBCINFO(PshNull,   NO_ARG,			AS_PTR_SIZE),
-	asBCINFO(ClrVPtr,   rW_ARG,			0),
+	asBCINFO(PshNull,	NO_ARG,			AS_PTR_SIZE),
+	asBCINFO(ClrVPtr,	rW_ARG,			0),
 	asBCINFO(OBJTYPE,	PTR_ARG,		AS_PTR_SIZE),
 	asBCINFO(TYPEID,	DW_ARG,			1),
 	asBCINFO(SetV4,		wW_DW_ARG,		0),
@@ -1635,20 +1701,20 @@ const asSBCInfo asBCInfo[256] =
 	asBCINFO(ChkNullS,	W_ARG,			0),
 	asBCINFO(ClrHi,		NO_ARG,			0),
 	asBCINFO(JitEntry,	PTR_ARG,		0),
-	asBCINFO(CallPtr,   rW_ARG,         0xFFFF),
-	asBCINFO(FuncPtr,   PTR_ARG,        AS_PTR_SIZE),
-	asBCINFO(LoadThisR, W_DW_ARG,       0),
+	asBCINFO(CallPtr,	rW_ARG,			0xFFFF),
+	asBCINFO(FuncPtr,	PTR_ARG,		AS_PTR_SIZE),
+	asBCINFO(LoadThisR,	W_DW_ARG,		0),
 	asBCINFO(PshV8,		rW_ARG,			2),
 	asBCINFO(DIVu,		wW_rW_rW_ARG,	0),
 	asBCINFO(MODu,		wW_rW_rW_ARG,	0),
 	asBCINFO(DIVu64,	wW_rW_rW_ARG,	0),
 	asBCINFO(MODu64,	wW_rW_rW_ARG,	0),
-	asBCINFO(LoadRObjR, rW_W_DW_ARG,    0),
-	asBCINFO(LoadVObjR, rW_W_DW_ARG,    0),
+	asBCINFO(LoadRObjR,	rW_W_DW_ARG,	0),
+	asBCINFO(LoadVObjR,	rW_W_DW_ARG,	0),
+	asBCINFO(RefCpyV,	wW_PTR_ARG,		0),
+	asBCINFO(JLowZ,		DW_ARG,			0),
+	asBCINFO(JLowNZ,	DW_ARG,			0),
 
-	asBCINFO_DUMMY(186),
-	asBCINFO_DUMMY(187),
-	asBCINFO_DUMMY(188),
 	asBCINFO_DUMMY(189),
 	asBCINFO_DUMMY(190),
 	asBCINFO_DUMMY(191),
@@ -1710,13 +1776,13 @@ const asSBCInfo asBCInfo[256] =
 	asBCINFO_DUMMY(247),
 	asBCINFO_DUMMY(248),
 	asBCINFO_DUMMY(249),
-	asBCINFO_DUMMY(250),
 
-	asBCINFO(VarDecl,   W_ARG,          0),
-	asBCINFO(Block,     INFO,           0),
-	asBCINFO(ObjInfo,	rW_DW_ARG,		0),
-	asBCINFO(LINE,		INFO,			0),
-	asBCINFO(LABEL,		INFO,			0)
+	asBCINFO(DiscardVar,	W_ARG,			0),
+	asBCINFO(VarDecl,		W_ARG,			0),
+	asBCINFO(Block,			INFO,			0),
+	asBCINFO(ObjInfo,		rW_DW_ARG,		0),
+	asBCINFO(LINE,			INFO,			0),
+	asBCINFO(LABEL,			INFO,			0)
 };
 
 // Macros to access bytecode instruction arguments

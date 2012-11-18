@@ -353,7 +353,10 @@ void MaterialTextEditorCodec::onKeyPressEvent(QKeyEvent *event)
 
             // Check if we are dealing with actual loaded Ogre materials here. If we previously found out
             // that there is a script error proceed anyway.
-            Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+            Ogre::MaterialPtr mat;
+            if( materialList.count() > 0 )
+                mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+
             if(mat.isNull() && !mScriptError)
             {
                 QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("This material file seems to not be an active Ogre material. Please make sure it is declared as a scene asset and properly loaded."));      
@@ -379,7 +382,10 @@ void MaterialTextEditorCodec::onRefresh()
 
     // Check if we are dealing with actual loaded Ogre materials here. If we previously found out
     // that there is a script error proceed anyway.
-    Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+    Ogre::MaterialPtr mat;
+    if( materialList.count() > 0 )
+        mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+
     if(mat.isNull() && !mScriptError)
     {
         QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr("This material file seems to not be an active Ogre material. Please make sure it is declared as a scene asset and properly loaded."));      

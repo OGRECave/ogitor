@@ -640,36 +640,15 @@ void QtOgitorSystem::DisplayTerrainDialog()
 bool QtOgitorSystem::DisplayImportHeightMapDialog(Ogre::NameValuePairList &params)
 {
     ImportHeightMapDialog dlg(QApplication::activeWindow());
-
-    Ogre::NameValuePairList::iterator it;
-
-    if((it = params.find("title")) != params.end())
-        dlg.setWindowTitle(params["title"].c_str());
-
-    if((it = params.find("input1")) != params.end())
-        dlg.input1label->setText(params["input1"].c_str());
-
-    if((it = params.find("input2")) != params.end())
-        dlg.input2label->setText(params["input2"].c_str());
-
-    if((it = params.find("check1")) != params.end())
-        dlg.checkV->setVisible(true);
-    else
-        dlg.checkV->setVisible(false);
-
-    if((it = params.find("input1value")) != params.end())
-        dlg.mInputScale->setText(params["input1value"].c_str());
-
-    if((it = params.find("input2value")) != params.end())
-        dlg.mInputBias->setText(params["input2value"].c_str());
-
     params.clear();
 
     if(dlg.exec() == QDialog::Accepted)
     {
-        params["input1"] = dlg.mInputScale->text().toStdString();
-        params["input2"] = dlg.mInputBias->text().toStdString();
-        params["inputCheckV"] = "false";
+        params["scale"] = dlg.mInputScale->text().toStdString();
+        params["bias"] = dlg.mInputBias->text().toStdString();
+        params["diffuse"] = dlg.mDiffuseCombo->itemText(dlg.mDiffuseCombo->currentIndex()).toStdString();
+        params["normal"] = dlg.mNormalCombo->itemText(dlg.mNormalCombo->currentIndex()).toStdString();
+        params["inverted"] = Ogre::StringConverter::toString(dlg.mInverted->isChecked());
         return true;
     }
     else
