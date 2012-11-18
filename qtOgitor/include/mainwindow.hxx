@@ -51,6 +51,7 @@ class ColourPickerWidget;
 class ObjectsViewWidget;
 class ActionToolbar;
 class OgitorPreferencesWidget;
+class PostProcessingViewWidget;
 class PreferencesManager;
 class LineEditWithHistory;
 class TerrainToolsWidget;
@@ -253,6 +254,7 @@ public:
     TemplateViewWidget              *getTemplatesViewWidget() {return mTemplatesViewWidget;};
     LayerViewWidget                 *getLayersViewWidget() {return mLayerViewWidget;};
     GeneralPropertiesViewWidget     *getGeneralPropertiesViewWidget() {return mGeneralPropertiesViewWidget;}; 
+    PostProcessingViewWidget        *getPostProcessingViewWidget() {return mPostProcessingViewWidget;};
     OgreWidget                      *getOgreWidget() {return mOgreWidget;};
     TerrainToolsWidget              *getTerrainToolsWidget() {return mTerrainToolsWidget;};
     ProjectFilesViewWidget          *getProjectFilesViewWidget() {return mProjectFilesViewWidget;};
@@ -372,6 +374,7 @@ private:
     ObjectsViewWidget               *mObjectsViewWidget;
     TemplateViewWidget              *mTemplatesViewWidget;
     ProjectFilesViewWidget          *mProjectFilesViewWidget;
+    PostProcessingViewWidget        *mPostProcessingViewWidget;
     PreferencesManager              *mPrefManager;
     OgitorAssistant                 *mOgitorAssistant;
     GenericTextEditor               *mGenericTextEditor;

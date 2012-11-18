@@ -33,8 +33,8 @@
 #include "mainwindow.hxx"
 #include "shortcuts.hxx"
 
-#include "paths.h"
-#include "qtogitorsystem.h"
+#include "paths.hxx"
+#include "qtogitorsystem.hxx"
 #include "BaseEditor.h"
 #include "ViewportEditor.h"
 #include "OgitorsRoot.h"

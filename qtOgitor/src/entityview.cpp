@@ -37,7 +37,7 @@
 #include <QtGui/QLineEdit>
 #include <QtGui/QPixmap>
 #include <QtGui/QImage>
-#include "qtogitorsystem.h"
+#include "qtogitorsystem.hxx"
 #include "entityview.hxx"
 #include "BaseEditor.h"
 #include "NodeEditor.h"
