@@ -20,7 +20,7 @@ Place - Suite 330, Boston, MA 02111-1307, USA, or go to
 http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
-#include "Prerequisites.h"
+
 #include "CloudsManager.h"
 
 #include "SkyX.h"
@@ -156,11 +156,8 @@ namespace SkyX
 			return;
 		}
 
-		if (mSkyX->getLightingMode() == SkyX::LM_LDR)
-		{
-			mCloudLayerPass->getFragmentProgramParameters()
-				->setNamedConstant("uExposure", mSkyX->getAtmosphereManager()->getOptions().Exposure);
-		}
+		mCloudLayerPass->getFragmentProgramParameters()
+			->setNamedConstant("uExposure", mSkyX->getAtmosphereManager()->getOptions().Exposure);
 		mCloudLayerPass->getFragmentProgramParameters()
 			->setNamedConstant("uTime", mSkyX->_getTimeOffset()*mOptions.TimeMultiplier);
 		/*

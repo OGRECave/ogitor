@@ -47,7 +47,7 @@ http://www.gnu.org/copyleft/lesser.txt.
 /// SkyX defines
 #define SKYX_VERSION_MAJOR 0
 #define SKYX_VERSION_MINOR 3
-#define SKYX_VERSION_PATCH 0
+#define SKYX_VERSION_PATCH 1
 
 #define SKYX_RESOURCE_GROUP "SkyX"
 

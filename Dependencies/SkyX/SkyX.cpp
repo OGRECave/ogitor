@@ -20,7 +20,7 @@ Place - Suite 330, Boston, MA 02111-1307, USA, or go to
 http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
-#include "Prerequisites.h"
+
 #pragma warning(disable:4355)
 
 #include "SkyX.h"
@@ -207,6 +207,7 @@ namespace SkyX
 		}
 
 		mMeshManager->getEntity()->setRenderQueueGroup(mRenderQueueGroups.skydome);
+		mMoonManager->getMoonBillboard()->setRenderQueueGroup(mRenderQueueGroups.skydome+1);
 	}
 
 	void SkyX::setLightingMode(const LightingMode& lm)
@@ -224,7 +225,7 @@ namespace SkyX
 		mMeshManager->setMaterialName(mGPUManager->getSkydomeMaterialName());
 		// Update layered clouds material
 		mCloudsManager->registerAll();
-		// Update ground passes materials
+		// Update ground passes materials and update textures gamma correction
 		mGPUManager->_updateFP();
 
 		// Update parameters

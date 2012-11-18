@@ -20,7 +20,7 @@ Place - Suite 330, Boston, MA 02111-1307, USA, or go to
 http://www.gnu.org/copyleft/lesser.txt.
 --------------------------------------------------------------------------------
 */
-#include "Prerequisites.h"
+
 #include "AtmosphereManager.h"
 
 #include "SkyX.h"
@@ -125,9 +125,8 @@ namespace SkyX
 			mGPUManager->setGpuProgramParameter(GPUManager::GPUP_FRAGMENT, "uG2", mOptions.G*mOptions.G, false);
 		}
 
-		if ((NewOptions.Exposure != mOptions.Exposure ||
-			ForceToUpdateAll) && 
-			(mSkyX->getLightingMode() == SkyX::LM_LDR))
+		if (NewOptions.Exposure != mOptions.Exposure ||
+			ForceToUpdateAll)
 		{
 			mOptions.Exposure = NewOptions.Exposure;
 
