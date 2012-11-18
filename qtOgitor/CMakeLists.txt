@@ -68,8 +68,10 @@ else(NOT QT4_FOUND)
         ./src/ogitorpreferenceswidget.cpp
         ./include/ogrewidget.hxx
         ./src/ogrewidget.cpp
-        ./include/paths.h
+        ./include/paths.hxx
         ./src/paths.cpp
+	   ./include/postprocessingview.hxx
+	   ./src/postprocessingview.cpp
         ./include/preferencesmanager.hxx
         ./src/preferencesmanager.cpp
         ./include/projectfilesview.hxx
@@ -78,7 +80,7 @@ else(NOT QT4_FOUND)
         ./src/propertiesviewcustom.cpp
         ./include/propertiesviewgeneral.hxx
         ./src/propertiesviewgeneral.cpp
-        ./include/qtogitorsystem.h
+        ./include/qtogitorsystem.hxx
         ./src/qtogitorsystem.cpp
         ./include/sceneview.hxx
         ./src/sceneview.cpp
@@ -123,6 +125,7 @@ else(NOT QT4_FOUND)
         ./include/ofstreewidget.hxx
         ./include/ogitorpreferenceswidget.hxx
         ./include/ogrewidget.hxx
+	   ./include/postprocessingview.hxx
         ./include/preferencesmanager.hxx
         ./include/projectfilesview.hxx
         ./include/propertiesviewcustom.hxx

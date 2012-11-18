@@ -35,7 +35,7 @@
 #include "entityview.hxx"
 #include "terraintoolswidget.hxx"
 
-#include "qtogitorsystem.h"
+#include "qtogitorsystem.hxx"
 #include "BaseEditor.h"
 #include "NodeEditor.h"
 #include "EntityEditor.h"

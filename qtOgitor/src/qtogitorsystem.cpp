@@ -30,7 +30,7 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "qtogitorsystem.h"
+#include "qtogitorsystem.hxx"
 #include "mainwindow.hxx"
 #include "ogrewidget.hxx"
 #include "sceneview.hxx"

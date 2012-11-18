@@ -48,7 +48,7 @@
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
-#include "qtogitorsystem.h"
+#include "qtogitorsystem.hxx"
 #include "ogitorpreferenceswidget.hxx"
 #include "shortcutsettings.hxx"
 
