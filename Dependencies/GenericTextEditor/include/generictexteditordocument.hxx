@@ -135,6 +135,7 @@ protected:
     QCompleter*         mCompleter;
     bool                mTextModified;
     bool                mInitialDisplay;
+    bool                mCloseEvtAlreadyProcessed;
 };
 
 //-----------------------------------------------------------------------------------------

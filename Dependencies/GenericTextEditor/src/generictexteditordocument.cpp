@@ -45,7 +45,7 @@
 
 GenericTextEditorDocument::GenericTextEditorDocument(QWidget *parent) : QPlainTextEdit(parent), 
 mCodec(0), mCompleter(0), mDocName(""), mFilePath(""), mTextModified(false), mFile(0), mIsOfsFile(false),
-mInitialDisplay(true)
+mInitialDisplay(true), mCloseEvtAlreadyProcessed(false)
 {
     QSettings settings;
 
@@ -144,7 +144,7 @@ void GenericTextEditorDocument::displayText(QString docName, QString text, QStri
     mCodec->onAddCompleter();
     mCodec->onAddHighlighter();
 
-    setWindowModified(false);
+    setTextModified(false);
 
     mCodec->onAfterDisplay();
 }
@@ -472,6 +472,9 @@ bool GenericTextEditorDocument::saveDefaultLogic()
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::closeEvent(QCloseEvent* event)
 {
+    if(mCloseEvtAlreadyProcessed == true)
+        return;
+    
     if(isTextModified())
     {
         int result = QMessageBox::information(QApplication::activeWindow(), "qtOgitor", "Document has been modified. Should the changes be saved?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -485,6 +488,8 @@ void GenericTextEditorDocument::closeEvent(QCloseEvent* event)
 
     event->accept();
     getCodec()->onClose();
+
+    mCloseEvtAlreadyProcessed = true;
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::showEvent(QShowEvent* event)

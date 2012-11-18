@@ -46,16 +46,16 @@
 ScriptTextEditorCodecToolBar* ScriptTextEditorCodec::mToolBar = 0;
 
 //-----------------------------------------------------------------------------------------
-ScriptTextEditorCodecToolBar::ScriptTextEditorCodecToolBar(const QString& name) : QToolBar(name), mActRefresh(0)
+ScriptTextEditorCodecToolBar::ScriptTextEditorCodecToolBar(const QString& name) : QToolBar(name)
 {
     mActRefresh = new QAction("Refresh Script", this);
     mActRefresh->setStatusTip("Refresh Script");
-    mActRefresh->setIcon( QIcon( ":/icons/refresh.svg"));
+    mActRefresh->setIcon(QIcon( ":/icons/refresh.svg"));
     mActRefresh->setEnabled(true);
 
     mActRun = new QAction(tr("Run Script"), this);
     mActRun->setStatusTip(tr("Run Script"));
-    mActRun->setIcon( QIcon( ":/icons/player_play.svg" ));
+    mActRun->setIcon(QIcon( ":/icons/player_play.svg" ));
     mActRun->setEnabled(true);
 
     connect(mActRefresh, SIGNAL(triggered()), this, SLOT(onRefresh()));

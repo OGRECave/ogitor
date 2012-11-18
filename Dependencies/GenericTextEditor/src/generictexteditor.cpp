@@ -232,7 +232,7 @@ bool GenericTextEditor::isDocAlreadyShowing(QString docName, GenericTextEditorDo
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::tabContentChange()
 {
-    mActSave->setEnabled(true);
+    mActSave->setEnabled(mActiveDocument->isTextModified());
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::closeTab(int index)
