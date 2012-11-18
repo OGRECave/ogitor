@@ -413,6 +413,7 @@ void GenericTextEditorDocument::setTextModified(bool modified)
     mTextModified = modified; 
     setWindowModified(modified);
     Ogitors::OgitorsRoot::getSingletonPtr()->ChangeSceneModified(modified);
+    GenericTextEditor::getSingletonPtr()->enableSaveButton(modified);
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditorDocument::save()
