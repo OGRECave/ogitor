@@ -15,6 +15,9 @@ cmake_policy(SET CMP0003 NEW)
 # statements.
 cmake_policy(SET CMP0005 NEW)
 
+# Turn on solution folders
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 project(Ogitor)
 
 set(OGITOR_VERSION_STRING "0.5.4")
@@ -214,6 +217,8 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PythonQt/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PythonQt/generated_cpp"
 )
 set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
 
@@ -221,13 +226,12 @@ set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
 set(MAC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mac")
 set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 
-#set_target_properties(ALL_BUILD PROPERTIES SOLUTION_FOLDER CMake)
-#set_target_properties(ZERO_CHECK PROPERTIES SOLUTION_FOLDER CMake)
-#set_target_properties(INSTALL PROPERTIES SOLUTION_FOLDER CMake)
-#set_target_properties(PACKAGE PROPERTIES SOLUTION_FOLDER CMake)
-
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
 file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
+
+#if(UNIX)
+#    file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/share/ogitor/Help)
+#endif(UNIX)
 
 # Unity build options
 # A Unity build includes all sources files in just a few actual compilation units
@@ -322,6 +326,10 @@ add_subdirectory(Dependencies/HYDRAX/Hydrax/src/Hydrax)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
+add_subdirectory(Dependencies/PythonQt)
+#if(NOT OGITOR_DIST)
+#    add_subdirectory(Dependencies/pythonqt/generator)
+#endif(NOT OGITOR_DIST)
 #add_subdirectory(Dependencies/lua)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
@@ -341,6 +349,7 @@ add_subdirectory(Plugins/DotSceneSerializer)
 add_subdirectory(Plugins/OgModularZone)
 add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
+add_subdirectory(Plugins/OgPythonQtScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 #add_subdirectory(Plugins/OgQtExample)
@@ -360,14 +369,7 @@ endif(NOT UNIX)
 
 add_subdirectory(RunPath)
 
-#add_subdirectory(Help)
-
-add_custom_target(lupdate
-    COMMAND ${PROJECT_SOURCE_DIR}/gen-qt-projectfile ${PROJECT_SOURCE_DIR} > ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
-    COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
-)
-
+add_subdirectory(Help)
 
 if(WIN32)
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/windows.cmake)
@@ -395,6 +397,9 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+set_target_properties(uninstall PROPERTIES FOLDER CMake) 
+
 
 # no package support for Linux or Mac, yet.
 if(WIN32 AND NOT UNIX)
