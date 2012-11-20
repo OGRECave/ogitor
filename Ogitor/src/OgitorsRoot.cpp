@@ -548,10 +548,14 @@ void OgitorsRoot::RegisterAllEditorObjects(Ogre::StringVector* pDisabledPluginPa
 
     PluginList.clear();
 
-    if(mScriptInterpreterList["AngelScript"] != 0)
+    //FIXME: How do we decide what interpreter to use?
+    if(mScriptInterpreterList["PythonQt"] != 0)
     {
-        mScriptInterpreter = mScriptInterpreterList["AngelScript"];
+        mScriptInterpreter = mScriptInterpreterList["PythonQt"];
         mScriptInterpreter->Init();
+        std::string modstr = "main";
+        std::string commandstr = "print 'hello'";
+        mScriptInterpreter->execString(modstr, commandstr);
     }
     else
     {
@@ -664,11 +668,19 @@ void OgitorsRoot::LoadPlugin(Ogre::String pluginPath, bool noRegistration)
         {
             it->second.mName = pluginName;
             it->second.mLoaded = true;
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("********************************************************") );
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("Loaded plugin:") );
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, it->second.mName );
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("********************************************************") );
         }
         else
         {
             it->second.mName = pluginPath;
             it->second.mLoadingError = true;
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("********************************************************") );
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("Could not load plugin:") );
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, it->second.mName );
+            Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("********************************************************") );
             lib->unload();
         }
     }
@@ -2011,6 +2023,10 @@ void OgitorsRoot::RegisterScriptInterpreter(void *pluginIdentifier, OgitorsScrip
             ScriptInterpreterMap::iterator it = mScriptInterpreterList.find(interpreter->getTypeString());
             if(it == mScriptInterpreterList.end())
             {
+                Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("******************************************************************") );
+                Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("Got script interpreter:") );
+                Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, interpreter->getTypeString() );
+                Ogre::LogManager::getSingletonPtr()->logMessage( Ogre::LML_CRITICAL, Ogre::String("******************************************************************") );
                 mScriptInterpreterList.insert(ScriptInterpreterMap::value_type(interpreter->getTypeString(), interpreter));
             }
         }
