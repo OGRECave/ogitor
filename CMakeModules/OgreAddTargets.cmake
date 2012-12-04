@@ -70,7 +70,7 @@ macro(create_unity_build_files TARGETNAME)
       # test if file is more than just a header
       get_filename_component(_EXT ${_FILE} EXT)
       list(FIND _EXCLUDES ${_FILE} _EXCLUDED)
-      if ((_EXT STREQUAL ".cpp") AND (_EXCLUDED EQUAL "-1"))
+      if (((_EXT STREQUAL ".cpp") OR (_EXT STREQUAL ".cxx")) AND (_EXCLUDED EQUAL "-1"))
         set(_FILE_CONTENTS "${_FILE_CONTENTS}\#include \"${_FILE}\"\n")
         math(EXPR _FILE_CNT "${_FILE_CNT}+1")
         if(_FILE_CNT EQUAL OGITOR_UNITY_FILES_PER_UNIT)
