@@ -389,7 +389,7 @@ TiXmlElement* CLightEditor::exportDotScene(TiXmlElement *pParent)
 //-----------------------------------------------------------------------------------------
 CLightEditorFactory::CLightEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Light Object";
+    mTypeName = "Light";
     mEditorType = ETYPE_LIGHT;
     mAddToObjectList = true;
     mRequirePlacement = true;

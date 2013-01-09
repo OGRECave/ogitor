@@ -744,7 +744,7 @@ void CPGInstanceManager::_createChildEditor(int index, Ogre::Vector3 pos, Ogre::
     q1.FromAngleAxis(Ogre::Degree(yaw), Ogre::Vector3::UNIT_Y);
     params["orientation"] = OgitorsPropertyValue(PROP_QUATERNION, Ogre::Any(q1));
 
-    mInstanceList[index].instance = static_cast<CPGInstanceEditor*>(mOgitorsRoot->CreateEditorObject(this, "PGInstance Object", params, true, false));
+    mInstanceList[index].instance = static_cast<CPGInstanceEditor*>(mOgitorsRoot->CreateEditorObject(this, "PGInstance", params, true, false));
 
     OgitorsUndoManager::getSingletonPtr()->EndCollection(false, true);
 }
@@ -845,7 +845,7 @@ void CPGInstanceManager::OnMouseWheel (CViewportEditor *viewport, Ogre::Vector2 
 //-----------------------------------------------------------------------------------------
 CPGInstanceManagerFactory::CPGInstanceManagerFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "PGInstance Manager Object";
+    mTypeName = "PGInstance Manager";
     mEditorType = ETYPE_CUSTOM_MANAGER;
     mAddToObjectList = true;
     mRequirePlacement = false;

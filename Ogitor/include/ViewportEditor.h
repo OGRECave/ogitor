@@ -37,12 +37,6 @@
 
 namespace Ogitors
 {
-    /** Compositor data structure */
-    struct COMPOSITORPUSH
-    {
-        Ogre::String name;       /** Compositor name */
-        bool         enabled;    /** Compositor enabled flag */
-    };
 
     //! Viewport editor class
     /*!  
@@ -53,23 +47,23 @@ namespace Ogitors
         friend class CViewportEditorFactory;
     public:
         /**
-        * Fetches viewport' camera position
-        * @return viewport' camera position
+        * Fetches viewport camera position
+        * @return viewport camera position
         */
         inline Ogre::Vector3    getCamPosition() { return mCamPosition->get(); }
         /**
-        * Fetches viewport' camera orientation
-        * @return viewport' camera orientation
+        * Fetches viewport camera orientation
+        * @return viewport camera orientation
         */
         inline Ogre::Quaternion getCamOrientation() { return mCamOrientation->get(); }
         /**
-        * Fetches viewport' camera polygon mode
-        * @return viewport' camera polygon mode
+        * Fetches viewport camera polygon mode
+        * @return viewport camera polygon mode
         */
         inline int              getCamPolyMode() { return mCamPolyMode->get(); }
         /**
-        * Fetches viewport' camera clip distance
-        * @return viewport' camera clip distance
+        * Fetches viewport camera clip distance
+        * @return viewport camera clip distance
         */
         inline Ogre::Vector2    getCamClipDistance() { return mCamClipDistance->get(); }
         /**
@@ -77,17 +71,7 @@ namespace Ogitors
         * @return viewport index
         */
         inline int              getViewportIndex() { return mViewportIndex->get(); }
-        /**
-        * Removes compositor from the list
-        * @param name compositor name
-        */
-        void          removeCompositor(const Ogre::String& name);
-        /**
-        * Adds new compositor
-        * @param name compositor name
-        * @param position place at which to insert new compositor
-        */
-        void          addCompositor(const Ogre::String& name, int position = -1);
+        
         /** @copydoc CBaseEditor::load(bool) */
         virtual bool  load(bool async = true);
         /** @copydoc CBaseEditor::unLoad() */
@@ -130,7 +114,7 @@ namespace Ogitors
         */
         void                 renderWindowResized();
         /**
-        * Exports the parameters to a dotscene file
+        * Exports the parameters to a DotScene file
         * @param output the stream to output
         * @param indent the indentation at the beginning
         */    
@@ -140,7 +124,6 @@ namespace Ogitors
     protected:
         Ogre::Viewport                      *mHandle;               /** Viewport handle */       
 
-        OgitorsProperty<int>               *mCompositorCount;       /** Compositor count property handle */
         OgitorsProperty<int>               *mViewportIndex;         /** Viewport index property handle */
         OgitorsProperty<Ogre::Vector4>     *mPlacement;             /** Placement coordinates property handle */
         OgitorsProperty<bool>              *mOverlays;              /** Overlay(s) flagproperty handle */
@@ -156,7 +139,6 @@ namespace Ogitors
 
         OgitorsScopedConnection             mCameraConnections[6];
 
-        std::vector<COMPOSITORPUSH>  mCompositorStorage;            /** Compositor(s) storage list */
         CCameraEditor               *mActiveCamera;                 /** Active camera handle */
         CCameraEditor               *mViewCamera;                   /** View camera handle */
 
@@ -257,28 +239,7 @@ namespace Ogitors
         * @return true if property handle is valid 
         */
         bool _setColour(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
-        /**
-        * Property setter for displaying compositor(s) flag (internal)
-        * @param property Handle to property responsible for displaying compositor(s) flag
-        * @param value new compositor(s) display flag
-        * @return true if property handle is valid 
-        */
-        bool _setCompositorEnabled(OgitorsPropertyBase* property, const bool& value);
-        /**
-        * Property setter for compositor(s) name (internal)
-        * @param property Handle to property responsible for compositor(s) name
-        * @param value new compositor(s) name
-        * @return true if property handle is valid 
-        */
-        bool _setCompositorName(OgitorsPropertyBase* property, const Ogre::String& value);
-        /**
-        * Restores compositor(s) in previous glory (undoes the operation(s))
-        */
-        bool _setCompositorNamedConstant(OgitorsPropertyBase* property, const float& value);
-        bool _setCompositorNamedConstantColourValue(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
-
-        void _restoreCompositors();
-
+        
 
         /// CAMERA TRACKING EVENTS
 
@@ -629,13 +590,6 @@ namespace Ogitors
         /** @copydoc CBaseEditorFactory::CreateObject(CBaseEditor **, OgitorsPropertyValueMap &) */
         virtual CBaseEditor *CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params);
         /** @copydoc CBaseEditorFactory::DestroyObject(CBaseEditor *) */
-        virtual void DestroyObject(CBaseEditor *object);
-        /**
-        * Fetches compositor name(s)
-        * @return compositor name(s)
-        */
-        static PropertyOptionsVector *GetCompositorNames() { return &mCompositorNames; }
-    protected:
-        static PropertyOptionsVector mCompositorNames;                    /** List of compositor names in the in the current user assets */
+        virtual void DestroyObject(CBaseEditor *object);       
     };
 }

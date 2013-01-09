@@ -52,7 +52,6 @@ namespace Ogitors
             return strcmp(o1.mKey.c_str(), o2.mKey.c_str()) < 0;
         }
     };
-
     
     typedef Ogre::vector<PropertyOption>::type PropertyOptionsVector;
 

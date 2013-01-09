@@ -70,8 +70,6 @@ else(NOT QT4_FOUND)
         ./src/ogrewidget.cpp
         ./include/paths.hxx
         ./src/paths.cpp
-	   ./include/postprocessingview.hxx
-	   ./src/postprocessingview.cpp
         ./include/preferencesmanager.hxx
         ./src/preferencesmanager.cpp
         ./include/projectfilesview.hxx
@@ -125,7 +123,6 @@ else(NOT QT4_FOUND)
         ./include/ofstreewidget.hxx
         ./include/ogitorpreferenceswidget.hxx
         ./include/ogrewidget.hxx
-	   ./include/postprocessingview.hxx
         ./include/preferencesmanager.hxx
         ./include/projectfilesview.hxx
         ./include/propertiesviewcustom.hxx

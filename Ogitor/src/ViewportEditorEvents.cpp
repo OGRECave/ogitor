@@ -777,7 +777,7 @@ namespace Ogitors
                 Ogre::String name = mOgitorsRoot->GetTerrainEditorObject()->getTypeName();
 
                 /* Only attempt to select the page if it's a Terrain Group Object type */
-                if(name == "Terrain Group Object") 
+                if(name == "Terrain Group") 
                 {
                     CTerrainGroupEditor* terrainGroupEditor = (CTerrainGroupEditor*)selected;
                     Ogre::TerrainGroup* handle = (Ogre::TerrainGroup*)terrainGroupEditor->getHandle();

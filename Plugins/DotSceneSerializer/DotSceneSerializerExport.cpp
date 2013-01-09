@@ -202,7 +202,7 @@ int CDotSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     }
 
     // export viewports
-    NameObjectPairList vpList = ogRoot->GetObjectsByTypeName("Viewport Object");
+    NameObjectPairList vpList = ogRoot->GetObjectsByTypeName("Viewport");
     NameObjectPairList::const_iterator vpIt = vpList.begin();
     while(vpIt != vpList.end())
     {

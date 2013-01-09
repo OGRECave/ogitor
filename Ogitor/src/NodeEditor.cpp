@@ -429,7 +429,7 @@ TiXmlElement* CNodeEditor::exportDotScene(TiXmlElement *pParent)
 //-----------------------------------------------------------------------------------------
 CNodeEditorFactory::CNodeEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Node Object";
+    mTypeName = "Node";
     mEditorType = ETYPE_NODE;
     mAddToObjectList = true;
     mRequirePlacement = true;

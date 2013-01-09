@@ -57,7 +57,6 @@ void CEntityEditor::onDropMaterial(Ogre::Ray ray, Ogre::Vector3 position, const 
         int submeshid = OgitorsUtils::PickSubMesh(ray, mEntityHandle);
         if(submeshid > -1)
         {
-
             CSceneManagerEditor *mSceneMgr = mOgitorsRoot->GetSceneManagerEditor();
 
             if(mSceneMgr->getShadowsEnabled())
@@ -392,7 +391,7 @@ void CEntityEditor::OnShadowsTechniqueChange(const OgitorsPropertyBase* property
 //-----------------------------------------------------------------------------------------
 CEntityEditorFactory::CEntityEditorFactory(OgitorsView *view) : CNodeEditorFactory(view)
 {
-    mTypeName = "Entity Object";
+    mTypeName = "Entity";
     mEditorType = ETYPE_ENTITY;
     mAddToObjectList = false;
     mRequirePlacement = true;

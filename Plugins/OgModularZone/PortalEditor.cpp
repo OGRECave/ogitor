@@ -276,7 +276,7 @@ bool PortalEditor::connectNearPortals(bool bAllowMove)
 {
     //compare this portal with others in the scene
     //NameObjectPairList portalList = OgitorsRoot::getSingletonPtr()->GetObjectsByType(this->getTypeID());
-    NameObjectPairList portalList = OgitorsRoot::getSingletonPtr()->GetObjectsByTypeName("MZ Portal Object");
+    NameObjectPairList portalList = OgitorsRoot::getSingletonPtr()->GetObjectsByTypeName("MZ Portal");
     NameObjectPairList::iterator itr;
 
     //check current connection

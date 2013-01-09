@@ -104,7 +104,7 @@ void ModularZoneToolbar::addZoneProperties(void)
 
             for(unsigned int i = 0;i < objects.size();i++)
             {
-                if(objects[i]->getTypeName() != "Modular Zone Object")
+                if(objects[i]->getTypeName() != "Modular Zone")
                     continue;
 
                 if(objects[i]->getCustomProperties()->hasProperty("ParentZone"))
@@ -137,7 +137,7 @@ void ModularZoneToolbar::createZone(void)
             obj->getSelection(objects);
             Ogitors::ObjectVector::iterator itr;
             itr = objects.begin();
-            if((*itr)->getTypeName()=="Entity Object")//
+            if((*itr)->getTypeName()=="Entity")//
             {
             //Find the mesh,position, etc from this entity
             Ogitors::CEntityEditor* ent = dynamic_cast<Ogitors::CEntityEditor*>((*itr));
@@ -168,7 +168,7 @@ void ModularZoneToolbar::createZone(void)
             //destroy the entity
             root->DestroyEditorObject(ent,true);
             //create a zone with the same mesh
-            ModularZoneEditor* zone = dynamic_cast<ModularZoneEditor*>(root->CreateEditorObject(0,"Modular Zone Object",zoneparams,true,true));
+            ModularZoneEditor* zone = dynamic_cast<ModularZoneEditor*>(root->CreateEditorObject(0,"Modular Zone",zoneparams,true,true));
             //TODO: should AddtoTreeList be TRUE? This isn't really part of the scene, its just a new
             //zone (unfinished) design. But it may make its easier to locate if you can selected from
             //the treetlist ... hmmm
@@ -178,7 +178,7 @@ void ModularZoneToolbar::createZone(void)
             //selectable verts for hanging portals on
             zone->setDesignMode();
             }
-            //else if((*itr)->getTypeName()=="Modular Zone Object")
+            //else if((*itr)->getTypeName()=="Modular Zone")
             //{
             //    //toggle design mode
             //    ModularZoneEditor* zone = dynamic_cast<ModularZoneEditor*>((*itr));

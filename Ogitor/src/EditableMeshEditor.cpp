@@ -352,7 +352,7 @@ bool CEditableMeshEditor::unLoad()
 //-------------------------------------------------------------------------------
 CEditableMeshEditorFactory::CEditableMeshEditorFactory(OgitorsView *view) : CNodeEditorFactory(view)
 {
-    mTypeName = "Editable Mesh Object";
+    mTypeName = "Editable Mesh";
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = true;
     mRequirePlacement = true;

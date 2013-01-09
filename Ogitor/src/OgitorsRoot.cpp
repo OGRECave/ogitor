@@ -77,6 +77,7 @@ namespace Ogitors
 {
 PropertyOptionsVector OgitorsRoot::mModelNames;
 PropertyOptionsVector OgitorsRoot::mMaterialNames;
+PropertyOptionsVector OgitorsRoot::mCompositorNames;
 Ogre::NameValuePairList OgitorsRoot::mModelMaterialMap;
 PropertyOptionsVector OgitorsRoot::mSkyboxMaterials;
 PropertyOptionsVector OgitorsRoot::mAutoTrackTargets;
@@ -208,7 +209,8 @@ mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSourc
     mObjectDisplayOrder.push_back(ETYPE_CUSTOM_MANAGER);
     mObjectDisplayOrder.push_back(ETYPE_FOLDER);
     mObjectDisplayOrder.push_back(ETYPE_LIGHT);
-    mObjectDisplayOrder.push_back(ETYPE_CAMERA);
+    mObjectDisplayOrder.push_back(ETYPE_CAMERA);  
+    mObjectDisplayOrder.push_back(ETYPE_SCREEN_EFFECT);
 
     for(int x = ETYPE_CAMERA + 1;x < LAST_EDITOR;x++)
     {
@@ -439,14 +441,14 @@ bool OgitorsRoot::TriggerImportSerializer(Ogre::String name)
                 return false;
         }
 
-        setLoadState(LS_LOADING);
+        SetLoadState(LS_LOADING);
 
         try
         {
             if( i->second->Import() == SCF_OK )
                 return true;
             else
-                setLoadState(LS_UNLOADED);
+                SetLoadState(LS_UNLOADED);
         }
         catch(...)
         {
@@ -790,7 +792,7 @@ void OgitorsRoot::UnRegisterObjectName(Ogre::String name, CBaseEditor *obj)
 //-----------------------------------------------------------------------------------------
 void OgitorsRoot::OnTerrainMaterialChange(CBaseEditor *terrainobject)
 {
-    NameObjectPairList hydrax = GetObjectsByTypeName("Hydrax Object");
+    NameObjectPairList hydrax = GetObjectsByTypeName("Hydrax");
     NameObjectPairList::const_iterator i = hydrax.begin();
     if(i != hydrax.end())
     {
@@ -993,7 +995,7 @@ CBaseEditor *OgitorsRoot::CreateEditorObject(CBaseEditor *parent, const Ogre::St
     {
         OgitorsPropertyValueMap::const_iterator ni;
 
-        if ((ni = params.find("parentnode")) != params.end())
+        if((ni = params.find("parentnode")) != params.end())
         {
             parent = FindObject(Ogre::any_cast<Ogre::String>(ni->second.val));
         }
@@ -1545,7 +1547,7 @@ bool OgitorsRoot::LoadProjectOptions(TiXmlElement *optRoot)
 //-----------------------------------------------------------------------------------------
 int OgitorsRoot::LoadScene(Ogre::String filename)
 {
-    setLoadState(LS_LOADING);
+    SetLoadState(LS_LOADING);
 
     ClearProjectOptions();
     mPostSceneUpdateList.clear();
@@ -1560,7 +1562,7 @@ int OgitorsRoot::LoadScene(Ogre::String filename)
     {
         msg = mSystem->Translate("Please load a Scene File...");
         mSystem->UpdateLoadProgress(-1, msg);
-        setLoadState(LS_UNLOADED);
+        SetLoadState(LS_UNLOADED);
         (*mProjectFile).unmount();
     }
 
@@ -1654,7 +1656,7 @@ bool OgitorsRoot::AfterLoadScene()
         params["camera::position"] = pvalue;
         unsigned int id = 2000000002;
         params["object_id"] = OgitorsPropertyValue(PROP_UNSIGNED_INT, Ogre::Any(id));
-        mActiveViewport = static_cast<CViewportEditor*>(CreateEditorObject(0,"Viewport Object",params,false,false));
+        mActiveViewport = static_cast<CViewportEditor*>(CreateEditorObject(0,"Viewport",params,false,false));
     }
 
     unsigned int vismask = 0x80000000;
@@ -1743,7 +1745,7 @@ bool OgitorsRoot::AfterLoadScene()
         mLayerNames.push_back(PropertyOption(mProjectOptions.LayerNames[li], Ogre::Any(li)));
     }
 
-    setLoadState(LS_LOADED);
+    SetLoadState(LS_LOADED);
     SetSceneModified(false);
     return true;
 }
@@ -1769,10 +1771,10 @@ bool OgitorsRoot::SaveScene(bool SaveAs, Ogre::String exportfile)
             controls because we change the names of certain items
             for example the *.OGSCENE file name to match the OFS file  */
             SetEditorTool(TOOL_SELECT);
-            setLoadState(LS_UNLOADED);
+            SetLoadState(LS_UNLOADED);
             mSystem->ClearTreeItems();
             FillTreeView();
-            setLoadState(LS_LOADED);
+            SetLoadState(LS_LOADED);
         }
 
         SetSceneModified(false);
@@ -1824,7 +1826,7 @@ bool OgitorsRoot::TerminateScene()
     mMultiSelection = 0;
     mActiveViewport = 0;
 
-    setLoadState(LS_UNLOADED);
+    SetLoadState(LS_UNLOADED);
 
     ClearEditors();
 
@@ -1841,6 +1843,7 @@ bool OgitorsRoot::TerminateScene()
     DestroyResourceGroup(PROJECT_TEMP_RESOURCE_GROUP);
 
     mMaterialNames.clear();
+    mCompositorNames.clear();
     mAutoTrackTargets.clear();
     mAutoTrackTargets.push_back(PropertyOption("None",Ogre::Any(Ogre::String("None"))));
 
@@ -2105,7 +2108,7 @@ void OgitorsRoot::SetRunState(RunState state)
     EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 }
 //-----------------------------------------------------------------------------------------
-void OgitorsRoot::setLoadState(LoadState state)
+void OgitorsRoot::SetLoadState(LoadState state)
 {
     if(mLoadState != state)
     {

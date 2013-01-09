@@ -242,7 +242,7 @@ bool CPGInstanceEditor::_setYaw(OgitorsPropertyBase* property, const Ogre::Real&
 //-----------------------------------------------------------------------------------------
 CPGInstanceEditorFactory::CPGInstanceEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "PGInstance Object";
+    mTypeName = "PGInstance";
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = false;
     mRequirePlacement = true;

@@ -64,8 +64,6 @@ namespace Ogitors
         r = engine->RegisterObjectMethod("ViewportEditor", "CameraEditor@ getCamera()", asMETHOD(CViewportEditor, getCameraEditor), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("ViewportEditor", "void setCamera(CameraEditor@)", asMETHOD(CViewportEditor, setCameraEditor), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("ViewportEditor", "int getViewportRect(Vector4 &out)", asMETHOD(CViewportEditor, getRect), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("ViewportEditor", "void addCompositor(const string &in, int)", asMETHOD(CViewportEditor, addCompositor), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("ViewportEditor", "void removeCompositor(const string &in)", asMETHOD(CViewportEditor, removeCompositor), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("ViewportEditor", "int getCamPolyMode()", asMETHOD(CViewportEditor, getCamPolyMode), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("ViewportEditor", "int getIndex()", asMETHOD(CViewportEditor, getViewportIndex), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("ViewportEditor", "Vector3 getCamPosition()", asMETHOD(CViewportEditor, getCamPosition), asCALL_THISCALL);assert(r >= 0);

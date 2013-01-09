@@ -1,4 +1,4 @@
-/*/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 /// An
 ///    ___   ____ ___ _____ ___  ____
 ///   / _ \ / ___|_ _|_   _/ _ \|  _ \
@@ -28,34 +28,29 @@
 /// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
-////////////////////////////////////////////////////////////////////////////////*/
+//////////////////////////////////////////////////////////////////////////////////
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QToolButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPixmap>
-#include <QtGui/QImage>
-#include "qtogitorsystem.hxx"
-#include "postprocessingview.hxx"
-#include "BaseEditor.h"
-#include "NodeEditor.h"
-#include "EntityEditor.h"
-#include "ViewportEditor.h"
-#include "SceneManagerEditor.h"
+#ifndef PLUGIN_H
+#define PLUGIN_H
 
-extern bool ViewKeyboard[1024];
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+   #ifdef PLUGIN_EXPORT
+     #define PluginExport __declspec (dllexport)
+   #else
+     #define PluginExport __declspec (dllimport)
+   #endif
+#else
+   #define PluginExport
+#endif
 
-using namespace Ogitors;
-//----------------------------------------------------------------------------------------
-PostProcessingViewWidget::PostProcessingViewWidget(QWidget *parent) :
-    QWidget(parent)
-{
-    
-}
-//----------------------------------------------------------------------------------------
-PostProcessingViewWidget::~PostProcessingViewWidget()
+namespace Ogitors
 {
 }
-//----------------------------------------------------------------------------------------
+
+extern "C" bool PluginExport dllStartPlugin(void *identifier, Ogre::String& name);
+
+extern "C" bool PluginExport dllGetPluginName(Ogre::String& name);
+
+extern "C" bool PluginExport dllStopPlugin(void);
+
+#endif

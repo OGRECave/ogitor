@@ -310,7 +310,7 @@ void CPagingManager::OgitorSectionFactory::destroyInstance(Ogre::PagedWorldSecti
 //-------------------------------------------------------------------------------
 CPagingManagerFactory::CPagingManagerFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Paging Manager Object";
+    mTypeName = "Paging Manager";
     mEditorType = ETYPE_PAGINGMANAGER;
     mAddToObjectList = true;
     mIcon = "pagingmanager.svg";

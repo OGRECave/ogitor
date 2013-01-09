@@ -113,20 +113,12 @@ void CFolderEditor::createProperties(OgitorsPropertyValueMap &params)
 //-----------------------------------------------------------------------------------------
 CFolderEditorFactory::CFolderEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Folder Object";
+    mTypeName = "Folder";
     mEditorType = ETYPE_FOLDER;
     mAddToObjectList = true;
     mRequirePlacement = false;
     mIcon = "folder.svg";
-    mCapabilities = CAN_DELETE | CAN_DROP | CAN_UNDO;
-
-    //OgitorsPropertyDef *definition;
-
-    //AddPropertyDefinition("position","Position","The position of the object.",PROP_VECTOR3);
-    //AddPropertyDefinition("orientation","Orientation","The orientation of the object.",PROP_QUATERNION,true,false);
-    //AddPropertyDefinition("scale","Scale","The scale of the object.", PROP_VECTOR3);
-    //definition = AddPropertyDefinition("autotracktarget","Tracking Target","The object's tracking target.",PROP_STRING);
-    //definition->setOptions(OgitorsRoot::GetAutoTrackTargets());
+    mCapabilities = CAN_DELETE | CAN_DROP | CAN_UNDO | CAN_ACCEPTCOPY | CAN_ACCEPTPASTE;
 
     OgitorsPropertyDefMap::iterator it = mPropertyDefs.find("layer");
     it->second.setAccess(false, false);

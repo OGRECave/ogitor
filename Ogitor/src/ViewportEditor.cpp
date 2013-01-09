@@ -44,7 +44,6 @@
 
 using namespace Ogitors;
 
-PropertyOptionsVector  CViewportEditorFactory::mCompositorNames;
 //-------------------------------------------------------------------------------
 CViewportEditor::CViewportEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
 {
@@ -64,8 +63,6 @@ CViewportEditor::CViewportEditor(CBaseEditorFactory *factory) : CBaseEditor(fact
     mLastClickPoint = Ogre::Vector2(-5,-5);
     mLastButtons = 0;
     mUndoManager = OgitorsUndoManager::getSingletonPtr();
-
-    mCompositorStorage.clear();
 }
 //-------------------------------------------------------------------------------
 CViewportEditor::~CViewportEditor()
@@ -104,28 +101,6 @@ void CViewportEditor::renderWindowResized()
     }
 }
 //-------------------------------------------------------------------------------
-void CViewportEditor::_restoreCompositors()
-{
-    if(!mHandle || mCompositorCount->get() < 1) 
-        return;
-
-    Ogre::CompositorManager *comMngr = Ogre::CompositorManager::getSingletonPtr();
-
-    int count = mCompositorCount->get();
-
-    for(int i = 0;i < count;i++)
-    {
-        Ogre::String propName = "compositor" + Ogre::StringConverter::toString(i);
-        Ogre::String compName;
-        bool enabled;
-        mProperties.getValue(propName + "::name", compName);
-        mProperties.getValue(propName + "::enabled", enabled);
-        comMngr->addCompositor(mHandle, compName);
-        if(enabled)
-            comMngr->setCompositorEnabled(mHandle, compName, enabled);
-    }
-}
-//-------------------------------------------------------------------------------
 void CViewportEditor::_createViewport()
 {
     OgitorsPropertyValueMap params;
@@ -151,7 +126,7 @@ void CViewportEditor::_createViewport()
     params["autoaspectratio"] = value;
 
     CBaseEditor *ScnMgr = mOgitorsRoot->GetSceneManagerEditor();
-    CBaseEditorFactory *factory = mOgitorsRoot->GetEditorObjectFactory("Camera Object");
+    CBaseEditorFactory *factory = mOgitorsRoot->GetEditorObjectFactory("Camera");
     mViewCamera = static_cast<CCameraEditor*>(factory->CreateObject(&ScnMgr,params));
     mViewCamera->load();
 
@@ -264,173 +239,16 @@ void CViewportEditor::setCameraEditor(CCameraEditor *camed)
 
     mActiveCamera->getCamera()->setAspectRatio((Ogre::Real)mHandle->getActualWidth() / (Ogre::Real)mHandle->getActualHeight());
     mHandle->setCamera(mActiveCamera->getCamera());
-
-    _restoreCompositors();
 }
 //-----------------------------------------------------------------------------------------
-void CViewportEditor::addCompositor(const Ogre::String& name, int position)
-{
-    Ogre::String propName;
-    Ogre::String propName2;
-    Ogre::String compName;
-    bool enabled;
-
-    int count = mCompositorCount->get();
-
-    if(position == -1)
-        position = count;
-
-
-    for(int i = 0;i < count;i++)
-    {
-        propName = "compositor" + Ogre::StringConverter::toString(i);
-        mProperties.getValue(propName + "::name", compName);
-        if(compName == name)
-            return;
-    }
-
-    if(mHandle)
-    {
-        try
-        {
-            Ogre::CompositorManager::getSingletonPtr()->addCompositor(mHandle, name, position);
-        }
-        catch(...)
-        {
-            return;
-        }
-    }
-
-    Ogre::String sCount1 = "Compositors::Compositor" + Ogre::StringConverter::toString(count);
-    Ogre::String sCount2 = "compositor" + Ogre::StringConverter::toString(count);
-
-    mFactory->AddPropertyDefinition(sCount2 + "::enabled", sCount1 + "::Enabled", "Is the compositor enabled?", PROP_BOOL, true, true);
-    OgitorsPropertyDef *definition = mFactory->AddPropertyDefinition(sCount2 + "::name", sCount1 + "::Name", "Compositor Name", PROP_STRING, true, true);
-    definition->setOptions(CViewportEditorFactory::GetCompositorNames());
-    
-    if(position == count)
-    {
-        PROPERTY(sCount2 + "::enabled", bool, false, position, SETTER(bool, CViewportEditor, _setCompositorEnabled)); 
-        PROPERTY(sCount2 + "::name", Ogre::String, name, position, SETTER(Ogre::String, CViewportEditor, _setCompositorName)); 
-    }
-    else
-    {
-        for(int c = count - 1;c >= position;c--)
-        {
-            propName = "compositor" + Ogre::StringConverter::toString(c);
-            propName2 = "compositor" + Ogre::StringConverter::toString(c + 1);
-            mProperties.getValue(propName + "::name", compName);
-            mProperties.getValue(propName + "::enabled", enabled);
-
-            if(c == (count - 1))
-            {            
-                PROPERTY(sCount2 + "::enabled", bool, enabled, c + 1, SETTER(bool, CViewportEditor, _setCompositorEnabled)); 
-                PROPERTY(sCount2 + "::name", Ogre::String, compName, c + 1, SETTER(Ogre::String, CViewportEditor, _setCompositorName)); 
-            }
-            else
-            {
-                static_cast<OgitorsProperty<Ogre::String>*>(mProperties.getProperty(propName2 + "::name"))->initAndSignal(compName);
-                static_cast<OgitorsProperty<bool>*>(mProperties.getProperty(propName2 + "::enabled"))->initAndSignal(enabled);
-            }
-        }
-
-        propName = "compositor" + Ogre::StringConverter::toString(position);
-        static_cast<OgitorsProperty<Ogre::String>*>(mProperties.getProperty(propName + "::name"))->initAndSignal(name);
-        static_cast<OgitorsProperty<bool>*>(mProperties.getProperty(propName + "::enabled"))->initAndSignal(false);
-    }
-
-    mCompositorCount->set(mCompositorCount->get() + 1);
-}
-//-------------------------------------------------------------------------------
-void CViewportEditor::removeCompositor(const Ogre::String& name)
-{
-    int count = mCompositorCount->get();
-
-    for(int i = 0;i < count;i++)
-    {
-        Ogre::String propName = "compositor" + Ogre::StringConverter::toString(i);
-        Ogre::String compName;
-        Ogre::String propName2;
-        mProperties.getValue(propName + "::name", compName);
-        if(compName == name)
-        {
-            for(int c = (i + 1);c < count;c++)
-            {
-                bool enabled;
-                propName = "compositor" + Ogre::StringConverter::toString(c -1);
-                propName2 = "compositor" + Ogre::StringConverter::toString(c);
-                mProperties.getValue(propName2 + "::name", compName);
-                mProperties.getValue(propName2 + "::enabled", enabled);
-                static_cast<OgitorsProperty<Ogre::String>*>(mProperties.getProperty(propName + "::name"))->initAndSignal(compName);
-                static_cast<OgitorsProperty<bool>*>(mProperties.getProperty(propName + "::enabled"))->initAndSignal(enabled);
-            }
-            
-            propName = "compositor" + Ogre::StringConverter::toString(count - 1);
-            mProperties.removeProperty(propName + "::name");
-            mProperties.removeProperty(propName + "::enabled");
-            mCompositorCount->set(mCompositorCount->get() - 1);
-            break;
-        }
-    }
-
-    if(!mHandle)
-        return;
-
-    Ogre::CompositorManager *comMngr = Ogre::CompositorManager::getSingletonPtr();
-    Ogre::CompositorChain *chain = comMngr->getCompositorChain(mHandle);
-    Ogre::CompositorChain::InstanceIterator it = chain->getCompositors();
-
-    while(it.hasMoreElements())
-    {
-        Ogre::CompositorInstance *compositor = it.getNext();
-        Ogre::Compositor *sub = compositor->getCompositor();
-        if(sub && sub->getName() == name)
-        {
-            comMngr->removeCompositor(mHandle, name);
-            return;
-        }
-    }
-}
-//-------------------------------------------------------------------------------
 bool CViewportEditor::getPropertyContextMenu(Ogre::String propertyName, UTFStringVector &menuitems)
 {
     menuitems.clear();
-
-    if((propertyName.find("compositor") != -1) || ((propertyName.find("Compositor") != -1) && (propertyName != "Compositors")))
-    {
-        menuitems.push_back(OTR("Add Compositor") + ";:/icons/additional.svg");
-        menuitems.push_back(OTR("Remove Compositor") + ";:/icons/trash.svg");
-        return true;
-    }
-    else
-    {
-        menuitems.push_back(OTR("Add Compositor") + ";:/icons/additional.svg");
-        return true;
-    }
-
     return false;
 }
 //-------------------------------------------------------------------------------
 void CViewportEditor::onPropertyContextMenu(Ogre::String propertyName, int menuresult)
 {
-    switch(menuresult)
-    {
-    // Add Compositor, add a "Ogre/Scene" compositor, user can change it later...
-    case 0:addCompositor("Ogre/Scene");
-           break;
-    // Remove compositor
-    case 1:
-        {
-            int pos = propertyName.find("::");
-            if(pos == -1)
-                return;
-
-            Ogre::String compName;
-            mProperties.getValue(propertyName.substr(0, pos + 2) + "name", compName);
-            removeCompositor(compName);
-            break;
-        }
-    }
 }
 //-------------------------------------------------------------------------------
 bool CViewportEditor::_setIndex(OgitorsPropertyBase* property, const int& value)
@@ -571,148 +389,12 @@ bool CViewportEditor::_setColour(OgitorsPropertyBase* property, const Ogre::Colo
     return true;
 }
 //-----------------------------------------------------------------------------------------
-bool CViewportEditor::_setCompositorEnabled(OgitorsPropertyBase* property, const bool& value)
-{
-    if(mHandle)
-    {
-        Ogre::CompositorManager *comMngr = Ogre::CompositorManager::getSingletonPtr();
-        Ogre::CompositorChain *chain = comMngr->getCompositorChain(mHandle);
-        Ogre::String name;
-        mProperties.getValue("compositor" + Ogre::StringConverter::toString(property->getTag()) + "::name", name);
-        
-        comMngr->setCompositorEnabled(mHandle, name, value);
-    }
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-bool CViewportEditor::_setCompositorName(OgitorsPropertyBase* property, const Ogre::String& value)
-{
-    if(mHandle)
-    {
-        Ogre::CompositorManager *comMngr = Ogre::CompositorManager::getSingletonPtr();
-        Ogre::CompositorChain *chain = comMngr->getCompositorChain(mHandle);
-        Ogre::String name = static_cast<OgitorsProperty<Ogre::String>*>(property)->getOld();
-        Ogre::CompositorInstance *comInstance;
-        try
-        {
-            comInstance = chain->getCompositor(value);
-            if(comInstance)
-                return false;
-
-            comMngr->removeCompositor(mHandle, name);
-
-            comInstance = comMngr->addCompositor(mHandle, value, property->getTag());
-            Ogre::String enableProp = "compositor" + Ogre::StringConverter::toString(property->getTag()) + "::enabled";
-            static_cast<OgitorsProperty<bool>*>(mProperties.getProperty(enableProp))->initAndSignal(false);
-        }
-        catch(...)
-        {
-            comMngr->removeCompositor(mHandle, value);
-            return false;
-        }
-
-        Ogre::GpuProgramParametersSharedPtr params=comInstance->getTechnique()->getOutputTargetPass()->getPass(0)->getMaterial()->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-        if( params->hasNamedParameters() )
-        {
-            Ogre::GpuNamedConstants gnc = params->getConstantDefinitions();
-            for(Ogre::GpuConstantDefinitionMap::iterator it = gnc.map.begin(); it != gnc.map.end(); ++it)
-            {
-                Ogre::String name = it->first;
-
-                // FIXME: what are those duplicate names ending in "[0]"?
-                if( name.rfind("[0]") != std::string::npos )
-                    continue;
-
-                Ogre::GpuConstantDefinition gcd = it->second;
-
-                Ogre::String newProp = "compositor" + Ogre::StringConverter::toString(property->getTag()) + "::" + name;
-                Ogre::String newProp2 = "Compositors::Compositor" + Ogre::StringConverter::toString(property->getTag()) + "::" + name;
-                switch(gcd.constType)
-                {
-                    case Ogre::GCT_FLOAT1:
-                    {
-                        mFactory->AddPropertyDefinition(newProp, newProp2, "", PROP_REAL, true, true);
-                        float value = *params->getFloatPointer( params->getConstantDefinition(name).physicalIndex );
-                        PROPERTY(newProp, Ogre::Real, value, 0, SETTER(Ogre::Real, CViewportEditor, _setCompositorNamedConstant)); 
-                    }
-                    break;
-                    case Ogre::GCT_FLOAT3:
-                        mFactory->AddPropertyDefinition(newProp, newProp2, "", PROP_COLOUR, true, true);
-                        float *value = params->getFloatPointer(params->getConstantDefinition(name).physicalIndex);
-                        PROPERTY(newProp, Ogre::ColourValue, Ogre::ColourValue(value[0], value[1], value[2]), 0, SETTER(Ogre::ColourValue, CViewportEditor, _setCompositorNamedConstantColourValue)); 
-                    break;
-                }
-            }
-        }
-    }
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-bool CViewportEditor::_setCompositorNamedConstant(OgitorsPropertyBase* property, const float& value)
-{
-    Ogre::CompositorManager *comMngr = Ogre::CompositorManager::getSingletonPtr();
-    Ogre::CompositorChain *chain = comMngr->getCompositorChain(mHandle);
-
-    Ogre::String name;
-    mProperties.getValue("compositor" + Ogre::StringConverter::toString(property->getTag()) + "::name", name);
-    Ogre::CompositorInstance *comInstance = chain->getCompositor( name );
-    Ogre::GpuProgramParametersSharedPtr params=comInstance->getTechnique()->getOutputTargetPass()->getPass(0)->getMaterial()->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-
-    int pos = property->getName().rfind("::");
-    if( pos == std::string::npos )
-        return true;
-
-    Ogre::String constantName = property->getName().substr(pos+2, std::string::npos);
-    params->setNamedConstant(constantName, value);
-
-    comMngr->setCompositorEnabled(mHandle, name, false);
-    comMngr->setCompositorEnabled(mHandle, name, true);
-
-    return true;
-}
-//-----------------------------------------------------------------------------------------
-bool CViewportEditor::_setCompositorNamedConstantColourValue(OgitorsPropertyBase* property, const Ogre::ColourValue& value)
-{
-    Ogre::CompositorManager *comMngr = Ogre::CompositorManager::getSingletonPtr();
-    Ogre::CompositorChain *chain = comMngr->getCompositorChain(mHandle);
-
-    Ogre::String name;
-    mProperties.getValue("compositor" + Ogre::StringConverter::toString(property->getTag()) + "::name", name);
-    Ogre::CompositorInstance *comInstance = chain->getCompositor( name );
-    Ogre::GpuProgramParametersSharedPtr params=comInstance->getTechnique()->getOutputTargetPass()->getPass(0)->getMaterial()->getTechnique(0)->getPass(0)->getFragmentProgramParameters();
-
-    int pos = property->getName().rfind("::");
-    if( pos == std::string::npos )
-        return true;
-
-    Ogre::String constantName = property->getName().substr(pos+2, std::string::npos);
-    params->setNamedConstant(constantName, value);
-
-    comMngr->setCompositorEnabled(mHandle, name, false);
-    comMngr->setCompositorEnabled(mHandle, name, true);
-
-    return true;
-}
-//-----------------------------------------------------------------------------------------
 void CViewportEditor::prepareBeforePresentProperties()
 {
-    Ogre::ResourcePtr mRes;
-    Ogre::ResourceManager::ResourceMapIterator it = Ogre::CompositorManager::getSingleton().getResourceIterator();
-
-    PropertyOptionsVector *map = CViewportEditorFactory::GetCompositorNames();
-    map->clear();
-
-    while(it.hasMoreElements())
-    {
-        mRes = it.getNext();
-        map->push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
-    }
-    std::sort(map->begin(), map->end(), PropertyOption::comp_func);
 }
 //-----------------------------------------------------------------------------------------
 void CViewportEditor::createProperties(OgitorsPropertyValueMap &params)
 {
-    PROPERTY_PTR(mCompositorCount, "compositorcount"   ,int              ,0                       ,0, 0);
     PROPERTY_PTR(mViewportIndex  , "index"             ,int              ,0                       ,0, SETTER(int, CViewportEditor, _setIndex));
     PROPERTY_PTR(mColour         , "colour"            ,Ogre::ColourValue,Ogre::ColourValue(0,0,0),0, SETTER(Ogre::ColourValue, CViewportEditor, _setColour));
     PROPERTY_PTR(mPlacement      , "placement"         ,Ogre::Vector4    ,Ogre::Vector4(0,0,1,1)  ,0, SETTER(Ogre::Vector4, CViewportEditor, _setPlacement));
@@ -726,23 +408,6 @@ void CViewportEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mCamPolyMode    , "camera::polymode"  ,int              ,Ogre::PM_SOLID          ,0, SETTER(int, CViewportEditor, _setCamPolyMode));
     PROPERTY_PTR(mCamFOV         , "camera::fov"       ,Ogre::Real       ,1.0f                    ,0, SETTER(Ogre::Real, CViewportEditor, _setCamFOV));
 
-    int count = 0;
-    OgitorsPropertyValueMap::const_iterator it = params.find("compositorcount");
-    if(it != params.end())
-        count = Ogre::any_cast<int>(it->second.val);
-
-    OgitorsPropertyDef *definition;
-    for(int ix = 0;ix < count;ix++)
-    {
-        Ogre::String sCount1 = "Compositors::Compositor" + Ogre::StringConverter::toString(ix);
-        Ogre::String sCount2 = "compositor" + Ogre::StringConverter::toString(ix);
-        mFactory->AddPropertyDefinition(sCount2 + "::enabled", sCount1 + "::Enabled", "Is the compositor enabled?", PROP_BOOL, true, true);
-        definition = mFactory->AddPropertyDefinition(sCount2 + "::name", sCount1 + "::Name", "Compositor Name", PROP_STRING, true, true);
-        definition->setOptions(CViewportEditorFactory::GetCompositorNames());
-        PROPERTY(sCount2 + "::enabled", bool, false, ix, SETTER(bool, CViewportEditor, _setCompositorEnabled)); 
-        PROPERTY(sCount2 + "::name", Ogre::String, "", ix, SETTER(Ogre::String, CViewportEditor, _setCompositorName)); 
-    }
-
     mProperties.initValueMap(params);
 }
 //-----------------------------------------------------------------------------------------
@@ -754,7 +419,6 @@ bool CViewportEditor::load(bool async)
     if(getParent()->load())
     {
         _createViewport();
-        _restoreCompositors();
     }
     else
         return false;
@@ -833,7 +497,7 @@ TiXmlElement* CViewportEditor::exportDotScene(TiXmlElement *pParent)
 //-------------------------------------------------------------------------------
 CViewportEditorFactory::CViewportEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Viewport Object";
+    mTypeName = "Viewport";
     mEditorType = ETYPE_VIEWPORT;
     mIcon = "viewport.svg";
     mCapabilities = CAN_UNDO;
@@ -881,7 +545,7 @@ CBaseEditor *CViewportEditorFactory::CreateObject(CBaseEditor **parent, OgitorsP
 
     int vIndex;
 
-    if ((ni = params.find("index")) != params.end())
+    if((ni = params.find("index")) != params.end())
     {
         vIndex = Ogre::any_cast<int>(ni->second.val);
         if(mLastZOrder < (unsigned int)vIndex)

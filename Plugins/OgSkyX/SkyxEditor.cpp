@@ -482,7 +482,7 @@ TiXmlElement *CSkyxEditor::exportDotScene(TiXmlElement *pParent)
 //----------------------------------------------------------------------------
 CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName           = "Skyx Object";
+    mTypeName           = "Skyx";
     mEditorType         = ETYPE_SKY_MANAGER;
     mAddToObjectList    = true;
     mIcon               = "caelum.svg";

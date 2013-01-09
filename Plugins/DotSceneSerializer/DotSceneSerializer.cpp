@@ -429,7 +429,7 @@ int CDotSceneSerializer::ReadSceneNode(TiXmlElement *element, CBaseEditor *paren
             params["orientation"] = parseQuaternion(subs);
     } while(subs = subs->NextSiblingElement());
     
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Node Object", params, false, false);
+    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Node", params, false, false);
     return SCF_OK;
 }
 //----------------------------------------------------------------------------
@@ -457,7 +457,7 @@ int CDotSceneSerializer::ReadEntity(TiXmlElement *element, CBaseEditor *parent, 
     propValue.val = Ogre::Any(Ogre::StringConverter::parseBool(ValidAttr(element->Attribute("receiveShadows"))));
     params["receiveshadows"] = propValue;
     
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Entity Object", params, false, false);
+    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Entity", params, false, false);
     return SCF_OK;
 }
 //----------------------------------------------------------------------------
@@ -577,7 +577,7 @@ int CDotSceneSerializer::ReadLight(TiXmlElement *element, CBaseEditor *parent, C
         }
     } while(subs = subs->NextSiblingElement());
     
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Light Object", params, false, false);
+    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Light", params, false, false);
     return SCF_OK;
 }
 //----------------------------------------------------------------------------
@@ -621,7 +621,7 @@ int CDotSceneSerializer::ReadCamera(TiXmlElement *element, CBaseEditor *parent, 
         }
     } while(subs = subs->NextSiblingElement());
     
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Camera Object", params, false, false);
+    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Camera", params, false, false);
     return SCF_OK;
 }
 //----------------------------------------------------------------------------
@@ -642,7 +642,7 @@ int CDotSceneSerializer::ReadParticle(TiXmlElement *element, CBaseEditor *parent
     propValue.val = Ogre::String(ValidAttr(element->Attribute("file")));
     params["particle"] = propValue;
     
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Particle Object", params, false, false);
+    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Particle", params, false, false);
     return SCF_OK;
 }
 //----------------------------------------------------------------------------
@@ -693,7 +693,7 @@ int CDotSceneSerializer::ReadPlane(TiXmlElement *element, CBaseEditor *parent, C
         params["normal"] = parseVector3(normal);
     }
 
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Plane Object", params, false, false);
+    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Plane", params, false, false);
     return SCF_OK;
 }
 //----------------------------------------------------------------------------

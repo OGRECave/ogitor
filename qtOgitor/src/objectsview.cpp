@@ -97,8 +97,9 @@ void ObjectsViewWidget::updateView()
             bModified = true;
         }
     }
+
     if(bModified)
-        listWidget->setGridSize(QSize(64,70));
+        listWidget->setGridSize(QSize(64, 70));
 }
 //----------------------------------------------------------------------------------------
 void ObjectsViewWidget::prepareView()
@@ -113,7 +114,6 @@ void ObjectsViewWidget::prepareView()
 
     while(it != objects.end())
     {
-
         if(it->second && it->second->mAddToObjectList)
         {
             if(it->second->mIcon != "")
@@ -121,10 +121,7 @@ void ObjectsViewWidget::prepareView()
             else
                 filename = ":/icons/objects.svg";
 
-
             itemname = it->second->mTypeName;
-
-            itemname.erase(itemname.length() - 7,7);
 
             filename = OgitorsUtils::QualifyPath(filename);
 
@@ -136,7 +133,7 @@ void ObjectsViewWidget::prepareView()
         it++;
       }
 
-    listWidget->setGridSize(QSize(64,70));
+    listWidget->setGridSize(QSize(64, 70));
 
     mTimer = new QTimer(this);
     mTimer->setInterval(1000);
@@ -161,7 +158,7 @@ bool ObjectsViewWidget::OnDragEnter()
     {
         QString stxt = selected[0]->text();
 
-        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory(stxt.toStdString() + " Object");
+        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory(stxt.toStdString());
 
         if(!factory)
             return false;
@@ -186,7 +183,7 @@ bool ObjectsViewWidget::OnDragEnter()
         mDragData.Parameters["position"] = pvalue;
 
         CBaseEditor *parent = OgitorsRoot::getSingletonPtr()->GetSceneManagerEditor();
-        CBaseEditorFactory *entityfactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Entity Object");
+        CBaseEditorFactory *entityfactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Entity");
         mDragData.Object = entityfactory->CreateObject(&parent, mDragData.Parameters);
         mDragData.Object->load();
 

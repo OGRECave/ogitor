@@ -180,7 +180,7 @@ bool ModularZoneEditor::_loadZoneDescription(int key)
     mPortalCount->set(info->mPortalCount);
 
     //get the portal factory:
-    CBaseEditorFactory* portalFactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("MZ Portal Object");
+    CBaseEditorFactory* portalFactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("MZ Portal");
     int count = 0;
     int i;
     for( i = 0; i<info->mPortalCount;i++)
@@ -217,7 +217,7 @@ bool ModularZoneEditor::_loadZoneDescription(int key)
         if(!mDragging)//This is a hack to stop it crashing during drag'n'drop
         {
             //don't create portals when the zone is being dragged - they will cause a crash - I don't know why
-            portal = dynamic_cast<PortalEditor*>(OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent,"MZ Portal Object",params,true,true));
+            portal = dynamic_cast<PortalEditor*>(OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent,"MZ Portal",params,true,true));
         }
         if(portal)
         {
@@ -274,7 +274,7 @@ TiXmlElement* ModularZoneEditor::exportDotScene(TiXmlElement *pParent)
         //TODO: need to create nodes and then attach objects to these
         //rather than attaching directly to zone node 
         //(as everything needs a node in PCZSM)
-        if(itrPortal->second->getTypeName() == "MZ Portal Object")
+        if(itrPortal->second->getTypeName() == "MZ Portal")
         {
             itrPortal->second->exportDotScene(pZone);
         }
@@ -319,7 +319,7 @@ TiXmlElement* ModularZoneEditor::exportDotScene(TiXmlElement *pParent)
         //TODO: need to create nodes and then attach objects to these
         //rather than attaching directly to zone node 
         //(as everything needs a node in PCZSM)
-        if(it->second->getTypeName() != "MZ Portal Object")
+        if(it->second->getTypeName() != "MZ Portal")
         {
             it->second->exportDotScene(pNode);
         }
@@ -444,7 +444,7 @@ void ModularZoneEditor::addPortal(void)
         //Because the portal is a created as child to this zone, no need to call AddPortal(portal)
         //portal will add itself automatically
         OgitorsRoot* root = OgitorsRoot::getSingletonPtr();
-        PortalEditor* portal = dynamic_cast<PortalEditor*>(root->CreateEditorObject(0, "MZ Portal Object",params,true,true));
+        PortalEditor* portal = dynamic_cast<PortalEditor*>(root->CreateEditorObject(0, "MZ Portal",params,true,true));
         portal->setLocked(false);//we need to be able to move new portal into position
 
         //add the PortalInfo to the ZoneInfo

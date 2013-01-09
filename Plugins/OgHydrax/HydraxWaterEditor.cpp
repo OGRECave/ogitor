@@ -968,7 +968,7 @@ bool CHydraxEditor::unLoad()
     NameObjectPairList::iterator it = list.begin();
     while(it != list.end())
     {
-        static_cast<CViewportEditor*>(it->second)->removeCompositor("_Hydrax_Underwater_Compositor_Name");
+        Ogre::CompositorManager::getSingleton().removeCompositor(mHandle->getViewport(), "_Hydrax_Underwater_Compositor_Name");
         it++;
     }
 
@@ -1077,7 +1077,7 @@ TiXmlElement *CHydraxEditor::exportDotScene(TiXmlElement *pParent)
 //----------------------------------------------------------------------------
 CHydraxEditorFactory::CHydraxEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Hydrax Object";
+    mTypeName = "Hydrax";
     mEditorType = ETYPE_WATER_MANAGER;
     mAddToObjectList = true;
     mIcon = "hydrax.svg";

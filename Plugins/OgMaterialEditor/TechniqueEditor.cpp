@@ -155,7 +155,7 @@ void CTechniqueEditor::createProperties(OgitorsPropertyValueMap &params)
 //-----------------------------------------------------------------------------------------
 CTechniqueEditorFactory::CTechniqueEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Technqiue Object";
+    mTypeName = "Technqiue";
     mEditorType = ETYPE_GENERALPURPOSE;
     mAddToObjectList = false;
     mRequirePlacement = true;
