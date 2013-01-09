@@ -66,7 +66,7 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
         # Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
         set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
     endif ()
-    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0" "1.50" "1.50.0")
+    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0" "1.50" "1.50.0" "1.51.0" "1.52.0")
     # Components that need linking (NB does not include header-only components like bind)
     set(OGRE_BOOST_COMPONENTS thread date_time regex)
     find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
@@ -115,9 +115,9 @@ if(MSVC80 OR MSVC90 OR MSVC10)
                 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
         endif(OGITOR_MSVC_ENABLE_MP)
         message(STATUS "Setting Visual Studio 2005+ option /MP to ${OGITOR_MSVC_ENABLE_MP}")
-        add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-        add_definitions(-DNOMINMAX)
+        #add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+        #add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+        #add_definitions(-DNOMINMAX)
 endif(MSVC80 OR MSVC90 OR MSVC10)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
@@ -191,7 +191,7 @@ include_directories(${Boost_INCLUDE_DIR})
 
 # Ogitor
 set(OGITOR_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include")
-set(OGITOR_LIBPATH      "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
+set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 
 # Dependencies
 set(DEPENDENCIES_INCLUDES
@@ -322,7 +322,6 @@ add_subdirectory(Dependencies/HYDRAX/Hydrax/src/Hydrax)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
-#add_subdirectory(Dependencies/lua)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
 add_subdirectory(Dependencies/ImageConverter)
@@ -343,7 +342,7 @@ add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
-#add_subdirectory(Plugins/OgQtExample)
+add_subdirectory(Plugins/OgScreenEffectEditor)
 
 add_subdirectory(OgreOfsPlugin)
 

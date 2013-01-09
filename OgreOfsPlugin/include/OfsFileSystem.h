@@ -146,10 +146,15 @@ namespace Ogre {
         /// @copydoc FactoryObj::getType
         const String& getType(void) const;
         /// @copydoc FactoryObj::createInstance
-        Archive *createInstance( const String& name ) 
+        Archive *createInstance(const String& name, 
+#if OGRE_VERSION_MINOR > 8            
+            bool readOnly
+#endif            
+            ) 
         {
             return OGRE_NEW OFSArchive(name, "Ofs");
         }
+
         /// @copydoc FactoryObj::destroyInstance
         void destroyInstance( Archive* arch) { delete arch; }
     };

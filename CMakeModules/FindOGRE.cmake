@@ -55,6 +55,7 @@ findpkg_begin(OGRE)
 
 # Get path, convert backslashes as ${ENV_${var}}
 getenv_path(OGRE_BYATIS)
+getenv_path(OGRE_GHADAMON)
 getenv_path(OGRE_HOME)
 getenv_path(OGRE_SDK)
 getenv_path(OGRE_SOURCE)
@@ -71,7 +72,7 @@ endif ()
 
 
 if(APPLE)
-	set(OGRE_LIBRARY_NAMES "Ogre${OGRE_LIB_SUFFIX}")
+    set(OGRE_LIBRARY_NAMES "Ogre${OGRE_LIB_SUFFIX}")
 else()
     set(OGRE_LIBRARY_NAMES "OgreMain${OGRE_LIB_SUFFIX}")
 endif()
@@ -97,7 +98,7 @@ elseif (UNIX)
   )
 endif ()
 set(OGRE_PREFIX_PATH
-  ${OGRE_HOME} ${OGRE_SDK} ${ENV_OGRE_HOME} ${ENV_OGRE_SDK} ${ENV_OGRE_BYATIS}
+  ${OGRE_HOME} ${OGRE_SDK} ${ENV_OGRE_HOME} ${ENV_OGRE_SDK} ${ENV_OGRE_BYATIS} ${ENV_OGRE_GHADAMON}
   ${OGRE_PREFIX_GUESSES}
 )
 create_search_paths(OGRE)
@@ -384,6 +385,8 @@ ogre_find_component(Terrain OgreTerrain.h)
 ogre_find_component(Property OgreProperty.h)
 # look for RTShaderSystem component
 ogre_find_component(RTShaderSystem OgreRTShaderSystem.h)
+# look for Overlay component
+ogre_find_component(Overlay OgreOverlay.h)
 
 
 #########################################################
