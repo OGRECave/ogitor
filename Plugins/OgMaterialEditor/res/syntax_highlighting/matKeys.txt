@@ -15,7 +15,8 @@ colour_op_ex
 compositor	   
 cos	   
 cosh	   
-cross   	   
+cross 
+cubic_texture  	   
 cull_hardware	   
 cull_software	   
 custom	   
@@ -35,7 +36,8 @@ do
 dot  	    	   
 else	   
 emissive	   
-entry_point	   
+entry_point
+env_map	   
 exp 	   
 exp2 	   
 faceforward 	   
@@ -99,7 +101,8 @@ smoothstep
 source	   
 specular	   
 sqrt	     	   
-step 	   
+step 	 
+syntax  
 tan 	   
 tanh	   
 target	   
