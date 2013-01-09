@@ -38,6 +38,7 @@
 
 #include "OgitorsExports.h"
 #include "OgitorsGlobals.h"
+#include "OgreUTFString.h"
 
 namespace Ogitors
 {
@@ -71,7 +72,8 @@ namespace Ogitors
         ETYPE_MULTISEL,         /** Multi-selection editor type */
         ETYPE_MATERIAL,         /** Material editor type */
         ETYPE_TECHNIQUE,        /** Technique editor type */
-        ETYPE_TERRAIN_PAGE      /** Terrain Page editor type */
+        ETYPE_TERRAIN_PAGE,     /** Terrain Page editor type */
+        ETYPE_SCREEN_EFFECT     /** Screen effect editor type */   
     };
 
     /** String'ified EDITORTYPE enumeration @see EDITORTYPE */
@@ -109,7 +111,7 @@ namespace Ogitors
     typedef OgitorExport Ogre::vector<CBaseEditor*>::type ObjectVector;
 
     /// A Hashed by Name Storage Definition for All Editors
-    typedef OgitorExport HashMap<Ogre::String,CBaseEditor*> NameObjectPairList;
+    typedef OgitorExport HashMap<Ogre::String, CBaseEditor*> NameObjectPairList;
 
     /** Load state enumeration */
     enum LoadState
