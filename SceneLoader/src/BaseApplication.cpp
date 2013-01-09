@@ -130,7 +130,13 @@ void BaseApplication::createFrameListener(void)
     //Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
+#if OGRE_VERSION_MINOR > 8 
+    OgreBites::InputContext inputContext;
+    inputContext.mMouse = mMouse;
+    mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", mWindow, inputContext, this);
+#else
     mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", mWindow, mMouse, this);
+#endif
     mTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
     mTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
     mTrayMgr->hideCursor();

@@ -20,10 +20,11 @@ findpkg_begin(OIS)
 # Get path, convert backslashes as ${ENV_${var}}
 getenv_path(OIS_HOME)
 getenv_path(OGRE_BYATIS)
+getenv_path(OGRE_GHADAMON)
 
 # construct search paths
 set(OIS_PREFIX_PATH ${OIS_HOME} ${ENV_OIS_HOME} 
-  ${OGRE_BYATIS}/sdk ${ENV_OGRE_BYATIS}/sdk/include ${ENV_OGRE_BYATIS}/sdk/lib ${ENV_OGRE_BYATIS})
+  ${OGRE_BYATIS}/sdk ${ENV_OGRE_BYATIS}/sdk/include ${ENV_OGRE_BYATIS}/sdk/lib ${ENV_OGRE_BYATIS} ${ENV_OGRE_GHADAMON})
 create_search_paths(OIS)
 # redo search if prefix path changed
 clear_if_changed(OIS_PREFIX_PATH

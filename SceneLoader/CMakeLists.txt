@@ -17,10 +17,8 @@ else(NOT OIS_FOUND)
 	set(SRCS ${SRCS})
 
 	if(WIN32)
-		getenv_path(OGRE_BYATIS)
-		set(OGRE_SAMPLES_INCLUDEPATH
-			${ENV_OGRE_BYATIS}/Samples/include
-		)
+		getenv_path(OGRE_HOME)
+		set(OGRE_SAMPLES_INCLUDEPATH ${ENV_OGRE_HOME}/Samples/include)
 	endif(WIN32)
 
  	if(UNIX)
@@ -28,7 +26,7 @@ else(NOT OIS_FOUND)
 			get_filename_component(OGRE_ROOT "${OGRE_INCLUDE_DIRS}/.." ABSOLUTE)
 		endif()
                 set(OGRE_SAMPLES_INCLUDEPATH
-                        ${ENV_OGRE_BYATIS}/Samples/Common/include
+                        ${ENV_OGRE_HOME}/Samples/Common/include
                 )
 		find_path(OGRE_SAMPLES_INCLUDEPATH SdkTrays.h
 			${OGRE_ROOT}/share/OGRE/Samples/Common/include/
@@ -40,12 +38,16 @@ else(NOT OIS_FOUND)
 			"Reinstall Ogre with OGRE_INSTALL_SAMPLES_SOURCE=1")
 	endif()
 
-	include_directories(./include ${OIS_INCLUDE_DIRS}
+	include_directories(
+		./include 
+		${OIS_INCLUDE_DIRS}
 		${OGRE_INCLUDE_DIRS}
-		${OGRE_Terrain_INCLUDE_DIR}
+		${OGRE_TERRAIN_INCLUDE_DIR}
+		${OGRE_OVERLAY_INCLUDE_DIR}
 		${Boost_INCLUDE_DIR}
 		${OGRE_SAMPLES_INCLUDEPATH}
-        ${DEPENDENCIES_INCLUDES}
+		${OGRE_INCLUDE_OVERLAY_DIR}
+        	${DEPENDENCIES_INCLUDES}
 	)
 
 	if(WIN32)
@@ -66,10 +68,10 @@ else(NOT OIS_FOUND)
 
 	if(APPLE)
 		find_package(IOKIT REQUIRED)
-                find_package(Cocoa REQUIRED)
-        TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${IOKit_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry ${Cocoa_LIBRARIES})
-    ELSE()
-        TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Terrain_LIBRARY} PagedGeometry ${Boost_LIBRARIES})
+		find_package(Cocoa REQUIRED)
+        	TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Terrain_LIBRARY} ${OGRE_Overlay_LIBRARY} PagedGeometry ${Cocoa_LIBRARIES} ${IOKit_LIBRARIES})
+    	else()
+        	TARGET_LINK_LIBRARIES(SampleLoadApp ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Terrain_LIBRARY} ${OGRE_Overlay_LIBRARY} PagedGeometry ${Boost_LIBRARIES})
 	endif(APPLE)
 
 	if(APPLE)
@@ -95,9 +97,9 @@ else(NOT OIS_FOUND)
 	endif(WIN32)
 	
 	if(UNIX AND NOT OGITOR_DIST AND NOT APPLE)
-        install(TARGETS SampleLoadApp
-            RUNTIME DESTINATION bin
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        	install(TARGETS SampleLoadApp
+            	RUNTIME DESTINATION bin
+            	CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     endif(UNIX AND NOT OGITOR_DIST AND NOT APPLE)
 
 endif(NOT OIS_FOUND)
