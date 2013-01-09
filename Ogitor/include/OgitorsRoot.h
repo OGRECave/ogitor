@@ -907,19 +907,25 @@ namespace Ogitors
         * Fetches names of models in user assets folders
         * @return names of models in user assets folders
         */
-        static PropertyOptionsVector        *GetModelNames() {return &mModelNames;};
+        static PropertyOptionsVector        *GetModelNames() { return &mModelNames; };
 
         /**
         * Fetches names of materials in user assets folders
         * @return names of materials in user assets folders
         */
-        static PropertyOptionsVector        *GetMaterialNames() {return &mMaterialNames;};
+        static PropertyOptionsVector        *GetMaterialNames() { return &mMaterialNames; };
+
+        /**
+        * Fetches names of compositors in user assets folders
+        * @return names of compositors in user assets folders
+        */
+        static PropertyOptionsVector        *GetCompositorNames() { return &mCompositorNames; } 
  
         /**
         * Fetches mapping of models to their default materials
         * @return mapping of models to their default materials
         */
-        static Ogre::NameValuePairList      *GetModelMaterialMap() {return &mModelMaterialMap;}
+        static Ogre::NameValuePairList      *GetModelMaterialMap() { return &mModelMaterialMap;  }
 
         /**
         * Fetches a list of properties containing skybox materials
@@ -1160,6 +1166,7 @@ namespace Ogitors
 
         static PropertyOptionsVector mModelNames;                       /** List of model names in the current user assets directories */
         static PropertyOptionsVector mMaterialNames;                    /** List of material names in the current user assets directories */
+        static PropertyOptionsVector mCompositorNames;                  /** List of compositor names in the current user assets directories */
         static Ogre::NameValuePairList mModelMaterialMap;               /** Mapping between a model and its default material */
         static PropertyOptionsVector mAutoTrackTargets;                 /** List of auto track targets in the scene */
         static PropertyOptionsVector mSkyboxMaterials;                  /** Skybox Material property list */
@@ -1220,7 +1227,7 @@ namespace Ogitors
         * Setter function for LoadState
         * @param state new state
         */
-        void             setLoadState(LoadState state);
+        void             SetLoadState(LoadState state);
 
     };
 

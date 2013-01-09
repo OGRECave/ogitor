@@ -8,7 +8,7 @@ using namespace MZP;
 
 PortalFactory::PortalFactory(OgitorsView *view) : CNodeEditorFactory(view)
 {
-    mTypeName = "MZ Portal Object";
+    mTypeName = "MZ Portal";
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = false; //at the moment, we can't new add portals in the editor...
     mRequirePlacement = true;
@@ -29,7 +29,7 @@ CBaseEditor *PortalFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyVa
     PortalEditor *object = OGRE_NEW PortalEditor(this);
     //TODO: store a pointer to parent in mZone
     //check it is a ModularZoneEditor first...
-    if((*parent)->getTypeName()=="Modular Zone Object")
+    if((*parent)->getTypeName()=="Modular Zone")
     {
         //the parent is a zone, so we can cast it and store it
         object->mParentZone = dynamic_cast<ModularZoneEditor*>(*parent);

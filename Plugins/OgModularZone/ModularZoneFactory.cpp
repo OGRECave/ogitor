@@ -33,7 +33,7 @@ ModularZoneFactory::ModularZoneFactory(OgitorsView *view) : CNodeEditorFactory(v
                                                             mCurrentZoneTemplate(-1),
                                                             mZoneListWidget(0)
 {
-    mTypeName = "Modular Zone Object";
+    mTypeName = "Modular Zone";
     mEditorType = ETYPE_NODE;
     mAddToObjectList = false;//use the dragndrop widget
     mRequirePlacement = true;
@@ -305,7 +305,7 @@ ZoneInfo ModularZoneFactory::_loadZoneDescription(Ogre::String filename)
         pElem=pRoot->FirstChildElement( "portal" );
 
         //get the portal factory:
-        CBaseEditorFactory* portalFactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("MZ Portal Object");
+        CBaseEditorFactory* portalFactory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("MZ Portal");
 
         int count = 0;
         for( pElem; pElem; pElem=pElem->NextSiblingElement("portal"))

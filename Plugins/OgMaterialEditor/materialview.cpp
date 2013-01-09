@@ -331,7 +331,7 @@ void MaterialViewWidget::selectionChanged()
         value.val = name.toStdString();
         params["name"] = value;
 
-        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Material Object");
+        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Material");
         mMaterialEditor = (CMaterialEditor*)factory->CreateObject(&parent, params);
         if(!mMaterialEditor)
             return;
@@ -378,31 +378,38 @@ void MaterialViewWidget::prepareView()
     fnt.setBold(true);
     rootitem->setFont(0, fnt);
 
+    Ogre::Technique *tech;
+    Ogre::Pass *pass;
+    QIcon materialIcon(":/icons/material.svg");
+    QIcon techniqueIcon(":/icons/technique.svg");
+    QIcon passIcon(":/icons/pass.svg");
+    Ogre::MaterialPtr matPtr;
+
     for(unsigned int i = 0;i < (*materials).size();i++)
     {
-        Ogre::MaterialPtr MatPtr = Ogre::MaterialManager::getSingletonPtr()->getByName((*materials)[i].mKey);
-        if(MatPtr.isNull())
+        matPtr = Ogre::MaterialManager::getSingletonPtr()->getByName((*materials)[i].mKey);
+        if(matPtr.isNull())
             continue;
 
         matitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString((*materials)[i].mKey.c_str())));
-        matitem->setIcon(0, QIcon(":/icons/material.svg"));
+        matitem->setIcon(0, materialIcon);
         rootitem->addChild(matitem);
 
-        for(unsigned int t = 0;t < MatPtr->getNumTechniques();t++)
+        for(unsigned int t = 0;t < matPtr->getNumTechniques();t++)
         {
-            Ogre::Technique *tech = MatPtr->getTechnique(t);
+            tech = matPtr->getTechnique(t);
             dumtitle = "Technique " + Ogre::StringConverter::toString(t) + ": (" + tech->getName() + ")";
             techitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(dumtitle.c_str())));
-            techitem->setIcon(0, QIcon(":/icons/technique.svg"));
+            techitem->setIcon(0, techniqueIcon);
             techitem->setWhatsThis(0, QString("%1").arg(t << 8));
             matitem->addChild(techitem);
 
             for(unsigned int p = 0;p < tech->getNumPasses();p++)
             {
-                Ogre::Pass *pass = tech->getPass(p);
+                pass = tech->getPass(p);
                 dumtitle = "Pass " + Ogre::StringConverter::toString(p) + ": (" + pass->getName() + ")";
                 passitem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(dumtitle.c_str())));
-                passitem->setIcon(0, QIcon(":/icons/pass.svg"));
+                passitem->setIcon(0, passIcon);
                 passitem->setWhatsThis(0, QString("%1").arg((t << 8) + p));
                 techitem->addChild(passitem);
             }

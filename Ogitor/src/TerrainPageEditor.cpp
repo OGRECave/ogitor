@@ -1447,7 +1447,7 @@ void CTerrainPageEditor::_modifyHeights(float scale, float offset)
 //-----------------------------------------------------------------------------------------
 CTerrainPageEditorFactory::CTerrainPageEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Terrain Page Object";
+    mTypeName = "Terrain Page";
     mEditorType = ETYPE_TERRAIN_PAGE;
     mIcon = "pagedterrain.svg";
     mCapabilities = CAN_PAGE | CAN_DELETE | CAN_UNDO | CAN_FOCUS;

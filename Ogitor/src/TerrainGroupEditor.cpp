@@ -236,7 +236,7 @@ bool CTerrainGroupEditor::addPage(const int x, const int y, const Ogre::String d
     pvalue.val = Ogre::Any((Ogre::Real)10.0f);
     creationparams["layer0::worldsize"] = pvalue;
 
-    CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page Object", creationparams, true, true);
+    CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page", creationparams, true, true);
 
     return true;
 }
@@ -829,7 +829,7 @@ void CTerrainGroupEditor::onShadowsTechniqueChange(const OgitorsPropertyBase* pr
 //-----------------------------------------------------------------------------------------
 CTerrainGroupEditorFactory::CTerrainGroupEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Terrain Group Object";
+    mTypeName = "Terrain Group";
     mEditorType = ETYPE_TERRAIN_MANAGER;
     mAddToObjectList = true;
     mIcon = "pagedterrainmanager.svg";

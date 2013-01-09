@@ -89,6 +89,7 @@ namespace Ogitors
         REG_ENUM_VALUE("EditorType", ETYPE_MATERIAL);
         REG_ENUM_VALUE("EditorType", ETYPE_TECHNIQUE);
         REG_ENUM_VALUE("EditorType", ETYPE_TERRAIN_PAGE);
+        REG_ENUM_VALUE("EditorType", ETYPE_SCREEN_EFFECT);
 
         r = engine->RegisterEnum("LoadState");assert(r >= 0);
         REG_ENUM_VALUE("LoadState", LS_UNLOADED);

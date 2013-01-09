@@ -53,7 +53,7 @@ namespace Ogitors
         OgitorsPropertyValueMap params;
         params["init"] = EMPTY_PROPERTY_VALUE;
         params["meshfile"] = Ogitors::OgitorsPropertyValue(PROP_STRING , Ogre::Any(meshfile));
-        return root->CreateEditorObject(parent, "Entity Object", params, true, false); 
+        return root->CreateEditorObject(parent, "Entity", params, true, false); 
     }
     //-----------------------------------------------------------------------------------------
     static CTerrainPageEditor *CreateTerrainPageImpl(int X, int Y, const Ogre::String& diffuse, const Ogre::String& normal, Ogre::Real worldSize, OgitorsRoot* root)
@@ -87,7 +87,7 @@ namespace Ogitors
         else
             params["layer0::worldsize"] = OgitorsPropertyValue(PROP_REAL, Ogre::Any(worldSize));
 
-        return (CTerrainPageEditor*)OgitorsRoot::getSingletonPtr()->CreateEditorObject(terGroup,"Terrain Page Object", params, true, true);
+        return (CTerrainPageEditor*)OgitorsRoot::getSingletonPtr()->CreateEditorObject(terGroup,"Terrain Page", params, true, true);
     }
     //-----------------------------------------------------------------------------------------
     static void GetTerrainDiffuseTextureNames(Ogre::StringVector& list, OgitorsRoot* root)

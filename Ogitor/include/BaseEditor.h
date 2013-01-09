@@ -542,7 +542,7 @@ namespace Ogitors
         bool                     mUsesHelper;               /** A flag signifying that editor uses visual helper object */
         bool                     mUsesGizmos;               /** A flag signifying  that editor object uses gizmos when selected*/
         NameObjectPairList       mChildren;                 /** Hash map of children object(s)*/
-        CVisualHelper            *mHelper;                   /** Visual helper object handle */
+        CVisualHelper           *mHelper;                   /** Visual helper object handle */
         Ogre::SceneNode         *mBoxParentNode;            /** Custom bounding box' parent node */
         Ogre::SceneNode         *mBBoxNode;                 /** Custom bounding Box node */
         OBBoxRenderable*         mOBBoxRenderable;          /** Custom bounding box handle */
@@ -770,6 +770,12 @@ namespace Ogitors
         * @return Returns a pointer to the new property definition
         */
         OgitorsPropertyDef *AddPropertyDefinition(const Ogre::String& name, const Ogre::String& displayname, const Ogre::String& desc, OgitorsPropertyType pType, bool read = true, bool write = true, bool trackchanges = true);
+        /**
+        * Retrieves an existing property definition
+        * @param name Name of the property to be retrieved
+        * @return Returns a pointer to the property definition
+        */
+        OgitorsPropertyDef *GetPropertyDefinition(const Ogre::String& name);
         /**
         * Creates a unique object name
         * @param name head of a string

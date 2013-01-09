@@ -579,7 +579,7 @@ void CCameraEditor::onObjectContextMenu(int menuresult)
 //-----------------------------------------------------------------------------------------
 CCameraEditorFactory::CCameraEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Camera Object";
+    mTypeName = "Camera";
     mEditorType = ETYPE_CAMERA;
     mAddToObjectList = true;
     mRequirePlacement = true;

@@ -189,7 +189,7 @@ TiXmlElement* CParticleEditor::exportDotScene(TiXmlElement *pParent)
 //-------------------------------------------------------------------------------
 CParticleEditorFactory::CParticleEditorFactory(OgitorsView *view) : CNodeEditorFactory(view)
 {
-    mTypeName = "Particle Object";
+    mTypeName = "Particle";
     mEditorType = ETYPE_PARTICLE;
     mAddToObjectList = true;
     mRequirePlacement = true;

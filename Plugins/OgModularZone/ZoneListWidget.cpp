@@ -114,7 +114,7 @@ void ZoneListWidget::prepareView()
     Ogre::String itemname;
     ImageMap::iterator it = mIcons.begin();
 
-    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object"));
+    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone"));
     if(!factory)return;
 
     while(it != mIcons.end())
@@ -136,7 +136,7 @@ void ZoneListWidget::prepareView()
 //----------------------------------------------------------------------------------------
 void ZoneListWidget::addZone(int key)
 {
-    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object"));
+    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone"));
     if(!factory)return;
     ZoneInfo* zone = factory->getZoneTemplate(key);
     if(zone)
@@ -156,7 +156,7 @@ void ZoneListWidget::updateZoneInfo(int key)
     //TODO: there's gotta be a better way to do this...
 
     //update zone description
-    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object"));
+    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone"));
     if(!factory)return;
     ZoneInfo* zone = factory->getZoneTemplate(key);
 
@@ -207,7 +207,7 @@ void ZoneListWidget::_createImages(ImageMap& retlist)
     v->setClearEveryFrame( true );
     v->setBackgroundColour(Ogre::ColourValue(0,0,0,0));
 
-    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object"));
+    ModularZoneFactory* factory = dynamic_cast<ModularZoneFactory*>(OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone"));
     if(!factory)return;
     factory->loadZoneTemplates();
     ZoneInfoMap zoneTemplates = factory->getZoneTemplateMap();
@@ -304,7 +304,7 @@ bool ZoneListWidget::OnDragEnter()
     if(selected.size())
     {
         QString stxt = selected[0]->text();
-        mDragData.ObjectType = "Modular Zone Object";
+        mDragData.ObjectType = "Modular Zone";
         OgitorsPropertyValue pvalue;
         mDragData.Parameters["init"] = EMPTY_PROPERTY_VALUE;
 
@@ -313,7 +313,7 @@ bool ZoneListWidget::OnDragEnter()
         mDragData.Parameters["zonetemplate"] = pvalue;
 
         CBaseEditor *parent = OgitorsRoot::getSingletonPtr()->GetSceneManagerEditor();
-        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone Object");
+        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Modular Zone");
         mDragData.Object = factory->CreateObject(&parent, mDragData.Parameters);
         dynamic_cast<ModularZoneEditor*>(mDragData.Object)->mDragging = true;
         mDragData.Object->load();

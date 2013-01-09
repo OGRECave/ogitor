@@ -178,7 +178,7 @@ void SceneTreeWidget::dropEvent(QDropEvent *evt)
             params["init"] = EMPTY_PROPERTY_VALUE;
             params["meshfile"] = value;
             
-            source = OgitorsRoot::getSingletonPtr()->CreateEditorObject(target, "Entity Object", params, true, true);
+            source = OgitorsRoot::getSingletonPtr()->CreateEditorObject(target, "Entity", params, true, true);
             if(source)
             {
                 source->load();

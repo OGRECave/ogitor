@@ -327,7 +327,7 @@ TiXmlElement* CPlaneEditor::exportDotScene(TiXmlElement *pParent)
 //-------------------------------------------------------------------------------
 CPlaneEditorFactory::CPlaneEditorFactory(OgitorsView *view) : CNodeEditorFactory(view)
 {
-    mTypeName = "Plane Object";
+    mTypeName = "Plane";
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = true;
     mRequirePlacement = true;

@@ -188,7 +188,7 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
         }
         catch(...)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error Preparing Mesh : ") + addstr, DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error while preparing mesh: ") + addstr, DLGTYPE_OK);
             ite++;
             continue;
         }
@@ -222,7 +222,7 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
         }
         catch(...)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error Preparing Mesh : ") + mEntity->getName(), DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error while preparing mesh: ") + mEntity->getName(), DLGTYPE_OK);
         }
 
         mEntity->detachFromParent();
@@ -261,7 +261,7 @@ bool EntityViewWidget::OnDragEnter()
     if(selected.size())
     {
         QString stxt = selected[0]->text();
-        mDragData.ObjectType = "Entity Object";
+        mDragData.ObjectType = "Entity";
         OgitorsPropertyValue pvalue;
         mDragData.Parameters["init"] = EMPTY_PROPERTY_VALUE;
         pvalue.propType = PROP_STRING;
@@ -272,7 +272,7 @@ bool EntityViewWidget::OnDragEnter()
         mDragData.Parameters["position"] = pvalue;
         
         CBaseEditor *parent = OgitorsRoot::getSingletonPtr()->GetSceneManagerEditor();
-        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Entity Object");
+        CBaseEditorFactory *factory = OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Entity");
         mDragData.Object = factory->CreateObject(&parent, mDragData.Parameters);
         mDragData.Object->load();
         

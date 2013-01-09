@@ -78,15 +78,15 @@ void TemplateTreeWidget::contextMenuEvent(QContextMenuEvent *evt)
 //----------------------------------------------------------------------------------------
 void TemplateTreeWidget::copyTemplate()
 {
-    //QList<QTreeWidgetItem*> list = selectedItems();
-    //if(list.size() == 0 || list[0]->parent() == 0)
-    //      return;
+    /*QList<QTreeWidgetItem*> list = selectedItems();
+    if(list.size() == 0 || list[0]->parent() == 0)
+          return;
 
-    //OGITORUNDOSTRUCT *templdata = OgitorsUndoManager::getSingletonPtr()->GetTemplateData(list[0]->text(0).toStdString());
-    //if(!templdata)
-    //      return;
+    OGITORUNDOSTRUCT *templdata = OgitorsUndoManager::getSingletonPtr()->GetTemplateData(list[0]->text(0).toStdString());
+    if(!templdata)
+          return;
 
-    //OgitorsUndoManager::getSingletonPtr()->Copy(templdata);
+    OgitorsUndoManager::getSingletonPtr()->Copy(templdata);*/
 }
 //----------------------------------------------------------------------------------------
 void TemplateTreeWidget::keyPressEvent(QKeyEvent *evt)

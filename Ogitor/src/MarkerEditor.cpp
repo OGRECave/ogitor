@@ -151,7 +151,7 @@ TiXmlElement* CMarkerEditor::exportDotScene(TiXmlElement *pParent)
 //-----------------------------------------------------------------------------------------
 CMarkerEditorFactory::CMarkerEditorFactory(OgitorsView *view) : CNodeEditorFactory(view)
 {
-    mTypeName = "Marker Object";
+    mTypeName = "Marker";
     mEditorType = ETYPE_MOVABLE;
     mAddToObjectList = true;
     mRequirePlacement = true;

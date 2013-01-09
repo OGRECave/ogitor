@@ -1509,6 +1509,7 @@ void OgitorsRoot::ReloadUserResources()
 
 
     mMaterialNames.clear();
+    mCompositorNames.clear();
     mSkyboxMaterials.clear();
     mSkyboxMaterials.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
 
@@ -1522,18 +1523,29 @@ void OgitorsRoot::ReloadUserResources()
         {
             mMaterialNames.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
             
-            Ogre::String matname =     mRes->getName();
+            Ogre::String matname = mRes->getName();
             Ogre::StringUtil::toLowerCase(matname);
             if(matname.find("sky") != -1 && matname.find("skyboxplane") == -1)
                 mSkyboxMaterials.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
         }
     }
 
+    it = Ogre::CompositorManager::getSingleton().getResourceIterator();
+    while(it.hasMoreElements())
+    {
+        mRes = it.getNext();
+        if(mRes->getGroup() == PROJECT_RESOURCE_GROUP)
+        {
+            mCompositorNames.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
+        }
+    }
+
     std::sort(mTerrainPlantMaterialNames.begin(), mTerrainPlantMaterialNames.end(), PropertyOption::comp_func);
     std::sort(mMaterialNames.begin(), mMaterialNames.end(), PropertyOption::comp_func);
+    std::sort(mCompositorNames.begin(), mCompositorNames.end(), PropertyOption::comp_func);
     std::sort(mSkyboxMaterials.begin(), mSkyboxMaterials.end(), PropertyOption::comp_func);
 
-    NameObjectPairList oblist = GetObjectsByTypeName("Entity Object");
+    NameObjectPairList oblist = GetObjectsByTypeName("Entity");
     NameObjectPairList::iterator obit = oblist.begin();
     while(obit != oblist.end())
     {
@@ -1546,7 +1558,7 @@ void OgitorsRoot::ReloadUserResources()
         obit++;        
     }
 
-    oblist = GetObjectsByTypeName("PGInstance Manager Object");
+    oblist = GetObjectsByTypeName("PGInstance Manager");
     obit = oblist.begin();
     while(obit != oblist.end())
     {
@@ -1665,6 +1677,7 @@ void OgitorsRoot::PrepareProjectResources()
         std::sort(++(mModelNames.begin()), mModelNames.end(), PropertyOption::comp_func);
 
         mMaterialNames.clear();
+        mCompositorNames.clear();
         mSkyboxMaterials.clear();
         mSkyboxMaterials.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
 
@@ -1685,7 +1698,18 @@ void OgitorsRoot::PrepareProjectResources()
             }
         }
 
+        it = Ogre::CompositorManager::getSingleton().getResourceIterator();
+        while(it.hasMoreElements())
+        {
+            mRes = it.getNext();
+            if(mRes->getGroup() == PROJECT_RESOURCE_GROUP)
+            {
+                mCompositorNames.push_back(PropertyOption(mRes->getName(), Ogre::Any(mRes->getName())));
+            }
+        }
+
         std::sort(mMaterialNames.begin(), mMaterialNames.end(), PropertyOption::comp_func);
+        std::sort(mCompositorNames.begin(), mCompositorNames.end(), PropertyOption::comp_func);
         std::sort(mSkyboxMaterials.begin(), mSkyboxMaterials.end(), PropertyOption::comp_func);
 
     } catch(...) {

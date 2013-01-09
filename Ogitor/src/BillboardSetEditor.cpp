@@ -435,7 +435,7 @@ void CBillboardSetEditor::onPropertyContextMenu(Ogre::String propertyName, int m
 //-----------------------------------------------------------------------------------------
 CBillboardSetEditorFactory::CBillboardSetEditorFactory(OgitorsView *view) : CNodeEditorFactory(view)
 {
-    mTypeName = "BillboardSet Object";
+    mTypeName = "BillboardSet";
     mEditorType = ETYPE_BILLBOARDSET;
     mAddToObjectList = true;
     mRequirePlacement = true;

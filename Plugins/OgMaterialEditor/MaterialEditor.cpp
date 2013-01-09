@@ -309,7 +309,7 @@ void CMaterialEditor::createProperties(OgitorsPropertyValueMap &params)
 //-----------------------------------------------------------------------------------------
 CMaterialEditorFactory::CMaterialEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Material Object";
+    mTypeName = "Material";
     mEditorType = ETYPE_GENERALPURPOSE;
     mAddToObjectList = false;
     mRequirePlacement = true;

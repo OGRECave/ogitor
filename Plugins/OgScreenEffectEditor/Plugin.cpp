@@ -1,4 +1,4 @@
-/*/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 /// An
 ///    ___   ____ ___ _____ ___  ____
 ///   / _ \ / ___|_ _|_   _/ _ \|  _ \
@@ -28,32 +28,34 @@
 /// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
-////////////////////////////////////////////////////////////////////////////////*/
+//////////////////////////////////////////////////////////////////////////////////
 
-#ifndef POSTPROCESSINGVIEW_HXX
-#define POSTPROCESSINGVIEW_HXX
+#include <QtGui/QDockWidget>
 
-#include <QtGui/QWidget>
-#include "OgitorsPrerequisites.h"
-#include "OgitorsRoot.h"
-#include "OgitorsProperty.h"
+#include "Ogitors.h"
+#include "Plugin.h"
+#include "ScreenEffectEditor.h"
 
-//----------------------------------------------------------------------------------------
+using namespace Ogitors;
 
-class QListWidget;
-class QLineEdit;
-class QToolButton;
-
-//----------------------------------------------------------------------------------------
-
-class PostProcessingViewWidget : public QWidget
+//----------------------------------------------------------------------------
+bool dllStartPlugin(void *identifier, Ogre::String& name)
 {
-    Q_OBJECT;
-public:
-    explicit PostProcessingViewWidget(QWidget *parent = 0);
-    virtual ~PostProcessingViewWidget();
-};
+    name = "Screen Effect Editor Plugin";
 
-//----------------------------------------------------------------------------------------
+    OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CScreenEffectEditorFactory());
 
-#endif // ENTITYVIEW_HXX
+    return true;
+}
+//----------------------------------------------------------------------------
+bool dllGetPluginName(Ogre::String& name)
+{
+    name = "Screen Effect Editor Plugin";
+    return true;
+}
+//----------------------------------------------------------------------------
+bool dllStopPlugin(void)
+{
+    return true;
+}
+//----------------------------------------------------------------------------

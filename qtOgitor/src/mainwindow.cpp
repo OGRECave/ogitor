@@ -55,7 +55,6 @@
 #include "generictexteditor.hxx"
 #include "projectfilesview.hxx"
 #include "genericimageeditor.hxx"
-#include "postprocessingview.hxx"
 
 #if OGRE_MEMORY_TRACKER
 #include "OgreMemoryTracker.h"
@@ -231,8 +230,8 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     mTerrainToolsWidget = new TerrainToolsWidget(parent);
 
-    OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Terrain Page Object")->setCustomToolsWindow(mTerrainToolsWidget);
-    OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Terrain Group Object")->setCustomToolsWindow(mTerrainToolsWidget);
+    OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Terrain Page")->setCustomToolsWindow(mTerrainToolsWidget);
+    OgitorsRoot::getSingletonPtr()->GetEditorObjectFactory("Terrain Group")->setCustomToolsWindow(mTerrainToolsWidget);
 
     retranslateUi();
 
@@ -593,7 +592,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mEntityViewWidget->setObjectName(QString::fromUtf8("entityViewWidget"));
     mTemplatesViewWidget = new TemplateViewWidget(parent);
     mProjectFilesViewWidget = new ProjectFilesViewWidget(parent);
-    mPostProcessingViewWidget = new PostProcessingViewWidget(parent);
 
     mResourcesDockWidget = new QDockWidget(parent);
     mResourcesDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
@@ -607,7 +605,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     mResourcesStackedWidget->addWidget(mObjectsViewWidget);
     mResourcesStackedWidget->addWidget(mEntityViewWidget);
     mResourcesStackedWidget->addWidget(mTemplatesViewWidget);
-    mResourcesStackedWidget->addWidget(mPostProcessingViewWidget);
 
     mResourcesStackedToolBar = new QToolBar(stackedWidgetInnerDummy);
     mResourcesStackedToolBar->setMovable(false);
@@ -630,10 +627,6 @@ void MainWindow::addDockWidgets(QMainWindow* parent)
     stackedAction->setCheckable(true);
     connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
     mResourcesStackedMapper->setMapping(stackedAction,  2);
-    stackedAction = mResourcesStackedActions->addAction(QIcon(":/icons/paint.svg"), tr("PostProcessing"));
-    stackedAction->setCheckable(true);
-    connect(stackedAction,  SIGNAL(triggered()), mResourcesStackedMapper, SLOT(map()));
-    mResourcesStackedMapper->setMapping(stackedAction,  3);
 
     connect(mResourcesStackedMapper, SIGNAL(mapped(int)), this, SLOT(onSwitchStackedResources(int)));
 

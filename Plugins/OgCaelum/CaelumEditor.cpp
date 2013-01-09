@@ -556,7 +556,7 @@ TiXmlElement *CCaelumEditor::exportDotScene(TiXmlElement *pParent)
 //--------------------------------------------------------------------------------------------------
 CCaelumEditorFactory::CCaelumEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
-    mTypeName = "Caelum Object";
+    mTypeName = "Caelum";
     mEditorType = ETYPE_SKY_MANAGER;
     mAddToObjectList = true;
     mIcon = "caelum.svg";
