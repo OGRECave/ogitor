@@ -46,8 +46,6 @@ mPropertyID(0)
 {
     mHandle = 0;
     mHelper = 0;
-    mUsesGizmos = false;
-    mUsesHelper = false;
 }
 //-----------------------------------------------------------------------------------------
 CTechniqueEditor::~CTechniqueEditor()
@@ -161,6 +159,8 @@ CTechniqueEditorFactory::CTechniqueEditorFactory(OgitorsView *view) : CBaseEdito
     mRequirePlacement = true;
     mIcon = "technique.svg";
     mCapabilities = CAN_UNDO;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 }
 //-----------------------------------------------------------------------------------------
 CBaseEditorFactory *CTechniqueEditorFactory::duplicate(OgitorsView *view)

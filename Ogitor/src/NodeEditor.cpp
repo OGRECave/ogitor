@@ -74,8 +74,6 @@ CNodeEditor::CNodeEditor(CBaseEditorFactory *factory) : CBaseEditor(factory),
 mAutoTrackTargetPtr(0)
 {
     mHandle = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
 
     PROPERTY_PTR(mPosition       , "position"   ,Ogre::Vector3   ,Ogre::Vector3::ZERO       ,0,SETTER(Ogre::Vector3, CNodeEditor, _setPosition));
     PROPERTY_PTR(mOrientation    , "orientation",Ogre::Quaternion,Ogre::Quaternion::IDENTITY,0,SETTER(Ogre::Quaternion, CNodeEditor, _setOrientation));
@@ -435,9 +433,10 @@ CNodeEditorFactory::CNodeEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     mRequirePlacement = true;
     mIcon = "node.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_ROTATE | CAN_SCALE | CAN_FOCUS | CAN_DELETE | CAN_DRAG | CAN_DROP | CAN_UNDO | CAN_ACCEPTCOPY | CAN_ACCEPTPASTE;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     OgitorsPropertyDef *definition;
-
     AddPropertyDefinition("position","Position","The position of the object.",PROP_VECTOR3);
     AddPropertyDefinition("orientation","Orientation","The orientation of the object.",PROP_QUATERNION,true,false);
     AddPropertyDefinition("scale","Scale","The scale of the object.", PROP_VECTOR3);

@@ -91,6 +91,7 @@ namespace Ogitors
         inline void setParent(CBaseEditor *value) { mParentEditor->set((unsigned long)value); }
         inline void setLayer(int value) { mLayer->set(value); }
         inline void setUpdateScript(const Ogre::String& value) { mUpdateScript->set(value); }
+        inline void setShowHelper(bool value) { mShowHelper->set(value); }
 
         /**
         * Fetches the unique editor type
@@ -135,12 +136,12 @@ namespace Ogitors
         * Tests if editor object uses gizmos
         * @return true if editor object uses gizmos, otherwise false
         */
-        inline bool                 usesGizmos() {return mUsesGizmos;};
+        bool                        usesGizmos();
         /**
         * Tests if editor object uses visual helper object
         * @return true if editor object uses visual helper object, otherwise false
         */
-        inline bool                 usesHelper() {return mUsesHelper;};
+        bool                        usesHelper();
         /**
         * Fetches handle to visual helper object
         * @return handle to visual helper object
@@ -170,17 +171,17 @@ namespace Ogitors
         * Fetches editor object update script name
         * @return editor object update script name
         */
-        Ogre::String                getUpdateScript()  { return mUpdateScript->get(); };
+        Ogre::String                getUpdateScript()  {return mUpdateScript->get();};
         /**
         * Fetches editor object script resource handle
         * @return editor object script resource handle
         */
-        unsigned int                getScriptResourceHandle() { return mScriptResourceHandle; };
+        unsigned int                getScriptResourceHandle() {return mScriptResourceHandle;};
         /**
         * Sets editor object script resource handle
         * @param handle new editor object script resource handle
         */
-        void                        setScriptResourceHandle(unsigned int handle) { mScriptResourceHandle = handle; };
+        void                        setScriptResourceHandle(unsigned int handle) {mScriptResourceHandle = handle;};
         /**
         * Fetches editor object layer
         * @return editor object layer
@@ -190,7 +191,7 @@ namespace Ogitors
         * Fetches editor object unique id
         * @return editor object unique id
         */
-        inline unsigned int         getObjectID() { return mObjectID->get(); }
+        inline unsigned int         getObjectID() {return mObjectID->get();}
         /**
         * Sets editor object unique id
         * @param id editor object unique id
@@ -202,6 +203,11 @@ namespace Ogitors
         * @return locking condition for editor object
         */
         inline bool                 getLocked() {return mLocked->get();};
+        /**
+        * Fetches whether editor renders its visual helper currently
+        * @return whether editor renders its visual helper currently
+        */
+        inline bool                 getShowHelper() {return mShowHelper->get();};
         /**
         * Fetches editor object properties set
         * @return editor object properties set
@@ -539,8 +545,6 @@ namespace Ogitors
         CBaseEditorFactory      *mFactory;                  /** The factory that created the object */
         OgitorsView             *mView;                     /** The View instantiating the object, NULL for OgitorsRoot */
         
-        bool                     mUsesHelper;               /** A flag signifying that editor uses visual helper object */
-        bool                     mUsesGizmos;               /** A flag signifying  that editor object uses gizmos when selected*/
         NameObjectPairList       mChildren;                 /** Hash map of children object(s)*/
         CVisualHelper           *mHelper;                   /** Visual helper object handle */
         Ogre::SceneNode         *mBoxParentNode;            /** Custom bounding box' parent node */
@@ -554,16 +558,17 @@ namespace Ogitors
         int                      mRefCount;                 /** Used for Scripting */
         unsigned int             mScriptResourceHandle;     /** Handle for Object's resources at the Script Interpreter side */
 
-        OgitorsParentProperty         *mParentEditor;       /** Parent handle */
-        OgitorsProperty<unsigned int> *mObjectID;           /** Unique Object ID */
-        OgitorsProperty<Ogre::String> *mName;               /** A copy of editor object's name to register/unregister when object destroyed by scene manager and we cant rely on GetName() */
-        OgitorsProperty<unsigned int> *mLayer;              /** The layer this object belongs to */
-        OgitorsProperty<bool>         *mLocked;             /** Flag signifying if this object is locked */
-        OgitorsProperty<bool>         *mLoaded;             /** Flag signifying if editor object was successfully created and loaded */ 
-        OgitorsProperty<bool>         *mSelected;           /** Flag signifying if editor object is selected*/
-        OgitorsProperty<bool>         *mHighlighted;        /** Flag signifying that editor object is highlighted */
-        OgitorsProperty<bool>         *mModified;           /** Flag signifying if editor object was modified */
-        OgitorsProperty<Ogre::String> *mUpdateScript;       /** The script to be called during update */
+        OgitorsParentProperty           *mParentEditor;     /** Parent handle */
+        OgitorsProperty<unsigned int>   *mObjectID;         /** Unique Object ID */
+        OgitorsProperty<Ogre::String>   *mName;             /** A copy of editor object's name to register/unregister when object destroyed by scene manager and we cant rely on GetName() */
+        OgitorsProperty<unsigned int>   *mLayer;            /** The layer this object belongs to */
+        OgitorsProperty<bool>           *mLocked;           /** Flag signifying if this object is locked */
+        OgitorsProperty<bool>           *mLoaded;           /** Flag signifying if editor object was successfully created and loaded */ 
+        OgitorsProperty<bool>           *mSelected;         /** Flag signifying if editor object is selected*/
+        OgitorsProperty<bool>           *mHighlighted;      /** Flag signifying that editor object is highlighted */
+        OgitorsProperty<bool>           *mModified;         /** Flag signifying if editor object was modified */
+        OgitorsProperty<Ogre::String>   *mUpdateScript;     /** The script to be called during update */
+        OgitorsProperty<bool>           *mShowHelper;       /** Flag signifying if helper should be rendered */
 
         /**
         * Constructor
@@ -643,6 +648,11 @@ namespace Ogitors
         */
         bool             _setLoaded(OgitorsPropertyBase* property, const bool& bLoaded);
         /**
+        * Sets object's "show helper" flag
+        * @param bShowHelper flag to signify if editor should render the visual helper
+        */
+        bool             _setShowHelper(OgitorsPropertyBase* property, const bool& bShowHelper);
+        /**
         * Registers editor object name in the system
         */
         void             registerObjectName();
@@ -692,21 +702,23 @@ namespace Ogitors
     class OgitorExport CBaseEditorFactory: public Ogre::GeneralAllocatedObject
     {
     public:
-        OgitorsView *mView;              /** The View instantiating the factory, NULL for OgitorsRoot */
-        unsigned int mTypeID;            /** Unique type identifier (Internal Use) */
-        Ogre::String mTypeName;          /** Unique type name. Set in call to OgitorsRoot::RegisterEditorObjectFactory (Internal Use) */
-        EDITORTYPE   mEditorType;        /** Type of editor objects created by this factory */
-        bool         mAddToObjectList;   /** If set to true, editor objects created by this factory will be displayed in Add Objects Menu/Toolbar */
-        bool         mRequirePlacement;  /** If true, will allow placement of editor objects created by this factory onto the scene with left mouse click */
-        Ogre::String mIcon;              /** Path to SVG Icon for editor objects created by this factory */
-        unsigned int mCapabilities;      /** The capabilities supported by the editor objects created by this factory */
-        int          mInstanceCount;      /** Number of base editor objects instantiated */
-        OgitorWorldSectionId mDefaultWorldSection; /** The Default World Section to be used during paging */
- 
-        OgitorsPropertyDefMap mPropertyDefs; /** Class holding all static property definition data */
+        OgitorsView             *mView;                     /** The View instantiating the factory, NULL for OgitorsRoot */
+        unsigned int            mTypeID;                    /** Unique type identifier (Internal Use) */
+        Ogre::String            mTypeName;                  /** Unique type name. Set in call to OgitorsRoot::RegisterEditorObjectFactory (Internal Use) */
+        EDITORTYPE              mEditorType;                /** Type of editor objects created by this factory */
+        bool                    mAddToObjectList;           /** If set to true, editor objects created by this factory will be displayed in Add Objects Menu/Toolbar */
+        bool                    mRequirePlacement;          /** If true, will allow placement of editor objects created by this factory onto the scene with left mouse click */
+        Ogre::String            mIcon;                      /** Path to SVG Icon for editor objects created by this factory */
+        unsigned int            mCapabilities;              /** The capabilities supported by the editor objects created by this factory */
+        int                     mInstanceCount;             /** Number of base editor objects instantiated */
+        OgitorWorldSectionId    mDefaultWorldSection;       /** The Default World Section to be used during paging */
+        bool                    mUsesHelper;                 /** A flag signifying that editor uses visual helper object */
+        bool                    mUsesGizmos;                 /** A flag signifying  that editor object uses gizmos when selected*/
+
+        OgitorsPropertyDefMap   mPropertyDefs;              /** Class holding all static property definition data */
         
-        void *mToolsWindow;
-        void *mPropertyEditorToolWindow;
+        void                    *mToolsWindow;
+        void                    *mPropertyEditorToolWindow;
 
         /**
         * Constructor

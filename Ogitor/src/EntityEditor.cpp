@@ -45,8 +45,6 @@ using namespace Ogitors;
 CEntityEditor::CEntityEditor(CBaseEditorFactory *factory) : CNodeEditor(factory)
 {
     mEntityHandle = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
     mUsingPlaceHolderMesh = false;
 }
 //-----------------------------------------------------------------------------------------
@@ -397,6 +395,8 @@ CEntityEditorFactory::CEntityEditorFactory(OgitorsView *view) : CNodeEditorFacto
     mRequirePlacement = true;
     mIcon = "entity.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_USEMATERIAL | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     OgitorsPropertyDef *definition = AddPropertyDefinition("meshfile","Mesh File","The mesh filename of the entity.",PROP_STRING, true, true);
     definition->setOptions(OgitorsRoot::GetModelNames());

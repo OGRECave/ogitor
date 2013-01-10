@@ -14,14 +14,13 @@ PortalFactory::PortalFactory(OgitorsView *view) : CNodeEditorFactory(view)
     mRequirePlacement = true;
     mIcon = Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/portal.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
-
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     AddPropertyDefinition("parentnode","Portal::Zone","Parent zone of this portal",PROP_STRING, true, false);
     AddPropertyDefinition("destination","Portal::Destination Portal","Portal that this one is connected to.",PROP_STRING, true, false);
     AddPropertyDefinition("width","Portal::Width","Width of the portal.",PROP_REAL, true, false);
     AddPropertyDefinition("height","Portal::Height","Height of the portal.",PROP_REAL, true, false);
-
-
 }
 //----------------------------------------------------------------------------------------
 CBaseEditor *PortalFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)

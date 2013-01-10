@@ -50,8 +50,6 @@ PropertyOptionsVector CSceneManagerEditorFactory::mShadowTechniqueNames;
 CSceneManagerEditor::CSceneManagerEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
 {
     mHandle = 0;
-    mUsesGizmos = false;
-    mUsesHelper = false;
 
     mSphereSceneQuery = 0;
     mRaySceneQuery = 0;
@@ -605,6 +603,8 @@ CSceneManagerEditorFactory::CSceneManagerEditorFactory(OgitorsView *view) : CBas
     mEditorType = ETYPE_SCENEMANAGER;
     mIcon = "tsm.svg";
     mCapabilities = CAN_DROP | CAN_UNDO | CAN_ACCEPTPASTE;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     mFogModes.clear();
     mFogModes.push_back(PropertyOption("FOG_NONE",Ogre::Any((int)Ogre::FOG_NONE)));

@@ -45,8 +45,6 @@ using namespace Ogitors;
 CPlaneEditor::CPlaneEditor(CBaseEditorFactory *factory) : CNodeEditor(factory)
 {
     mPlaneHandle = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
 }
 //-------------------------------------------------------------------------------
 void CPlaneEditor::onDropMaterial(Ogre::Ray ray, Ogre::Vector3 position, const Ogre::String& materialname)
@@ -333,6 +331,8 @@ CPlaneEditorFactory::CPlaneEditorFactory(OgitorsView *view) : CNodeEditorFactory
     mRequirePlacement = true;
     mIcon = "plane.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_USEMATERIAL | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     AddPropertyDefinition("normal","Normal","The normal of the object.",PROP_VECTOR3);
     AddPropertyDefinition("distance","Distance","The distance of the object.",PROP_REAL);

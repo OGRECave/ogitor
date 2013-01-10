@@ -114,8 +114,6 @@ CPGInstanceManager::CPGInstanceManager(CBaseEditorFactory *factory) : CBaseEdito
 mHandle(0), mPGHandle(0), mEntityHandle(0), mPlacementMode(false), mNextInstanceIndex(0)
 {
     mHelper = 0;
-    mUsesGizmos = false;
-    mUsesHelper = false;
     mHideChildrenInProgress = false;
     mLastFileName = "";
     mUsingPlaceHolderMesh = false;
@@ -851,6 +849,8 @@ CPGInstanceManagerFactory::CPGInstanceManagerFactory(OgitorsView *view) : CBaseE
     mRequirePlacement = false;
     mIcon = "pagedgeometry.svg";
     mCapabilities = CAN_UNDO | CAN_DELETE;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     OgitorsPropertyDef *definition = AddPropertyDefinition("model", "Model", "The model to be used.", PROP_STRING);
     definition->setOptions(OgitorsRoot::getSingletonPtr()->GetModelNames());

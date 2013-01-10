@@ -64,7 +64,7 @@ namespace Ogitors
     }
     //-----------------------------------------------------------------------------------------
     CBaseEditor::CBaseEditor(CBaseEditorFactory *factory) :
-    mFactory(factory), mUsesHelper(0), mUsesGizmos(0), mHelper(0), 
+    mFactory(factory), mHelper(0), 
         mBoxParentNode(0), mBBoxNode(0), mOBBoxRenderable(0), 
         mOBBoxData(AxisAlignedBox::BOX_NULL), mSceneTreeItemHandle(0), mLayerTreeItemHandle(0), 
         mScriptResourceHandle(0)
@@ -96,6 +96,10 @@ namespace Ogitors
         PROPERTY_PTR(mLocked,       "locked"   ,    bool         , false  , 0, SETTER(bool, CBaseEditor, _setLocked));
         PROPERTY_PTR(mModified,     "modified" ,    bool         , false  , 0, SETTER(bool, CBaseEditor, _setModified));
         PROPERTY_PTR(mUpdateScript, "updatescript", Ogre::String, "", 0, SETTER(Ogre::String, CBaseEditor, _setUpdateScript));
+    
+        if(usesHelper())
+            PROPERTY_PTR(mShowHelper, "show_helper", bool, true, 0, SETTER(bool, CBaseEditor, _setShowHelper));
+
     }
     //-----------------------------------------------------------------------------------------
     CBaseEditor::~CBaseEditor()
@@ -445,7 +449,7 @@ namespace Ogitors
     //-----------------------------------------------------------------------------------------
     void CBaseEditor::showHelper(bool show)
     {
-        if(!mUsesHelper || !mHelper) 
+        if(!usesHelper() || !mHelper) 
             return;
 
         bool globalVisibility = true;
@@ -477,11 +481,10 @@ namespace Ogitors
         if(!mLoaded->get())
             return;
 
-        if(mUsesHelper)
+        if(usesHelper())
             mBoxParentNode = mHelper->getNode()->createChildSceneNode("scbno" + mName->get(),Vector3(0,0,0),Quaternion::IDENTITY);
         else
             mBoxParentNode = getNode()->createChildSceneNode("scbno" + mName->get(),Vector3(0,0,0),Quaternion::IDENTITY);
-
 
         mOBBoxData = getAABB();
 
@@ -542,10 +545,10 @@ namespace Ogitors
 
         if(oldparent)
         {
-            if(mBoxParentNode && !mUsesHelper) 
+            if(mBoxParentNode && !usesHelper()) 
                 mBoxParentNode->getParentSceneNode()->removeChild(mBoxParentNode);
 
-            if(mUsesHelper && mHelper)
+            if(usesHelper() && mHelper)
                 mHelper->getNode()->getParentSceneNode()->removeChild(mHelper->getNode());
 
             oldparent->_removeChild(mName->get());
@@ -557,10 +560,10 @@ namespace Ogitors
         {    
             ((CBaseEditor*)value)->_addChild(this);
 
-            if(mBoxParentNode && !mUsesHelper) 
+            if(mBoxParentNode && !usesHelper()) 
                 getNode()->addChild(mBoxParentNode);
 
-            if(mUsesHelper && mHelper)
+            if(usesHelper() && mHelper)
                 getNode()->addChild(mHelper->getNode());
 
             adjustBoundingBox();
@@ -688,6 +691,12 @@ namespace Ogitors
         return true;
     }
     //-----------------------------------------------------------------------------------------
+    bool CBaseEditor::_setShowHelper(OgitorsPropertyBase* property, const bool& bShowHelper)
+    {
+        mHelper->Show(bShowHelper);
+        return true;
+    }
+    //-----------------------------------------------------------------------------------------
     void *CBaseEditor::getCustomToolsWindow() 
     { 
         return mFactory->mToolsWindow; 
@@ -698,6 +707,16 @@ namespace Ogitors
         return mFactory->mPropertyEditorToolWindow; 
     }
     //-----------------------------------------------------------------------------------------
+    bool CBaseEditor::usesGizmos()
+    {
+        return getFactoryDynamic()->mUsesGizmos;
+    }
+    //-----------------------------------------------------------------------------------------
+    bool CBaseEditor::usesHelper()
+    {
+        return getFactoryDynamic()->mUsesHelper;
+    }
+    //-----------------------------------------------------------------------------------------
 
     //-----------------------------------------------------------------------------------------
     // CBaseEditorFactory
@@ -706,7 +725,7 @@ namespace Ogitors
     mView(view), mTypeID(0), mTypeName(""), mEditorType(ETYPE_BASE),
         mAddToObjectList(false), mRequirePlacement(false), 
         mIcon(""), mCapabilities(0), mInstanceCount(0), mDefaultWorldSection(SECT_GENERAL),
-        mToolsWindow(0), mPropertyEditorToolWindow(0)
+        mToolsWindow(0), mPropertyEditorToolWindow(0), mUsesHelper(0), mUsesGizmos(0)
     {
         AddPropertyDefinition("object_id",      "", "The unique ID of Object.", PROP_UNSIGNED_INT, false, false, false);
         AddPropertyDefinition("name", "Name",   "The name of the Object.", PROP_STRING, true, true);
@@ -720,6 +739,7 @@ namespace Ogitors
         AddPropertyDefinition("locked",         "", "Is the Object locked?",PROP_BOOL, false, false);
         AddPropertyDefinition("modified",       "", "Is the Object modified?",PROP_BOOL, false, false);
         AddPropertyDefinition("destroyed",      "", "Is the Object destroyed?",PROP_BOOL, false, false);
+        AddPropertyDefinition("show_helper",    "Show Helper", "Should the visual helper be rendered?", PROP_BOOL, true, true);
         definition = AddPropertyDefinition("updatescript", "Update Script", "The Script to be called during update.", PROP_STRING, false, false);
         definition->setOptions(OgitorsRoot::GetScriptNames());
     }
@@ -736,6 +756,7 @@ namespace Ogitors
     {
         mInstanceCount++;
         CBaseEditor *object = OGRE_NEW CBaseEditor(this);
+
         object->createProperties(params);
         object->mParentEditor->init(0);
         return object;

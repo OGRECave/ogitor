@@ -42,9 +42,6 @@ CSkyxEditor::CSkyxEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
 {
     mHandle = 0;
     mName->init("SkyX");
-
-    mUsesGizmos = false;
-    mUsesHelper = false;
 }
 //---------------------------------------------------------------------------------
 CSkyxEditor::~CSkyxEditor()
@@ -487,9 +484,10 @@ CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(v
     mAddToObjectList    = true;
     mIcon               = "caelum.svg";
     mCapabilities       = CAN_DELETE;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     OgitorsPropertyDef* definition = 0;
-
     definition = AddPropertyDefinition("options::currenttime",          "Options::Current Time",        "", PROP_REAL);
     definition->setRange(Ogre::Any(0.0f), Ogre::Any(24.0f), Ogre::Any(0.25f));
     definition->setTrackChanges(false);

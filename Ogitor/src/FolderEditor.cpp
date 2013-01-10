@@ -41,8 +41,6 @@ using namespace Ogitors;
 //-----------------------------------------------------------------------------------------
 CFolderEditor::CFolderEditor(CBaseEditorFactory *factory) : CBaseEditor(factory) 
 {
-    mUsesGizmos = false;
-    mUsesHelper = false;
 }
 //-----------------------------------------------------------------------------------------
 CFolderEditor::~CFolderEditor()
@@ -119,6 +117,8 @@ CFolderEditorFactory::CFolderEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mRequirePlacement = false;
     mIcon = "folder.svg";
     mCapabilities = CAN_DELETE | CAN_DROP | CAN_UNDO | CAN_ACCEPTCOPY | CAN_ACCEPTPASTE;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     OgitorsPropertyDefMap::iterator it = mPropertyDefs.find("layer");
     it->second.setAccess(false, false);

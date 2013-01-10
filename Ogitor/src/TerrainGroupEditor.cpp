@@ -80,8 +80,6 @@ Ogre::Real OgitorTerrainGroupHeightFunction(Ogre::Real x, Ogre::Real z, void *us
 CTerrainGroupEditor::CTerrainGroupEditor(CBaseEditorFactory *factory) : CBaseEditor(factory),
 mHandle(0), mBrushData(0), mModificationRect(0,0,0,0)
 {
-    mUsesGizmos = false;
-    mUsesHelper = false;
     mDecalNode = 0;
     mDecalFrustum = 0;
     mEditMode = EM_NONE;
@@ -834,6 +832,8 @@ CTerrainGroupEditorFactory::CTerrainGroupEditorFactory(OgitorsView *view) : CBas
     mAddToObjectList = true;
     mIcon = "pagedterrainmanager.svg";
     mCapabilities = CAN_DELETE | CAN_UNDO;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     mMinBatchSizes.clear();
     mMinBatchSizes.push_back(PropertyOption("5", Ogre::Any((int)5)));

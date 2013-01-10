@@ -44,8 +44,6 @@ using namespace Ogitors;
 //--------------------------------------------------------------------------------
 CMultiSelEditor::CMultiSelEditor(CBaseEditorFactory *factory, const Ogre::String& name) : CBaseEditor(factory)
 {
-    mUsesGizmos = true;
-    mUsesHelper = false;
     mDeletionInProgress = false;
 
     if(name == "")
@@ -627,6 +625,8 @@ CMultiSelEditorFactory::CMultiSelEditorFactory(OgitorsView *view) : CBaseEditorF
     mEditorType = ETYPE_MULTISEL;
     mIcon = "multisel.svg";
     mCapabilities = CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_UNDO  | CAN_FOCUS | CAN_DELETE;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     AddPropertyDefinition("position", "", "The position of the object.",PROP_VECTOR3, false, false);
     AddPropertyDefinition("scale", "", "The scale of the object.",PROP_VECTOR3, false, false);

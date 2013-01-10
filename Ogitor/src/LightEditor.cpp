@@ -47,8 +47,6 @@ CLightEditor::CLightEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
 {
     mHandle = 0;
     mHelper = 0;
-    mUsesGizmos = true;
-    mUsesHelper = true;
 }
 //-----------------------------------------------------------------------------------------
 CLightEditor::~CLightEditor()
@@ -395,6 +393,8 @@ CLightEditorFactory::CLightEditorFactory(OgitorsView *view) : CBaseEditorFactory
     mRequirePlacement = true;
     mIcon = "light.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = true;
 
     mLightTypes.clear();
     mLightTypes.push_back(PropertyOption("LT_POINT",Ogre::Any((int)Ogre::Light::LT_POINT)));

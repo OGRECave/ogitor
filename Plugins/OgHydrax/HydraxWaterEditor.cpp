@@ -46,9 +46,6 @@ CHydraxEditor::CHydraxEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
     mHandle = 0;
     mModule = 0;
     mName->init("HydraxWater");
-
-    mUsesGizmos = false;
-    mUsesHelper = false;
 }
 //---------------------------------------------------------------------------------
 CHydraxEditor::~CHydraxEditor()
@@ -1082,6 +1079,8 @@ CHydraxEditorFactory::CHydraxEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mAddToObjectList = true;
     mIcon = "hydrax.svg";
     mCapabilities = CAN_DELETE;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     mShaderModes.clear();
     mShaderModes.push_back(PropertyOption("SM_HLSL",Ogre::Any((int)Hydrax::MaterialManager::SM_HLSL)));

@@ -46,8 +46,6 @@ namespace Ogitors
     {
         mHandle = viewport;
         mHelper = 0;
-        mUsesGizmos = false;
-        mUsesHelper = false;
     }
     //-----------------------------------------------------------------------------------------
     CScreenEffectEditor::~CScreenEffectEditor()
@@ -330,6 +328,8 @@ namespace Ogitors
         mRequirePlacement = false;
         mIcon = "screen_effect.svg";
         mCapabilities = CAN_UNDO | CAN_DELETE;
+        mUsesGizmos = false;
+        mUsesHelper = false;
 
         OgitorsPropertyDef *definition;
         definition = AddPropertyDefinition("compositor::name", "Compositor", "", Ogitors::PROP_STRING);
