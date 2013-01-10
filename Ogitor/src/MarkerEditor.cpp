@@ -44,8 +44,6 @@ CMarkerEditor::CMarkerEditor(CBaseEditorFactory *factory) : CNodeEditor(factory)
 mMarkerHandle(0)
 {
     mHandle = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
     mMaterial.setNull();
 }
 //-----------------------------------------------------------------------------------------
@@ -157,6 +155,8 @@ CMarkerEditorFactory::CMarkerEditorFactory(OgitorsView *view) : CNodeEditorFacto
     mRequirePlacement = true;
     mIcon = "marker.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     AddPropertyDefinition("colour", "Colour", "The colour of the object.",PROP_COLOUR);
 

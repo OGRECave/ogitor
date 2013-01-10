@@ -99,9 +99,6 @@ mPageX(0), mPageY(0), mFirstTimeInit(false), mExternalDataHandle(0), mPGModified
     mBlendSaveStart = 1;
     mBlendSaveCount = 0;
 
-    mUsesGizmos = false;
-    mUsesHelper = false;
-
     mTempFileName = "";
     mTempDensityFileName = "";
 }
@@ -1452,6 +1449,8 @@ CTerrainPageEditorFactory::CTerrainPageEditorFactory(OgitorsView *view) : CBaseE
     mIcon = "pagedterrain.svg";
     mCapabilities = CAN_PAGE | CAN_DELETE | CAN_UNDO | CAN_FOCUS;
     mDefaultWorldSection = SECT_TERRAIN;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     OgitorsPropertyDef *definition;
 

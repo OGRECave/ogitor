@@ -48,9 +48,6 @@ PortalEditor::PortalEditor(Ogitors::CBaseEditorFactory *factory) : Ogitors::CNod
                                                                     mFreeMove(false)
 {
     mHandle = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
-
 }
 //----------------------------------------------------------------------------------------
 PortalEditor::~PortalEditor(void)
@@ -173,7 +170,6 @@ bool PortalEditor::getObjectContextMenu(UTFStringVector &menuitems)
                 menuitems.push_back(OTR("Link"));
             }
         }
-
     }
 
     //possible feature -> snap-to ->portal_name.
@@ -214,14 +210,11 @@ void PortalEditor::onObjectContextMenu(int menuresult)
 
                 //update selection plane
                 _createPlane();
-
             }
         }
     }
     else
     {
-
-
         if(mConnected)//if there is a potential destination...
         {
             if(menuresult == 0)//connect
@@ -238,11 +231,7 @@ void PortalEditor::onObjectContextMenu(int menuresult)
                 }
             }
         }
-
     }
-
-
-
 }
 //----------------------------------------------------------------------------------------
 void PortalEditor::link(PortalEditor* dest)
@@ -290,7 +279,6 @@ bool PortalEditor::connectNearPortals(bool bAllowMove)
                 mConnected->connect(0);
                 this->connect(0);
             }
-
     }
 
     for(itr=portalList.begin();itr!=portalList.end();++itr )
@@ -305,22 +293,18 @@ bool PortalEditor::connectNearPortals(bool bAllowMove)
             //check the portals match
             if(that->getHeight()==this->getHeight()&&that->getWidth()==this->getWidth())
             {
-
                 //check portal proximity
                 Ogre::Real d = that->getDerivedPosition().distance(this->getDerivedPosition());
 
                 if(d<1.0f)
                 {
-
                     if(this->snapTpPortal(that,bAllowMove))
                     {
                         //join the portals,set lock
                         this->connect(that);
                         that->connect(this);
                         return true;
-
                     }
-
                 }
             }
             //TODO: else{/*check h vs w and rotate 90deg if matches*/}
@@ -426,9 +410,7 @@ bool PortalEditor::postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *
             mLinked=true;
             if(mPortalOutline)
                 mPortalOutline->setPortalState(PortalOutlineRenderable::PS_LINKED);
-
         }
-
     }
 
     this->setLocked(true);
@@ -515,9 +497,7 @@ TiXmlElement* PortalEditor::exportDotScene(TiXmlElement *pParent)
         pDestination->SetAttribute("portal",mConnected->getName().c_str());
     }
 
-
     return pNode;
-
 }
 
 //----------------------------------------------------------------------------------------
@@ -535,30 +515,24 @@ bool PortalEditor::update(float timePassed)
         std::vector<HoleSnapPoint>::iterator itr;
         for(itr = tools->mHoles.begin();itr != tools->mHoles.end() && !snapped ;++itr)
         {
-
             //get current position data:
             Ogre::Vector3 vDest = (*itr).first;
             Ogre::Vector3 vPortal = this->getPosition();
             Ogre::Quaternion qDest = (*itr).second;
             Ogre::Quaternion qPortal = this->getOrientation();
 
-
             //check portal proximity
             Ogre::Real d = vPortal.distance(vDest);
 
             if(d<1.0f)
             {
-
                 this->setPosition(vDest);//move into position
                 this->setOrientation(qDest);//adjust orientation
                 snapped = true;
-
             }
-
         }
 
         bModified = true;
-
     }
 
     return bModified;

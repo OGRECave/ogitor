@@ -46,8 +46,6 @@ mPropertyID(0)
 {
     mHandle.setNull();
     mHelper = 0;
-    mUsesGizmos = false;
-    mUsesHelper = false;
 
     mCompareFunctions.push_back("ALWAYS_FAIL");     
     mCompareFunctions.push_back("ALWAYS_PASS");     
@@ -315,6 +313,8 @@ CMaterialEditorFactory::CMaterialEditorFactory(OgitorsView *view) : CBaseEditorF
     mRequirePlacement = true;
     mIcon = "material.svg";
     mCapabilities = CAN_UNDO;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     AddPropertyDefinition("material_path", "Material Path", "The path to the material file", Ogitors::PROP_STRING);
 }

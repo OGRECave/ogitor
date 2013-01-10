@@ -48,8 +48,6 @@ CBillboardSetEditor::CBillboardSetEditor(CBaseEditorFactory *factory) : CNodeEdi
 mBillboardSetHandle(0)
 {
     mHelper = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
 }
 //-----------------------------------------------------------------------------------------
 CBillboardSetEditor::~CBillboardSetEditor()
@@ -441,6 +439,8 @@ CBillboardSetEditorFactory::CBillboardSetEditorFactory(OgitorsView *view) : CNod
     mRequirePlacement = true;
     mIcon = "billboardset.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_USEMATERIAL | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     OgitorsPropertyDef *definition;
     

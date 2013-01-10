@@ -46,8 +46,6 @@ CPGInstanceEditor::CPGInstanceEditor(CBaseEditorFactory *factory) : CBaseEditor(
     mIndex = -1;
     mHandle = 0;
     mHelper = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
 }
 //-----------------------------------------------------------------------------------------
 CPGInstanceEditor::~CPGInstanceEditor()
@@ -248,6 +246,8 @@ CPGInstanceEditorFactory::CPGInstanceEditorFactory(OgitorsView *view) : CBaseEdi
     mRequirePlacement = true;
     mIcon = "pginstance.svg";
     mCapabilities = CAN_FOCUS | CAN_DELETE | CAN_UNDO | CAN_MOVE | CAN_SCALE | CAN_ROTATEY;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     AddPropertyDefinition("position","Position","The position of the object.",PROP_VECTOR3);
     AddPropertyDefinition("orientation","Orientation","The orientation of the object.",PROP_QUATERNION,false, false, false);

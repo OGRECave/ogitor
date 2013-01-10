@@ -46,8 +46,6 @@ mMeshHandle(0), mBoundingBox(Ogre::AxisAlignedBox::BOX_NULL),
 mIsEditing(false), mInEditMode(false), mNeedsBBoxUpdate(true), 
 mCurrentVertex(0), mCurrentNode(0), mSelectionMode(EMSM_VERTEX)
 {
-    mUsesGizmos = true;
-    mUsesHelper = false;
 }
 //-------------------------------------------------------------------------------
 CEditableMeshEditor::~CEditableMeshEditor()
@@ -358,6 +356,8 @@ CEditableMeshEditorFactory::CEditableMeshEditorFactory(OgitorsView *view) : CNod
     mRequirePlacement = true;
     mIcon = "entity.svg";
     mCapabilities = CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 }
 //-----------------------------------------------------------------------------------------
 CBaseEditorFactory *CEditableMeshEditorFactory::duplicate(OgitorsView *view)

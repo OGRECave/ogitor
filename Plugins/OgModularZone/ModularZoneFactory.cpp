@@ -39,11 +39,12 @@ ModularZoneFactory::ModularZoneFactory(OgitorsView *view) : CNodeEditorFactory(v
     mRequirePlacement = true;
     mIcon = Ogitors::Globals::OGITOR_PLUGIN_ICON_PATH + "/zone.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_DROP| CAN_UNDO | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     AddPropertyDefinition("zonetemplate","Zone::Description File","XML file that defines this zone",PROP_INT, true, false);
     AddPropertyDefinition("portalcount","Zone::Portal Count","Number of portals in this zone",PROP_INT, true, false);
     AddPropertyDefinition("meshname","Zone::Mesh Name","Enclosing mesh of this zone",PROP_STRING, true, false);
-
 }
 //-----------------------------------------------------------------------------------------
 CBaseEditor *ModularZoneFactory::CreateObject(CBaseEditor **parent, OgitorsPropertyValueMap &params)

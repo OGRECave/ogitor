@@ -54,9 +54,6 @@ ModularZoneEditor::ModularZoneEditor(Ogitors::CBaseEditorFactory *factory) :
                                                                                 mDragging(false)
 {
     mHandle = 0;
-    mUsesGizmos = true;
-    mUsesHelper = false;
-
 }
 
 void ModularZoneEditor::showBoundingBox(bool bShow) 

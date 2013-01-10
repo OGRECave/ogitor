@@ -68,8 +68,6 @@ DummyPageProvider mDummyPageProvider;
 CPagingManager::CPagingManager(CBaseEditorFactory *factory) : CBaseEditor(factory),
 mHandle(0)
 {
-    mUsesGizmos = false;
-    mUsesHelper = false;
     mName->init("Paging Manager");
     mSections.clear();
 }
@@ -315,6 +313,8 @@ CPagingManagerFactory::CPagingManagerFactory(OgitorsView *view) : CBaseEditorFac
     mAddToObjectList = true;
     mIcon = "pagingmanager.svg";
     mCapabilities = CAN_DELETE | CAN_UNDO;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     OgitorsPropertyDefMap::iterator it = mPropertyDefs.find("name");
     it->second.setAccess(true, false);

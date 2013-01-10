@@ -52,8 +52,6 @@ mAutoTrackTargetPtr(0)
 {
     mHandle = 0;
     mHelper = 0;
-    mUsesGizmos = true;
-    mUsesHelper = true;
 }
 //-----------------------------------------------------------------------------------------
 CCameraEditor::~CCameraEditor()
@@ -585,6 +583,8 @@ CCameraEditorFactory::CCameraEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mRequirePlacement = true;
     mIcon = "camera.svg";
     mCapabilities = CAN_MOVE | CAN_ROTATE | CAN_CLONE | CAN_DELETE | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = true;
 
     mCameraPolygonModes.clear();
     mCameraPolygonModes.push_back(PropertyOption("PM_SOLID",Ogre::Any((int)Ogre::PM_SOLID)));

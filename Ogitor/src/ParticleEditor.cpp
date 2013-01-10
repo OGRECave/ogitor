@@ -44,8 +44,6 @@ using namespace Ogitors;
 CParticleEditor::CParticleEditor(CBaseEditorFactory *factory) : CNodeEditor(factory),
 mEntityHandle(0), mParticleHandle(0)
 {
-    mUsesGizmos = true;
-    mUsesHelper = false;
 }
 //-------------------------------------------------------------------------------
 Ogre::AxisAlignedBox CParticleEditor::getAABB() 
@@ -195,6 +193,8 @@ CParticleEditorFactory::CParticleEditorFactory(OgitorsView *view) : CNodeEditorF
     mRequirePlacement = true;
     mIcon = "particle.svg";
     mCapabilities = CAN_PAGE | CAN_MOVE | CAN_SCALE | CAN_ROTATE | CAN_CLONE | CAN_DELETE  | CAN_FOCUS | CAN_DRAG | CAN_UNDO | CAN_ACCEPTCOPY;
+    mUsesGizmos = true;
+    mUsesHelper = false;
 
     OgitorsPropertyDef *definition;
     definition = AddPropertyDefinition("particle","Particle System","The particle name of the object.",PROP_STRING);

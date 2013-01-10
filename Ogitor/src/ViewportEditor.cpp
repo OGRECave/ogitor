@@ -48,9 +48,7 @@ using namespace Ogitors;
 CViewportEditor::CViewportEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
 {
     mHandle = 0;
-    mUsesGizmos = false;
-    mUsesHelper = false;
-
+    
     mActiveCamera = 0;
     mViewCamera = 0;
 
@@ -502,6 +500,8 @@ CViewportEditorFactory::CViewportEditorFactory(OgitorsView *view) : CBaseEditorF
     mIcon = "viewport.svg";
     mCapabilities = CAN_UNDO;
     mLastZOrder = 0;
+    mUsesGizmos = false;
+    mUsesHelper = false;
 
     OgitorsPropertyDef *definition;
 
