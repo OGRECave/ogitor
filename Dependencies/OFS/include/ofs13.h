@@ -257,9 +257,9 @@ const char VERSION_FIX      = '0';
         time_t       create_time;
         time_t       modified_time;
 
-        static bool Compare ( FileEntry elem1, FileEntry elem2 )
+        static bool Compare(FileEntry elem1, FileEntry elem2)
         {
-            return (strcmp(elem1.name.c_str(), elem2.name.c_str()) < 0);
+            return (_strcmpi(elem1.name.c_str(), elem2.name.c_str()) < 0);
         };
     };
 
