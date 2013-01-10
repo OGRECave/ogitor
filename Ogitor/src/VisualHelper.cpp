@@ -73,7 +73,7 @@ CEntityVisualHelper::CEntityVisualHelper(CBaseEditor *parent, bool scalesensitiv
     CONNECT_PROPERTY_MEMFN(mParent, "parent", CEntityVisualHelper, OnParentsParentChange, mConnections[0]);
     CONNECT_PROPERTY_MEMFN(mParent, "position", CEntityVisualHelper, OnParentPositionChange, mConnections[1]);
     CONNECT_PROPERTY_MEMFN(mParent, "orientation", CEntityVisualHelper, OnParentOrientationChange, mConnections[2]);
-    if(mScaleSensitive && parent->getParent())
+    if(mScaleSensitive && parent->getParent() && parent->getParent()->hasProperty("scale"))
         CONNECT_PROPERTY_MEMFN(mParent->getParent(), "scale", CEntityVisualHelper, OnParentsNodeScaleChange, mConnections[3]);
 }
 //--------------------------------------------------------------------------------
