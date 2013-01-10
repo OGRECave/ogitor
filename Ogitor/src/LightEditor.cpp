@@ -315,7 +315,7 @@ void CLightEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mDiffuse    ,"diffuse"    ,Ogre::ColourValue,Ogre::ColourValue(1,1,1,1), 0, SETTER(Ogre::ColourValue, CLightEditor, _setDiffuse));
     PROPERTY_PTR(mSpecular   ,"specular"   ,Ogre::ColourValue,Ogre::ColourValue(0,0,0,1), 0, SETTER(Ogre::ColourValue, CLightEditor, _setSpecular));
     PROPERTY_PTR(mRange      ,"lightrange" ,Ogre::Vector3    ,Ogre::Vector3(15,30,1.0f) , 0, SETTER(Ogre::Vector3, CLightEditor, _setRange));
-    PROPERTY_PTR(mAttenuation,"attenuation",Ogre::Vector4    ,Ogre::Vector4(100,1,0.5f,0), 0, SETTER(Ogre::Vector4, CLightEditor, _setAttenuation));
+    PROPERTY_PTR(mAttenuation,"attenuation",Ogre::Vector4    ,Ogre::Vector4(100,0.5,0.1f,0), 0, SETTER(Ogre::Vector4, CLightEditor, _setAttenuation));
     PROPERTY_PTR(mPower      ,"power"      ,Ogre::Real       ,1.0f                      , 0, SETTER(Ogre::Real, CLightEditor, _setPower));
     PROPERTY_PTR(mCastShadows,"castshadows",bool             ,true                      , 0, SETTER(bool, CLightEditor, _setCastShadows));
 
