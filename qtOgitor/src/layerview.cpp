@@ -77,6 +77,7 @@ LayerTreeWidget::LayerTreeWidget(QWidget *parent) : QTreeWidget(parent)
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setDragDropOverwriteMode(false);
     setDragDropMode(QAbstractItemView::DragDrop);
+    setAutoScroll(true);
 
     connect(itemDelegate(), SIGNAL(closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)), this, SLOT(itemEditDone()));
 }
@@ -118,6 +119,8 @@ void LayerTreeWidget::dragMoveEvent(QDragMoveEvent *evt)
         evt->accept();
     else
         evt->ignore();
+
+    QTreeWidget::dragMoveEvent(evt);
 }
 //----------------------------------------------------------------------------------------
 void LayerTreeWidget::dropEvent(QDropEvent *evt)

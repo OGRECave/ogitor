@@ -51,6 +51,7 @@ OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, QString
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setContextMenuPolicy(Qt::CustomContextMenu);
     setDragDropOverwriteMode(false);
+    setAutoScroll(true);
     
     if(capabilities & CAP_ALLOW_DROPS)
         setDragDropMode(QAbstractItemView::DragDrop);
@@ -483,6 +484,8 @@ void OfsTreeWidget::dragMoveEvent(QDragMoveEvent *evt)
     }
 
     evt->ignore();
+
+    QTreeWidget::dragMoveEvent(evt);
 }
 //----------------------------------------------------------------------------------------
 void OfsTreeWidget::dropEvent(QDropEvent *evt)

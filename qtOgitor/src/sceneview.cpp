@@ -52,6 +52,7 @@ SceneTreeWidget::SceneTreeWidget(QWidget *parent) : ExtendedTreeWidget(parent)
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setDragDropOverwriteMode(false);
     setDragDropMode(QAbstractItemView::DragDrop);
+    setAutoScroll(true);
 }
 //----------------------------------------------------------------------------------------
 void SceneTreeWidget::dragEnterEvent(QDragEnterEvent *evt)
@@ -109,6 +110,8 @@ void SceneTreeWidget::dragMoveEvent(QDragMoveEvent *evt)
         evt->accept();
     else
         evt->ignore();
+
+    QTreeWidget::dragMoveEvent(evt);
 }
 //----------------------------------------------------------------------------------------
 void SceneTreeWidget::dropEvent(QDropEvent *evt)
