@@ -46,6 +46,7 @@ namespace Ogitors
     const event_id_type EventManager::AFTER_SCENE_EXPORT             = event_id_type("after_scene_export");
     const event_id_type EventManager::GLOBAL_PREPARE_VIEW            = event_id_type("global_prepare_view");
     const event_id_type EventManager::SELECTION_CHANGE               = event_id_type("selection_change");
+    const event_id_type EventManager::ASSETS_ADDED                   = event_id_type("assets_added");
 
     event_id_type LoadStateChangeEvent::mID(EventManager::LOAD_STATE_CHANGE);
     event_id_type RunStateChangeEvent::mID(EventManager::RUN_STATE_CHANGE);
@@ -57,6 +58,7 @@ namespace Ogitors
     event_id_type AfterSceneExportEvent::mID(EventManager::AFTER_SCENE_EXPORT);
     event_id_type GlobalPrepareViewEvent::mID(EventManager::GLOBAL_PREPARE_VIEW);
     event_id_type SelectionChangeEvent::mID(EventManager::SELECTION_CHANGE);
+    event_id_type AssetsAddedEvent::mID(EventManager::ASSETS_ADDED);
 
     // Pure virtual Destructor
     IEvent::~IEvent()

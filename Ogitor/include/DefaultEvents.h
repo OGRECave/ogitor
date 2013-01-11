@@ -196,6 +196,21 @@ namespace Ogitors
         static event_id_type    mID;
         CMultiSelEditor*        mMultiSelEditor;
     };
+       
+    //-----------------------------------------------------------------------------------------
+
+    class OgitorExport AssetsAddedEvent : public IEvent
+    {
+    public:
+        AssetsAddedEvent(Ogre::StringVector* newAssetNames) : mNewAssetNames(newAssetNames) {}
+        ~AssetsAddedEvent() {}
+
+        const event_id_type& getID() const { return mID; }
+
+    private:
+        static event_id_type    mID;
+        Ogre::StringVector*     mNewAssetNames;     // Not populated yet
+    };
 
     //-----------------------------------------------------------------------------------------
 }

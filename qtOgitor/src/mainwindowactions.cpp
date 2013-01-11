@@ -707,7 +707,7 @@ void MainWindow::openScene()
     if(ret == SCF_CANCEL)
         return;
 
-    if( ret != SCF_OK )
+    if(ret != SCF_OK)
     {
         QMessageBox::warning(this,"qtOgitor", tr("Error Loading file") + ": " + CBaseSerializer::GetErrorString((SCENEFILERESULT)ret).c_str(), QMessageBox::Ok);
         return;

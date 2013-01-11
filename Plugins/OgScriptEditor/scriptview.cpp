@@ -106,7 +106,8 @@ void ScriptTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
     Ogre::String scriptname = item->text(0).toStdString();
     Ogre::String scriptfilename = item->whatsThis(0).toStdString();
 
-    GenericTextEditor::getSingletonPtr()->displayTextFromFile(scriptfilename.c_str());
+    if(GenericTextEditor::getSingletonPtr())
+        GenericTextEditor::getSingletonPtr()->displayTextFromFile(scriptfilename.c_str());
 }
 //----------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------

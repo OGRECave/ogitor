@@ -266,13 +266,13 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column
     }
 
     path = QString(Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName().c_str()) + QString("::") + path;
-    if(mOgitorMainWindow->getGenericTextEditor()->findMatchingCodecFactory(path) != 0)
+    if(mOgitorMainWindow->getGenericTextEditor() && mOgitorMainWindow->getGenericTextEditor()->findMatchingCodecFactory(path) != 0)
     {
         mOgitorMainWindow->getGenericTextEditor()->displayTextFromFile(path);
         return;
     }
 
-    if(mOgitorMainWindow->getGenericImageEditor()->findMatchingCodecFactory(path) != 0)
+    if(mOgitorMainWindow->getGenericImageEditor() && mOgitorMainWindow->getGenericImageEditor()->findMatchingCodecFactory(path) != 0)
     {
         mOgitorMainWindow->getGenericImageEditor()->displayImageFromFile(path);
         return;
@@ -815,15 +815,17 @@ void ProjectFilesViewWidget::onMakeAsset()
     }
 
     if(!found)
+    {
         Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ResourceDirectories.push_back(name.toStdString());
 
-    Ogitors::OgitorsRoot::getSingletonPtr()->ReloadUserResources();
-    mOgitorMainWindow->getEntityViewWidget()->prepareView();
-    mOgitorMainWindow->getTemplatesViewWidget()->prepareView();
+        Ogitors::OgitorsRoot::getSingletonPtr()->ReloadUserResources();
+        mOgitorMainWindow->getEntityViewWidget()->prepareView();
+        mOgitorMainWindow->getTemplatesViewWidget()->prepareView();
 
-    // Send event so that all listening plugins get notified as well and can update their views
-    Ogitors::GlobalPrepareViewEvent evt;
-    Ogitors::EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
+        // Send event so that all listening plugins get notified as well and can update their views
+        Ogitors::AssetsAddedEvent evt(0);
+        Ogitors::EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
+    }
 }
 //----------------------------------------------------------------------------------------
 void ProjectFilesViewWidget::onAddFolder()

@@ -533,13 +533,15 @@ void OgreWidget::showObjectMenu()
         QSignalMapper *signalMapper = 0;
         QSignalMapper *pasteSignalMapper = 0;
 
-        contextMenu->addAction(mOgitorMainWindow->actEditCopy);
-        contextMenu->addAction(mOgitorMainWindow->actEditCut);
-        contextMenu->addAction(mOgitorMainWindow->actEditDelete);
         contextMenu->addAction(mOgitorMainWindow->actEditRename);
         contextMenu->addSeparator();
+        contextMenu->addAction(mOgitorMainWindow->actEditCopy);
+        contextMenu->addAction(mOgitorMainWindow->actEditCut);        
+        contextMenu->addSeparator();            
         contextMenu->addAction(mOgitorMainWindow->actEditCopyToTemplate);
         contextMenu->addAction(mOgitorMainWindow->actEditCopyToTemplateWithChildren);
+        contextMenu->addSeparator();
+        contextMenu->addAction(mOgitorMainWindow->actEditDelete);
 
         UTFStringVector menuList;
         if(e->getObjectContextMenu(menuList))
@@ -609,6 +611,10 @@ void OgreWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
             mOgitorMainWindow->getTemplatesViewWidget()->prepareView();
             mOgitorMainWindow->getProjectFilesViewWidget()->prepareView();
             mOgitorMainWindow->toggleGrid();
+
+            // Send event so that all listening plugins get notified as well and can update their views
+            Ogitors::GlobalPrepareViewEvent evt;
+            Ogitors::EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 
             mOgitorMainWindow->getLayersViewWidget()->updateLayerNames();
 

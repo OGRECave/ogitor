@@ -66,8 +66,10 @@ namespace Ogitors
         /// Gets the Handle to encapsulated object
         inline virtual void*            getHandle() {return static_cast<void*>(mHandle);};
         inline virtual void             setHandle(Ogre::Viewport* handle){mHandle = handle;}
-        inline virtual Ogre::String     getCompositorName(){return mCompositorPath->get();};
-        inline virtual void             setCompositorName(const Ogre::String& path) {mCompositorPath->set(path);};
+        inline virtual Ogre::String     getCompositorName(){return mCompositorName->get();};
+        inline virtual void             setCompositorName(const Ogre::String& path) {mCompositorName->set(path);};
+
+        TiXmlElement*                   exportDotScene(TiXmlElement *pParent); 
 
         /**
         * Adds new compositor
@@ -111,8 +113,8 @@ protected:
         bool                            _setCompositorNamedConstantColourValue(OgitorsPropertyBase* property, const Ogre::ColourValue& value);
 
         Ogre::Viewport*                     mHandle;
-        OgitorsProperty<Ogre::String>*      mCompositorPath;
-        bool                                mCompositorEnabled;
+        OgitorsProperty<Ogre::String>*      mCompositorName;
+        OgitorsProperty<bool>*              mCompositorEnabled;
 
         CScreenEffectEditor(Ogre::Viewport* viewport, CBaseEditorFactory *factory);
         virtual     ~CScreenEffectEditor();
