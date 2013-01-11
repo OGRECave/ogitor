@@ -80,18 +80,18 @@ void TemplateTreeWidget::copyTemplate()
 {
     /*QList<QTreeWidgetItem*> list = selectedItems();
     if(list.size() == 0 || list[0]->parent() == 0)
-          return;
+    return;
 
     OGITORUNDOSTRUCT *templdata = OgitorsUndoManager::getSingletonPtr()->GetTemplateData(list[0]->text(0).toStdString());
     if(!templdata)
-          return;
+    return;
 
     OgitorsUndoManager::getSingletonPtr()->Copy(templdata);*/
 }
 //----------------------------------------------------------------------------------------
 void TemplateTreeWidget::keyPressEvent(QKeyEvent *evt)
 {
-         QTreeWidget::keyPressEvent(evt);
+    QTreeWidget::keyPressEvent(evt);
 }
 //----------------------------------------------------------------------------------------
 TemplateViewWidget::TemplateViewWidget(QWidget *parent) : QWidget(parent),

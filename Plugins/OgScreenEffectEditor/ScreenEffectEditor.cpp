@@ -30,10 +30,8 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
+#include "Ogitors.h"
 #include "OgitorsPrerequisites.h"
-#include "BaseEditor.h"
-#include "OgitorsRoot.h"
-#include "OgitorsSystem.h"
 #include "ScreenEffectEditor.h"
 #include "OgreMaterialManager.h"
 #include "ViewportEditor.h"
@@ -310,10 +308,20 @@ namespace Ogitors
     //-----------------------------------------------------------------------------------------
     void CScreenEffectEditor::createProperties(OgitorsPropertyValueMap &params)
     {
-        PROPERTY_PTR(mCompositorPath, "compositor::name", Ogre::String, "", 0, SETTER(Ogre::String, CScreenEffectEditor, _setCompositorName)); 
-        PROPERTY("compositor::enabled", bool, false, 0, SETTER(bool, CScreenEffectEditor, _setCompositorEnabled)); 
+        PROPERTY_PTR(mCompositorName, "compositor::name", Ogre::String, "", 0, SETTER(Ogre::String, CScreenEffectEditor, _setCompositorName)); 
+        PROPERTY_PTR(mCompositorEnabled, "compositor::enabled", bool, false, 0, SETTER(bool, CScreenEffectEditor, _setCompositorEnabled)); 
 
         mProperties.initValueMap(params);
+    }
+    //-----------------------------------------------------------------------------------------
+    TiXmlElement* CScreenEffectEditor::exportDotScene(TiXmlElement *pParent)
+    {
+        TiXmlElement *pScreenEffect = pParent->Parent()->InsertEndChild(TiXmlElement("screeneffect"))->ToElement();
+
+        pScreenEffect->SetAttribute("name", mCompositorName->get().c_str());
+        pScreenEffect->SetAttribute("enabled", Ogre::StringConverter::toString(mCompositorEnabled->get()).c_str());
+        
+        return pScreenEffect;
     }
     //-----------------------------------------------------------------------------------------
 

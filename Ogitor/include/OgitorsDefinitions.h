@@ -73,7 +73,9 @@ namespace Ogitors
         ETYPE_MATERIAL,         /** Material editor type */
         ETYPE_TECHNIQUE,        /** Technique editor type */
         ETYPE_TERRAIN_PAGE,     /** Terrain Page editor type */
-        ETYPE_SCREEN_EFFECT     /** Screen effect editor type */   
+        ETYPE_SCREEN_EFFECT,    /** Screen effect editor type */   
+
+        ETYPE_EXTERNAL_PLUGIN   /** To be used by all non-Ogitor team created plugins */
     };
 
     /** String'ified EDITORTYPE enumeration @see EDITORTYPE */
@@ -100,10 +102,13 @@ namespace Ogitors
         "ETYPE_MULTISEL",       /** String'ification of EDITORTYPE::ETYPE_MULTISEL */
         "ETYPE_MATERIAL",       /** String'ification of EDITORTYPE::ETYPE_MATERIAL */
         "ETYPE_TECHNIQUE",      /** String'ification of EDITORTYPE::ETYPE_TECHNIQUE */
-        "ETYPE_TERRAIN_PAGE"    /** String'ification of EDITORTYPE::ETYPE_TERRAIN_PAGE */
+        "ETYPE_TERRAIN_PAGE",   /** String'ification of EDITORTYPE::ETYPE_TERRAIN_PAGE */
+        "ETYPE_SCREEN_EFFECT",  /** String'ification of EDITORTYPE::ETYPE_SCREEN_EFFECT */
+
+        "ETYPE_EXTERNAL_PLUGIN" /** String'ification of EDITORTYPE::ETYPE_EXTERNAL_PLUGIN */
     };
     /** Last unique ID for an editor */
-    const unsigned int LAST_EDITOR = ETYPE_TERRAIN_PAGE + 1;
+    const unsigned int LAST_EDITOR = ETYPE_EXTERNAL_PLUGIN + 1;
 
     typedef Ogre::vector<Ogre::UTFString>::type UTFStringVector;
 
