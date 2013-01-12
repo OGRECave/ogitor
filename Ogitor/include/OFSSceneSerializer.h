@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include "tinyxml.h"
+
 namespace Ogitors
 {
     //! Ogitor scene serializer class
@@ -70,6 +72,7 @@ namespace Ogitors
         virtual int  Import(Ogre::String importfile = "");
     private:
         int  _writeFile(Ogre::String exportfile = "", const bool forceSave=true);
+        void _upgradeOgsceneFileFrom2To3(TiXmlNode* ogsceneRootNode);
     };
 };
 

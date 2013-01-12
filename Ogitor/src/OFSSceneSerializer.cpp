@@ -38,7 +38,6 @@
 #include "OgitorsSystem.h"
 #include "OFSSceneSerializer.h"
 
-#include "tinyxml.h"
 #include "ofs.h"
 
 using namespace Ogitors;
@@ -97,7 +96,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         {
             mSystem->DisplayMessageDialog("The OFS file is a previous version, please use qtOFS to upgrade it to new file version.", DLGTYPE_OK);
         }
-        
+
         loadmsg = mSystem->Translate("Please load a Scene File...");
         mSystem->UpdateLoadProgress(-1, loadmsg);
         return SCF_ERRPARSE;
@@ -115,7 +114,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
     if(typepos != -1)
         fileName.erase(typepos, fileName.length() - typepos);
     pOpt->ProjectName = fileName;
-    
+
     fileName += ".ogscene";
 
     OFS::ofs64 file_size = 0;
@@ -149,32 +148,61 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
     loadmsg = mSystem->Translate("Parsing Scene File");
     mSystem->UpdateLoadProgress(1, loadmsg);
 
-    TiXmlNode* node = 0;
+    TiXmlNode* ogitorSceneNode = 0;
+    TiXmlNode* projectNode;
     TiXmlElement* element = 0;
-    node = docImport.FirstChild("OGITORSCENE");
-    
-    if(!node)
+    bool upgradeExecuted = false;
+    ogitorSceneNode = docImport.FirstChild("OGITORSCENE");
+
+    if(!ogitorSceneNode)
         return SCF_ERRPARSE;
 
-    element = node->ToElement();
-    int version = Ogre::StringConverter::parseInt(ValidAttr(element->Attribute("version"),"1"));
-    if(version == 1)
-        return SCF_ERRPARSE;
+    element = ogitorSceneNode->ToElement();
 
-    node = node->FirstChild("PROJECT");
+    // Old OGSCENE version check and attempt to fix/update
+    int version = Ogre::StringConverter::parseInt(ValidAttr(element->Attribute("version"), "0"));    
+    if(Ogre::StringConverter::toString(version) < Globals::OGSCENE_FORMAT_VERSION)
+    {
+        mSystem->DisplayMessageDialog(mSystem->Translate("Old OGSCENE file version detected. Ogitor will now attempt to upgrade the format and will also create a backup version of your OFS file."), DLGTYPE_OK);
 
-    if(node)
+        loadmsg = mSystem->Translate("Upgrading OGSCENE file.");
+        mSystem->UpdateLoadProgress(10, loadmsg);
+
+        if(version == 0)
+        {
+            mSystem->DisplayMessageDialog(mSystem->Translate("OGSCENE files contains no version number set and therefore cannot be loaded."), DLGTYPE_OK);
+            return SCF_ERRPARSE;
+        }
+        else if(version == 1)
+        {
+            mSystem->DisplayMessageDialog(mSystem->Translate("OGSCENE files with version 1 cannot be upgraded automatically. Please contact the Ogitor team for further details."), DLGTYPE_OK);
+            return SCF_ERRPARSE;
+        }
+        if(version > 1)
+            if(!mSystem->CopyFile(importfile, importfile + ".backup"))
+                mSystem->DisplayMessageDialog(mSystem->Translate("Error while trying to create backup file."), DLGTYPE_OK);
+        
+        switch(version)
+        {
+         case 2:
+            _upgradeOgsceneFileFrom2To3(ogitorSceneNode);
+            break;
+        }
+
+        upgradeExecuted = true;
+    }  
+
+    projectNode = ogitorSceneNode->FirstChild("PROJECT");
+
+    if(projectNode)
     {
         loadmsg = mSystem->Translate("Parsing project options");
         mSystem->UpdateLoadProgress(5, loadmsg);
-        ogRoot->LoadProjectOptions(node->ToElement());
+        ogRoot->LoadProjectOptions(projectNode->ToElement());
         ogRoot->PrepareProjectResources();
     }
 
-    node = docImport.FirstChild("OGITORSCENE");
-    if(!node) 
-        return SCF_ERRPARSE;
-    element = node->FirstChildElement();
+    element = ogitorSceneNode->FirstChildElement();
 
     loadmsg = mSystem->Translate("Creating scene objects");
     mSystem->UpdateLoadProgress(10, loadmsg);
@@ -183,6 +211,15 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
     Ogre::String objecttype;
     OgitorsPropertyValueMap params;
     OgitorsPropertyValue tmpPropVal;
+    Ogre::String objAttValue;
+    Ogre::String elementName;
+    TiXmlElement* properties = 0;
+    Ogre::String attID;
+    Ogre::String attValue;
+    CBaseEditor* result = 0;
+    TiXmlElement* customprop = 0;
+    Ogre::StringVector invalidEditorTypes;
+
     do
     {
         // Make sure its NON-ZERO
@@ -191,10 +228,8 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
             ++obj_count;
             mSystem->UpdateLoadProgress(10 + ((obj_count * 70) / pOpt->ObjectCount), loadmsg);
         }
-        
-        params.clear();
 
-        Ogre::String objAttValue;
+        params.clear();       
 
         objAttValue = ValidAttr(element->Attribute("object_id"), "");
         if(objAttValue != "")
@@ -204,7 +239,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
             params.insert(OgitorsPropertyValueMap::value_type("object_id", tmpPropVal));
         }
 
-        objAttValue = ValidAttr(element->Attribute("parentnode"),"");
+        objAttValue = ValidAttr(element->Attribute("parentnode"), "");
         if(objAttValue != "")
         {
             tmpPropVal.propType = PROP_STRING;
@@ -212,7 +247,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
             params.insert(OgitorsPropertyValueMap::value_type("parentnode", tmpPropVal));
         }
 
-        objAttValue = ValidAttr(element->Attribute("name"),"");
+        objAttValue = ValidAttr(element->Attribute("name"), "");
         if(objAttValue != "")
         {
             tmpPropVal.propType = PROP_STRING;
@@ -222,7 +257,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         else
             continue;
 
-        objAttValue = ValidAttr(element->Attribute("typename"),"");
+        objAttValue = ValidAttr(element->Attribute("typename"), "");
         if(objAttValue != "")
         {
             tmpPropVal.propType = PROP_STRING;
@@ -232,35 +267,54 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         else
             continue;
 
-        TiXmlElement *properties = element->FirstChildElement();
+        properties = element->FirstChildElement();
         if(properties)
-        {
-            Ogre::String elementName;
+        {            
             do
             {
                 elementName = properties->Value();
                 if(elementName != "PROPERTY")
                     continue;
 
-                Ogre::String attID = ValidAttr(properties->Attribute("id"),"");
-                int attType = Ogre::StringConverter::parseInt(ValidAttr(properties->Attribute("type"),""));
-                Ogre::String attValue = ValidAttr(properties->Attribute("value"),"");
+                attID = ValidAttr(properties->Attribute("id"), "");
+                int attType = Ogre::StringConverter::parseInt(ValidAttr(properties->Attribute("type"), ""));
+                attValue = ValidAttr(properties->Attribute("value"), "");
 
                 params.insert(OgitorsPropertyValueMap::value_type(attID, OgitorsPropertyValue::createFromString((OgitorsPropertyType)attType, attValue)));
             } while(properties = properties->NextSiblingElement());
         }
 
         objecttype = Ogre::any_cast<Ogre::String>(params["typename"].val);
-        CBaseEditor *result = ogRoot->CreateEditorObject(0, objecttype, params, false, false);
+        result = ogRoot->CreateEditorObject(0, objecttype, params, false, false);
         if(result)
         {
-            TiXmlElement *customprop = element->FirstChildElement("CUSTOMPROPERTIES");
+            customprop = element->FirstChildElement("CUSTOMPROPERTIES");
             if(customprop) 
             {
                 OgitorsUtils::ReadCustomPropertySet(customprop, result->getCustomProperties());
             }
         }
+        else
+            invalidEditorTypes.push_back(objecttype);
+
     } while(element = element->NextSiblingElement());
+
+    // Print out invalid/unsupported editor types (= types where no factory could be found)
+    if(invalidEditorTypes.size() > 0)
+    {
+        std::sort(invalidEditorTypes.begin(), invalidEditorTypes.end());
+        invalidEditorTypes.erase(std::unique(invalidEditorTypes.begin(), invalidEditorTypes.end()), invalidEditorTypes.end());
+        Ogre::String invalidTypesResultString;
+        for(unsigned int i = 0; i < invalidEditorTypes.size(); i++)
+        {
+            invalidTypesResultString += invalidEditorTypes.at(i) + "\n";
+        }
+        mSystem->DisplayMessageDialog(mSystem->Translate("Could not create objects of types:\n" + invalidTypesResultString), DLGTYPE_OK);
+    }
+
+    // Save directly after upgrade
+    if(upgradeExecuted)
+        Export(false, importfile);
 
     ogRoot->AfterLoadScene();
 
@@ -318,7 +372,7 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
 
     // Change the project directory to the new path
     pOpt->ProjectDir = fileLocation;
-    fileLocation = fileLocation+fileName+".ofs";
+    fileLocation = fileLocation+fileName + ".ofs";
 
     if (SaveAs && mFile->moveFileSystemTo(fileLocation.c_str()) != OFS::OFS_OK)
     {
@@ -349,7 +403,7 @@ int COFSSceneSerializer::_writeFile(Ogre::String exportfile, const bool forceSav
     std::stringstream outfile;
 
     outfile << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    outfile << "<OGITORSCENE version=\"2\">\n";
+    outfile << "<OGITORSCENE version=\"" << Globals::OGSCENE_FORMAT_VERSION << "\">\n";
 
     PROJECTOPTIONS *pOpt = ogRoot->GetProjectOptions();
     pOpt->CameraSpeed = ogRoot->GetViewport()->GetCameraSpeed();
@@ -361,10 +415,10 @@ int COFSSceneSerializer::_writeFile(Ogre::String exportfile, const bool forceSav
     OgitorsPropertyValueMap::iterator ni;
 
     // Start from 1, since 0 means all objects
-    for(unsigned int i = 1;i < LAST_EDITOR;i++)
+    for(unsigned int i = 1; i < LAST_EDITOR; i++)
     {
         ogRoot->GetObjectList(i, ObjectList);
-        for(unsigned int ob = 0;ob < ObjectList.size();ob++)
+        for(unsigned int ob = 0; ob < ObjectList.size(); ob++)
         {
             /// If Object does not have a parent, then it is not part of the scene
             if(ObjectList[ob]->getParent())
@@ -386,3 +440,32 @@ int COFSSceneSerializer::_writeFile(Ogre::String exportfile, const bool forceSav
 
     return SCF_ERRFILE;
 }
+//-----------------------------------------------------------------------------
+void Ogitors::COFSSceneSerializer::_upgradeOgsceneFileFrom2To3(TiXmlNode* ogsceneRootNode)
+{
+    TiXmlElement* element = ogsceneRootNode->FirstChildElement();   
+
+    unsigned int obj_count = 0;
+    Ogre::String objecttype;
+    OgitorsPropertyValueMap params;
+    OgitorsPropertyValue tmpPropVal;
+    Ogre::String objAttValue;
+    size_t offset = 0;
+
+    do
+    {
+        objAttValue = ValidAttr(element->Attribute("typename"), "");
+        if(objAttValue != "")
+        {
+            if((offset = objAttValue.find(" Object")) != Ogre::String::npos)
+            {
+                objAttValue = objAttValue.substr(0, offset);
+                element->SetAttribute("typename", objAttValue.c_str());
+            }
+        }
+        else
+            continue;
+
+    } while(element = element->NextSiblingElement());
+}
+//-----------------------------------------------------------------------------

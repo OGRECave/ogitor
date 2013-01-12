@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         {
             // We are trying to load something we can't load
             // Exit the application.
-            QMessageBox msg(QMessageBox::Critical, "Ofs Error", "We can only load Ofs Files.\nExiting..");
+            QMessageBox msg(QMessageBox::Critical, "Ofs Error", "We can only load Ofs files.\nExiting..");
             msg.exec();
             return 0;
         }

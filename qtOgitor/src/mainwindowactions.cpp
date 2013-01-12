@@ -384,7 +384,7 @@ void MainWindow::addActions()
     actCamModeSolid->setIcon(QIcon(":icons/pmsolid.svg"));
     actCamModeSolid->setCheckable(true);
     connect(actCamModeSolid, SIGNAL(triggered()), polymapper, SLOT(map()));
-    polymapper->setMapping(actCamModeSolid, (int)0 );
+    polymapper->setMapping(actCamModeSolid, (int)0);
 
     actCamModeWireframe = menuCamPolyMode->addAction(tr("Wireframe"));
     actCamModeWireframe->setStatusTip(tr("Set Polygon Mode to Wireframe"));
@@ -590,7 +590,7 @@ void MainWindow::updateLoadTerminateActions(bool loaded)
     actEditCopyToTemplate->setEnabled(loaded);
     actEditCopyToTemplateWithChildren->setEnabled(loaded);
 
-    for(int i = 0; i < 10;i++)
+    for(int i = 0; i < 10; i++)
         mSelectLists[i].clear();
 }
 //------------------------------------------------------------------------------
@@ -661,9 +661,9 @@ void MainWindow::newScene()
         if(succeed)
         {
             outfile << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-            outfile << "<OGITORSCENE version=\"2\">\n";
+            outfile << "<OGITORSCENE version=\"" << Globals::OGSCENE_FORMAT_VERSION << "\">\n";
             ogRoot->WriteProjectOptions(outfile, &opt);
-            sprintf_s(buffer,5000,NewSceneDefinition,opt.SceneManagerName.c_str(),opt.SceneManagerName.c_str(),opt.SceneManagerConfigFile.c_str());
+            sprintf_s(buffer, 5000, NewSceneDefinition, opt.SceneManagerName.c_str(), opt.SceneManagerName.c_str(), opt.SceneManagerConfigFile.c_str());
             outfile << buffer;
 
             OFS::OFSHANDLE handle;
@@ -709,7 +709,7 @@ void MainWindow::openScene()
 
     if(ret != SCF_OK)
     {
-        QMessageBox::warning(this,"qtOgitor", tr("Error Loading file") + ": " + CBaseSerializer::GetErrorString((SCENEFILERESULT)ret).c_str(), QMessageBox::Ok);
+        QMessageBox::warning(this, "qtOgitor", tr("Error Loading file") + ": " + CBaseSerializer::GetErrorString((SCENEFILERESULT)ret).c_str(), QMessageBox::Ok);
         return;
     }
     updateRecentFiles();

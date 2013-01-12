@@ -412,7 +412,7 @@ Ogitors::DIALOGRET QtOgitorSystem::DisplayMessageDialog(Ogre::UTFString msg, Ogi
         break;
     }
 
-    switch(QMessageBox::information(QApplication::activeWindow(),"qtOgitor", ConvertToQString(msg), buttons))
+    switch(QMessageBox::information(QApplication::activeWindow(), "qtOgitor", ConvertToQString(msg), buttons))
     {
     case QMessageBox::Ok:
     case QMessageBox::Yes:
