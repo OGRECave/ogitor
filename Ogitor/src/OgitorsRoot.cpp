@@ -1242,6 +1242,10 @@ namespace Ogitors
     void OgitorsRoot::RecurseFillTreeView(CBaseEditor *pEditor)
     {
         NameObjectPairList& children = pEditor->getChildren();
+
+        if(children.size() == 0)
+            return;
+
         NameObjectPairList::iterator i, iend;
 
         iend = children.end();
