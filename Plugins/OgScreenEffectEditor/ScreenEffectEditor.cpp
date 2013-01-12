@@ -309,7 +309,7 @@ namespace Ogitors
     void CScreenEffectEditor::createProperties(OgitorsPropertyValueMap &params)
     {
         Ogre::String default;
-        if(OgitorsRoot::GetCompositorNames())
+        if(OgitorsRoot::GetCompositorNames()->size() > 0)
             default = Ogre::any_cast<Ogre::String>(OgitorsRoot::GetCompositorNames()->at(0).mValue);
 
         PROPERTY_PTR(mCompositorName, "compositor::name", Ogre::String, default, 0, SETTER(Ogre::String, CScreenEffectEditor, _setCompositorName)); 
