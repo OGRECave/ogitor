@@ -208,7 +208,7 @@ void MainWindow::openOfsFile(QString filename)
     {
         OFS::OfsResult ret = mOfsFile.mount(filename.toStdString().c_str(), OFS::OFS_MOUNT_OPEN | OFS::OFS_MOUNT_RECOVER);
 
-        if(ret == OFS::OFS_PREVIOUS_VERSION && QMessageBox::information(QApplication::activeWindow(),"Old File Version", tr("File you want to open is of an old format.") + QString("\n") + tr("Would you like to upgrade it?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+        if(ret == OFS::OFS_PREVIOUS_VERSION && QMessageBox::information(QApplication::activeWindow(), "Old File Version", tr("File you want to open is of an old format.") + QString("\n") + tr("Would you like to upgrade it?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
         {
             OFS::OfsConverter conv;
 
@@ -226,7 +226,7 @@ void MainWindow::openOfsFile(QString filename)
 
         if(ret != OFS::OFS_OK)
         {
-            QMessageBox::information(QApplication::activeWindow(),"qtOfs", tr("Error reading file : ") + filename, QMessageBox::Ok);
+            QMessageBox::information(QApplication::activeWindow(),"qtOfs", tr("Error reading file: ") + filename + tr("\nFile already open somewhere?"), QMessageBox::Ok);
             return;
         }
 

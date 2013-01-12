@@ -136,16 +136,16 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
 {
     retlist.clear();
     
-    Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual( "EntityTex", 
+    Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual("EntityTex", 
                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, 
-                   256, 256, 0, Ogre::PF_A8R8G8B8 , Ogre::TU_RENDERTARGET );
+                   256, 256, 0, Ogre::PF_A8R8G8B8 , Ogre::TU_RENDERTARGET);
 
     Ogre::RenderTexture *rttTex = texture->getBuffer()->getRenderTarget();
     Ogre::SceneManager *mSceneMgr = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", "EntityTexMgr");
 
     Ogre::Light *dirl = mSceneMgr->createLight("DisplayLight");
-    dirl->setDirection(-1,-1,-1);
-    dirl->setDiffuseColour(1,1,1);
+    dirl->setDirection(-1, -1, -1);
+    dirl->setDiffuseColour(1, 1, 1);
     dirl->setType(Ogre::Light::LT_DIRECTIONAL);
 
     Ogre::Camera* RTTCam = mSceneMgr->createCamera("EntityCam");
@@ -153,27 +153,27 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
     RTTCam->setFarClipDistance(0);
     RTTCam->setAspectRatio(1);
     RTTCam->setFOVy(Ogre::Degree(90));
-    RTTCam->setPosition(0,0,1);
-    RTTCam->lookAt(0,0,0);
+    RTTCam->setPosition(0, 0, 1);
+    RTTCam->lookAt(0, 0, 0);
 
-    Ogre::Viewport *v = rttTex->addViewport( RTTCam );
-    v->setClearEveryFrame( true );
-    v->setBackgroundColour(Ogre::ColourValue(0,0,0,0));
+    Ogre::Viewport *v = rttTex->addViewport(RTTCam);
+    v->setClearEveryFrame(true);
+    v->setBackgroundColour(Ogre::ColourValue(0, 0, 0, 0));
 
-    Ogre::StringVectorPtr pList = Ogre::ResourceGroupManager::getSingleton().findResourceNames(PROJECT_RESOURCE_GROUP,"*.mesh",false);
+    Ogre::StringVectorPtr pList = Ogre::ResourceGroupManager::getSingleton().findResourceNames(PROJECT_RESOURCE_GROUP, "*.mesh",false);
     
     Ogre::Entity *mEntity;
 
     unsigned char dataptr[300 * 300 * 6]; 
     unsigned char *dataptr2;
-    Ogre::PixelBox pb(256,256,1,Ogre::PF_A8R8G8B8, dataptr);
+    Ogre::PixelBox pb(256, 256, 1, Ogre::PF_A8R8G8B8, dataptr);
 
     EntityMap entities;
-    for(unsigned int i = 0;i < pList->size();i++)
+    for(unsigned int i = 0; i < pList->size(); i++)
     {
         Ogre::String addstr = (*pList)[i];
         if(entities.find(addstr) == entities.end())
-            entities.insert(EntityMap::value_type(addstr,addstr));
+            entities.insert(EntityMap::value_type(addstr, addstr));
     }
 
     EntityMap::const_iterator ite = entities.begin();
@@ -188,7 +188,7 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
         }
         catch(...)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error while preparing mesh: ") + addstr, DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString(tr("Error while preparing mesh: ").toStdString()) + addstr, DLGTYPE_OK);
             ite++;
             continue;
         }
@@ -200,29 +200,28 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
     
         vSize += Ogre::Vector3(vSize.z, vSize.z, vSize.z);
 
-        float maxsize = std::max(std::max(vSize.x,vSize.y),vSize.z);
+        float maxsize = std::max(std::max(vSize.x,vSize.y), vSize.z);
     
         vSize = Ogre::Vector3(0, 0, maxsize * 1.1f) + vCenter;
     
-        RTTCam->setPosition(vSize.x,vSize.y,vSize.z);
-        RTTCam->lookAt(vCenter.x,vCenter.y,vCenter.z);
+        RTTCam->setPosition(vSize.x, vSize.y, vSize.z);
+        RTTCam->lookAt(vCenter.x, vCenter.y, vCenter.z);
 
         try
         {
             rttTex->update();
-            rttTex->copyContentsToMemory(pb, Ogre::RenderTarget::FB_FRONT);
-        
+            rttTex->copyContentsToMemory(pb, Ogre::RenderTarget::FB_FRONT);        
 
             dataptr2 = new unsigned char[96 * 96 * 4];
-            Ogre::PixelBox pb2(96,96,1,Ogre::PF_A8R8G8B8, dataptr2);
-            Ogre::Image::scale(pb,pb2);
+            Ogre::PixelBox pb2(96, 96, 1, Ogre::PF_A8R8G8B8, dataptr2);
+            Ogre::Image::scale(pb, pb2);
 
             addstr.erase(addstr.length() - 5, 5);
             retlist.insert(ImageMap::value_type(addstr.c_str(), dataptr2));
         }
         catch(...)
         {
-            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString("Error while preparing mesh: ") + mEntity->getName(), DLGTYPE_OK);
+            OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(Ogre::UTFString(tr("Error while preparing mesh: ").toStdString()) + mEntity->getName(), DLGTYPE_OK);
         }
 
         mEntity->detachFromParent();
