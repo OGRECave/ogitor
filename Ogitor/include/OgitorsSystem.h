@@ -201,14 +201,19 @@ namespace Ogitors
         * @param str string to be translated
         * @return 
         */
-        virtual Ogre::UTFString Translate(Ogre::String& str) {return str;};
-        /**
-        * Translates specified string into OGRE-based UTF string
+#ifndef linux
+	virtual Ogre::UTFString Translate(Ogre::String& str) {return str;};
+#else
+	virtual Ogre::UTFString Translate( std::string str ) { return Ogre::String(str) ; } ;
+#endif
+
+	/**
+	* Translates specified string into OGRE-based UTF string
         * @param str pointer to character array to be translated (wrapped)
         * @return 
         */
-        virtual Ogre::UTFString Translate(const char * str) {return Ogre::String(str);};
-        /**
+	virtual Ogre::UTFString Translate(const char * str) {return Ogre::String(str);};
+	/**
         * Tests if the system has treeview widget associated with it
         * @return true if it has treeview widget associated with it, otherwise false
         */
