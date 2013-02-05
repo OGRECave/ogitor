@@ -36,6 +36,9 @@ BaseApplication::BaseApplication(void)
     mInputManager(0),
     mMouse(0),
     mKeyboard(0)
+#ifdef OGRE_EXTERNAL_OVERLAY
+	,mOverlaySystem(0)
+#endif
 {
 }
 
@@ -43,6 +46,9 @@ BaseApplication::BaseApplication(void)
 BaseApplication::~BaseApplication(void)
 {
     if (mTrayMgr) delete mTrayMgr;
+#ifdef OGRE_EXTERNAL_OVERLAY
+	if (mOverlaySystem) delete mOverlaySystem;
+#endif
     if (mCameraMan) delete mCameraMan;
 
     //Remove ourself as a Window listener
@@ -130,10 +136,14 @@ void BaseApplication::createFrameListener(void)
     //Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
-#if OGRE_VERSION_MINOR > 8 
-    OgreBites::InputContext inputContext;
-    inputContext.mMouse = mMouse;
-    mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", mWindow, inputContext, this);
+#ifdef OGRE_EXTERNAL_OVERLAY
+	OgreBites::InputContext input;
+	input.mAccelerometer = NULL;
+	input.mKeyboard = mKeyboard;
+	input.mMouse = mMouse;
+	input.mMultiTouch = NULL;
+
+	mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", mWindow, input, this);
 #else
     mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", mWindow, mMouse, this);
 #endif
@@ -166,10 +176,16 @@ void BaseApplication::createFrameListener(void)
     mTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "Help", 100, names)->setParamValue(0, "H/F1");
 
     mRoot->addFrameListener(this);
+#ifdef OGRE_EXTERNAL_OVERLAY
+	mSceneMgr->addRenderQueueListener(mOverlaySystem);
+#endif
 }
 //-------------------------------------------------------------------------------------
 void BaseApplication::destroyScene(void)
 {
+#ifdef OGRE_EXTERNAL_OVERLAY
+	mSceneMgr->removeRenderQueueListener(mOverlaySystem);
+#endif
 }
 //-------------------------------------------------------------------------------------
 void BaseApplication::createViewports(void)
@@ -235,6 +251,9 @@ bool BaseApplication::setup(void)
     mRoot = new Ogre::Root("plugins_debug.cfg");
 #else
     mRoot = new Ogre::Root();
+#endif
+#ifdef OGRE_EXTERNAL_OVERLAY
+	mOverlaySystem = new Ogre::OverlaySystem();
 #endif
     setupResources();
 
