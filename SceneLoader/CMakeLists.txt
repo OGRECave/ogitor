@@ -62,6 +62,11 @@ else(NOT OIS_FOUND)
 			${SampleLoadApp_res})
 	endif(NOT APPLE)
 
+	if ((${OGRE_VERSION} VERSION_EQUAL "1.9.0") OR (${OGRE_VERSION} VERSION_GREATER "1.9.0"))
+		include_directories(${OGRE_Overlay_INCLUDE_DIR})
+		target_link_libraries(SampleLoadApp ${OGRE_Overlay_LIBRARIES})
+	endif()
+
 	if(WIN32)
 		set_target_properties(SampleLoadApp PROPERTIES DEBUG_POSTFIX _d)
 	endif(WIN32)
