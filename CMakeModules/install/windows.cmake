@@ -90,36 +90,69 @@ install(FILES ${caelum_headers}
 # TODO: PythonQt
 
 # Ogre DLLs
-install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
-    ${OGRE_PLUGIN_DIR_REL}/RenderSystem_Direct3D9.dll
-    ${OGRE_PLUGIN_DIR_REL}/RenderSystem_GL.dll
-    ${OGRE_PLUGIN_DIR_REL}/Plugin_OctreeSceneManager.dll
+if(EXISTS ${OGRE_Overlay_BINARY_REL})
+    install(FILES ${OGRE_Overlay_BINARY_REL} DESTINATION bin CONFIGURATIONS Release)
+endif()
+if(EXISTS ${OGRE_RenderSystem_Direct3D11_REL})
+    install(FILES ${OGRE_RenderSystem_Direct3D11_REL} ${OGRE_PLUGIN_DIR_REL}/cgD3D11.dll DESTINATION bin CONFIGURATIONS Release)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_D3D11_REL "#")
+endif()
+if(EXISTS ${OGRE_RenderSystem_Direct3D9_REL})
+    install(FILES ${OGRE_RenderSystem_Direct3D9_REL} ${OGRE_PLUGIN_DIR_REL}/cgD3D9.dll DESTINATION bin CONFIGURATIONS Release)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_D3D9_REL "#")
+endif()
+if(EXISTS ${OGRE_RenderSystem_GL3Plus_REL})
+    install(FILES ${OGRE_RenderSystem_GL3Plus_REL} ${OGRE_PLUGIN_DIR_REL}/cgGL.dll ${OGRE_PLUGIN_DIR_REL}/glut32.dll DESTINATION bin CONFIGURATIONS Release)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_GL3PLUS_REL "#")
+endif()
+if(EXISTS ${OGRE_RenderSystem_GL_REL})
+    install(FILES ${OGRE_RenderSystem_GL_REL} ${OGRE_PLUGIN_DIR_REL}/cgGL.dll ${OGRE_PLUGIN_DIR_REL}/glut32.dll DESTINATION bin CONFIGURATIONS Release)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_GL_REL "#")
+endif()
+install(FILES ${OGRE_BINARY_REL}
+    ${OGRE_Plugin_OctreeSceneManager_REL}
     ${OGRE_PLUGIN_DIR_REL}/cg.dll
-    ${OGRE_PLUGIN_DIR_REL}/Plugin_CgProgramManager.dll
-    ${OGRE_PLUGIN_DIR_REL}/Plugin_ParticleFX.dll
-    ${OGRE_PLUGIN_DIR_REL}/OgreTerrain.dll
-    ${OGRE_PLUGIN_DIR_REL}/OgrePaging.dll
+    ${OGRE_Plugin_CgProgramManager_REL}
+    ${OGRE_Plugin_ParticleFX_REL}
+    ${OGRE_Terrain_BINARY_REL}
+    ${OGRE_Paging_BINARY_REL}
     DESTINATION bin
     CONFIGURATIONS Release)
 
-install(FILES ${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.dll
-    ${OGRE_PLUGIN_DIR_DBG}/RenderSystem_Direct3D9_d.dll
-    ${OGRE_PLUGIN_DIR_DBG}/RenderSystem_GL_d.dll
-    ${OGRE_PLUGIN_DIR_DBG}/Plugin_OctreeSceneManager_d.dll
+if(EXISTS ${OGRE_Overlay_BINARY_DBG})
+    install(FILES ${OGRE_Overlay_BINARY_DBG} DESTINATION bin CONFIGURATIONS Debug)
+endif()
+if(EXISTS ${OGRE_RenderSystem_Direct3D11_DBG})
+    install(FILES ${OGRE_RenderSystem_Direct3D11_DBG} ${OGRE_PLUGIN_DIR_DBG}/cgD3D11.dll DESTINATION bin CONFIGURATIONS Debug)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_D3D11_DBG "#")
+endif()
+if(EXISTS ${OGRE_RenderSystem_Direct3D9_DBG})
+    install(FILES ${OGRE_RenderSystem_Direct3D9_DBG} ${OGRE_PLUGIN_DIR_DBG}/cgD3D9.dll DESTINATION bin CONFIGURATIONS Debug)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_D3D9_DBG "#")
+endif()
+if(EXISTS ${OGRE_RenderSystem_GL3Plus_DBG})
+    install(FILES ${OGRE_RenderSystem_GL3Plus_DBG} ${OGRE_PLUGIN_DIR_DBG}/cgGL.dll ${OGRE_PLUGIN_DIR_DBG}/glut32.dll DESTINATION bin CONFIGURATIONS Debug)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_GL3PLUS_REL "#")
+endif()
+if(EXISTS ${OGRE_RenderSystem_GL_DBG})
+    install(FILES ${OGRE_RenderSystem_GL_DBG} ${OGRE_PLUGIN_DIR_DBG}/cgGL.dll ${OGRE_PLUGIN_DIR_DBG}/glut32.dll DESTINATION bin CONFIGURATIONS Debug)
+else()
+    set(OGRE_COMMENT_RENDERSYSTEM_GL_DBG "#")
+endif()
+install(FILES ${OGRE_BINARY_DBG}
+    ${OGRE_Plugin_OctreeSceneManager_DBG}
     ${OGRE_PLUGIN_DIR_DBG}/cg.dll
-    ${OGRE_PLUGIN_DIR_DBG}/Plugin_CgProgramManager_d.dll
-    ${OGRE_PLUGIN_DIR_DBG}/Plugin_ParticleFX_d.dll
-    ${OGRE_PLUGIN_DIR_DBG}/OgreTerrain_d.dll
-    ${OGRE_PLUGIN_DIR_DBG}/OgrePaging_d.dll
-    #${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/RenderSystem_Direct3D9_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/RenderSystem_GL_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/Plugin_OctreeSceneManager_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/Plugin_CgProgramManager_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/Plugin_BSPSceneManager_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/Plugin_ParticleFX_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/OgreTerrain_d.pdb
-    #${OGRE_PLUGIN_DIR_DBG}/OgrePaging_d.pdb
+    ${OGRE_Plugin_CgProgramManager_DBG}
+    ${OGRE_Plugin_ParticleFX_DBG}
+    ${OGRE_Terrain_BINARY_DBG}
+    ${OGRE_Paging_BINARY_DBG}
     DESTINATION bin
     CONFIGURATIONS Debug)
 
