@@ -709,7 +709,7 @@ void MainWindow::openScene()
 
     if(ret != SCF_OK)
     {
-        QMessageBox::warning(this, "qtOgitor", tr("Error Loading file") + ": " + CBaseSerializer::GetErrorString((SCENEFILERESULT)ret).c_str(), QMessageBox::Ok);
+        QMessageBox::warning(this, "qtOgitor", tr("Could not open project.") + tr("\nProject already open somewhere else?"), QMessageBox::Ok);
         return;
     }
     updateRecentFiles();

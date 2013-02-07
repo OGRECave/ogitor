@@ -226,7 +226,7 @@ void MainWindow::openOfsFile(QString filename)
 
         if(ret != OFS::OFS_OK)
         {
-            QMessageBox::information(QApplication::activeWindow(),"qtOfs", tr("Error reading file: ") + filename + tr("\nFile already open somewhere?"), QMessageBox::Ok);
+            QMessageBox::information(QApplication::activeWindow(), "qtOfs", tr("Error reading file: ") + filename + tr("\nFile already open somewhere else?"), QMessageBox::Ok);
             return;
         }
 
@@ -238,7 +238,7 @@ void MainWindow::openOfsFile(QString filename)
     }
     catch(OFS::Exception& e)
     {
-        QMessageBox::information(QApplication::activeWindow(),"Ofs Exception:", QString(e.getDescription().c_str()), QMessageBox::Ok);
+        QMessageBox::information(QApplication::activeWindow(), "Ofs Exception:", QString(e.getDescription().c_str()), QMessageBox::Ok);
     }
 }
 //------------------------------------------------------------------------------
