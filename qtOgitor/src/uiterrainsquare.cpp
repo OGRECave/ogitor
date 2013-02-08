@@ -8,7 +8,7 @@
 ///                              File
 ///
 /// Copyright (c) 2011 Andrew Fenn <andrewfenn@gmail.com> and the Ogitor Team
-//
+///
 /// The MIT License
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy

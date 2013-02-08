@@ -7,7 +7,7 @@
 /////   \___/ \____|___| |_| \___/|_| \_\
 /////                              File
 /////
-///// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+///// Copyright (c) 2008-2013 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
 ////
 ///// The MIT License
 /////
