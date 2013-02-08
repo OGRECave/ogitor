@@ -7,8 +7,8 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
-//
+/// Copyright (c) 2008-2013 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+///
 /// The MIT License
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -313,15 +313,15 @@ bool CTerrainGroupEditor::load(bool async)
 
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
     Ogre::String terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
-    terrainDir = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/"+terrainDir+"/";
+    terrainDir = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + terrainDir + "/";
 
-    mngr->addResourceLocation(terrainDir+"textures/normalheight","Ofs","TerrainGroupNormalHeight");
+    mngr->addResourceLocation(terrainDir + "textures/normalheight", "Ofs", "TerrainGroupNormalHeight");
     mngr->initialiseResourceGroup("TerrainGroupNormalHeight");
 
-    mngr->addResourceLocation(terrainDir+"textures/diffusespecular","Ofs","TerrainGroupDiffuseSpecular");
+    mngr->addResourceLocation(terrainDir + "textures/diffusespecular", "Ofs", "TerrainGroupDiffuseSpecular");
     mngr->initialiseResourceGroup("TerrainGroupDiffuseSpecular");
 
-    mngr->addResourceLocation(terrainDir+"plants","Ofs","TerrainGroupPlants");
+    mngr->addResourceLocation(terrainDir + "plants", "Ofs", "TerrainGroupPlants");
     mngr->initialiseResourceGroup("TerrainGroupPlants");
 
     OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
@@ -329,7 +329,7 @@ bool CTerrainGroupEditor::load(bool async)
 
     mDecalFrustum = OGRE_NEW Ogre::Frustum();
     mDecalNode = getSceneManager()->getRootSceneNode()->createChildSceneNode("OgitorTerrainDecalNode");
-    mDecalNode->setPosition(99999,-99999,99999);
+    mDecalNode->setPosition(99999, -99999, 99999);
     mDecalNode->attachObject(mDecalFrustum);
     mDecalFrustum->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
     mDecalNode->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
@@ -337,7 +337,8 @@ bool CTerrainGroupEditor::load(bool async)
     mDecalFrustum->setNearClipDistance(10);
     mDecalFrustum->setOrthoWindow(10, 10);
     mDecalFrustum->setVisible(false);
-    mDecalTexture = Ogre::TextureManager::getSingletonPtr()->createManual("OgitorDecalTexture","TerrainResources",Ogre::TEX_TYPE_2D,256,256,1,1,Ogre::PF_A8R8G8B8,Ogre::TU_DYNAMIC_WRITE_ONLY,this);
+    mDecalTexture = Ogre::TextureManager::getSingletonPtr()->createManual("OgitorDecalTexture", "TerrainResources", 
+        Ogre::TEX_TYPE_2D, 256, 256, 1, 1, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY, this);
 
     mBrushData = OGRE_ALLOC_T(float, BRUSH_DATA_SIZE * BRUSH_DATA_SIZE, Ogre::MEMCATEGORY_GEOMETRY);
 
@@ -388,7 +389,7 @@ bool CTerrainGroupEditor::load(bool async)
     CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::enabled", CTerrainGroupEditor, onShadowsChange, mShadowsConnection[0]);
     CONNECT_PROPERTY_MEMFN(mSceneMgr, "shadows::technique", CTerrainGroupEditor, onShadowsTechniqueChange, mShadowsConnection[1]);
 
-    mHandle = OGRE_NEW Ogre::TerrainGroup(mOgitorsRoot->GetSceneManager() ,Ogre::Terrain::ALIGN_X_Z, mMapSize->get(), mWorldSize->get());
+    mHandle = OGRE_NEW Ogre::TerrainGroup(mOgitorsRoot->GetSceneManager(), Ogre::Terrain::ALIGN_X_Z, mMapSize->get(), mWorldSize->get());
     mHandle->setOrigin(Ogre::Vector3::ZERO);
     mHandle->setResourceGroup("TerrainResources");
     mHandle->setFilenameConvention(mPageNamePrefix->get(), "ogt");
@@ -427,12 +428,12 @@ bool CTerrainGroupEditor::load(bool async)
 
     terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory + "/terrain/";
 
-    OFS::FileList TGAList = mOgitorsRoot->GetProjectFile()->listFiles( terrainDir.c_str(), OFS::OFS_FILE );
+    OFS::FileList TGAList = mOgitorsRoot->GetProjectFile()->listFiles(terrainDir.c_str(), OFS::OFS_FILE);
 
-    for( unsigned int t = 0; t < TGAList.size(); t++ )
+    for(unsigned int t = 0; t < TGAList.size(); t++)
     {
         int pos = TGAList[t].name.find("_density.tga");
-        if( pos > 0 )
+        if(pos > 0)
         {
             Ogre::Image _img;
             Ogre::String sLoc = terrainDir + TGAList[t].name;
@@ -441,7 +442,7 @@ bool CTerrainGroupEditor::load(bool async)
             {
                 OFS::OFSHANDLE *iHandle = new OFS::OFSHANDLE();
                 mOgitorsRoot->GetProjectFile()->openFile( *iHandle, sLoc.c_str() );
-                Ogre::DataStreamPtr img_stream = Ogre::DataStreamPtr( OGRE_NEW OfsDataStream( mOgitorsRoot->GetProjectFile(), iHandle ) );
+                Ogre::DataStreamPtr img_stream = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), iHandle));
                 _img.load(img_stream);
             }
 
