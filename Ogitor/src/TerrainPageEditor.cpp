@@ -7,8 +7,8 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
-//
+/// Copyright (c) 2008-2013 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+///
 /// The MIT License
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -129,6 +129,9 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
 
     mOgitorsRoot->GetProjectFile()->createFile(*fileHandle, filename.c_str());
 
+    // Force to load highest LoD, or quadTree may contain hole
+    mHandle->load(0, true);
+
     Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), fileHandle));
     Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filename, stream, tmpCompressFile));
     Ogre::StreamSerialiser ser(compressStream);
@@ -137,7 +140,7 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
 //-----------------------------------------------------------------------------------------
 void CTerrainPageEditor::onSave(bool forced)
 {
-    Ogre::String terrainDir = "/"+mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain/";
+    Ogre::String terrainDir = "/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain/";
 
     if(mHandle)
     {
@@ -200,7 +203,7 @@ bool CTerrainPageEditor::getObjectContextMenu(UTFStringVector &menuitems)
         menuitems.push_back(OTR("Scale/Offset Height Values") + ";:icons/scale.svg");
         menuitems.push_back("---");
         menuitems.push_back(OTR("Import Heightmap") + ";:icons/import.svg");
-        
+
         menuitems.push_back("---");
         menuitems.push_back(OTR(">Import Blendmaps") +  Ogre::UTFString(" (RGB+A)")  + ";:icons/import.svg");
 
@@ -226,7 +229,7 @@ bool CTerrainPageEditor::getObjectContextMenu(UTFStringVector &menuitems)
 void CTerrainPageEditor::onObjectContextMenu(int menuresult)
 {
     int layerCount = mLayerCount->get();
-    
+
     if(menuresult == 0)
     {
         Ogre::UTFString msgStr = OTR("Do you want to remove %s?");
@@ -859,7 +862,7 @@ TiXmlElement* CTerrainPageEditor::exportDotScene(TiXmlElement *pParent)
                     case CHANNEL_GREEN: tempStr = "GREEN"; break;
                     case CHANNEL_RED:   tempStr = "RED";   break;
                 }
-                
+
                 // density map channel
                 pGrassLayerProps = pGrassLayers->InsertEndChild(TiXmlElement("densityMapProps"))->ToElement();
                 pGrassLayerProps->SetAttribute("channel", tempStr.c_str());
@@ -1047,7 +1050,7 @@ void CTerrainPageEditor::_notifyModification(int layerID, const Ogre::Rect& dirt
                 {
                     int loc = pos * mapsize;
                     for(unsigned int pgx = 0;pgx < mapsize;pgx++)
-                         mGrassSave[loc + pgx] = 0.0f;
+                        mGrassSave[loc + pgx] = 0.0f;
                 }
                 ++pos;
             }
@@ -1424,7 +1427,7 @@ void CTerrainPageEditor::_modifyHeights(float scale, float offset)
 
     mHandle->dirtyRect(rect);
     mHandle->update();
-    
+
     OgitorsUndoManager::getSingletonPtr()->EndCollection(true);
 
     mOgitorsRoot->SetSceneModified(true);

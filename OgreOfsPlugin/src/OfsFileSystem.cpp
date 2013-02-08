@@ -7,8 +7,8 @@
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///                              File
 ///
-/// Copyright (c) 2008-2012 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
-//
+/// Copyright (c) 2008-2013 Ismail TARIM <ismail@royalspor.com> and the Ogitor Team
+///
 /// The MIT License
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -443,7 +443,7 @@ namespace Ogre {
         mOfs->seekw(*mFileHandle, count, OFS::OFS_SEEK_CURRENT);
     }
     //-----------------------------------------------------------------------
-    void OfsDataStream::seek( size_t pos )
+    void OfsDataStream::seek(size_t pos)
     {
         mOfs->seekr(*mFileHandle, pos, OFS::OFS_SEEK_BEGIN);
         mOfs->seekw(*mFileHandle, pos, OFS::OFS_SEEK_BEGIN);
@@ -477,5 +477,5 @@ namespace Ogre {
         static String name = "Ofs";
         return name;
     }
-
+    //-----------------------------------------------------------------------
 }
