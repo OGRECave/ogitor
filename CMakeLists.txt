@@ -68,7 +68,7 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
         # Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
         set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
     endif ()
-    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0" "1.50" "1.50.0" "1.51" "1.51.0" "1.52" "1.52.0" "1.53" "1.53.0")
+    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0" "1.50" "1.50.0" "1.51" "1.51.0" "1.52" "1.52.0" "1.53" "1.53.0" "1.54" "1.54.0")
     # Components that need linking (NB does not include header-only components like bind)
     set(OGRE_BOOST_COMPONENTS thread date_time regex)
     find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
