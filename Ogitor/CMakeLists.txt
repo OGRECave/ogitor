@@ -1,4 +1,4 @@
-include_directories(${DEPENDENCIES_INCLUDES})
+zzinclude_directories(${DEPENDENCIES_INCLUDES})
 include_directories(include)
 
 include(PrecompiledHeader)
@@ -185,7 +185,7 @@ if(WIN32)
 	add_custom_command(TARGET Ogitor POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
 
-	install(TARGETS Ogitor RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+	install(TARGETS Ogitor RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 if(UNIX)

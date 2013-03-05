@@ -54,7 +54,7 @@ if(WIN32)
 
 	install(TARGETS OgCaelum
 		RUNTIME DESTINATION Plugins
-		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 IF(UNIX AND NOT APPLE)

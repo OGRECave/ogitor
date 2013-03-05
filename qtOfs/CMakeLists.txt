@@ -85,10 +85,10 @@ else(NOT QT4_FOUND)
 			${QT_DLL_DIR}/QtWebKit4.dll
 			${QT_DLL_DIR}/QtCLucene4.dll
 			${QT_DLL_DIR}/QtXml4.dll
-                        ${QT_DLL_DIR}/QtXmlPatterns4.dll
+			${QT_DLL_DIR}/QtXmlPatterns4.dll
 			${QT_DLL_DIR}/phonon4.dll
 			DESTINATION bin
-			CONFIGURATIONS Release)
+			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 		install(FILES 
 			${QT_DLL_DIR}/QtCored4.dll
 			${QT_DLL_DIR}/QtGuid4.dll
@@ -100,25 +100,25 @@ else(NOT QT4_FOUND)
 			${QT_DLL_DIR}/QtWebKitd4.dll
 			${QT_DLL_DIR}/QtCLucened4.dll
 			${QT_DLL_DIR}/QtXmld4.dll
-                        ${QT_DLL_DIR}/QtXmlPatternsd4.dll
+			${QT_DLL_DIR}/QtXmlPatternsd4.dll
 			${QT_DLL_DIR}/phonond4.dll
 			DESTINATION bin
 			CONFIGURATIONS Debug)
 		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon4.dll 
 			DESTINATION bin/iconengines
-			CONFIGURATIONS Release)
+			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond4.dll
 			DESTINATION bin/iconengines
 			CONFIGURATIONS Debug)
 		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll
 			DESTINATION bin/sqldrivers
-			CONFIGURATIONS Release)
+			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited4.dll
 			DESTINATION bin/sqldrivers
 			CONFIGURATIONS Debug)
 		install(TARGETS qtOfs
 			RUNTIME DESTINATION bin
-			CONFIGURATIONS Release)
+			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     elseif(UNIX AND NOT APPLE)
         install(TARGETS qtOfs
             RUNTIME DESTINATION bin)

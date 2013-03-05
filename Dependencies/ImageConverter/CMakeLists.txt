@@ -73,7 +73,7 @@ else(NOT QT4_FOUND)
 
         install(TARGETS ImageConverter
             RUNTIME DESTINATION bin
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
     endif(WIN32)
 
     IF(UNIX AND NOT APPLE)
@@ -87,11 +87,11 @@ else(NOT QT4_FOUND)
 
     ENDIF(UNIX AND NOT APPLE)
 
-IF (APPLE)
+    IF (APPLE)
         set_target_properties(ImageConverter PROPERTIES OUTPUT_NAME ImageConverter_Ogitor)
         # Set the INSTALL_PATH so that Frameworks can be local
         set_target_properties(ImageConverter PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
-   ENDIF(APPLE)
+    ENDIF(APPLE)
 
 
 endif(NOT QT4_FOUND)

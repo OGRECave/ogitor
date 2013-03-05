@@ -83,9 +83,9 @@ set_target_properties(Hydrax PROPERTIES SOLUTION_FOLDER Dependencies)
 target_link_libraries(Hydrax  ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 
 IF(WIN32)
-install(TARGETS Hydrax
-	RUNTIME DESTINATION bin
-	CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+	install(TARGETS Hydrax
+		RUNTIME DESTINATION bin
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 ENDIF(WIN32)
 
 IF(UNIX AND NOT APPLE)
@@ -110,5 +110,5 @@ IF (APPLE)
         set_target_properties(Hydrax PROPERTIES OUTPUT_NAME Hydrax)
         # Set the INSTALL_PATH so that Frameworks can be local
         set_target_properties(Hydrax PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
-   ENDIF(APPLE)
+ENDIF(APPLE)
 

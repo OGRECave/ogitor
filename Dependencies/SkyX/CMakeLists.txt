@@ -77,7 +77,7 @@ if(WIN32)
 
 	install(TARGETS SkyX
 		RUNTIME DESTINATION bin
-		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
@@ -101,6 +101,6 @@ IF (APPLE)
         set_target_properties(SkyX PROPERTIES OUTPUT_NAME SkyX)
         # Set the INSTALL_PATH so that Frameworks can be local
         set_target_properties(SkyX PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
-   ENDIF(APPLE)
+ENDIF(APPLE)
 
 # vim: set sw=2 ts=2 noet:

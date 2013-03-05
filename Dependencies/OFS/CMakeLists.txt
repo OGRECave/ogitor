@@ -30,13 +30,8 @@ set(LIBRARY_OUTPUT_PATH  ../lib)
 
 set_target_properties(OFS PROPERTIES COMPILE_DEFINITIONS "OFS_EXPORT")
 
-if(WIN32)
-	set_target_properties(OFS PROPERTIES COMPILE_FLAGS "/MP")
-endif(WIN32)
-
-
 if(UNIX)
-        set(CMAKE_CXX_FLAGS -fPIC)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif(UNIX)
 
 if(WIN32)
@@ -45,7 +40,7 @@ if(WIN32)
 	add_custom_command(TARGET OFS POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
 
-	install(TARGETS OFS RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+	install(TARGETS OFS RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
@@ -63,6 +58,5 @@ IF (APPLE)
         set_target_properties(OFS PROPERTIES OUTPUT_NAME OFS)
         # Set the INSTALL_PATH so that Frameworks can be local
         set_target_properties(OFS PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
-   ENDIF(APPLE)
-
+ENDIF(APPLE)
 
