@@ -1,4 +1,4 @@
-zzinclude_directories(${DEPENDENCIES_INCLUDES})
+include_directories(${DEPENDENCIES_INCLUDES})
 include_directories(include)
 
 include(PrecompiledHeader)
