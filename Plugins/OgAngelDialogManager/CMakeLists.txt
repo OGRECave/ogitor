@@ -92,7 +92,7 @@ else(NOT QT4_FOUND)
 
 		install(TARGETS OgAngelDialogManager
 			RUNTIME DESTINATION Plugins
-			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 	endif(WIN32)
 
 IF(UNIX AND NOT APPLE)

@@ -105,7 +105,7 @@ if(WIN32)
 
 	install(TARGETS meshmagick_bin meshmagick_shared_lib
 		RUNTIME DESTINATION bin
-		CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 #install(TARGETS meshmagick_bin meshmagick_shared_lib

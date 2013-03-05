@@ -109,22 +109,24 @@ if(CMAKE_BUILD_TYPE STREQUAL "")
 endif ()
 
 if(WIN32)
-set(CMAKE_DEBUG_POSTFIX "_d")
+	set(CMAKE_DEBUG_POSTFIX "_d")
 endif(WIN32)
 
-if(MSVC80 OR MSVC90 OR MSVC10)
-        # Option is to enable the /MP switch for Visual Studio 2005 or later
-        option(OGITOR_MSVC_ENABLE_MP
-                "Set to ON to build Ogitor with the /MP option (Visual Studio 2005 and above)." ON)
-        mark_as_advanced(OGITOR_MSVC_ENABLE_MP)
-        if(OGITOR_MSVC_ENABLE_MP)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-        endif(OGITOR_MSVC_ENABLE_MP)
-        message(STATUS "Setting Visual Studio 2005+ option /MP to ${OGITOR_MSVC_ENABLE_MP}")
-        #add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-        #add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-        #add_definitions(-DNOMINMAX)
-endif(MSVC80 OR MSVC90 OR MSVC10)
+if(MSVC_VERSION GREATER 1500 OR MSVC_VERSION EQUAL 1500)
+	# Option is to enable the /MP switch for Visual Studio 2005 or later
+	option(OGITOR_MSVC_ENABLE_MP
+		"Set to ON to build Ogitor with the /MP option (Visual Studio 2005 and above)." ON)
+	mark_as_advanced(OGITOR_MSVC_ENABLE_MP)
+	if(OGITOR_MSVC_ENABLE_MP)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	endif(OGITOR_MSVC_ENABLE_MP)
+	message(STATUS "Setting Visual Studio 2005+ option /MP to ${OGITOR_MSVC_ENABLE_MP}")
+	#add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+	#add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	#add_definitions(-DNOMINMAX)
+else()
+	set(OGITOR_MSVC_ENABLE_MP FALSE)
+endif(MSVC_VERSION GREATER 1500 OR MSVC_VERSION EQUAL 1500)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 
@@ -150,15 +152,16 @@ if(APPLE)
     add_definitions(${CMAKE_THREAD_LIBS_INIT})
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl ${CMAKE_THREAD_LIBS_INIT}")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl ${CMAKE_THREAD_LIBS_INIT}")
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl 
-${CMAKE_THREAD_LIBS_INIT}")
-endif(APPLE)
+    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl ${CMAKE_THREAD_LIBS_INIT}")
 
-if(APPLE)
     find_package(CG REQUIRED)
+
+	# Resources (Only used by OSX)
+	set(MAC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mac")
+	set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 endif(APPLE)
 
-if((NOT "${OGRE_VERSION_NAME}" STREQUAL "Byatis") AND (NOT "${OGRE_VERSION_NAME}" STREQUAL "Ghadamon"))
+if(NOT ((${OGRE_VERSION} VERSION_EQUAL "1.8.0") OR (${OGRE_VERSION} VERSION_GREATER "1.8.0")))
     message(SEND_ERROR "You need Ogre 1.8 Byatis or later to build this.")
 endif()
 
@@ -170,9 +173,9 @@ endif(UNIX)
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("void*" OGITOR_PTR_SIZE BUILTIN_TYPES_ONLY)
 if (OGITOR_PTR_SIZE EQUAL 8)
-set(OGITOR_PLATFORM_X64 TRUE)
+	set(OGITOR_PLATFORM_X64 TRUE)
 else ()
-set(OGITOR_PLATFORM_X64 FALSE)
+	set(OGITOR_PLATFORM_X64 FALSE)
 endif ()
 
 if(UNIX)
@@ -222,10 +225,6 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
 )
 set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
-
-# Resources (Only used by OSX)
-set(MAC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mac")
-set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 
 #set_target_properties(ALL_BUILD PROPERTIES SOLUTION_FOLDER CMake)
 #set_target_properties(ZERO_CHECK PROPERTIES SOLUTION_FOLDER CMake)

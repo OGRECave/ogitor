@@ -225,10 +225,6 @@ else(NOT QT4_FOUND)
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})
     endif(NOT APPLE)
 
-    if(WIN32)
-        set_target_properties(qtOgitor PROPERTIES DEBUG_POSTFIX _d)
-    endif(WIN32)
-
     if(OGITOR_MESHMAGICK_INTERFACE)
         TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     else(OGITOR_MESHMAGICK_INTERFACE)
@@ -250,6 +246,7 @@ else(NOT QT4_FOUND)
     endif()
 
     if(WIN32)
+        set_target_properties(qtOgitor PROPERTIES DEBUG_POSTFIX _d)
         add_custom_command(TARGET qtOgitor PRE_BUILD
             COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
         add_custom_command(TARGET qtOgitor POST_BUILD
@@ -260,12 +257,10 @@ else(NOT QT4_FOUND)
         get_target_property(OGITORFILE qtOgitor LOCATION)
         add_custom_command(TARGET qtOgitor POST_BUILD
             COMMAND cp -r ${OGITORFILE} ../RunPath/bin/${TARGET})
-    endif(UNIX AND NOT APPLE)
 
-    if(UNIX AND NOT APPLE)
-        install(TARGETS qtOgitor
-                RUNTIME DESTINATION bin
-                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+		install(TARGETS qtOgitor
+			RUNTIME DESTINATION bin
+			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     endif(UNIX AND NOT APPLE)
 
     if(UNIX)
@@ -352,24 +347,24 @@ else(NOT QT4_FOUND)
             CONFIGURATIONS Debug)
         install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon4.dll
             DESTINATION bin/iconengines
-            CONFIGURATIONS Release)
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
         install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond4.dll
             DESTINATION bin/iconengines
             CONFIGURATIONS Debug)
         install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll
             DESTINATION bin/sqldrivers
-            CONFIGURATIONS Release)
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
         install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited4.dll
             DESTINATION bin/sqldrivers
             CONFIGURATIONS Debug)
         install(TARGETS qtOgitor
             RUNTIME DESTINATION bin
-            CONFIGURATIONS Release)
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
         
         if (MSVC)
             configure_file(${Ogitor_SOURCE_DIR}/CMakeModules/VisualStudioUserFile.vcproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/QtOgitor.vcproj.user @ONLY)
             configure_file(${Ogitor_SOURCE_DIR}/CMakeModules/VisualStudioUserFile.vcxproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/QtOgitor.vcxproj.user @ONLY)
-  endif ()
+        endif ()
     endif(WIN32)
 endif(NOT QT4_FOUND)
 

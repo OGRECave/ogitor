@@ -155,9 +155,3 @@ endif()
 
 ogitor_add_library(Angelscript STATIC ${ANGELSCRIPT_ADDON_SOURCE} ${ANGELSCRIPT_ADDON_HEADERS} ${ANGELSCRIPT_SOURCE} ${ANGELSCRIPT_HEADERS})
 set(LIBRARY_OUTPUT_PATH  ../lib)
-
-if(WIN32)
-	set_target_properties(Angelscript PROPERTIES COMPILE_FLAGS "/MP")
-endif(WIN32)
-
-# vim: set sw=2 ts=2 noet:

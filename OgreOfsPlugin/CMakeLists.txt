@@ -26,7 +26,7 @@ if(WIN32)
 	add_custom_command(TARGET OgreOfsPlugin POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
 
-	install(TARGETS OgreOfsPlugin RUNTIME DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+	install(TARGETS OgreOfsPlugin RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
