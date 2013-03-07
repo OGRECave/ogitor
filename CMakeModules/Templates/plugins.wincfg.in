@@ -1,0 +1,13 @@
+# Defines plugins to load
+
+# Define plugin folder
+PluginFolder=.
+
+# Define plugins
+@OGRE_COMMENT_RENDERSYSTEM_D3D9@ Plugin=RenderSystem_Direct3D9
+@OGRE_COMMENT_RENDERSYSTEM_D3D11@ Plugin=RenderSystem_Direct3D11
+@OGRE_COMMENT_RENDERSYSTEM_GL@ Plugin=RenderSystem_GL
+@OGRE_COMMENT_RENDERSYSTEM_GL3PLUS@ Plugin=RenderSystem_GL3Plus
+@OGRE_COMMENT_PLUGIN_PARTICLEFX@ Plugin=Plugin_ParticleFX
+@OGRE_COMMENT_PLUGIN_CG@ Plugin=Plugin_CgProgramManager
+@OGRE_COMMENT_PLUGIN_OCTREE@ Plugin=Plugin_OctreeSceneManager

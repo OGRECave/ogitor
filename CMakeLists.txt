@@ -273,22 +273,22 @@ if(UNIX)
 	set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
 	endif(APPLE)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 else(UNIX)
     # We are on Windows
     set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
     set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
     set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path" FORCE)
     set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages" CACHE PATH "Ogitor languages path" FORCE)
-    set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media" CACHE PATH "Ogitor media path" FORCE)
+    set(OGITOR_MEDIA_PATH "../Media" CACHE PATH "Ogitor media path" FORCE)
     set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
     set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
     set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path" FORCE)
     set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
     set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogre plugins path" FORCE)
     set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "libOgreOfsPlugin path" FORCE)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/bin/resources.cfg)
 endif(UNIX)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 
 # hide advanced options
 mark_as_advanced(
@@ -380,10 +380,7 @@ endif()
 if(UNIX)
     # apple and linux
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/unix.cmake)
-endif()
 
-# Install cmake Find scripts
-if(UNIX)
     FILE(GLOB ogitor_cmake_scripts "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
     install(FILES ${ogitor_cmake_scripts}
         DESTINATION "${CMAKE_ROOT}/Modules"
