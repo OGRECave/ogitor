@@ -91,25 +91,25 @@ install(FILES ${caelum_headers}
 
 # Ogre DLLs
 if(EXISTS ${OGRE_Overlay_BINARY_REL})
-    install(FILES ${OGRE_Overlay_BINARY_REL} DESTINATION bin CONFIGURATIONS Release)
+    install(FILES ${OGRE_Overlay_BINARY_REL} DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 endif()
 if(EXISTS ${OGRE_RenderSystem_Direct3D11_REL})
-    install(FILES ${OGRE_RenderSystem_Direct3D11_REL} DESTINATION bin CONFIGURATIONS Release)
+    install(FILES ${OGRE_RenderSystem_Direct3D11_REL} DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 else()
     set(OGRE_COMMENT_RENDERSYSTEM_D3D11_REL "#")
 endif()
 if(EXISTS ${OGRE_RenderSystem_Direct3D9_REL})
-    install(FILES ${OGRE_RenderSystem_Direct3D9_REL} DESTINATION bin CONFIGURATIONS Release)
+    install(FILES ${OGRE_RenderSystem_Direct3D9_REL} DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 else()
     set(OGRE_COMMENT_RENDERSYSTEM_D3D9_REL "#")
 endif()
 if(EXISTS ${OGRE_RenderSystem_GL3Plus_REL})
-    install(FILES ${OGRE_RenderSystem_GL3Plus_REL} DESTINATION bin CONFIGURATIONS Release)
+    install(FILES ${OGRE_RenderSystem_GL3Plus_REL} DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 else()
     set(OGRE_COMMENT_RENDERSYSTEM_GL3PLUS_REL "#")
 endif()
 if(EXISTS ${OGRE_RenderSystem_GL_REL})
-    install(FILES ${OGRE_RenderSystem_GL_REL} DESTINATION bin CONFIGURATIONS Release)
+    install(FILES ${OGRE_RenderSystem_GL_REL} DESTINATION bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 else()
     set(OGRE_COMMENT_RENDERSYSTEM_GL_REL "#")
 endif()
@@ -121,7 +121,7 @@ install(FILES ${OGRE_BINARY_REL}
     ${OGRE_Terrain_BINARY_REL}
     ${OGRE_Paging_BINARY_REL}
     DESTINATION bin
-    CONFIGURATIONS Release)
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
 
 if(EXISTS ${OGRE_Overlay_BINARY_DBG})
     install(FILES ${OGRE_Overlay_BINARY_DBG} DESTINATION bin CONFIGURATIONS Debug)
@@ -156,12 +156,19 @@ install(FILES ${OGRE_BINARY_DBG}
     DESTINATION bin
     CONFIGURATIONS Debug)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.wincfg.in ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/bin/plugins.cfg)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins_d.wincfg.in ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/bin/plugins_debug.cfg)
+
 IF(OGITOR_DIST)
-    install(FILES redist/dxwebsetup.exe
-        DESTINATION redist
-        CONFIGURATIONS Release)
-    install(FILES redist/msvcr100.dll
-        redist/msvcp100.dll
-        DESTINATION bin
-        CONFIGURATIONS Release)
+	if(EXISTS redist/dxwebsetup.exe)
+		install(FILES redist/dxwebsetup.exe
+			DESTINATION redist
+			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+	endif()
+	if(EXISTS redist/msvcr100.dll)
+		install(FILES redist/msvcr100.dll
+			redist/msvcp100.dll
+			DESTINATION bin
+			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+	endif()
 ENDIF(OGITOR_DIST)
