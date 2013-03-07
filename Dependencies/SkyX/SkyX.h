@@ -67,10 +67,11 @@ namespace SkyX
 			/** Constructor
 			    @param s Skydome render queue group (Note: Moon = skydome_render_queue+1)
 				@param vc VClouds render queue group
-				@param vcl VClouds lightnings render queue group
+				@param vclu VClouds lightnings render queue group (when the camera is under the cloud field)
+				@param vclo VClouds lightnings render queue group (when the camera is over the cloud field)
 			 */
-			inline RenderQueueGroups(const Ogre::uint8& s, const Ogre::uint8& vc, const Ogre::uint8& vcl)
-				: skydome(s), vclouds(vc), vcloudsLightnings(vcl)
+			inline RenderQueueGroups(const Ogre::uint8& s, const Ogre::uint8& vc, const Ogre::uint8& vclu, const Ogre::uint8& vclo)
+				: skydome(s), vclouds(vc), vcloudsLightningsUnder(vclu), vcloudsLightningsOver(vclo)
 			{
 			}
 
@@ -78,8 +79,10 @@ namespace SkyX
 			Ogre::uint8 skydome;
 			/// VClouds render queue group
 			Ogre::uint8 vclouds;
-			/// VClouds lightnings render queue group
-			Ogre::uint8 vcloudsLightnings;
+			/// VClouds lightnings render queue group (when the camera is under the cloud field)
+			Ogre::uint8 vcloudsLightningsUnder;
+			/// VClouds lightnings render queue group (when the camera is over the cloud field)
+			Ogre::uint8 vcloudsLightningsOver;
 		};
 
 		/** Lighting mode enumeration

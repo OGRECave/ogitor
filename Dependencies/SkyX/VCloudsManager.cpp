@@ -38,7 +38,7 @@ namespace SkyX
 	{
 		mVClouds = new VClouds::VClouds(mSkyX->getSceneManager());
 		mVClouds->setRenderQueueGroups(
-			VClouds::VClouds::RenderQueueGroups(mSkyX->getRenderQueueGroups().vclouds, mSkyX->getRenderQueueGroups().vcloudsLightnings));
+			VClouds::VClouds::RenderQueueGroups(mSkyX->getRenderQueueGroups().vclouds, mSkyX->getRenderQueueGroups().vcloudsLightningsUnder, mSkyX->getRenderQueueGroups().vcloudsLightningsOver));
 
 		mAmbientGradient = ColorGradient();
 		mAmbientGradient.addCFrame(ColorGradient::ColorFrame(Ogre::Vector3(1,1,1)*0.9f, 1.0f));

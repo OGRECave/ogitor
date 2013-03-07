@@ -50,6 +50,7 @@ namespace SkyX { namespace VClouds
 		, mDisplacement(Ogre::Vector3(0,0,0))
 		, mWorldOffset(Ogre::Vector2(0,0))
 		, mCamera(0)
+		, mDistance(Ogre::Vector3(0,0,0))
 		, mLastFallingDistance(0)
 	{
 		_calculateDataSize();
@@ -276,7 +277,7 @@ namespace SkyX { namespace VClouds
 		mVertices = new VERTEX[mVertexCount];
 	}
 
-	void GeometryBlock::updateGeometry(Ogre::Camera* c, const Ogre::Vector3& displacement)
+	void GeometryBlock::updateGeometry(Ogre::Camera* c, const Ogre::Vector3& displacement, const Ogre::Vector3& distance)
 	{
 		if (!mCreated)
 		{
@@ -314,6 +315,7 @@ namespace SkyX { namespace VClouds
 		if (isInFrustum(c))
 		{
 			mCamera = c;
+			mDistance = distance;
 			_updateGeometry();
 		}
 	}
@@ -486,7 +488,8 @@ namespace SkyX { namespace VClouds
 
 	void GeometryBlock::_setVertexData(const int& index, const Ogre::Vector3& p, const float& o)
 	{
-		float fallingDistance = mVClouds->getDistanceFallingParams().x*(mEntity->getParentSceneNode()->_getDerivedPosition().y-mCamera->getDerivedPosition().y)*(Ogre::Vector2(p.x,p.z).length()/mRadius);
+		float yDist = -mDistance.y;
+		float fallingDistance = mVClouds->getDistanceFallingParams().x*yDist*(Ogre::Vector2(p.x,p.z).length()/mRadius);
 		
 		if (mVClouds->getDistanceFallingParams().y > 0) // -1 means no max falling
 		{
@@ -505,10 +508,20 @@ namespace SkyX { namespace VClouds
 				}
 			}
 		}
+
+		fallingDistance *= Ogre::Math::Sign(yDist);
 		
 		// Position
 		mVertices[index].x = p.x;
-		mVertices[index].y = p.y - fallingDistance;
+		if (yDist < -mHeight/2)
+		{
+			// Over-cloud
+			mVertices[index].y = mHeight - p.y;
+		}
+		else // Under-cloud
+		{
+			mVertices[index].y = p.y - fallingDistance;
+		}
 		mVertices[index].z = p.z;
 
 		// 3D coords (Z-UP)
@@ -516,6 +529,11 @@ namespace SkyX { namespace VClouds
 		mVertices[index].xc = (p.x+mWorldOffset.x)*scale;
 		mVertices[index].yc = (p.z+mWorldOffset.y)*scale;
 		mVertices[index].zc = Ogre::Math::Clamp<Ogre::Real>(p.y/mHeight, 0, 1);
+		if (yDist < -mHeight/2)
+		{
+			// Over-cloud
+			mVertices[index].zc = 1.0f - mVertices[index].zc;
+		}
 
 		// Noise coords
 		float noise_scale = mVClouds->getNoiseScale()/mRadius;
@@ -528,7 +546,9 @@ namespace SkyX { namespace VClouds
 		mVertices[index].v = (uv.z+mWorldOffset.y)*noise_scale;
 
 		// Opacity
-		mVertices[index].o = o * mVClouds->getGlobalOpacity();
+		float dist = (mDistance - Ogre::Vector3(p.x, p.y - fallingDistance, p.z)).length();
+		float att = Ogre::Math::Clamp((dist-mA/3.25f)/(mA/3.25f),0.0f,1.0f);
+		mVertices[index].o = o * att * mVClouds->getGlobalOpacity();
 	}
 
 	const bool GeometryBlock::isInFrustum(Ogre::Camera *c) const

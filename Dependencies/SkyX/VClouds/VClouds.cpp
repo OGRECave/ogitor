@@ -33,7 +33,7 @@ namespace SkyX { namespace VClouds
 		, mCreated(false)
 		, mGeometrySettings(GeometrySettings())
 		, mDistanceFallingParams(Ogre::Vector2(1,-1))
-		, mRenderQueueGroups(RenderQueueGroups(Ogre::RENDER_QUEUE_MAIN, Ogre::RENDER_QUEUE_9))
+		, mRenderQueueGroups(RenderQueueGroups(Ogre::RENDER_QUEUE_MAIN, Ogre::RENDER_QUEUE_9, Ogre::RENDER_QUEUE_4))
 		, mWindDirection(Ogre::Degree(0))
 		, mWindSpeed(80.0f)
 		, mWheater(Ogre::Vector2(0.5f, 1.0f))
@@ -59,6 +59,10 @@ namespace SkyX { namespace VClouds
 	VClouds::~VClouds()
 	{
 		remove();
+
+		delete mDataManager;
+		delete mGeometryManager;
+		delete mLightningManager;
 	}
 
 	void VClouds::create()
@@ -195,6 +199,9 @@ namespace SkyX { namespace VClouds
 
 		mGeometryManager->updateGeometry(c, timeSinceLastCameraFrame);
 		mLightningManager->updateMaterial();
+
+		mLightningManager->_updateRenderQueueGroup(mGeometryManager->_getCurrentDistance().y < mGeometryManager->getHeight().y/2 ?
+			mRenderQueueGroups.vcloudsLightningsUnder : mRenderQueueGroups.vcloudsLightningsOver);
 	}
 
 	void VClouds::registerCamera(Ogre::Camera* c)
@@ -245,7 +252,6 @@ namespace SkyX { namespace VClouds
 		}
 
 		mGeometryManager->_updateRenderQueueGroup(rqg.vclouds);
-		mLightningManager->_updateRenderQueueGroup(rqg.vcloudsLightnings);
 	}
 
 	void VClouds::setSunColor(const Ogre::Vector3& SunColor)

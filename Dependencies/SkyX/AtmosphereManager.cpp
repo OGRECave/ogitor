@@ -144,10 +144,10 @@ namespace SkyX
 
 	const Ogre::Vector3 AtmosphereManager::getColorAt(const Ogre::Vector3& Direction) const
 	{
-		if (Direction.y < 0)
+		/*if (Direction.y < 0)
 		{
 			return Ogre::Vector3(0,0,0);
-		}
+		}*/
 		
 		// Parameters
 		double Scale = 1.0f / (mOptions.OuterRadius - mOptions.InnerRadius),
@@ -161,7 +161,7 @@ namespace SkyX
 		// --- Start vertex program simulation ---
 		Ogre::Vector3
 			uLightDir = mSkyX->getController()->getSunDirection(),
-			v3Pos = Direction,
+			v3Pos = Direction.normalisedCopy(),
 			uCameraPos = Ogre::Vector3(0, mOptions.InnerRadius + (mOptions.OuterRadius-mOptions.InnerRadius)*mOptions.HeightPosition, 0),
 			uInvWaveLength = Ogre::Vector3(
 			                    1.0f / Ogre::Math::Pow(mOptions.WaveLength.x, 4.0f),
@@ -187,7 +187,7 @@ namespace SkyX
 			   fHeight_, fDepth_, fLightAngle, fCameraAngle, fScatter;
 		Ogre::Vector3 v3SampleRay = v3Ray * fSampleLength,
 		              v3SamplePoint = v3Start + v3SampleRay * 0.5f,
-					  color, v3Attenuate;
+					  color = Ogre::Vector3(0,0,0), v3Attenuate;
 
         // Loop the ray
 		for (int i = 0; i < mOptions.NumberOfSamples; i++)
@@ -236,16 +236,26 @@ namespace SkyX
 				1 - Ogre::Math::Exp(-mOptions.Exposure * (rayleighPhase * oRayleighColor.x + miePhase * oMieColor.x)),
 				1 - Ogre::Math::Exp(-mOptions.Exposure * (rayleighPhase * oRayleighColor.y + miePhase * oMieColor.y)),
 				1 - Ogre::Math::Exp(-mOptions.Exposure * (rayleighPhase * oRayleighColor.z + miePhase * oMieColor.z)));
+		
+			// For night rendering
+			oColor += Ogre::Math::Clamp<Ogre::Real>(((1 - std::max(oColor.x, std::max(oColor.y, oColor.z))*10)), 0, 1) 
+				* (Ogre::Vector3(0.05, 0.05, 0.1)
+				* (2-0.75f*Ogre::Math::Clamp<Ogre::Real>(-uLightDir.y, 0, 1)) * Ogre::Math::Pow(1-Direction.y, 3));
 		}
 		else
 		{
-			oColor = rayleighPhase * oRayleighColor + miePhase * oMieColor;
-		}
+			oColor = mOptions.Exposure * (rayleighPhase * oRayleighColor + miePhase * oMieColor);
+		
+			Ogre::Real nightmult = Ogre::Math::Clamp<Ogre::Real>(((1 - std::max(oColor.x, std::max(oColor.y, oColor.z))*10)), 0, 1);
 
-		// For night rendering
-		oColor += Ogre::Math::Clamp<Ogre::Real>(((1 - std::max(oColor.x, std::max(oColor.y, oColor.z))*10)), 0, 1) 
-			* (Ogre::Vector3(0.05, 0.05, 0.1)
-			* (2-0.75f*Ogre::Math::Clamp<Ogre::Real>(-uLightDir.y, 0, 1)) * Ogre::Math::Pow(1-Direction.y, 3));
+			// For night rendering
+			Ogre::Vector3 nightCol =  Ogre::Vector3(0.05, 0.05, 0.1) * (2-0.75f*Ogre::Math::Clamp<Ogre::Real>(-uLightDir.y, 0, 1)) * Ogre::Math::Pow(1-Direction.y, 3);
+			nightCol.x = Ogre::Math::Pow(nightCol.x, 2.2);
+			nightCol.y = Ogre::Math::Pow(nightCol.y, 2.2);
+			nightCol.z = Ogre::Math::Pow(nightCol.z, 2.2);
+
+			oColor += nightmult*nightCol;
+		}
 
 		// --- End fragment program simulation ---
 

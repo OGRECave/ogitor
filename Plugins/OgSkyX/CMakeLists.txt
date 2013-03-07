@@ -13,7 +13,7 @@ set(SOURCE_FILES
 )
 
 set(OgSkyX_VERSION 0)
-set(OgSkyX_VERSION_MAJOR 3)
+set(OgSkyX_VERSION_MAJOR 4)
 
 include_directories(include)
 # Terrain Scene Manager

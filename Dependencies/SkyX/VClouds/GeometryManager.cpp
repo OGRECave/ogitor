@@ -40,6 +40,7 @@ namespace SkyX { namespace VClouds
 		, mNa(0), mNb(0), mNc(0)
 		, mA(0), mB(0), mC(0)
 		, mWorldOffset(Ogre::Vector2(0,0))
+		, mCurrentDistance(Ogre::Vector3(0,0,0))
 	{
 	}
 
@@ -191,10 +192,13 @@ namespace SkyX { namespace VClouds
 			currentCameraData.geometryDisplacement.x -= (mA/mNa)*Ogre::Math::IFloor((currentCameraData.geometryDisplacement.x)/(mA/mNa));
 		}
 
+		// Check under/over cloud rendering
+		mCurrentDistance = c->getDerivedPosition()-mSceneNode->_getDerivedPosition();
+
 		for (int k = 0; k < mNumberOfBlocks; k++)
 		{
 			mGeometryBlocks.at(k)->setWorldOffset(mWorldOffset + currentCameraData.cameraOffset);
-			mGeometryBlocks.at(k)->updateGeometry(c, currentCameraData.geometryDisplacement);
+			mGeometryBlocks.at(k)->updateGeometry(c, currentCameraData.geometryDisplacement, mCurrentDistance);
 		}
 	}
 }}

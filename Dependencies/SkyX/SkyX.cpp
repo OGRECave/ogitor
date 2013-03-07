@@ -38,7 +38,7 @@ namespace SkyX
 		, mGPUManager(new GPUManager(this))
 		, mMoonManager(new MoonManager(this))
 		, mCloudsManager(new CloudsManager(this))
-		, mRenderQueueGroups(RenderQueueGroups(Ogre::RENDER_QUEUE_SKIES_EARLY, Ogre::RENDER_QUEUE_3, Ogre::RENDER_QUEUE_4))
+		, mRenderQueueGroups(RenderQueueGroups(Ogre::RENDER_QUEUE_SKIES_EARLY, Ogre::RENDER_QUEUE_3, Ogre::RENDER_QUEUE_4, Ogre::RENDER_QUEUE_2))
 		, mCreated(false)
 		, mLastCameraPosition(Ogre::Vector3(0,0,0))
 		, mLastCameraFarClipDistance(-1)
@@ -199,7 +199,7 @@ namespace SkyX
 		mRenderQueueGroups = rqg;
 
 		mVCloudsManager->getVClouds()->setRenderQueueGroups(
-			VClouds::VClouds::RenderQueueGroups(mRenderQueueGroups.vclouds, mRenderQueueGroups.vcloudsLightnings));
+			VClouds::VClouds::RenderQueueGroups(mRenderQueueGroups.vclouds, mRenderQueueGroups.vcloudsLightningsUnder, mRenderQueueGroups.vcloudsLightningsOver));
 
 		if (!mCreated)
 		{
