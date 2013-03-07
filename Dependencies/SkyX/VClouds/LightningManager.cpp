@@ -210,7 +210,9 @@ namespace SkyX { namespace VClouds
 
 		Lightning* lightning = new Lightning(mVClouds->getSceneManager(), sn, Ogre::Vector3(0,0,0), d, l, div, 3, mLightningTimeMultiplier, mVClouds->getGeometrySettings().Radius/9500);
 		lightning->create();
-		lightning->_updateRenderQueueGroup(mVClouds->getRenderQueueGroups().vcloudsLightnings);
+		lightning->_updateRenderQueueGroup(
+			mVClouds->getGeometryManager()->_getCurrentDistance().y < mVClouds->getGeometryManager()->getHeight().y/2 ?
+			mVClouds->getRenderQueueGroups().vcloudsLightningsUnder : mVClouds->getRenderQueueGroups().vcloudsLightningsOver);
 		lightning->getBillboardSet()->setVisible(mVClouds->isVisible());
 
 		mSceneNodes.push_back(sn);
@@ -296,7 +298,7 @@ namespace SkyX { namespace VClouds
 	{
 		for(Ogre::uint32 k = 0; k < mLightnings.size(); k++)
 		{	
-			mLightnings.at(k)->_updateRenderQueueGroup(mVClouds->getRenderQueueGroups().vcloudsLightnings);
+			mLightnings.at(k)->_updateRenderQueueGroup(rqg);
 		}
 	}
 

@@ -81,8 +81,9 @@ namespace SkyX { namespace VClouds{
 		/** Update geometry
 		    @param c Camera
 		    @param displacement Current offset in world units per zone
+			@param distance Current camera to cloud field distance
          */
-		void updateGeometry(Ogre::Camera* c, const Ogre::Vector3& displacement);
+		void updateGeometry(Ogre::Camera* c, const Ogre::Vector3& displacement, const Ogre::Vector3& distance);
 
 		/** Has been create() already called?
 		    @return true if created() have been already called, false if not
@@ -240,6 +241,9 @@ namespace SkyX { namespace VClouds{
 		VClouds *mVClouds;
 		/// Current rendering camera
 		Ogre::Camera* mCamera;
+
+		/// Current distance
+		Ogre::Vector3 mDistance;
 
 		/// Last falling distance
 		float mLastFallingDistance;

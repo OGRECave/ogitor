@@ -28,7 +28,7 @@ http://www.gnu.org/copyleft/lesser.txt.
 #pragma warning (disable:4355) // 'this' : used in base member initializer list
 
 /// Include external headers
-#include <OGRE/Ogre.h>
+#include <Ogre.h>
 
 /// Define the dll export qualifier if compiling for Windows
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -46,8 +46,8 @@ http://www.gnu.org/copyleft/lesser.txt.
 
 /// SkyX defines
 #define SKYX_VERSION_MAJOR 0
-#define SKYX_VERSION_MINOR 3
-#define SKYX_VERSION_PATCH 1
+#define SKYX_VERSION_MINOR 4
+#define SKYX_VERSION_PATCH 0
 
 #define SKYX_RESOURCE_GROUP "SkyX"
 

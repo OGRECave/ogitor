@@ -41,17 +41,20 @@ namespace SkyX { namespace VClouds{
 		{
 			/** Constructor
 				@param vc VClouds render queue group
-				@param vcl VClouds lightnings render queue group
+				@param vclu VClouds lightnings render queue group (when the camera is under the cloud field)
+				@param vclo VClouds lightnings render queue group (when the camera is over the cloud field)
 			 */
-			inline RenderQueueGroups(const Ogre::uint8& vc, const Ogre::uint8& vcl)
-				: vclouds(vc), vcloudsLightnings(vcl)
+			inline RenderQueueGroups(const Ogre::uint8& vc, const Ogre::uint8& vclu, const Ogre::uint8& vclo)
+				: vclouds(vc), vcloudsLightningsUnder(vclu), vcloudsLightningsOver(vclo)
 			{
 			}
 
 			/// VClouds render queue group
 			Ogre::uint8 vclouds;
-			/// VClouds lightnings render queue group
-			Ogre::uint8 vcloudsLightnings;
+			/// VClouds lightnings render queue group (when the camera is under the cloud field)
+			Ogre::uint8 vcloudsLightningsUnder;
+			/// VClouds lightnings render queue group (when the camera is over the cloud field)
+			Ogre::uint8 vcloudsLightningsOver;
 		};
 
 		/** Geometry settings

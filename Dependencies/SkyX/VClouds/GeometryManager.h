@@ -89,6 +89,14 @@ namespace SkyX { namespace VClouds{
 			return mSceneNode;
 		}
 
+		/** Get height (x = Altitude over the camera, y: Field height (both in world coordinates))
+		    @return Height (x = Altitude over the camera, y: Field height (both in world coordinates))
+		 */
+		inline const Ogre::Vector2 getHeight() const
+		{
+			return mHeight;
+		}
+
 		/** Set material name
 		    @param mn Material name
 		    @remarks Only for internal use
@@ -100,6 +108,15 @@ namespace SkyX { namespace VClouds{
 		    @remarks Only for internal use. Use VClouds::setRenderQueueGroups(...) instead.
 		 */
 		void _updateRenderQueueGroup(const Ogre::uint8& rqg);
+
+		/** Get current camera to cloud field distance
+		    @return Current camera to cloud field distance
+			@remarks Only for internal use
+		 */
+		inline const Ogre::Vector3 _getCurrentDistance() const
+		{
+			return mCurrentDistance;
+		}
 
 	private:
 		/** Create geometry
@@ -138,6 +155,9 @@ namespace SkyX { namespace VClouds{
 
 		/// Scene node
 		Ogre::SceneNode *mSceneNode;
+
+		/// Current camera-clouds distance
+		Ogre::Vector3 mCurrentDistance;
 
 		/// VClouds pointer
 		VClouds *mVClouds;
