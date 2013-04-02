@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2012 Andreas Jonsson
+   Copyright (c) 2003-2013 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -199,9 +199,8 @@ int asCReader::ReadInner()
 		{
 			engine->classTypes.PushLast(ot);
 
-			// Add script classes to the GC
-			if( (ot->GetFlags() & asOBJ_SCRIPT_OBJECT) && !ot->IsInterface() )
-				engine->gc.AddScriptObjectToGC(ot, &engine->objectTypeBehaviours);
+			// Set this module as the owner
+			ot->module = module;
 		}
 		module->classTypes.PushLast(ot);
 		ot->AddRef();
@@ -217,7 +216,38 @@ int asCReader::ReadInner()
 		bool isNew;
 		asCScriptFunction *func = ReadFunction(isNew, false, true);
 		if( func )
+		{
 			module->funcDefs.PushLast(func);
+			engine->funcDefs.PushLast(func);
+
+			// TODO: clean up: This is also done by the builder. It should probably be moved to a method in the module
+			// Check if there is another identical funcdef from another module and if so reuse that instead
+			for( asUINT n = 0; n < engine->funcDefs.GetLength(); n++ )
+			{
+				asCScriptFunction *f2 = engine->funcDefs[n];
+				if( f2 == 0 || func == f2 )
+					continue;
+
+				if( f2->name == func->name &&
+					f2->nameSpace == func->nameSpace &&
+					f2->IsSignatureExceptNameEqual(func) )
+				{
+					// Replace our funcdef for the existing one
+					module->funcDefs[module->funcDefs.IndexOf(func)] = f2;
+					f2->AddRef();
+
+					engine->funcDefs.RemoveValue(func);
+
+					savedFunctions[savedFunctions.IndexOf(func)] = f2;
+
+					func->Release();
+
+					// Funcdefs aren't deleted when the ref count reaches zero so we must manually delete it here
+					asDELETE(func,asCScriptFunction);
+					break;
+				}
+			}
+		}
 		else
 			error = true;
 	}
@@ -265,7 +295,7 @@ int asCReader::ReadInner()
 
 	// scriptGlobals[]
 	count = ReadEncodedUInt();
-	if( engine->ep.disallowGlobalVars )
+	if( count && engine->ep.disallowGlobalVars )
 	{
 		engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, TXT_GLOBAL_VARS_NOT_ALLOWED);
 		error = true;
@@ -315,6 +345,7 @@ int asCReader::ReadInner()
 					func->id = 0;
 					func->byteCode.SetLength(0);
 					func->Release();
+					break;
 				}
 			}
 		}
@@ -402,18 +433,26 @@ int asCReader::ReadInner()
 		ReadUsedObjectProps();
 
 	// Validate the template types
-	for( i = 0; i < usedTypes.GetLength() && !error; i++ )
+	if( !error )
 	{
-		if( (usedTypes[i]->flags & asOBJ_TEMPLATE) && 
-			usedTypes[i]->templateSubType.IsValid() &&
-			usedTypes[i]->beh.templateCallback )
+		for( i = 0; i < usedTypes.GetLength() && !error; i++ )
 		{
+			if( !(usedTypes[i]->flags & asOBJ_TEMPLATE) || 
+				!usedTypes[i]->beh.templateCallback )
+				continue;
+			
 			bool dontGarbageCollect = false;
 			asCScriptFunction *callback = engine->scriptFunctions[usedTypes[i]->beh.templateCallback];
 			if( !engine->CallGlobalFunctionRetBool(usedTypes[i], &dontGarbageCollect, callback->sysFuncIntf, callback) )
 			{
+				asCString sub = usedTypes[i]->templateSubTypes[0].Format();
+				for( asUINT n = 1; n < usedTypes[i]->templateSubTypes.GetLength(); n++ )
+				{
+					sub += ",";
+					sub += usedTypes[i]->templateSubTypes[n].Format();
+				}
 				asCString str;
-				str.Format(TXT_INSTANCING_INVLD_TMPL_TYPE_s_s, usedTypes[i]->name.AddressOf(), usedTypes[i]->templateSubType.Format().AddressOf());
+				str.Format(TXT_INSTANCING_INVLD_TMPL_TYPE_s_s, usedTypes[i]->name.AddressOf(), sub.AddressOf());
 				engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
 				error = true;
 			}
@@ -642,11 +681,9 @@ asCScriptFunction *asCReader::ReadFunction(bool &isNew, bool addToModule, bool a
 
 	ReadFunctionSignature(func);
 
-	func->id = engine->GetNextScriptFunctionId();
-
 	if( func->funcType == asFUNC_SCRIPT )
 	{
-		if( addToGC )
+		if( addToGC && !addToModule )
 			engine->gc.AddScriptObjectToGC(func, &engine->functionBehaviours);
 		
 		ReadByteCode(func);
@@ -685,6 +722,21 @@ asCScriptFunction *asCReader::ReadFunction(bool &isNew, bool addToModule, bool a
 			func->lineNumbers.SetLength(length);
 			for( i = 0; i < length; ++i )
 				func->lineNumbers[i] = ReadEncodedUInt();
+
+			// Read the array of script sections 
+			length = ReadEncodedUInt();
+			func->sectionIdxs.SetLength(length);
+			for( i = 0; i < length; ++i )
+			{
+				if( (i & 1) == 0 )
+					func->sectionIdxs[i] = ReadEncodedUInt();
+				else
+				{
+					asCString str;
+					ReadString(&str);
+					func->sectionIdxs[i] = engine->GetScriptSectionNameIndex(str.AddressOf());
+				}
+			}
 		}
 
 		ReadData(&func->isShared, 1);
@@ -733,7 +785,10 @@ asCScriptFunction *asCReader::ReadFunction(bool &isNew, bool addToModule, bool a
 		module->scriptFunctions.PushLast(func);
 	}
 	if( addToEngine )
+	{
+		func->id = engine->GetNextScriptFunctionId();
 		engine->SetScriptFunction(func);
+	}
 	if( func->objectType )
 		func->ComputeSignatureId();
 
@@ -828,7 +883,7 @@ void asCReader::ReadObjectTypeDeclaration(asCObjectType *ot, int phase)
 		else if( ot->flags & asOBJ_TYPEDEF )
 		{
 			eTokenType t = (eTokenType)ReadEncodedUInt();
-			ot->templateSubType = asCDataType::CreatePrimitive(t, false);
+			ot->templateSubTypes.PushLast(asCDataType::CreatePrimitive(t, false));
 		}
 		else
 		{
@@ -1081,6 +1136,16 @@ void asCReader::ReadObjectTypeDeclaration(asCObjectType *ot, int phase)
 					}
 					else
 					{
+						// If the method is the assignment operator we need to replace the default implementation
+						if( func->name == "opAssign" && func->parameterTypes.GetLength() == 1 &&
+							func->parameterTypes[0].GetObjectType() == func->objectType &&
+							(func->inOutFlags[0] & asTM_INREF) )
+						{
+							engine->scriptFunctions[ot->beh.copy]->Release();
+							ot->beh.copy = func->id;
+							func->AddRef();
+						}
+						
 						ot->methods.PushLast(func->id);
 						func->AddRef();
 					}
@@ -1302,7 +1367,9 @@ void asCReader::ReadGlobalProperty()
 	if( f )
 	{
 		bool isNew;
-		asCScriptFunction *func = ReadFunction(isNew, false, true);
+		// Do not add the function to the GC at this time. It will 
+		// only be added to the GC when the module releases the property
+		asCScriptFunction *func = ReadFunction(isNew, false, true, false);
 		if( func )
 		{
 			prop->SetInitFunc(func);
@@ -1403,7 +1470,10 @@ void asCReader::ReadDataType(asCDataType *dt)
 	if( isObjectHandle )
 	{
 		dt->MakeReadOnly(isHandleToConst);
-		dt->MakeHandle(true);
+		
+		// Here we must allow a scoped type to be a handle 
+		// e.g. if the datatype is for a system function
+		dt->MakeHandle(true, true);
 	}
 	dt->MakeReadOnly(isReadOnly);
 	dt->MakeReference(isReference);
@@ -1432,41 +1502,48 @@ asCObjectType* asCReader::ReadObjectType()
 			return 0;
 		}
 
-		ReadData(&ch, 1);
-		if( ch == 's' )
+		asUINT numSubTypes = ReadEncodedUInt();
+		asCArray<asCDataType> subTypes;
+		for( asUINT n = 0; n < numSubTypes; n++ )
 		{
-			asCDataType dt;
-			ReadDataType(&dt);
-
-			if( tmpl->templateSubType.GetObjectType() == dt.GetObjectType() )
-				ot = tmpl;
-			else
-				ot = engine->GetTemplateInstanceType(tmpl, dt);
-			
-			if( ot == 0 )
+			ReadData(&ch, 1);
+			if( ch == 's' )
 			{
-				asCString str;
-				str.Format(TXT_INSTANCING_INVLD_TMPL_TYPE_s_s, typeName.AddressOf(), dt.Format().AddressOf());
-				engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
-				error = true;
-				return 0;
+				asCDataType dt;
+				ReadDataType(&dt);
+				subTypes.PushLast(dt);
+			}
+			else
+			{
+				eTokenType tokenType = (eTokenType)ReadEncodedUInt();
+				asCDataType dt = asCDataType::CreatePrimitive(tokenType, false);
+				subTypes.PushLast(dt);
 			}
 		}
+
+		// Return the actual template if the subtypes are the template's dummy types
+		if( tmpl->templateSubTypes == subTypes )
+			ot = tmpl;
 		else
 		{
-			eTokenType tokenType = (eTokenType)ReadEncodedUInt();
-			asCDataType dt = asCDataType::CreatePrimitive(tokenType, false);
+			// Get the template instance type based on the loaded subtypes
+			ot = engine->GetTemplateInstanceType(tmpl, subTypes);
+		}
 
-			ot = engine->GetTemplateInstanceType(tmpl, dt);
-			
-			if( ot == 0 )
+		if( ot == 0 )
+		{
+			// Show all subtypes in error message
+			asCString sub = subTypes[0].Format();
+			for( asUINT n = 1; n < subTypes.GetLength(); n++ )
 			{
-				asCString str;
-				str.Format(TXT_INSTANCING_INVLD_TMPL_TYPE_s_s, typeName.AddressOf(), dt.Format().AddressOf());
-				engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
-				error = true;
-				return 0;
+				sub += ",";
+				sub += subTypes[n].Format();
 			}
+			asCString str;
+			str.Format(TXT_INSTANCING_INVLD_TMPL_TYPE_s_s, typeName.AddressOf(), sub.AddressOf());
+			engine->WriteMessage("", 0, 0, asMSGTYPE_ERROR, str.AddressOf());
+			error = true;
+			return 0;
 		}
 	}
 	else if( ch == 's' )
@@ -1558,7 +1635,7 @@ void asCReader::ReadByteCode(asCScriptFunction *func)
 
 		// Allocate the space for the instruction
 		asUINT len = asBCTypeSize[asBCInfo[b].type];
-		asUINT newSize = func->byteCode.GetLength() + len;
+		asUINT newSize = asUINT(func->byteCode.GetLength()) + len;
 		if( func->byteCode.GetCapacity() < newSize )
 		{
 			// Determine the average size of the loaded instructions and re-estimate the final size
@@ -1954,16 +2031,25 @@ void asCReader::TranslateFunction(asCScriptFunction *func)
 			int *tid = (int*)&bc[n+1];
 			*tid = FindTypeId(*tid);
 
-			// COPY is used to copy POD types that don't have the opAssign method
+			// COPY is used to copy POD types that don't have the opAssign method. It is 
+			// also used to copy references to scoped types during variable initializations.
 			// Update the number of dwords to copy as it may be different on the target platform
-			asCDataType dt = engine->GetDataTypeFromTypeId(*tid);
-			if( !dt.IsValid() )
+			if( (*tid) & asTYPEID_OBJHANDLE )
 			{
-				// TODO: Write error to message
-				error = true;
+				// It is the actual reference that is being copied, not the object itself
+				asBC_SWORDARG0(&bc[n]) = AS_PTR_SIZE;
 			}
 			else
-				asBC_SWORDARG0(&bc[n]) = (short)dt.GetSizeInMemoryDWords();
+			{
+				asCDataType dt = engine->GetDataTypeFromTypeId(*tid);
+				if( !dt.IsValid() )
+				{
+					// TODO: Write error to message
+					error = true;
+				}
+				else
+					asBC_SWORDARG0(&bc[n]) = (short)dt.GetSizeInMemoryDWords();
+			}
 		}
 		else if( c == asBC_RET )
 		{
@@ -2001,12 +2087,12 @@ void asCReader::TranslateFunction(asCScriptFunction *func)
 			asPWORD *arg = (asPWORD*)&bc[n+1];
 			*(asCObjectType**)arg = FindObjectType(*(int*)arg);
 
-			// If the object type is a script class then the constructor id must be translated
-			asCObjectType *ot = *(asCObjectType**)arg;
-			if( ot && (ot->flags & asOBJ_SCRIPT_OBJECT) )
+			// The constructor function id must be translated, unless it is zero
+			int *fid = (int*)&bc[n+1+AS_PTR_SIZE];
+			if( *fid != 0 )
 			{
-				int *fid = (int*)&bc[n+1+AS_PTR_SIZE];
-				asCScriptFunction *f = FindFunction(*fid);
+				// Subtract 1 from the id, as it was incremented during the writing
+				asCScriptFunction *f = FindFunction(*fid-1);
 				if( f )
 					*fid = f->id;
 				else
@@ -2202,9 +2288,9 @@ void asCReader::TranslateFunction(asCScriptFunction *func)
 	// The program position (every even number) needs to be adjusted
 	// for the line numbers to be in number of dwords instead of number of instructions 
 	for( n = 0; n < func->lineNumbers.GetLength(); n += 2 )
-	{
 		func->lineNumbers[n] = instructionNbrToPos[func->lineNumbers[n]];
-	}
+	for( n = 0; n < func->sectionIdxs.GetLength(); n += 2 )
+		func->sectionIdxs[n] = instructionNbrToPos[func->sectionIdxs[n]];
 
 	CalculateStackNeeded(func);
 }
@@ -2486,15 +2572,30 @@ asCScriptFunction *asCReader::GetCalledFunction(asCScriptFunction *func, asDWORD
 	{
 		// Find the function from the engine's bind array
 		int funcId = asBC_INTARG(&func->byteCode[programPos]);
-		return engine->importedFunctions[funcId&0xFFFF]->importedFunctionSignature;
+		return engine->importedFunctions[funcId & ~FUNC_IMPORTED]->importedFunctionSignature;
 	}
 	else if( bc == asBC_CallPtr )
 	{
-		// Find the funcdef from the local variable
+		asUINT v;
 		int var = asBC_SWORDARG0(&func->byteCode[programPos]);
-		for( asUINT v = 0; v < func->objVariablePos.GetLength(); v++ )
+
+		// Find the funcdef from the local variable
+		for( v = 0; v < func->objVariablePos.GetLength(); v++ )
 			if( func->objVariablePos[v] == var )
 				return func->funcVariableTypes[v];
+
+		// Look in parameters
+		int paramPos = 0;
+		if( func->objectType )
+			paramPos -= AS_PTR_SIZE;
+		if( func->DoesReturnOnStack() )
+			paramPos -= AS_PTR_SIZE;
+		for( v = 0; v < func->parameterTypes.GetLength(); v++ )
+		{
+			if( var == paramPos )
+				return func->parameterTypes[v].GetFuncDef();
+			paramPos -= func->parameterTypes[v].GetSizeOnStackDWords();
+		}
 	}
 
 	return 0;
@@ -2918,6 +3019,25 @@ void asCWriter::WriteFunction(asCScriptFunction* func)
 				else
 					WriteEncodedInt64(func->lineNumbers[i]);
 			}
+
+			// Write the array of script sections
+			length = (asUINT)func->sectionIdxs.GetLength();
+			WriteEncodedInt64(length);
+			for( i = 0; i < length; ++i )
+			{
+				if( (i & 1) == 0 )
+					WriteEncodedInt64(bytecodeNbrByPos[func->sectionIdxs[i]]);
+				else
+				{
+					if( func->sectionIdxs[i] >= 0 )
+						WriteString(engine->scriptSectionNames[func->sectionIdxs[i]]);
+					else
+					{
+						char c = 0;
+						WriteData(&c, 1);
+					}
+				}
+			}
 		}
 
 		WriteData(&func->isShared, 1);
@@ -2999,7 +3119,7 @@ void asCWriter::WriteObjectTypeDeclaration(asCObjectType *ot, int phase)
 		}
 		else if( ot->flags & asOBJ_TYPEDEF )
 		{
-			eTokenType t = ot->templateSubType.GetTokenType();
+			eTokenType t = ot->templateSubTypes[0].GetTokenType();
 			WriteEncodedInt64(t);
 		}
 		else
@@ -3239,24 +3359,28 @@ void asCWriter::WriteObjectType(asCObjectType* ot)
 	if( ot )
 	{
 		// Check for template instances/specializations
-		if( ot->templateSubType.GetTokenType() != ttUnrecognizedToken )
+		if( ot->templateSubTypes.GetLength() )
 		{
 			ch = 'a';
 			WriteData(&ch, 1);
 			WriteString(&ot->name);
 
-			if( ot->templateSubType.IsObject() || ot->templateSubType.IsEnumType() )
+			WriteEncodedInt64(ot->templateSubTypes.GetLength());
+			for( asUINT n = 0; n < ot->templateSubTypes.GetLength(); n++ )
 			{
-				ch = 's';
-				WriteData(&ch, 1);
-				WriteDataType(&ot->templateSubType);
-			}
-			else
-			{
-				ch = 't';
-				WriteData(&ch, 1);
-				eTokenType t = ot->templateSubType.GetTokenType();
-				WriteEncodedInt64(t);
+				if( ot->templateSubTypes[0].IsObject() || ot->templateSubTypes[0].IsEnumType() )
+				{
+					ch = 's';
+					WriteData(&ch, 1);
+					WriteDataType(&ot->templateSubTypes[0]);
+				}
+				else
+				{
+					ch = 't';
+					WriteData(&ch, 1);
+					eTokenType t = ot->templateSubTypes[0].GetTokenType();
+					WriteEncodedInt64(t);
+				}
 			}
 		}
 		else if( ot->flags & asOBJ_TEMPLATE_SUBTYPE )
@@ -3436,19 +3560,40 @@ int asCWriter::AdjustGetOffset(int offset, asCScriptFunction *func, asDWORD prog
 		{
 			// Find the function from the engine's bind array
 			int funcId = asBC_INTARG(&func->byteCode[n]);
-			calledFunc = engine->importedFunctions[funcId&0xFFFF]->importedFunctionSignature;
+			calledFunc = engine->importedFunctions[funcId & ~FUNC_IMPORTED]->importedFunctionSignature;
 			break;
 		}
 		else if( bc == asBC_CallPtr )
 		{
-			// Find the funcdef from the local variable
 			int var = asBC_SWORDARG0(&func->byteCode[n]);
-			for( asUINT v = 0; v < func->objVariablePos.GetLength(); v++ )
+			asUINT v;
+			// Find the funcdef from the local variable
+			for( v = 0; v < func->objVariablePos.GetLength(); v++ )
+			{
 				if( func->objVariablePos[v] == var )
 				{
 					calledFunc = func->funcVariableTypes[v];
 					break;
 				}
+			}
+			if( !calledFunc )
+			{
+				// Look in parameters
+				int paramPos = 0;
+				if( func->objectType )
+					paramPos -= AS_PTR_SIZE;
+				if( func->DoesReturnOnStack() )
+					paramPos -= AS_PTR_SIZE;
+				for( v = 0; v < func->parameterTypes.GetLength(); v++ )
+				{
+					if( var == paramPos )
+					{
+						calledFunc = func->parameterTypes[v].GetFuncDef();
+						break;
+					}
+					paramPos -= func->parameterTypes[v].GetSizeOnStackDWords();
+				}
+			}
 			break;
 		}
 		else if( bc == asBC_REFCPY ||
@@ -3532,9 +3677,12 @@ void asCWriter::WriteByteCode(asCScriptFunction *func)
 			asCObjectType *ot = *(asCObjectType**)(tmp+1);
 			*(asPWORD*)(tmp+1) = FindObjectTypeIdx(ot);
 
-			// Translate the constructor func id, if it is a script class
-			if( ot->flags & asOBJ_SCRIPT_OBJECT )
-				*(int*)&tmp[1+AS_PTR_SIZE] = FindFunctionIndex(engine->scriptFunctions[*(int*)&tmp[1+AS_PTR_SIZE]]);
+			// Translate the constructor func id, unless it is 0
+			if( *(int*)&tmp[1+AS_PTR_SIZE] != 0 )
+			{
+				// Increment 1 to the translated function id, as 0 will be reserved for no function
+				*(int*)&tmp[1+AS_PTR_SIZE] = 1+FindFunctionIndex(engine->scriptFunctions[*(int*)&tmp[1+AS_PTR_SIZE]]);
+			}
 		}
 		else if( c == asBC_FREE    || // wW_PTR_ARG
 			     c == asBC_REFCPY  || // PTR_ARG

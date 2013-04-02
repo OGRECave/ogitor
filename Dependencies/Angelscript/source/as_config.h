@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2012 Andreas Jonsson
+   Copyright (c) 2003-2013 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -94,6 +94,12 @@
 // AS_NO_EXCEPTIONS
 // Define this if exception handling is turned off or not available on the target platform.
 
+// AS_NO_MEMBER_INIT
+// Disable the support for initialization of class members directly in the declaration.
+// This was as a form to maintain backwards compatibility with versions before 2.26.0
+// if the new order of the member initialization caused null pointer exceptions in older
+// scripts (e.g. if a base class accessed members of a derived class through a virtual method).
+
 
 //
 // Library usage
@@ -165,15 +171,6 @@
 // CPU differences
 //---------------------------------------
 
-// AS_ALIGN
-// Some CPUs require that data words are aligned in some way. This macro
-// should be defined if the words should be aligned to boundaries of the same
-// size as the word, i.e.
-//  1 byte  on 1 byte boundaries
-//  2 bytes on 2 byte boundaries
-//  4 bytes on 4 byte boundaries
-//  8 bytes on 4 byte boundaries (no it's not a typo)
-
 // AS_USE_DOUBLE_AS_FLOAT
 // If there is no 64 bit floating point type, then this constant can be defined
 // to treat double like normal floats.
@@ -233,6 +230,7 @@
 // AS_DC        - Sega Dreamcast
 // AS_GC        - Nintendo GameCube
 // AS_WII       - Nintendo Wii
+// AS_WIIU      - Nintendo Wii U
 // AS_IPHONE    - Apple IPhone
 // AS_ANDROID   - Android
 // AS_HAIKU     - Haiku
@@ -397,10 +395,8 @@
 	#define THISCALL_RETURN_SIMPLE_IN_MEMORY
 	#define THISCALL_PASS_OBJECT_POINTER_IN_ECX
 
-	// There doesn't seem to be a standard define to identify Marmalade, so we'll
-	// look for one of these defines that have to be given by the project settings
 	// http://www.madewithmarmalade.com/
-	#if defined(AS_MARMALADE) || defined (MARMALADE)
+	#if defined(__S3E__)
 		#ifndef AS_MARMALADE
 			// From now on we'll use the below define
 			#define AS_MARMALADE
@@ -408,12 +404,20 @@
 
 		// Marmalade doesn't use the Windows libraries
 		#define asVSNPRINTF(a, b, c, d) vsnprintf(a, b, c, d)
-		
-		// Marmalade doesn't seem to have proper support for 
-		// atomic instructions or read/write locks
+
+		// Marmalade doesn't seem to have proper support for
+		// atomic instructions or read/write locks, so we turn off
+		// multithread support
 		//#define AS_POSIX_THREADS
 		#define AS_NO_THREADS
 		#define AS_NO_ATOMIC
+
+		// Marmalade has it's own way of identifying the CPU target
+		// Note, when building for ARM, the gnuc compiler will always
+		// be used so we don't need to check for it here
+		#if defined(I3D_ARCH_X86)
+			#define AS_X86
+		#endif
 	#else
 		#if _MSC_VER < 1500  // MSVC++ 9 (aka MSVC++ .NET 2008)
 			#define asVSNPRINTF(a, b, c, d) _vsnprintf(a, b, c, d)
@@ -454,7 +458,6 @@
 	#endif
 
 	#ifdef _ARM_
-		#define AS_ALIGN
 		#define AS_ARM
 		#define AS_CALLEE_DESTROY_OBJ_BY_VAL
 		#define CDECL_RETURN_SIMPLE_IN_MEMORY
@@ -560,13 +563,66 @@
 	#define STDCALL __attribute__((stdcall))
 	#define ASM_AT_N_T
 
+	// WII U
+	#if defined(__ghs__)
+		#define AS_WIIU
+
+		// Native calling conventions are not yet supported
+		#define AS_MAX_PORTABILITY
+
+	// Marmalade is a cross platform SDK. It uses g++ to compile for iOS and Android
+	#elif defined(__S3E__)
+		#ifndef AS_MARMALADE
+			// From now on we'll use the below define
+			#define AS_MARMALADE
+		#endif
+
+		// STDCALL is not available on Marmalade when compiled for iOS or Android
+		#undef STDCALL
+		#define STDCALL
+
+		// Marmalade doesn't seem to have proper support for
+		// atomic instructions or read/write locks
+		#define AS_NO_THREADS
+		#define AS_NO_ATOMIC
+
+		// Identify for which CPU the library is being built
+		#if defined(I3D_ARCH_X86)
+			#define AS_X86
+		#elif defined(I3D_ARCH_ARM)
+			#define AS_ARM
+
+			// Marmalade appear to use the same ABI as Android when built for ARM
+			#define CDECL_RETURN_SIMPLE_IN_MEMORY
+			#define STDCALL_RETURN_SIMPLE_IN_MEMORY
+			#define THISCALL_RETURN_SIMPLE_IN_MEMORY
+
+			#undef THISCALL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE
+			#define THISCALL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE 2
+
+			#undef CDECL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE
+			#define CDECL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE 2
+
+			#undef STDCALL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE
+			#define STDCALL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE 2
+
+			#undef GNU_STYLE_VIRTUAL_METHOD
+
+			#undef COMPLEX_MASK
+			#define COMPLEX_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
+			#undef COMPLEX_RETURN_MASK
+			#define COMPLEX_RETURN_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
+
+			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
+		#endif
+
 	// MacOSX and IPhone
-	#ifdef __APPLE__
+	#elif defined(__APPLE__)
 
 		#include <TargetConditionals.h>
 
-		// Is this a Mac or an IPhone?
-		#ifdef TARGET_OS_IPHONE
+		// Is this a Mac or an IPhone (or other iOS device)?
+		#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE == 1
 			#define AS_IPHONE
 		#else
 			#define AS_MAC
@@ -620,8 +676,6 @@
 		#elif (defined(_ARM_) || defined(__arm__))
 			// The IPhone use an ARM processor
 			#define AS_ARM
-			#define AS_IPHONE
-			#define AS_ALIGN
 			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
 			#define CDECL_RETURN_SIMPLE_IN_MEMORY
 			#define STDCALL_RETURN_SIMPLE_IN_MEMORY
@@ -679,7 +733,6 @@
 
 		#elif defined(__x86_64__)
 			#define AS_X64_MINGW
-			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
 			#define AS_LARGE_OBJS_PASSED_BY_REF
 			#define AS_LARGE_OBJ_MIN_SIZE 3
 			#define COMPLEX_OBJS_PASSED_BY_REF
@@ -690,16 +743,17 @@
 		#define AS_WINDOWS_THREADS
 
 	// Linux
-	#elif defined(__linux__) && !defined(ANDROID)
+	#elif defined(__linux__) && !defined(ANDROID) && !defined(__ANDROID__)
+
+		#undef COMPLEX_MASK
+		#define COMPLEX_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
+		#undef COMPLEX_RETURN_MASK
+		#define COMPLEX_RETURN_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
+
 		#if defined(i386) && !defined(__LP64__)
 			#define THISCALL_RETURN_SIMPLE_IN_MEMORY
 			#define CDECL_RETURN_SIMPLE_IN_MEMORY
 			#define STDCALL_RETURN_SIMPLE_IN_MEMORY
-
-			#undef COMPLEX_MASK
-			#define COMPLEX_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
-			#undef COMPLEX_RETURN_MASK
-			#define COMPLEX_RETURN_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
 
 			// Support native calling conventions on Intel 32bit CPU
 			#define THISCALL_PASS_OBJECT_POINTER_ON_THE_STACK
@@ -708,10 +762,6 @@
 			#define AS_X64_GCC
 			#define HAS_128_BIT_PRIMITIVES
 			#define SPLIT_OBJS_BY_MEMBER_TYPES
-			#undef COMPLEX_MASK
-			#define COMPLEX_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
-			#undef COMPLEX_RETURN_MASK
-			#define COMPLEX_RETURN_MASK (asOBJ_APP_CLASS_DESTRUCTOR | asOBJ_APP_CLASS_COPY_CONSTRUCTOR)
 			#define AS_LARGE_OBJS_PASSED_BY_REF
 			#define AS_LARGE_OBJ_MIN_SIZE 5
 			// STDCALL is not available on 64bit Linux
@@ -719,9 +769,7 @@
 			#define STDCALL
 		#elif defined(__ARMEL__) || defined(__arm__)
 			#define AS_ARM
-			#define AS_ALIGN
 			#define AS_NO_ATOMIC
-			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
 
 			#define CDECL_RETURN_SIMPLE_IN_MEMORY
 			#define STDCALL_RETURN_SIMPLE_IN_MEMORY
@@ -734,6 +782,13 @@
 			#define THISCALL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE 2
 			#define CDECL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE 2
 			#define STDCALL_RETURN_SIMPLE_IN_MEMORY_MIN_SIZE 2
+		#elif defined(__mips__)
+			#define AS_MIPS
+			#define AS_BIG_ENDIAN
+			#define AS_USE_DOUBLE_AS_FLOAT
+
+			// Native calling conventions for Linux/Mips do not work yet.
+			#define AS_MAX_PORTABILITY
 		#else
 			#define AS_MAX_PORTABILITY
 		#endif
@@ -814,7 +869,7 @@
 		#define STDCALL
 
 	// Android
-	#elif defined(ANDROID)
+	#elif defined(ANDROID) || defined(__ANDROID__)
 		#define AS_ANDROID
 		#define AS_NO_ATOMIC
 
@@ -844,7 +899,6 @@
 
 			#define AS_ARM
 			#define AS_CALLEE_DESTROY_OBJ_BY_VAL
-			#define AS_ALIGN
 		#endif
 
 	// Haiku OS
@@ -913,7 +967,6 @@
 
 // MIPS architecture (generally PS2 and PSP consoles, potentially supports N64 as well)
 #if defined(_MIPS_ARCH) || defined(_mips) || defined(__MIPSEL__) || defined(__PSP__) || defined(__psp__) || defined(_EE_) || defined(_PSP) || defined(_PS2)
-	#define AS_ALIGN				// align datastructures
 	#define AS_USE_DOUBLE_AS_FLOAT	// use 32bit floats instead of doubles
 #endif
 
@@ -923,26 +976,12 @@
 
 	// Gamecube
 	#if defined(_GC)
-		#define AS_ALIGN
 		#define AS_USE_DOUBLE_AS_FLOAT
-	#endif
-	// XBox 360
-	#if (_XBOX_VER >= 200)
-		#define AS_ALIGN
-	#endif
-	// PS3
-	#if defined(__PPU__)
-		#define AS_ALIGN
-	#endif
-	// Wii
-	#if defined(EPPC)
-		#define AS_ALIGN
 	#endif
 #endif
 
 // Dreamcast console
 #ifdef __SH4_SINGLE_ONLY__
-	#define AS_ALIGN				// align datastructures
 	#define AS_USE_DOUBLE_AS_FLOAT	// use 32bit floats instead of doubles
 #endif
 
@@ -952,6 +991,12 @@
 	#ifndef AS_MAX_PORTABILITY
 		#define AS_MAX_PORTABILITY
 	#endif
+#endif
+
+// If the platform doesn't support atomic instructions we can't allow
+// multithreading as the reference counters won't be threadsafe
+#if defined(AS_NO_ATOMIC) && !defined(AS_NO_THREADS)
+	#define AS_NO_THREADS
 #endif
 
 // If the form of threads to use hasn't been chosen
@@ -988,12 +1033,6 @@
 // Internal defines (do not change these)
 //----------------------------------------------------------------
 
-#ifdef AS_ALIGN
-	#define	ALIGN(b) (((b)+3)&(~3))
-#else
-	#define	ALIGN(b) (b)
-#endif
-
 #define ARG_W(b)     ((asWORD*)&b)
 #define ARG_DW(b)    ((asDWORD*)&b)
 #define ARG_QW(b)    ((asQWORD*)&b)
@@ -1005,7 +1044,7 @@
 
 // This macro is used to avoid warnings about unused variables.
 // Usually where the variables are only used in debug mode.
-#define UNUSED_VAR(x) (x)=(x)
+#define UNUSED_VAR(x) (void)(x)
 
 #include "../include/angelscript.h"
 #include "as_memory.h"
