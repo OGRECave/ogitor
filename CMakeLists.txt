@@ -381,12 +381,14 @@ if(UNIX)
     # apple and linux
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/unix.cmake)
 
-    FILE(GLOB ogitor_cmake_scripts "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
-    install(FILES ${ogitor_cmake_scripts}
-        DESTINATION "${CMAKE_ROOT}/Modules"
-        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
-    )
-endif()
+    if(OGITOR_DIST)
+        FILE(GLOB ogitor_cmake_scripts "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
+        install(FILES ${ogitor_cmake_scripts}
+            DESTINATION "${CMAKE_ROOT}/Modules"
+            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+        )
+    endif(OGITOR_DIST)
+endif(UNIX)
 
 # uninstall target
 configure_file(
