@@ -113,7 +113,7 @@ if(EXISTS ${OGRE_RenderSystem_GL_REL})
 else()
     set(OGRE_COMMENT_RENDERSYSTEM_GL_REL "#")
 endif()
-install(FILES ${OGRE_BINARY_REL}
+install(FILES ${OGRE_PLUGIN_DIR_REL}/OgreMain.dll
     ${OGRE_Plugin_OctreeSceneManager_REL}
     ${OGRE_PLUGIN_DIR_REL}/cg.dll
     ${OGRE_Plugin_CgProgramManager_REL}
@@ -146,7 +146,7 @@ if(EXISTS ${OGRE_RenderSystem_GL_DBG})
 else()
     set(OGRE_COMMENT_RENDERSYSTEM_GL_DBG "#")
 endif()
-install(FILES ${OGRE_BINARY_DBG}
+install(FILES ${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.dll
     ${OGRE_Plugin_OctreeSceneManager_DBG}
     ${OGRE_PLUGIN_DIR_DBG}/cg.dll
     ${OGRE_Plugin_CgProgramManager_DBG}
@@ -156,8 +156,8 @@ install(FILES ${OGRE_BINARY_DBG}
     DESTINATION bin
     CONFIGURATIONS Debug)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.wincfg.in ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/bin/plugins.cfg)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins_d.wincfg.in ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/bin/plugins_debug.cfg)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.wincfg.in ${CMAKE_INSTALL_PREFIX}/bin/plugins.cfg)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins_d.wincfg.in ${CMAKE_INSTALL_PREFIX}/bin/plugins_debug.cfg)
 
 IF(OGITOR_DIST)
 	if(EXISTS redist/dxwebsetup.exe)
