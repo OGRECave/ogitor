@@ -25,9 +25,7 @@ if(WIN32)
 		PATTERN "sdk" EXCLUDE
 	)
 
-	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/plugins_debug.cfg
-		#${CMAKE_CURRENT_SOURCE_DIR}/bin/resources.cfg
-		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
 		${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
 		DESTINATION bin
 		CONFIGURATIONS Debug
@@ -56,9 +54,7 @@ if(UNIX)
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
         )
     else(OGITOR_DIST)
-        install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
-            ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
-            ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+        install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
             #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
             DESTINATION bin
         )
