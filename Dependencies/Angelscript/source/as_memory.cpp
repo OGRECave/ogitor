@@ -38,10 +38,6 @@
 
 #include <stdlib.h>
 
-#if !defined(__APPLE__) && !defined( __SNC__ ) && !defined( __ghs__ )
-#include <malloc.h>
-#endif
-
 #include "as_config.h"
 #include "as_memory.h"
 #include "as_scriptnode.h"

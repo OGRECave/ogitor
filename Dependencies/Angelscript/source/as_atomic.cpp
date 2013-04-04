@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2013 Andreas Jonsson
+   Copyright (c) 2003-2012 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -29,9 +29,9 @@
 */
  
 //
-// as_atomic.cpp
+// as_gc.cpp
 //
-// The implementation of the atomic class for thread safe reference counting
+// The implementation of the garbage collector
 //
 
 #include "as_atomic.h"
@@ -53,29 +53,39 @@ void asCAtomic::set(asDWORD val)
 	value = val;
 }
 
-asDWORD asCAtomic::atomicInc()
-{
-	return asAtomicInc((int&)value);
-}
-
-asDWORD asCAtomic::atomicDec()
-{
-	return asAtomicDec((int&)value);
-}
-
 //
 // The following code implements the atomicInc and atomicDec on different platforms
 //
-#if defined(AS_NO_THREADS) || defined(AS_NO_ATOMIC)
+#ifdef AS_NO_THREADS
 
-int asAtomicInc(int &value)
+asDWORD asCAtomic::atomicInc()
 {
 	return ++value;
 }
 
-int asAtomicDec(int &value)
+asDWORD asCAtomic::atomicDec()
 {
 	return --value;
+}
+
+#elif defined(AS_NO_ATOMIC)
+
+asDWORD asCAtomic::atomicInc()
+{
+	asDWORD v;
+	ENTERCRITICALSECTION(cs);
+	v = ++value;
+	LEAVECRITICALSECTION(cs);
+	return v;
+}
+
+asDWORD asCAtomic::atomicDec()
+{
+	asDWORD v;
+	ENTERCRITICALSECTION(cs);
+	v = --value;
+	LEAVECRITICALSECTION(cs);
+	return v;
 }
 
 #elif defined(AS_XENON) /// XBox360
@@ -84,12 +94,12 @@ END_AS_NAMESPACE
 #include <xtl.h>
 BEGIN_AS_NAMESPACE
 
-int asAtomicInc(int &value)
+asDWORD asCAtomic::atomicInc()
 {
 	return InterlockedIncrement((LONG*)&value);
 }
 
-int asAtomicDec(int &value)
+asDWORD asCAtomic::atomicDec()
 {
 	return InterlockedDecrement((LONG*)&value);
 }
@@ -101,12 +111,12 @@ END_AS_NAMESPACE
 #include <windows.h>
 BEGIN_AS_NAMESPACE
 
-int asAtomicInc(int &value)
+asDWORD asCAtomic::atomicInc()
 {
 	return InterlockedIncrement((LONG*)&value);
 }
 
-int asAtomicDec(int &value)
+asDWORD asCAtomic::atomicDec()
 {
 	asASSERT(value > 0);
 	return InterlockedDecrement((LONG*)&value);
@@ -125,12 +135,12 @@ int asAtomicDec(int &value)
 // use the critical sections, though it is a lot slower.
 // 
 
-int asAtomicInc(int &value)
+asDWORD asCAtomic::atomicInc()
 {
 	return __sync_add_and_fetch(&value, 1);
 }
 
-int asAtomicDec(int &value)
+asDWORD asCAtomic::atomicDec()
 {
 	return __sync_sub_and_fetch(&value, 1);
 }
@@ -141,12 +151,12 @@ END_AS_NAMESPACE
 #include <libkern/OSAtomic.h>
 BEGIN_AS_NAMESPACE
 
-int asAtomicInc(int &value)
+asDWORD asCAtomic::atomicInc()
 {
 	return OSAtomicIncrement32((int32_t*)&value);
 }
 
-int asAtomicDec(int &value)
+asDWORD asCAtomic::atomicDec()
 {
 	return OSAtomicDecrement32((int32_t*)&value);
 }

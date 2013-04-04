@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2013 Andreas Jonsson
+   Copyright (c) 2003-2012 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -93,9 +93,11 @@ public:
 	bool IsEnumType()       const;
 	bool IsAnyType()        const {return tokenType == ttQuestion;}
 
+	bool IsSamePrimitiveBaseType(const asCDataType &dt)    const;
 	bool IsEqualExceptRef(const asCDataType &)             const;
 	bool IsEqualExceptRefAndConst(const asCDataType &)     const;
 	bool IsEqualExceptConst(const asCDataType &)           const;
+	bool IsEqualExceptInterfaceType(const asCDataType &dt) const;
 	bool IsNullHandle()                                    const;
 
 	bool SupportHandles() const;
@@ -105,7 +107,7 @@ public:
 	bool operator ==(const asCDataType &) const;
 	bool operator !=(const asCDataType &) const;
 
-	asCDataType        GetSubType(asUINT subtypeIndex = 0)    const;
+	asCDataType        GetSubType()    const;
 	eTokenType         GetTokenType()  const {return tokenType;}
 	asCObjectType     *GetObjectType() const {return objectType;}
 	asCScriptFunction *GetFuncDef()    const {return funcDef;}

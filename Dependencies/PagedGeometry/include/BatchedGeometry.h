@@ -46,6 +46,11 @@ public:
 	//Shaggoth compatibility
 	void visitRenderables(Ogre::Renderable::Visitor* visitor, bool debugRenderables) {}
 	#endif
+	
+	#if OGRE_VERSION_MAJOR >1
+	//2.1.0 compatibility
+	void visitRenderables(Ogre::Renderable::Visitor*, bool) {}
+	#endif
 
 	class SubBatch: public Ogre::Renderable
 	{

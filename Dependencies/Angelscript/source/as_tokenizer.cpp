@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2013 Andreas Jonsson
+   Copyright (c) 2003-2011 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -89,14 +89,6 @@ const char *asCTokenizer::GetDefinition(int tokenType)
 			return tokenWords[n].word;
 
 	return 0;
-}
-
-bool asCTokenizer::IsDigitInRadix(char ch, int radix) const
-{
-	if( ch >= '0' && ch <= '9' ) return (ch -= '0') < radix;
-	if( ch >= 'A' && ch <= 'Z' ) return (ch -= 'A'-10) < radix;
-	if( ch >= 'a' && ch <= 'z' ) return (ch -= 'a'-10) < radix;
-	return false;
 }
 
 eTokenType asCTokenizer::GetToken(const char *source, size_t sourceLength, size_t *tokenLength, asETokenClass *tc) const
@@ -222,30 +214,21 @@ bool asCTokenizer::IsConstant(const char *source, size_t sourceLength, size_t &t
 	// Starting with number
 	if( (source[0] >= '0' && source[0] <= '9') || (source[0] == '.' && sourceLength > 1 && source[1] >= '0' && source[1] <= '9') )
 	{
-		// Is it a based number?
-		if( source[0] == '0' && sourceLength > 1 )
+		// Is it a hexadecimal number?
+		if( source[0] == '0' && sourceLength > 1 && (source[1] == 'x' || source[1] == 'X') )
 		{
-			// Determine the radix for the constant
-			int radix = 0;
-			switch( source[1] )
- 			{
-			case 'b': case 'B': radix =  2; break;
-			case 'o': case 'O': radix =  8; break;
-			case 'd': case 'D': radix = 10; break;
-			case 'x': case 'X': radix = 16; break;
- 			}
-
-			if( radix )
+			size_t n;
+			for( n = 2; n < sourceLength; n++ )
 			{
-				size_t n;
-				for( n = 2; n < sourceLength; n++ )
-					if( !IsDigitInRadix(source[n], radix) )
-						break;
-
-				tokenType   = ttBitsConstant;
-				tokenLength = n;
-				return true;
+				if( !(source[n] >= '0' && source[n] <= '9') &&
+					!(source[n] >= 'a' && source[n] <= 'f') &&
+					!(source[n] >= 'A' && source[n] <= 'F') )
+					break;
 			}
+
+			tokenType   = ttBitsConstant;
+			tokenLength = n;
+			return true;
 		}
 
 		size_t n;

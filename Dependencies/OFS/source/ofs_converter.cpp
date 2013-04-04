@@ -37,7 +37,7 @@
 
 using namespace std;
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
 #define OPEN_STREAM(a, b, c) a.open(b, c, SH_DENYWR)
 #else
 #define OPEN_STREAM(a, b, c) a.open(b, c)

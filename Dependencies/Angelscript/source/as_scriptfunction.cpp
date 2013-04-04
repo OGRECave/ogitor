@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2013 Andreas Jonsson
+   Copyright (c) 2003-2012 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -151,8 +151,19 @@ asCScriptFunction::asCScriptFunction(asCScriptEngine *engine, asCModule *mod, as
 	variableSpace          = 0;
 	nameSpace              = engine->nameSpaces[0];
 
+	// TODO: runtime optimize: The engine could notify the GC just before it wants to
+	//                         discard the function. That way the GC won't waste time
+	//                         trying to determine if the functions are garbage before
+	//                         they can actually be considered garbage.
+	//                         Should have a method called Orphan(void *owner). The module
+	//                         should call this method instead of Release() when freeing
+	//                         its reference to the object. The script function would then
+	//                         check if module that is calling Orphan is the owner, and if 
+	//                         so notify the GC. If the module that is calling method isn't
+	//                         the owner, then the script function would simply call Release 
+	//                         as normal.
 	// Notify the GC of script functions
-	if( funcType == asFUNC_SCRIPT && mod == 0 )
+	if( funcType == asFUNC_SCRIPT )
 		engine->gc.AddScriptObjectToGC(this, &engine->functionBehaviours);
 }
 
@@ -229,28 +240,10 @@ int asCScriptFunction::Release() const
 	gcFlag = false;
 	asASSERT( funcType != asFUNC_IMPORTED );
 	int r = refCount.atomicDec();
-	if( r == 0 && 
-		funcType != asFUNC_FUNCDEF && // Funcdefs are treated as object types and will be deleted by ClearUnusedTypes()
-		funcType != asFUNC_DUMMY )    // Dummy functions are allocated on the stack and cannot be deleted
+	if( r == 0 && funcType != asFUNC_DUMMY ) // Dummy functions are allocated on the stack and cannot be deleted
 		asDELETE(const_cast<asCScriptFunction*>(this),asCScriptFunction);
 
 	return r;
-}
-
-// internal
-void asCScriptFunction::Orphan(asIScriptModule *mod)
-{
-	if( mod && module == mod )
-	{
-		module = 0;
-		if( funcType == asFUNC_SCRIPT && refCount.get() > 1 )
-		{
-			// This function is being orphaned, so notify the GC so it can check for circular references
-			engine->gc.AddScriptObjectToGC(this, &engine->functionBehaviours);
-		}
-	}
-
-	Release();
 }
 
 // interface
@@ -464,21 +457,9 @@ int asCScriptFunction::FindNextLineWithCode(int line) const
 }
 
 // internal
-int asCScriptFunction::GetLineNumber(int programPosition, int *sectionIdx)
+int asCScriptFunction::GetLineNumber(int programPosition)
 {
-	if( sectionIdx ) *sectionIdx = scriptSectionIdx;
 	if( lineNumbers.GetLength() == 0 ) return 0;
-
-	if( sectionIdx )
-	{
-		// Find the correct section index if the function is compiled from multiple sections
-		// This array will be empty most of the time so we don't need a sofisticated algorithm to search it
-		for( asUINT n = 0; n < sectionIdxs.GetLength(); n += 2 )
-		{
-			if( sectionIdxs[n] <= programPosition )
-				*sectionIdx = sectionIdxs[n+1];
-		}
-	}
 
 	// Do a binary search in the buffer
 	int max = (int)lineNumbers.GetLength()/2 - 1;

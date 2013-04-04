@@ -34,3 +34,7 @@
 
 #include "ofs14.h"
 #include "ofs_converter.h"
+
+#ifdef __GNUC__
+#define sprintf_s snprintf 
+#endif

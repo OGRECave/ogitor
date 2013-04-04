@@ -48,7 +48,7 @@ class asCScriptEngine;
 class asCScriptFunction;
 struct asSSystemFunctionInterface;
 
-int DetectCallingConvention(bool isMethod, const asSFuncPtr &ptr, int callConv, void *objForThiscall, asSSystemFunctionInterface *internal);
+int DetectCallingConvention(bool isMethod, const asSFuncPtr &ptr, int callConv, asSSystemFunctionInterface *internal);
 
 int PrepareSystemFunctionGeneric(asCScriptFunction *func, asSSystemFunctionInterface *internal, asCScriptEngine *engine);
 
@@ -100,7 +100,6 @@ struct asSSystemFunctionInterface
 	asCArray<bool>       paramAutoHandles;
 	bool                 returnAutoHandle;
 	bool                 hasAutoHandles;
-	void                *objForThiscall;
 
 	asSSystemFunctionInterface() {}
 
@@ -123,7 +122,6 @@ struct asSSystemFunctionInterface
 		paramAutoHandles   = in.paramAutoHandles;
 		returnAutoHandle   = in.returnAutoHandle;
 		hasAutoHandles     = in.hasAutoHandles;
-		objForThiscall     = in.objForThiscall;
 		return *this;
 	}
 };

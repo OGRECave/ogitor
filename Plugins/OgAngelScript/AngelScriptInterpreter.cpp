@@ -152,7 +152,7 @@ Ogre::StringVector AngelScriptInterpreter::buildString(std::string &section, std
     Ogre::StringVector ret;
 
     mBuilder->StartNewModule(mEngine, section.c_str());
-    mBuilder->AddSectionFromMemory(arg.c_str(), section.c_str());
+    mBuilder->AddSectionFromMemory(arg.c_str());
     int r = mBuilder->BuildModule();
     if( r < 0 )
     {
