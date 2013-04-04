@@ -75,9 +75,8 @@ public:
 
 	bool Exists(T &element) const;
 	int  IndexOf(T &element) const;
-	void RemoveIndex(size_t index);          // Removes the entry without reordering the array
-	void RemoveValue(const T &element);      // Removes the value without reordering the array
-	void RemoveIndexUnordered(size_t index); // Removes the entry without keeping the order
+	void RemoveIndex(size_t index);     // Removes the entry without reordering the array
+	void RemoveValue(const T &element);
 
 	bool operator==(const asCArray<T> &) const;
 	bool operator!=(const asCArray<T> &) const;
@@ -500,15 +499,6 @@ void asCArray<T>::RemoveValue(const T &e)
 			break;
 		}
 	}
-}
-
-template <class T>
-void asCArray<T>::RemoveIndexUnordered(size_t index)
-{
-	if( index == length - 1 )
-		PopLast();
-	else if( index < length )
-		array[index] = PopLast();
 }
 
 END_AS_NAMESPACE

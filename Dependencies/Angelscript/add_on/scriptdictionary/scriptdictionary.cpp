@@ -14,7 +14,6 @@ CScriptDictionary::CScriptDictionary(asIScriptEngine *engine)
 {
     // We start with one reference
     refCount = 1;
-	gcFlag = false;
 
     // Keep a reference to the engine for as long as we live
 	// We don't increment the reference counter, because the 
@@ -35,31 +34,30 @@ CScriptDictionary::~CScriptDictionary()
 void CScriptDictionary::AddRef() const
 {
 	// We need to clear the GC flag
-	gcFlag = false;
-	asAtomicInc(refCount);
+	refCount = (refCount & 0x7FFFFFFF) + 1;
 }
 
 void CScriptDictionary::Release() const
 {
 	// We need to clear the GC flag
-	gcFlag = false;
-	if( asAtomicDec(refCount) == 0 )
+	refCount = (refCount & 0x7FFFFFFF) - 1;
+	if( refCount == 0 )
         delete this;
 }
 
 int CScriptDictionary::GetRefCount()
 {
-	return refCount;
+	return refCount & 0x7FFFFFFF;
 }
 
 void CScriptDictionary::SetGCFlag()
 {
-	gcFlag = true;
+	refCount |= 0x80000000;
 }
 
 bool CScriptDictionary::GetGCFlag()
 {
-	return gcFlag;
+	return (refCount & 0x80000000) ? true : false;
 }
 
 void CScriptDictionary::EnumReferences(asIScriptEngine *engine)

@@ -198,11 +198,8 @@ void QtOgitorSystem::InitTreeIcons()
 //-------------------------------------------------------------------------------
 void Mkdir(const QString& path)
 {
-    QDir directory(path);
-    if(directory.exists())
-       return;
-    else
-       QDir().mkpath(path);
+   QDir directory(path);
+   directory.mkpath(path);
 }
 //-------------------------------------------------------------------------------
 bool CopyDir(const QString& src, const QString& target, const QString& targetRoot)

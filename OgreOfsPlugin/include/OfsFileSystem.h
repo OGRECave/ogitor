@@ -148,10 +148,10 @@ namespace Ogre {
         /// @copydoc FactoryObj::createInstance
         
 
-#if OGRE_VERSION_MINOR > 8            
-	Archive *createInstance(const String& name, bool readOnly ) { return OGRE_NEW OFSArchive(name, "Ofs"); }
-#else
+#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 8
 	Archive *createInstance(const String& name) { return OGRE_NEW OFSArchive(name, "Ofs"); } 
+#else
+	Archive *createInstance(const String& name, bool readOnly ) { return OGRE_NEW OFSArchive(name, "Ofs"); }
 #endif            
     
         /// @copydoc FactoryObj::destroyInstance

@@ -240,7 +240,6 @@ CScriptAny::CScriptAny(asIScriptEngine *engine)
 {
 	this->engine = engine;
 	refCount = 1;
-	gcFlag = false;
 
 	value.typeId = 0;
 	value.valueInt = 0;
@@ -253,7 +252,6 @@ CScriptAny::CScriptAny(void *ref, int refTypeId, asIScriptEngine *engine)
 {
 	this->engine = engine;
 	refCount = 1;
-	gcFlag = false;
 
 	value.typeId = 0;
 	value.valueInt = 0;
@@ -430,17 +428,16 @@ void CScriptAny::ReleaseAllHandles(asIScriptEngine * /*engine*/)
 int CScriptAny::AddRef() const
 {
 	// Increase counter and clear flag set by GC
-	gcFlag = false;
-	return asAtomicInc(refCount);
+	refCount = (refCount & 0x7FFFFFFF) + 1;
+	return refCount;
 }
 
 int CScriptAny::Release() const
 {
-	// Decrease the ref counter
-	gcFlag = false;
-	if( asAtomicDec(refCount) == 0 )
+	// Now do the actual releasing (clearing the flag set by GC)
+	refCount = (refCount & 0x7FFFFFFF) - 1;
+	if( refCount == 0 )
 	{
-		// Delete this object as no more references to it exists
 		delete this;
 		return 0;
 	}
@@ -450,17 +447,17 @@ int CScriptAny::Release() const
 
 int CScriptAny::GetRefCount()
 {
-	return refCount;
+	return refCount & 0x7FFFFFFF;
 }
 
 void CScriptAny::SetFlag()
 {
-	gcFlag = true;
+	refCount |= 0x80000000;
 }
 
 bool CScriptAny::GetFlag()
 {
-	return gcFlag;
+	return (refCount & 0x80000000) ? true : false;
 }
 
 

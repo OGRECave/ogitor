@@ -66,8 +66,7 @@ BEGIN_AS_NAMESPACE
 // the +1 is for when CallThis (object methods) is used
 // extra +1 when returning in memory
 extern "C" {
-// TODO: This array shouldn't be global. It should be a local array in CallSystemFunctionNative
-asDWORD mipsArgs[AS_MIPS_MAX_ARGS + 1 + 1];
+static asDWORD mipsArgs[AS_MIPS_MAX_ARGS + 1 + 1];
 }
 
 // Loads all data into the correct places and calls the function.

@@ -202,7 +202,11 @@ namespace Ogitors
         * @return 
         */
 #ifndef linux
+	#if defined( __GNUC__ )
+	virtual Ogre::UTFString Translate( std::string str ) { return Ogre::String(str) ; } ;
+	#else
 	virtual Ogre::UTFString Translate(Ogre::String& str) {return str;};
+	#endif
 #else
 	virtual Ogre::UTFString Translate( std::string str ) { return Ogre::String(str) ; } ;
 #endif

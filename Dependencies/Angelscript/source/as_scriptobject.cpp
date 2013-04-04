@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2013 Andreas Jonsson
+   Copyright (c) 2003-2012 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -236,57 +236,21 @@ asCScriptObject::asCScriptObject(asCObjectType *ot, bool doInitialize)
 	if( objType->flags & asOBJ_GC )
 		objType->engine->gc.AddScriptObjectToGC(this, objType);
 
-	if( doInitialize )
+	// Construct all properties
+	asCScriptEngine *engine = objType->engine;
+	for( asUINT n = 0; n < objType->properties.GetLength(); n++ )
 	{
-#ifndef AS_NO_MEMBER_INIT
-		// The actual initialization will be done by the bytecode, so here we should just clear the
-		// memory to guarantee that no pointers with have scratch values in case of an exception
-		// TODO: runtime optimize: Is it quicker to just do a memset on the entire object? 
-		for( asUINT n = 0; n < objType->properties.GetLength(); n++ )
+		asCObjectProperty *prop = objType->properties[n];
+		if( prop->type.IsObject() )
 		{
-			asCObjectProperty *prop = objType->properties[n];
-			if( prop->type.IsObject() )
-			{
-				asPWORD *ptr = reinterpret_cast<asPWORD*>(reinterpret_cast<asBYTE*>(this) + prop->byteOffset);
+			asPWORD *ptr = (asPWORD*)(((char*)this) + prop->byteOffset);
+
+			if( prop->type.IsObjectHandle() )
 				*ptr = 0;
-			}
-		}
-#else
-		// When member initialization is disabled the constructor must make sure
-		// to allocate and initialize all members with the default constructor
-		for( asUINT n = 0; n < objType->properties.GetLength(); n++ )
-		{
-			asCObjectProperty *prop = objType->properties[n];
-			if( prop->type.IsObject() )
+			else
 			{
-				asPWORD *ptr = reinterpret_cast<asPWORD*>(reinterpret_cast<asBYTE*>(this) + prop->byteOffset);
-				if( prop->type.IsObjectHandle() )
-					*ptr = 0;
-				else
-				{
-					if( prop->type.GetObjectType()->flags & asOBJ_SCRIPT_OBJECT )
-						*ptr = (asPWORD)ScriptObjectFactory(prop->type.GetObjectType(), ot->engine);
-					else
-						*ptr = (asPWORD)AllocateUninitializedObject(prop->type.GetObjectType(), ot->engine);
-				}
-			}
-		}
-#endif
-	}
-	else
-	{
-		// When the object is created without initialization, all non-handle members must be allocated, but not initialized
-		asCScriptEngine *engine = objType->engine;
-		for( asUINT n = 0; n < objType->properties.GetLength(); n++ )
-		{
-			asCObjectProperty *prop = objType->properties[n];
-			if( prop->type.IsObject() )
-			{
-				asPWORD *ptr = reinterpret_cast<asPWORD*>(reinterpret_cast<asBYTE*>(this) + prop->byteOffset);
-				if( prop->type.IsObjectHandle() )
-					*ptr = 0;
-				else
-					*ptr = (asPWORD)AllocateUninitializedObject(prop->type.GetObjectType(), engine);
+				// Allocate the object and call it's constructor
+				*ptr = (asPWORD)AllocateObject(prop->type.GetObjectType(), engine, doInitialize);
 			}
 		}
 	}
@@ -561,106 +525,27 @@ asCScriptObject &asCScriptObject::operator=(const asCScriptObject &other)
 	{
 		asASSERT( other.objType->DerivesFrom(objType) );
 
-		// If the script class implements the opAssign method, it should be called
 		asCScriptEngine *engine = objType->engine;
-		asCScriptFunction *func = engine->scriptFunctions[objType->beh.copy];
-		if( func->funcType == asFUNC_SYSTEM )
+
+		// Copy all properties
+		for( asUINT n = 0; n < objType->properties.GetLength(); n++ )
 		{
-			// Copy all properties
-			for( asUINT n = 0; n < objType->properties.GetLength(); n++ )
+			asCObjectProperty *prop = objType->properties[n];
+			if( prop->type.IsObject() )
 			{
-				asCObjectProperty *prop = objType->properties[n];
-				if( prop->type.IsObject() )
-				{
-					void **dst = (void**)(((char*)this) + prop->byteOffset);
-					void **src = (void**)(((char*)&other) + prop->byteOffset);
-					if( !prop->type.IsObjectHandle() )
-						CopyObject(*src, *dst, prop->type.GetObjectType(), engine);
-					else
-						CopyHandle((asPWORD*)src, (asPWORD*)dst, prop->type.GetObjectType(), engine);
-				}
+				void **dst = (void**)(((char*)this) + prop->byteOffset);
+				void **src = (void**)(((char*)&other) + prop->byteOffset);
+				if( !prop->type.IsObjectHandle() )
+					CopyObject(*src, *dst, prop->type.GetObjectType(), engine);
 				else
-				{
-					void *dst = ((char*)this) + prop->byteOffset;
-					void *src = ((char*)&other) + prop->byteOffset;
-					memcpy(dst, src, prop->type.GetSizeInMemoryBytes());
-				}
+					CopyHandle((asPWORD*)src, (asPWORD*)dst, prop->type.GetObjectType(), engine);
 			}
-		}
-		else
-		{
-			// Reuse the active context or create a new one to call the script class' opAssign method
-			asIScriptContext *ctx = 0;
-			int r = 0;
-			bool isNested = false;
-
-			ctx = asGetActiveContext();
-			if( ctx )
-			{
-				r = ctx->PushState();
-				if( r == asSUCCESS )
-					isNested = true;
-				else
-					ctx = 0;
-			}
-
-			if( ctx == 0 )
-			{
-				r = engine->CreateContext(&ctx, true);
-				if( r < 0 )
-					return *this;
-			}
-
-			r = ctx->Prepare(engine->scriptFunctions[objType->beh.copy]);
-			if( r < 0 )
-			{
-				if( isNested )
-					ctx->PopState();
-				else
-					ctx->Release();
-				return *this;
-			}
-
-			r = ctx->SetArgAddress(0, const_cast<asCScriptObject*>(&other));
-			asASSERT( r >= 0 );
-			r = ctx->SetObject(this);
-			asASSERT( r >= 0 );
-
-			for(;;)
-			{
-				r = ctx->Execute();
-
-				// We can't allow this execution to be suspended 
-				// so resume the execution immediately
-				if( r != asEXECUTION_SUSPENDED )
-					break;
-			}
-
-			if( r != asEXECUTION_FINISHED )
-			{
-				if( isNested )
-				{
-					ctx->PopState();
-
-					// If the execution was aborted or an exception occurred,
-					// then we should forward that to the outer execution.
-					if( r == asEXECUTION_EXCEPTION )
-					{
-						// TODO: How to improve this exception
-						ctx->SetException(TXT_EXCEPTION_IN_NESTED_CALL);
-					}
-					else if( r == asEXECUTION_ABORTED )
-						ctx->Abort();
-				}
-				else
-					ctx->Release();
-				return *this;
-			}
-
-			if( isNested )
-				ctx->PopState();
 			else
-				ctx->Release();
+			{
+				void *dst = ((char*)this) + prop->byteOffset;
+				void *src = ((char*)&other) + prop->byteOffset;
+				memcpy(dst, src, prop->type.GetSizeInMemoryBytes());
+			}
 		}
 	}
 
@@ -679,14 +564,19 @@ int asCScriptObject::CopyFrom(asIScriptObject *other)
 	return 0;
 }
 
-void *asCScriptObject::AllocateUninitializedObject(asCObjectType *objType, asCScriptEngine *engine)
+void *asCScriptObject::AllocateObject(asCObjectType *objType, asCScriptEngine *engine, bool doInitialize)
 {
 	void *ptr = 0;
 
 	if( objType->flags & asOBJ_SCRIPT_OBJECT )
 	{
-		ptr = engine->CallAlloc(objType);
-		ScriptObject_ConstructUnitialized(objType, reinterpret_cast<asCScriptObject*>(ptr));
+		if( doInitialize )
+			ptr = ScriptObjectFactory(objType, engine);
+		else
+		{
+			ptr = engine->CallAlloc(objType);
+			ScriptObject_ConstructUnitialized(objType, reinterpret_cast<asCScriptObject*>(ptr));
+		}
 	}
 	else if( objType->flags & asOBJ_TEMPLATE )
 	{
@@ -728,20 +618,13 @@ void asCScriptObject::FreeObject(void *ptr, asCObjectType *objType, asCScriptEng
 
 void asCScriptObject::CopyObject(void *src, void *dst, asCObjectType *objType, asCScriptEngine *engine)
 {
+	// TODO: If the object doesn't have the copy behaviour, and it is not a 
+	//       POD object then the copy must not be performed
 	int funcIndex = objType->beh.copy;
+
 	if( funcIndex )
-	{
-		asCScriptFunction *func = engine->scriptFunctions[objType->beh.copy];
-		if( func->funcType == asFUNC_SYSTEM )
-			engine->CallObjectMethod(dst, src, funcIndex);
-		else
-		{
-			// Call the script class' opAssign method
-			asASSERT( objType->flags & asOBJ_SCRIPT_OBJECT );
-			reinterpret_cast<asCScriptObject*>(dst)->CopyFrom(reinterpret_cast<asCScriptObject*>(src));
-		}
-	}
-	else if( objType->size && (objType->flags & asOBJ_POD) )
+		engine->CallObjectMethod(dst, src, funcIndex);
+	else
 		memcpy(dst, src, objType->size);
 }
 

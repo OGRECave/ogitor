@@ -36,7 +36,11 @@
 
 using namespace std;
 
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
+#define OPEN_STREAM(a, b, c) a.open(b, c, SH_DENYWR)
+#else
 #define OPEN_STREAM(a, b, c) a.open(b, c)
+#endif
 
 
 namespace OFS
@@ -79,7 +83,7 @@ namespace OFS
     {
         close();
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
 		m_pFile = _fsopen( file, mode, _SH_DENYWR );
 #else
         m_pFile = fopen( file, mode );
