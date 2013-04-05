@@ -62,6 +62,8 @@
 
 //------------------------------------------------------------------------------
 
+template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::msSingleton = 0;
+
 extern QString ConvertToQString(Ogre::UTFString& value);
 
 using namespace Ogitors;

@@ -53,6 +53,8 @@ using namespace Ogitors;
 
 ScriptViewWidget *mScriptViewWidget = 0;
 
+template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::msSingleton = 0;
+
 //----------------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
 {
@@ -135,9 +137,7 @@ ScriptViewWidget::ScriptViewWidget(QWidget *parent) : QWidget(parent)
 
     treeWidget->addTopLevelItem(projectCategory);
 
-    //Ogre::String filefilter = OgitorsUtils::QualifyPath(Ogitors::Globals::SCRIPTS_PATH + "/*.as");
-    //FIXME: we need to deal with scripts embedded in OFS!
-    Ogre::String filefilter = OgitorsUtils::QualifyPath("../Scripts/*.as");
+    Ogre::String filefilter = OgitorsUtils::QualifyPath(Ogitors::Globals::SCRIPTS_PATH + "/*.as");
 
     QTreeWidgetItem* scriptitem = 0;
     Ogre::StringVector list;

@@ -42,7 +42,7 @@
 #include <time.h>
 #include <boost/thread.hpp>
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
    #ifdef OFS_EXPORT
      #define OfsExport __declspec (dllexport)
    #else
@@ -72,12 +72,17 @@ const int RECYCLEBIN_DIRECTORY_ID = -2;
 #define STATIC_AUTO_MUTEX static boost::recursive_mutex OfsStaticMutex;
 #define STATIC_LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsStaticMutex);
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
 typedef __int64 ofs64;
 #define fseeko _fseeki64
 #define ftello _ftelli64
 #else
 typedef off_t ofs64;
+ #if (defined( __WIN32__ ) || defined( _WIN32 ))
+ #undef fseeko
+ #define fseeko fseek
+ #define ftello ftell
+ #endif
 #endif
 
     class FileStream
@@ -231,7 +236,7 @@ typedef off_t ofs64;
             unsigned short b = *((unsigned short *)&data[4]);
             unsigned short c = *((unsigned short *)&data[6]);
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
             sprintf_s(dest, 36, "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", a, b, c, data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
 #else
             sprintf(dest, "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", a, b, c, data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
@@ -245,7 +250,7 @@ typedef off_t ofs64;
             unsigned int a;
             unsigned short b, c;
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
+#if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
             sscanf_s(str.c_str(), "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", &a, &b, &c, &data[8], &data[9], &data[10], &data[11], &data[12], &data[13], &data[14], &data[15]);
 #else
             sscanf(str.c_str(), "%08X-%04hX-%04hX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX", &a, &b, &c, &data[8], &data[9], &data[10], &data[11], &data[12], &data[13], &data[14], &data[15]);
