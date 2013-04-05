@@ -1,6 +1,16 @@
-ATTENTION:
-Source code is now being hosted on Bitbucket!
-hg.ogitor.org will become read-only in a very short time, so it's not to be used.
+/*/////////////////////////////////////////////////////////////////////////////////
+///    ___   ____ ___ _____ ___  ____
+///   / _ \ / ___|_ _|_   _/ _ \|  _ \
+///  | | | | |  _ | |  | || | | | |_) |
+///  | |_| | |_| || |  | || |_| |  _ <
+///   \___/ \____|___| |_| \___/|_| \_\
+///
+/// Copyright (c) 2008-2013 Ogitor Team
+///
+/// Licensed under the MIT License
+///////////////////////////////////////////////////////////////////////////////////*
+
+This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing environment for OGRE (www.ogre3d.org)
 
 
 IMPORTANT NOTE:
