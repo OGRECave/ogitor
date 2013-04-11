@@ -31,6 +31,8 @@ set(Ogitor_hdrs
 	./include/OBBoxRenderable.h
 	./include/OFSDataStream.h
 	./include/OFSSceneSerializer.h
+    ./include/RFSDataStream.h
+    ./include/RFSSceneSerializer.h
 	./include/Ogitors.h
 	./include/OgitorsClipboardManager.h
 	./include/OgitorsDefinitions.h
@@ -92,6 +94,8 @@ set(Ogitor_srcs
 	./src/OBBoxRenderable.cpp
 	./src/OFSDataStream.cpp
 	./src/OFSSceneSerializer.cpp
+    ./src/RFSDataStream.cpp
+    ./src/RFSSceneSerializer.cpp
 	./src/OgitorsClipboardManager.cpp
 	./src/OgitorsView.cpp
 	./src/OgitorsMasterView.cpp
