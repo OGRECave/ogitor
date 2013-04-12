@@ -38,8 +38,6 @@
 #include "OgitorsSystem.h"
 #include "RFSSceneSerializer.h"
 
-#include "ofs.h"
-
 using namespace Ogitors;
 
 int RFSSceneSerializer::Import(Ogre::String importfile)
@@ -52,7 +50,7 @@ int RFSSceneSerializer::Import(Ogre::String importfile)
     {
         UTFStringVector extlist;
         extlist.push_back(OTR("Ogitor Scene File"));
-        extlist.push_back("*.ofs");
+        extlist.push_back("*.ogscene");
 
         importfile = mSystem->GetSetting("system", "oldOpenPath", "");
         importfile = mSystem->DisplayOpenDialog(OTR("Open"), extlist, importfile);

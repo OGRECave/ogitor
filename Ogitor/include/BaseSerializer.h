@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include "OgitorsExports.h"
+
 namespace Ogitors
 {
     /** Serialization capability enumeration */

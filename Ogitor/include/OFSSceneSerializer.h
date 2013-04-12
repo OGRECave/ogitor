@@ -34,6 +34,8 @@
 
 #include "tinyxml.h"
 
+#include "OgitorsExports.h"
+
 namespace Ogitors
 {
     //! Ogitor scene serializer class
