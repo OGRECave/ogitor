@@ -69,7 +69,7 @@ namespace Ogitors
         /**
         * Destructor
         */
-        virtual ~CBaseSerializer() {};
+        virtual ~CBaseSerializer() {}
 
         /**
         * Fetches type name of the serializer
