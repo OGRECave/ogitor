@@ -38,6 +38,8 @@
 
 #include "ofs.h"
 
+#include "OgitorsExports.h"
+
 namespace Ogitors {
 
     /** Specialisation of DataStream to handle streaming data from the file system. */
