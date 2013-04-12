@@ -46,11 +46,11 @@ namespace Ogitors
         /**
         * Constructor (empty)
         */
-        RFSSceneSerializer() : CBaseSerializer("Scene Serializer", CAN_EXPORT | CAN_IMPORT) {};
+        RFSSceneSerializer() : CBaseSerializer("Scene Serializer", CAN_EXPORT | CAN_IMPORT) {}
         /**
         * Destructor (empty)
         */
-        virtual ~RFSSceneSerializer() {};
+        virtual ~RFSSceneSerializer() {}
         /**
         * Tests if serializer needs to terminate the scene before import
         * @return
