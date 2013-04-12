@@ -65,7 +65,7 @@ namespace Ogitors
         * @param typestring type name of the serializer
         * @param capability capabilities of the serializer (@see SERIALIZERCAPABILITY)
         */
-        CBaseSerializer(Ogre::String typestring = "Base Serializer", unsigned int capability = 0) : mTypeName(typestring), mTypeID(0), mCapability(capability) {};
+        CBaseSerializer(Ogre::String typestring = "Base Serializer", unsigned int capability = 0) : mTypeName(typestring), mTypeID(0), mCapability(capability) {}
         /**
         * Destructor
         */
@@ -75,7 +75,7 @@ namespace Ogitors
         * Fetches type name of the serializer
         * @return type name of the serializer
         */
-        inline Ogre::String GetTypeString() {return mTypeName;};
+        inline Ogre::String GetTypeString() {return mTypeName;}
         /**
         * Fetches error message as string
         * @return errno the error code
@@ -97,41 +97,41 @@ namespace Ogitors
         * Fetches type ID of the serializer
         * @return type ID of the serializer
         */
-        inline unsigned int GetTypeID() {return mTypeID;};
+        inline unsigned int GetTypeID() {return mTypeID;}
         /**
         * Sets type ID of the serializer
         * @param ID sets type ID the serializer
         */
-        inline void         SetTypeID(unsigned int ID) {mTypeID = ID;};
+        inline void         SetTypeID(unsigned int ID) {mTypeID = ID;}
         /**
         * Tests if serializer object can export
         * @return true if serializer object can export, otherwise false
         */
-        inline bool         CanExport() {return ((mCapability & CAN_EXPORT) != 0);};
+        inline bool         CanExport() {return ((mCapability & CAN_EXPORT) != 0);}
         /**
         * Tests if serializer object can import
         * @return true if serializer object can import, otherwise false
         */
-        inline bool         CanImport() {return ((mCapability & CAN_IMPORT) != 0);};
+        inline bool         CanImport() {return ((mCapability & CAN_IMPORT) != 0);}
 
         /**
         * Tests if serializer object requires scene to be terminated before importing new scene
         * @return true if serializer object requires scene to be terminated before importing new scene, otherwise false
         */
-        virtual bool RequiresTerminateScene() {return false;};
+        virtual bool RequiresTerminateScene() {return false;}
         /**
         * Exports scene data
         * @param SaveAs flag signifying that a "Save As" dialog is invoked to save scene file into different place
         * @param exportfile optional parameter to pass the location where the scene is to be saved to
         * @return @see SCENEFILERESULT
         */
-        virtual int  Export(bool SaveAs = false, Ogre::String exportfile = "") {return SCF_OK;};
+        virtual int  Export(bool SaveAs = false, Ogre::String exportfile = "") {return SCF_OK;}
         /**
         * Imports scene data
         * @param importfile file name of imported scene
         * @return @see SCENEFILERESULT
         */
-        virtual int  Import(Ogre::String importfile = "") {return false;};
+        virtual int  Import(Ogre::String importfile = "") {return false;}
 
     protected:
         Ogre::String mTypeName;            /** Serializer type name */
