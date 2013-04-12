@@ -100,7 +100,7 @@ typedef off_t ofs64;
 
         void close();
 
-        void open( const char *file, const char *mode );
+        void open( const char *file, const char *mode, int flag = 0 );
 
         bool fail()
         {

@@ -79,12 +79,12 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    void FileStream::open( const char *file, const char *mode )
+    void FileStream::open( const char *file, const char *mode, int flag )
     {
         close();
 
 #if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
-		m_pFile = _fsopen( file, mode, _SH_DENYWR );
+		m_pFile = _fsopen( file, mode, flag );
 #else
         m_pFile = fopen( file, mode );
 #endif

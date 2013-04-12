@@ -54,8 +54,6 @@ using namespace Ogitors;
 
 MaterialViewWidget *mMaterialViewWidget = 0;
 
-template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::msSingleton = 0;
-
 //----------------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
 {
