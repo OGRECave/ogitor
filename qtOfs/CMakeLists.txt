@@ -55,7 +55,11 @@ else(NOT QT4_FOUND)
         TARGET_LINK_LIBRARIES(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
 
         if(UNIX)
-            TARGET_LINK_LIBRARIES(qtOfs optimized ${Boost_LIBRARIES})
+            target_link_libraries(qtOfs optimized
+            ${Boost_FILESYSTEM_LIBRARY}
+            ${Boost_SYSTEM_LIBRARY}
+            ${Boost_REGEX_LIBRARY}
+            )
         endif()
 
 	if(WIN32)
