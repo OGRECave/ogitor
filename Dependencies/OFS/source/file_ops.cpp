@@ -78,7 +78,7 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
           newdesc->ParentId = desc->Id;
           newdesc->Parent = desc;
           newdesc->Flags = OFS::OFS_FILE;
-          newdesc->Name = boost::filesystem::path(name).filename();
+          newdesc->Name = boost::filesystem::path(name).filename().string();
           newdesc->FileSize = boost::filesystem::file_size(name);
           newdesc->OldParentId = desc->Id;
           newdesc->UseCount = 0;
@@ -98,7 +98,7 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
           newdesc->ParentId = desc->Id;
           newdesc->Parent = desc;
           newdesc->Flags = OFS::OFS_DIR;
-          newdesc->Name = boost::filesystem::path(name).filename();
+          newdesc->Name = boost::filesystem::path(name).filename().string();
           newdesc->FileSize = 0;
           newdesc->OldParentId = desc->Id;
           newdesc->UseCount = 0;
@@ -114,7 +114,7 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
 
           while( it != end )
           {
-              OfsListContentsRecursive(owner, newdesc, ++id, it->string().c_str(), linkmode);
+              OfsListContentsRecursive(owner, newdesc, ++id, it->path().filename().string().c_str(), linkmode);
               ++it;
           }
       }
@@ -129,7 +129,7 @@ void OfsListContents(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc *desc, in
 
           while( it != end )
           {
-              OfsListContentsRecursive(owner, desc, id, it->string().c_str(), linkmode);
+              OfsListContentsRecursive(owner, desc, id, it->path().filename().string().c_str(), linkmode);
               ++it;
           }
       }
