@@ -165,7 +165,7 @@ public:
     void extractFiles();
     void addFiles(QString rootDir, QStringList list);
 
-    static void triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2);
+    static void triggerCallback(void* userData, OFS::_OfsBase::OfsEntryDesc* arg1, const char* arg2);
 
 public Q_SLOTS:
     void onSelectionChanged();

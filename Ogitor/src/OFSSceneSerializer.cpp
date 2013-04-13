@@ -51,8 +51,10 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
     if(importfile == "")
     {
         UTFStringVector extlist;
-        extlist.push_back(OTR("Ogitor Scene File"));
+        extlist.push_back(OTR("Ogitor File System File"));
         extlist.push_back("*.ofs");
+        extlist.push_back(OTR("Ogitor Scene File"));
+        extlist.push_back("*.ogscene");
 
         importfile = mSystem->GetSetting("system", "oldOpenPath", "");
         importfile = mSystem->DisplayOpenDialog(OTR("Open"), extlist, importfile);
@@ -89,6 +91,11 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
 
     Ogre::UTFString loadmsg = "";
 
+    int typepos = importfile.find_last_of(".");
+    if(typepos != -1 && (importfile.substr(typepos, 4) != ".ofs"))
+        importfile = filePath;
+    
+
     OFS::OfsResult oRet;
     if((oRet = mFile.mount(importfile.c_str(), OFS::OFS_MOUNT_OPEN | OFS::OFS_MOUNT_RECOVER)) != OFS::OFS_OK)
     {
@@ -110,7 +117,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
     pOpt->CreatedIn = "";
 
     pOpt->ProjectDir = filePath;
-    int typepos = fileName.find_last_of(".");
+    typepos = fileName.find_last_of(".");
     if(typepos != -1)
         fileName.erase(typepos, fileName.length() - typepos);
     pOpt->ProjectName = fileName;
@@ -343,8 +350,17 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     {
         // Saving at a different location
         UTFStringVector extlist;
-        extlist.push_back(OTR("Ogitor Scene File"));
-        extlist.push_back("*.ofs");
+
+        if( mFile->getFileSystemType() == OFS::OFS_PACKED )
+        {
+            extlist.push_back(OTR("Ogitor File System File"));
+            extlist.push_back("*.ofs");
+        }
+        else
+        {
+            extlist.push_back(OTR("Ogitor Scene File"));
+            extlist.push_back("*.ogscene");
+        }
 
         Ogre::String newfileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, fileLocation);
         if(newfileLocation == "") 
@@ -355,31 +371,30 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
         if(Ogre::StringUtil::match(newfileLocation, fileLocation, false))
         {
             SaveAs = false;
-        } else {
+        } 
+        else 
+        {
             forceSave = true;
             fileLocation = newfileLocation;
         }
     }
 
+    Ogre::String filePath = OgitorsUtils::ExtractFilePath(fileLocation);
     fileName = OgitorsUtils::ExtractFileName(fileLocation);
+
+    // Change the project directory to the new path
+    pOpt->ProjectDir = filePath;
+
+    if(fileName.substr(fileName.size() - 4, 4) != ".ofs")
+        fileLocation = filePath;
+
     int dotpos = fileName.find_last_of(".");
     if (dotpos > 0)
     {
         fileName.erase(dotpos, fileName.length() - dotpos);
     }
 
-    fileLocation = OgitorsUtils::ExtractFilePath(fileLocation);
-
-    // Change the project directory to the new path
-    pOpt->ProjectDir = fileLocation;
-    fileLocation = fileLocation+fileName + ".ofs";
-
     if (SaveAs && mFile->moveFileSystemTo(fileLocation.c_str()) != OFS::OFS_OK)
-    {
-        return SCF_ERRFILE;
-    }
-
-    if (_writeFile(fileName+".ogscene", forceSave) != SCF_OK)
     {
         return SCF_ERRFILE;
     }
@@ -388,6 +403,11 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     {
         mFile->deleteFile((pOpt->ProjectName+".ogscene").c_str());
         pOpt->ProjectName = fileName;
+    }
+
+    if (_writeFile(fileName+".ogscene", forceSave) != SCF_OK)
+    {
+        return SCF_ERRFILE;
     }
 
     return SCF_OK;

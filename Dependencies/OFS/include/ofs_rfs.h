@@ -37,76 +37,11 @@
 namespace OFS
 {
 
-    class OfsExport _Ofs: public _OfsBase
+    class OfsExport _OfsRfs: public _OfsBase
     {
         friend class _OfsBase;
         friend class OfsPtr;
     public:
-
-        /* Determines type of Allocated Blocks in OFS Files
-         * OFS_FREE_BLOCK is a mask which marks a block as FREE
-         * OFS_MAIN_BLOCK is the first block of any file or folder which contains all required header data
-         * OFS_EXTENDED_BLOCK is any extra block needed for extending the file, only contains a short header
-         */
-        enum BlockType
-        {
-            OFS_FREE_BLOCK = 0xFF000000,
-            OFS_MAIN_BLOCK = 1,
-            OFS_EXTENDED_BLOCK = 2
-        };
-
-#pragma pack(push)
-#pragma pack(4)
-
-        /* OFS File Header */
-        struct strFileHeader
-        {
-            unsigned char ID[4];               /* The file identifier */
-            unsigned char VERSION[4];          /* Version of the OFS File */
-            unsigned int  BLOCK_HEADER_SIG[2]; /* Identifiers used as Block Header Signatures */
-            unsigned int  LAST_ID;             /* The Last ID used for any entry */
-            unsigned int  RESERVED[27];        /* RESERVED */
-        };
-
-        /* Holds information about an allocated block (for writing to file as block header) */
-        struct strBlockHeader
-        {
-            unsigned int Signature[2]; /* Block Signature */
-            unsigned int Type;         /* Block Type */
-            unsigned int Reserved;     /* Reserved for block packing */
-            ofs64        Length;       /* Length of the block in file not including this header */
-        };
-
-        /* Short entry header for EXTENDED BLOCKS */
-        struct strExtendedEntryHeader
-        {
-             int          Id;           /* Id of the Owner Entry */
-             int          ParentId;     /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-             unsigned int Index;        /* Index of this Extended Data */
-             unsigned int Reserved;     /* RESERVED */
-             ofs64        NextBlock;    /* Position of Next Block in file (owned by the same entry) */
-        };
-
-        /* Full Entry Header, contains all information needed for entry */
-        struct strMainEntryHeader
-        {
-            int          Id;              /* Id of the Owner Entry */
-            int          ParentId;        /* Id of the Owner Entry's Parent Directory, -1 if root directory */
-            unsigned int Flags;           /* File Flags */
-            int          OldParentId;     /* Id of the Owner Entry's Old Parent Directory, -1 if root directory */
-            unsigned int RESERVED[2];     /* RESERVED */
-            ofs64        FileSize;        /* Entry's File Size, 0 for Directories */
-            ofs64        NextBlock;       /* File Position of Next Block owned by this entry */
-            char         Name[256];       /* Entry's Name */
-            OTIME        CreationTime;    /* Entry's Creation Time */
-            UUID         Uuid;            /* UUID of Entry */
-        };
-
-#pragma pack(pop)
-
-        typedef std::map<ofs64, BlockData> PosBlockDataMap;
-        typedef std::vector<BlockData> BlockDataVector;
-
 
         /**
         * Retrieves various statistics about file system
@@ -537,16 +472,14 @@ namespace OFS
         bool         eof(OFSHANDLE& handle);
 
     private:
-        FileStream                mStream;              // Handle of underlying file system
-        strFileHeader             mHeader;              // File System Header
-        BlockDataVector           mFreeBlocks;          // Vector holding free(available) blocks in file system 
+        int mNextAvailableId;
 
         /* Private Constructor */
-        _Ofs();
+        _OfsRfs();
         /* Private Destructor */
-        ~_Ofs();
-        _Ofs& operator=(_Ofs& other); //disallow operator=
-        _Ofs(const _Ofs& other); //disallow copy ctor
+        ~_OfsRfs();
+        _OfsRfs& operator=(_OfsRfs& other); //disallow operator=
+        _OfsRfs(const _OfsRfs& other); //disallow copy ctor
 
         /* Mounts a file as file system */
         OfsResult     _mount(const char *file, unsigned int op = OFS_MOUNT_OPEN);
@@ -555,22 +488,12 @@ namespace OFS
 
         /* Reads the file system header */
         OfsResult     _readHeader();
-        /* Writes the file system header */
-        OfsResult     _writeHeader();
 
         /* Clears the state of file system (during error) */
         inline void   _clear();
         /* Deallocates children of an entry recursively */
         inline void   _deallocateChildren(OfsEntryDesc* parent);
-        /* Marks a used block as free (available) */
-        inline void   _markUnused(BlockData data);
-        /* Allocates a data block for use, either from free blocks or creates a new block and writes given header */
-        inline void   _allocateFileBlock(OfsEntryDesc *desc, strMainEntryHeader& mainEntry, ofs64 block_size, unsigned int data_size = 0, const char *data = NULL);
-        /* Allocates a data block for use, either from free blocks or creates a new block, writes a short header */
-        inline void   _allocateExtendedFileBlock(OfsEntryDesc *desc, ofs64 block_size, unsigned int data_size = 0, const char *data = NULL);
 
-        /* Fills UUID Map by recursively visiting children of given desc */
-        OfsResult     _rebuildUUIDMapRecursive(OfsEntryDesc *current);
         /* Retrieves file system stats recursively */
         void          _getFileSystemStatsRecursive(OfsEntryDesc *desc, FileSystemStats& stats);
         /* Retrieves directory descriptor of a given path, null if not found */
@@ -584,15 +507,13 @@ namespace OFS
         /* Internal createDirectory implementation */
         OfsEntryDesc* _createDirectory(OfsEntryDesc *parent, const std::string& name, const UUID& uuid = UUID_ZERO);
         /* Internal createFile implementation */
-        OfsEntryDesc* _createFile(OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid = UUID_ZERO, unsigned int data_size = 0, const char *data = NULL);
+        OFSHANDLE _createFile(OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid = UUID_ZERO, unsigned int data_size = 0, const char *data = NULL);
         /* Internal deleteDirectory implementation */
         OfsResult     _deleteDirectory(OfsEntryDesc *dir);
         /* Internal deleteFile implementation */
         OfsResult     _deleteFile(OfsEntryDesc *file);
         /* Internal setFileFlags implementation */
         inline void   _setFileFlags(OfsEntryDesc *file, unsigned int flags);
-        /* Internal  function to free files in recycle bin */
-        inline void   _deleteRecycleBinDesc(OfsEntryDesc *desc);
         /* Internal  function to find an entry by id */
         OfsEntryDesc* _findDescById(OfsEntryDesc* base, int id);
     };

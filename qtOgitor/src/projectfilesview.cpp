@@ -301,7 +301,7 @@ void ProjectFilesViewWidget::modifyStats( selectStats& stats, QTreeWidgetItem* i
     stats.mActEmptyRecycleBinEnabled = false;
     stats.mActRestoreFromRecycleBinEnabled = false;
 
-    OFS::_Ofs::NameOfsPtrMap fsLinks;
+    OFS::_OfsBase::NameOfsPtrMap fsLinks;
 
     QString path = item->whatsThis(0);
 
@@ -423,10 +423,10 @@ void ProjectFilesViewWidget::onOfsWidgetCustomContextMenuRequested(const QPoint 
     {
         if( stats.mActLinkFileSystemEnabled )
         {
-            OFS::_Ofs::NameOfsPtrMap fsLinks;
+            OFS::_OfsBase::NameOfsPtrMap fsLinks;
             file->getDirectoryLinks(selItems[0]->whatsThis(0).toStdString().c_str(), fsLinks);
    
-            OFS::_Ofs::NameOfsPtrMap::iterator fit = fsLinks.begin();
+            OFS::_OfsBase::NameOfsPtrMap::iterator fit = fsLinks.begin();
 
             while( fit != fsLinks.end() )
             {

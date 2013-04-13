@@ -32,11 +32,11 @@
 
 #pragma once
 
-#include "ofs_base.h"
-#include "ofs_converter.h"
-
-#ifdef __GNUC__
-#define sprintf_s snprintf 
-#endif
+bool OfsDirectoryExists(const char *path);
+bool OfsCreateDirectory(const char *path);
+bool OfsDeleteFile(const char *path);
+bool OfsDeleteDirectory(const char *path);
+bool OfsRenameFile(const char *path, const char *new_path);
+void OfsListContents(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc *desc, int &id, const char *path, bool linkmode);
 
 //------------------------------------------------------------------------------

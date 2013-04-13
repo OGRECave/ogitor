@@ -1606,11 +1606,13 @@ void OgitorsRoot::PrepareProjectResources()
         Ogre::String scriptDir = "/Scripts";
         (*mProjectFile)->createDirectory(scriptDir.c_str());
 
+        std::string main_resource_path = (*mProjectFile)->getFileSystemName();
+
         mngr->createResourceGroup(PROJECT_TEMP_RESOURCE_GROUP);
-        mngr->addResourceLocation(mProjectOptions.ProjectDir + mProjectOptions.ProjectName + ".ofs::" + tempDir, "Ofs", PROJECT_TEMP_RESOURCE_GROUP);
+        mngr->addResourceLocation(main_resource_path + "::" + tempDir, "Ofs", PROJECT_TEMP_RESOURCE_GROUP);
         mngr->initialiseResourceGroup(PROJECT_TEMP_RESOURCE_GROUP);
 
-        FillResourceGroup(mngr, mProjectOptions.ResourceDirectories, mProjectOptions.ProjectDir + mProjectOptions.ProjectName + ".ofs", PROJECT_RESOURCE_GROUP);
+        FillResourceGroup(mngr, mProjectOptions.ResourceDirectories, main_resource_path, PROJECT_RESOURCE_GROUP);
 
         try
         {
