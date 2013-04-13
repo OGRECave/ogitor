@@ -114,7 +114,7 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
 
           while( it != end )
           {
-              OfsListContentsRecursive(owner, newdesc, ++id, it->path().filename().string().c_str(), linkmode);
+              OfsListContentsRecursive(owner, newdesc, ++id, it->path().string().c_str(), linkmode);
               ++it;
           }
       }
@@ -129,7 +129,7 @@ void OfsListContents(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc *desc, in
 
           while( it != end )
           {
-              OfsListContentsRecursive(owner, desc, id, it->path().filename().string().c_str(), linkmode);
+              OfsListContentsRecursive(owner, desc, id, it->path().string().c_str(), linkmode);
               ++it;
           }
       }
