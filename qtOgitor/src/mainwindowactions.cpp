@@ -634,7 +634,10 @@ void MainWindow::newScene()
 
     OFS::OfsPtr mFile;
 
-    Ogre::String filename = opt.ProjectDir + "/" + opt.ProjectName + ".ofs";
+    Ogre::String filename = opt.ProjectDir + "/";
+    if(dlg.usePackedOFSFile->checkState() == Qt::Checked)
+        filename += opt.ProjectName + ".ofs";
+
     filename = Ogitors::OgitorsUtils::QualifyPath(filename);
 
     /* Prompt current scene to save */
@@ -685,6 +688,9 @@ void MainWindow::newScene()
         system->DisplayMessageDialog(tr("The path is Read-Only. Ogitor can not work with Read-Only Project Paths").toStdString(), DLGTYPE_OK);
         return;
     }
+
+    if(dlg.usePackedOFSFile->checkState() != Qt::Checked)
+        filename += "/" + opt.ProjectName + ".ogscene";
 
     ogRoot->LoadScene(filename);
     updateRecentFiles();

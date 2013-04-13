@@ -59,8 +59,8 @@ OfsTreeWidget::OfsTreeWidget(QWidget *parent, unsigned int capabilities, QString
     mUnknownFileIcon = mOgitorMainWindow->mIconProvider.icon(QFileIconProvider::File);
 
     mFile = Ogitors::OgitorsRoot::getSingletonPtr()->GetProjectFile();
-    mFile->addTrigger(this, OFS::_Ofs::CLBK_CREATE, &triggerCallback);
-    mFile->addTrigger(this, OFS::_Ofs::CLBK_DELETE, &triggerCallback);
+    mFile->addTrigger(this, OFS::_OfsBase::CLBK_CREATE, &triggerCallback);
+    mFile->addTrigger(this, OFS::_OfsBase::CLBK_DELETE, &triggerCallback);
 
     refreshWidget();
 
@@ -593,7 +593,7 @@ void OfsTreeWidget::threadFinished()
     emit busyState(false);
 }
 //----------------------------------------------------------------------------------------
-void OfsTreeWidget::triggerCallback(void* userData, OFS::_Ofs::OfsEntryDesc* arg1, const char* arg2)
+void OfsTreeWidget::triggerCallback(void* userData, OFS::_OfsBase::OfsEntryDesc* arg1, const char* arg2)
 {
     emit mOgitorMainWindow->getProjectFilesViewWidget()->triggerRefresh();
 }
