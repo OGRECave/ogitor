@@ -324,7 +324,8 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, s
                 contents = new char[(unsigned int)file_size + 1];
                 ofsFile->read(fHandle, contents, (unsigned int)file_size);
                 contents[file_size] = 0;
-                r = mBuilder->AddSectionFromMemory(contents, file.c_str());
+
+                r = mBuilder->AddSectionFromMemory(section.c_str(), contents);
                 delete [] contents;
             }
             else
