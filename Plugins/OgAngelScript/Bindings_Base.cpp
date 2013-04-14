@@ -211,16 +211,16 @@ namespace Ogitors
         r = engine->RegisterObjectMethod("CameraEditor", "void pitch(float)", asMETHODPR(CCameraEditor, pitch, (float), void), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("CameraEditor", "void roll(float)", asMETHODPR(CCameraEditor, roll, (float), void), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("CameraEditor", "void lookAt(const Vector2 &in)", asMETHODPR(CCameraEditor, lookAt, (const Ogre::Vector2&), void), asCALL_THISCALL);assert(r >= 0);
-
-        r = engine->RegisterObjectMethod("LightEditor", "void setPosition(const Vector3 &in)", asMETHODPR(CLightEditor, setPosition), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "Vector3 getPosition()", asMETHODPR(CLightEditor, getPosition), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "void setOrientation(const Quaternion &in)", asMETHODPR(CLightEditor, setOrientation), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "Quaternion getOrientation()", asMETHODPR(CLightEditor, getOrientation), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "void setDirection(const Vector3 &in)", asMETHODPR(CLightEditor, setDirection), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "Vector3 getDirection()", asMETHODPR(CLightEditor, getDirection), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "void setRange(const Vector3 &in)", asMETHODPR(CLightEditor, setRange), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "Vector3 getRange()", asMETHODPR(CLightEditor, getRange), asCALL_THISCALL);assert(r >= 0);
-        r = engine->RegisterObjectMethod("LightEditor", "void setAttenuation(const Vector3 &in)", asMETHODPR(CLightEditor, setAttenuation), asCALL_THISCALL);assert(r >= 0);
+*/
+        r = engine->RegisterObjectMethod("LightEditor", "void setPosition(const Vector3 &in)", asMETHODPR(CLightEditor, setPosition, (const Ogre::Vector3&), void), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("LightEditor", "Vector3 getPosition()", asMETHODPR(CLightEditor, getPosition, (), Ogre::Vector3), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("LightEditor", "void setOrientation(const Quaternion &in)", asMETHODPR(CLightEditor, setOrientation, (const Ogre::Quaternion&), void), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("LightEditor", "Quaternion getOrientation()", asMETHODPR(CLightEditor, getOrientation, (), Ogre::Quaternion), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("LightEditor", "void setDirection(const Vector3 &in)", asMETHODPR(CLightEditor, setDirection, (const Ogre::Vector3&), void), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("LightEditor", "Vector3 getDirection()", asMETHODPR(CLightEditor, getDirection, (), Ogre::Vector3), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("LightEditor", "void setRange(const Vector3 &in)", asMETHODPR(CLightEditor, setRange, (const Ogre::Vector3&), void), asCALL_THISCALL);assert(r >= 0);
+        r = engine->RegisterObjectMethod("LightEditor", "Vector3 getRange()", asMETHODPR(CLightEditor, getRange, (), Ogre::Vector3), asCALL_THISCALL);assert(r >= 0);
+/*        r = engine->RegisterObjectMethod("LightEditor", "void setAttenuation(const Vector3 &in)", asMETHODPR(CLightEditor, setAttenuation), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("LightEditor", "Vector3 getAttenuation()", asMETHODPR(CLightEditor, getAttenuation), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("LightEditor", "void setLightType(LightType)", asMETHODPR(CLightEditor, setLightType), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("LightEditor", "LightType getLightType()", asMETHODPR(CLightEditor, getLightType), asCALL_THISCALL);assert(r >= 0);
@@ -232,14 +232,14 @@ namespace Ogitors
         r = engine->RegisterObjectMethod("LightEditor", "ColourValue getDiffuse()", asMETHODPR(CLightEditor, getDiffuse), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("LightEditor", "void setSpecular(const ColourValue &in)", asMETHODPR(CLightEditor, setSpecular), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("LightEditor", "ColourValue getSpecular()", asMETHODPR(CLightEditor, getSpecular), asCALL_THISCALL);assert(r >= 0);
-
+*/
         REGISTER_NODE_FUNCTIONS("NodeEditor", CNodeEditor);
         REGISTER_NODE_FUNCTIONS("EntityEditor", CEntityEditor);
         REGISTER_NODE_FUNCTIONS("PlaneEditor", CPlaneEditor);
         REGISTER_NODE_FUNCTIONS("ParticleEditor", CParticleEditor);
         REGISTER_NODE_FUNCTIONS("MarkerEditor", CMarkerEditor);
 
-        r = engine->RegisterObjectMethod("EntityEditor", "void setCastShadows(bool)", asMETHODPR(CEntityEditor, setCastShadows), asCALL_THISCALL);assert(r >= 0);
+/*        r = engine->RegisterObjectMethod("EntityEditor", "void setCastShadows(bool)", asMETHODPR(CEntityEditor, setCastShadows), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("EntityEditor", "bool getCastShadows()", asMETHODPR(CEntityEditor, getCastShadows), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("PlaneEditor", "void setCastShadows(bool)", asMETHODPR(CPlaneEditor, setCastShadows), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("PlaneEditor", "bool getCastShadows()", asMETHODPR(CPlaneEditor, getCastShadows), asCALL_THISCALL);assert(r >= 0);
