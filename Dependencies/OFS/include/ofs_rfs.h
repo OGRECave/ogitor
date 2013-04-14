@@ -507,7 +507,7 @@ namespace OFS
         /* Internal createDirectory implementation */
         OfsEntryDesc* _createDirectory(OfsEntryDesc *parent, const std::string& name, const UUID& uuid = UUID_ZERO);
         /* Internal createFile implementation */
-        OFSHANDLE _createFile(OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid = UUID_ZERO, unsigned int data_size = 0, const char *data = NULL);
+        OfsEntryDesc* _createFile(OFSHANDLE &handle, OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid = UUID_ZERO, unsigned int data_size = 0, const char *data = NULL);
         /* Internal deleteDirectory implementation */
         OfsResult     _deleteDirectory(OfsEntryDesc *dir);
         /* Internal deleteFile implementation */

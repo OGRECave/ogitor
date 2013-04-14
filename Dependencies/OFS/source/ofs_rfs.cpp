@@ -32,6 +32,7 @@
 
 #include "ofs_rfs.h"
 #include "file_ops.h"
+#include <errno.h>
 #include <algorithm>
 #include <stdio.h>
 
@@ -558,12 +559,9 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    OFSHANDLE _OfsRfs::_createFile(OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid, unsigned int data_size, const char *data)
+    _OfsRfs::OfsEntryDesc* _OfsRfs::_createFile(OFSHANDLE &handle, OfsEntryDesc *parent, const std::string& name, ofs64 file_size, const UUID& uuid, unsigned int data_size, const char *data)
     {
         assert(parent != NULL);
-        
-        OFSHANDLE result;
-        result.mEntryDesc = NULL;
         
         OfsEntryDesc *file = new OfsEntryDesc();
 
@@ -573,40 +571,29 @@ namespace OFS
         file->Flags = OFS_FILE;
         file->OldParentId = ROOT_DIRECTORY_ID;
         file->Name = name;
-        file->FileSize = file_size;
+        file->FileSize = data_size;
         file->Parent = parent;
         file->CreationTime = time( NULL );
         file->UseCount = 0;
         file->WriteLocked = false;
         file->Uuid = uuid;
 
-        parent->Children.push_back(file);
-
-        if(uuid != UUID_ZERO)
-        {
-            UuidDescMap::const_iterator it = mUuidMap.find(uuid);
-
-            if(it != mUuidMap.end())
-            {
-                delete file;
-
-                OFS_EXCEPT("_OfsRfs::_createFile, The UUID supplied already exists.");
-
-                return result;
-            }
-            else
-            {
-                mUuidMap.insert(UuidDescMap::value_type(uuid, file));
-            }
-        }
-
         std::string full_path = mFileName + constructFullPath( file );
 
-        result.mEntryDesc = file;
-        result.mStream.open(full_path.c_str(), "wb+");
-        result.mStream.write(data, data_size);
+        handle.mStream.open(full_path.c_str(), "wb+");
+        if( handle.mStream.fail() )
+        {
+            delete file;
+            return NULL;
+        }
 
-        return result;
+        if( data_size > 0 )
+            handle.mStream.write(data, data_size);
+
+        handle.mEntryDesc = file;
+        parent->Children.push_back(file);
+
+        return file;
     }
 
 //------------------------------------------------------------------------------
@@ -1244,9 +1231,7 @@ namespace OFS
                 }
             }
 
-            handle = _createFile(dirDesc, fName, file_size, uuid, data_size, data);
-            fileDesc = handle.mEntryDesc;
-
+            fileDesc = _createFile(handle, dirDesc, fName, file_size, uuid, data_size, data);
 
             if(fileDesc != NULL)
             {
@@ -1512,6 +1497,8 @@ namespace OFS
         if(actual_read != NULL)
             *actual_read = length;
 
+        handle.mReadPos = handle.mStream.tell();
+
         return OFS_OK;
     }
 
@@ -1542,10 +1529,10 @@ namespace OFS
 
         length = handle.mStream.write(src, length);
 
-        ofs64 pos = handle.mStream.tell();
+        handle.mReadPos = handle.mStream.tell();
 
-        if( pos < handle.mEntryDesc->FileSize )
-            handle.mEntryDesc->FileSize = pos;
+        if( handle.mReadPos > handle.mEntryDesc->FileSize )
+            handle.mEntryDesc->FileSize = handle.mReadPos;
 
         return OFS_OK;
     }
@@ -1578,7 +1565,9 @@ namespace OFS
                           break;
         }
 
-        return handle.mStream.tell();
+        handle.mReadPos = handle.mStream.tell();
+
+        return handle.mReadPos;
     }
 
 //------------------------------------------------------------------------------
@@ -1609,7 +1598,9 @@ namespace OFS
                           break;
         }
 
-        return handle.mStream.tell();
+        handle.mReadPos = handle.mStream.tell();
+
+        return handle.mReadPos;
     }
 
 //------------------------------------------------------------------------------
@@ -1630,7 +1621,7 @@ namespace OFS
             return 0;
         }
 
-        return handle.mStream.tell();
+        return handle.mReadPos;
     }
 
 //------------------------------------------------------------------------------
@@ -1651,7 +1642,7 @@ namespace OFS
             return 0;
         }
 
-        return handle.mStream.tell();
+        return handle.mReadPos;
     }
 
 //------------------------------------------------------------------------------

@@ -122,7 +122,7 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
         filename = mTempFileName;
     }
 
-    Ogre::String tmpCompressFile = OgitorsUtils::ExtractFilePath(mOgitorsRoot->GetProjectFile()->getFileSystemName()) + "Temp/";
+    Ogre::String tmpCompressFile = mOgitorsRoot->GetProjectFile()->getFileSystemDirectory() + "/Temp/";
     tmpCompressFile = tmpCompressFile + Ogre::StringConverter::toString(mObjectID->get()) + ".compress";
 
     OFS::OFSHANDLE *fileHandle = new OFS::OFSHANDLE();
@@ -133,8 +133,9 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
     mHandle->load(0, true);
 
     Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), fileHandle));
-    Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filename, stream, tmpCompressFile));
-    Ogre::StreamSerialiser ser(compressStream);
+    //Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filename, stream, tmpCompressFile));
+    //Ogre::StreamSerialiser ser(compressStream);
+    Ogre::StreamSerialiser ser(stream);
     mHandle->save(ser);
 }
 //-----------------------------------------------------------------------------------------

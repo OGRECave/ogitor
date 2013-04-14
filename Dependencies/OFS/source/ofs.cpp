@@ -50,6 +50,18 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
+    size_t FileStream::write( const void *data, size_t size )
+    {
+        assert( m_pFile != NULL );
+
+        size_t actual_len =  fwrite( data, 1, size, m_pFile );
+        
+        assert(actual_len == size);
+        
+        return actual_len;
+    }
+
+
     void FileStream::close()
     {
         if( m_pFile != NULL )
@@ -282,6 +294,25 @@ namespace OFS
         return mActive; 
     }
 
+
+//------------------------------------------------------------------------------
+
+    std::string _OfsBase::getFileSystemDirectory()
+    {
+        if(mFileSystemType == OFS_RFS )
+            return mFileName;
+        else
+        {
+            int pos1 = mFileName.find_last_of("/");
+            int pos2 = mFileName.find_last_of("\\");
+
+            if( pos2 > pos1 ) pos1 = pos2;
+
+            return mFileName.substr( 0, pos1 );
+        }
+    }
+
+//------------------------------------------------------------------------------
 
     OfsResult _OfsBase::mount(_OfsBase** ptr, const char *file, unsigned int op)
     {

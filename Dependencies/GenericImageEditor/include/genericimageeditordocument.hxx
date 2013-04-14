@@ -95,7 +95,7 @@ public:
     inline void setCodec(IImageEditorCodec* codec){mCodec = codec;}
     inline bool isOfsFile(){return mIsOfsFile;};
     inline OFS::OfsPtr getOfsPtr(){return mOfsPtr;};
-    inline OFS::OFSHANDLE getOfsFileHandle(){return mOfsFileHandle;};
+    inline OFS::OFSHANDLE* getOfsFileHandle(){return &mOfsFileHandle;};
     ToolTipLabel* getLabel(){return mLabel;};
 
 public slots:
