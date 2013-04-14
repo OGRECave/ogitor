@@ -131,11 +131,7 @@ typedef off_t ofs64;
             return ( feof( m_pFile ) != 0 );
         }
 
-        size_t write( const void *data, size_t size )
-        {
-            assert( m_pFile != NULL );
-            return fwrite( data, 1, size, m_pFile );
-        }
+        size_t write( const void *data, size_t size );
 
         size_t read( void *data, size_t size )
         {
@@ -517,6 +513,18 @@ typedef off_t ofs64;
         * @return Name of the file used by Virtual File System
         */
         const std::string& getFileSystemName() const { return mFileName; };
+
+        /**
+        * Retrieves Base Directory of the file used by Virtual File System
+        * @return Base Directory of the file used by Virtual File System
+        */
+        std::string getFileSystemDirectory();
+
+        /**
+        * Retrieves Type of the Virtual File System
+        * @return Type of the Virtual File System
+        */
+        FileSystemType getFileSystemType() { return mFileSystemType; }
 
         /**
         * Checks if file system is mounted
@@ -981,8 +989,6 @@ typedef off_t ofs64;
         /* Retrieves file descriptor of a given child in a given directory, null if not found */
         virtual OfsEntryDesc* _findChild(OfsEntryDesc *dir_desc, std::string child_name) = 0;
 
-        FileSystemType getFileSystemType() { return mFileSystemType; }
-
     protected:
         STATIC_AUTO_MUTEX
         AUTO_MUTEX
@@ -1084,6 +1090,21 @@ typedef off_t ofs64;
         * @param value New read position
         */
         void _setReadPos(ofs64 value);
+
+    private:
+
+        /* Assignment operator */
+        OFSHANDLE& operator=(OFSHANDLE& other)
+        {
+            assert(0 && "OFSHANDLE MUST NOT BE COPIED");
+            return *this;
+        }
+
+        /* Construction operator */
+        OFSHANDLE(const OFSHANDLE& other)
+        {
+            assert(0 && "OFSHANDLE MUST NOT BE COPIED");
+        }
     };
 
 
