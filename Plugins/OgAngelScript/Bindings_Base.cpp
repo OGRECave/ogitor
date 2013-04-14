@@ -69,7 +69,7 @@ namespace Ogitors
     r = engine->RegisterObjectMethod(name, "string getName()", asMETHODPR(classname, getName, (), std::string), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "string getTypeName()", asMETHODPR(classname, getTypeName, (), std::string), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "int getType()", asMETHODPR(classname, getEditorType, (), Ogitors::EDITORTYPE), asCALL_THISCALL);assert(r >= 0);\
-    r = engine->RegisterObjectMethod(name, "uint getID()", asMETHODPR(classname, getObjectID, (), uint), asCALL_THISCALL);assert(r >= 0);\
+    r = engine->RegisterObjectMethod(name, "int getID()", asMETHODPR(classname, getObjectID, (), unsigned int), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "bool getModified()", asMETHODPR(classname, isModified, (), bool), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "bool getLoaded()", asMETHODPR(classname, isLoaded, (), bool), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "BaseEditor@ getParent()", asMETHODPR(classname, getParent, (), CBaseEditor*), asCALL_THISCALL);assert(r >= 0);\
