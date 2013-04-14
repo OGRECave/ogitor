@@ -309,9 +309,6 @@ namespace OFS
         
         mFileName = file;
 
-        if((mFileName[mFileName.size() - 1] == '/') || (mFileName[mFileName.size() - 1] == '/'))
-            mFileName.erase(mFileName.size() - 1, 1);
-
         OfsResult ret = OFS_INVALID_FILE;
 
         if(op & OFS_MOUNT_RECOVER)

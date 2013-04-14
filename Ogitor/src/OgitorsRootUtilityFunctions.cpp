@@ -1457,7 +1457,7 @@ void OgitorsRoot::ReloadUserResources()
 {   
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
     mngr->clearResourceGroup(PROJECT_RESOURCE_GROUP);
-    FillResourceGroup(mngr, mProjectOptions.ResourceDirectories, mProjectOptions.ProjectDir + mProjectOptions.ProjectName + ".ofs", PROJECT_RESOURCE_GROUP);
+    FillResourceGroup(mngr, mProjectOptions.ResourceDirectories, (*mProjectFile)->getFileSystemName(), PROJECT_RESOURCE_GROUP);
 
     try
     {

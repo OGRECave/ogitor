@@ -291,15 +291,18 @@ namespace OFS
 
         std::string file_name = file;
 
+        if((file_name[file_name.size() - 1] == '/') || (file_name[file_name.size() - 1] == '/'))
+            file_name.erase(file_name.size() - 1, 1);
+
         NameOfsHandleMap::iterator it = mAllocatedHandles.find(file_name);
 
         if(it == mAllocatedHandles.end())
         {
-            file_name = file_name.substr(file_name.size() - 4);
+            std::string extension = file_name.substr(file_name.size() - 4);
 #ifdef linux
-	        int result = strcasecmp(file_name.c_str(), ".ofs");
+	        int result = strcasecmp(extension.c_str(), ".ofs");
 #else
-	        int result = _strcmpi(file_name.c_str(), ".ofs");
+	        int result = _strcmpi(extension.c_str(), ".ofs");
 #endif            
             if(result == 0)
                 *ptr = new _Ofs();
@@ -308,7 +311,7 @@ namespace OFS
 
             (*ptr)->_incUseCount();
             
-            OfsResult ret = (*ptr)->_mount(file, op);
+            OfsResult ret = (*ptr)->_mount(file_name.c_str(), op);
 
             if(ret != OFS_OK)
             {
@@ -317,7 +320,7 @@ namespace OFS
                 return ret;
             }
 
-            mAllocatedHandles.insert(NameOfsHandleMap::value_type(std::string(file), *ptr));
+            mAllocatedHandles.insert(NameOfsHandleMap::value_type(file_name, *ptr));
         }
         else
         {

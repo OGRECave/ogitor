@@ -932,7 +932,9 @@ Ogitors::PropertyOptionsVector OgitorsUtils::GetResourceFilenames(const Ogre::St
     }
     resList.setNull();
 
-    std::sort(++(resourceList.begin()), resourceList.end(), PropertyOption::comp_func); 
+    if(resourceList.size() > 1)
+        std::sort(++(resourceList.begin()), resourceList.end(), PropertyOption::comp_func); 
+
     return resourceList;
 }
 //----------------------------------------------------------------------------------------

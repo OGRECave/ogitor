@@ -586,7 +586,7 @@ void OgreWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 
         if(state == LS_LOADED)
         {
-            appTitle += QString(" - ") + QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString(".ofs");
+            appTitle += QString(" - ") + QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString(".ogscene");
 
             mOgitorMainWindow->setCameraPositions();
 
