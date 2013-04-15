@@ -82,7 +82,7 @@
 	{
 		int r;
 
-		r = engine->RegisterObjectType("Vector2", sizeof(Ogre::Vector2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectType("Vector2", sizeof(Ogre::Vector2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA | asOBJ_APP_CLASS_ALLFLOATS); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector2", "float x", offsetof(Ogre::Vector2, x)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector2", "float y", offsetof(Ogre::Vector2, y)); assert( r >= 0 );
 
@@ -97,7 +97,7 @@
 		r = engine->RegisterObjectMethod("Vector2", "Vector2 opNeg() const",							asMETHODPR(Ogre::Vector2, operator-, () const,						Ogre::Vector2),	asCALL_THISCALL); assert(r >= 0);
 
 
-		r = engine->RegisterObjectType("Vector3", sizeof(Ogre::Vector3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectType("Vector3", sizeof(Ogre::Vector3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA | asOBJ_APP_CLASS_ALLFLOATS); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector3", "float x", offsetof(Ogre::Vector3, x)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector3", "float y", offsetof(Ogre::Vector3, y)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector3", "float z", offsetof(Ogre::Vector3, z)); assert( r >= 0 );
@@ -116,7 +116,7 @@
 		r = engine->RegisterObjectMethod("Vector3", "Vector3 opNeg() const",							asMETHODPR(Ogre::Vector3, operator-, () const,						Ogre::Vector3),	asCALL_THISCALL); assert(r >= 0);
 
 
-		r = engine->RegisterObjectType("Vector4", sizeof(Ogre::Vector4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectType("Vector4", sizeof(Ogre::Vector4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA | asOBJ_APP_CLASS_ALLFLOATS); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector4", "float x", offsetof(Ogre::Vector4, x)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector4", "float y", offsetof(Ogre::Vector4, y)); assert( r >= 0 );
 		r = engine->RegisterObjectProperty("Vector4", "float z", offsetof(Ogre::Vector4, z)); assert( r >= 0 );

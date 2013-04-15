@@ -43,7 +43,7 @@
 		int r;
 
 		// Register the type
-        r = engine->RegisterObjectType("Quaternion", sizeof(Ogre::Quaternion), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CAK); assert( r >= 0 );
+        r = engine->RegisterObjectType("Quaternion", sizeof(Ogre::Quaternion), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_CA | asOBJ_APP_CLASS_ALLFLOATS); assert( r >= 0 );
 		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f()",					asFUNCTION(QuaternionDefaultConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(float, float, float, float)",					asFUNCTION(QuaternionInitMainConstructor),	asCALL_CDECL_OBJLAST); assert(r >= 0);
         r = engine->RegisterObjectBehaviour("Quaternion", asBEHAVE_CONSTRUCT,  "void f(const Quaternion &in)",    asFUNCTION(CopyConstructQuaternion), asCALL_CDECL_OBJLAST); assert( r >= 0 );
