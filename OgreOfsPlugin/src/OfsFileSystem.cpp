@@ -439,19 +439,17 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void OfsDataStream::skip(long count)
     {
-        mOfs->seekr(*mFileHandle, count, OFS::OFS_SEEK_CURRENT);
-        mOfs->seekw(*mFileHandle, count, OFS::OFS_SEEK_CURRENT);
+        mOfs->seek(*mFileHandle, count, OFS::OFS_SEEK_CURRENT);
     }
     //-----------------------------------------------------------------------
     void OfsDataStream::seek(size_t pos)
     {
-        mOfs->seekr(*mFileHandle, pos, OFS::OFS_SEEK_BEGIN);
-        mOfs->seekw(*mFileHandle, pos, OFS::OFS_SEEK_BEGIN);
+        mOfs->seek(*mFileHandle, pos, OFS::OFS_SEEK_BEGIN);
     }
     //-----------------------------------------------------------------------
     size_t OfsDataStream::tell(void) const
     {
-        return mOfs->tellr(*mFileHandle);
+        return mOfs->tell(*mFileHandle);
     }
     //-----------------------------------------------------------------------
     bool OfsDataStream::eof(void) const

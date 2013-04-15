@@ -37,6 +37,7 @@
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
 #include "OFSSceneSerializer.h"
+#include "OgreTerrainConverter.h"
 
 #include "ofs.h"
 
@@ -487,5 +488,34 @@ void Ogitors::COFSSceneSerializer::_upgradeOgsceneFileFrom2To3(TiXmlNode* ogscen
             continue;
 
     } while(element = element->NextSiblingElement());
+}
+//-----------------------------------------------------------------------------
+void Ogitors::COFSSceneSerializer::_upgradeOgsceneFileFrom3To4(TiXmlNode* ogsceneRootNode)
+{
+    TiXmlElement* element = ogsceneRootNode->FirstChildElement();   
+
+        //Ogre::String terrainDir = "/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain/";
+        //Ogre::String filenameorig = terrainDir + terGroup->generateFilename(mPageX->get(), mPageY->get());
+        //Ogre::String filenamebackup = filenameorig + ".backup";
+
+        //mOgitorsRoot->GetProjectFile()->renameFile( filenameorig.c_str(), filenamebackup.c_str() );
+
+        //OFS::OFSHANDLE *filebackup = new OFS::OFSHANDLE();
+        //OFS::OFSHANDLE *fileorig = new OFS::OFSHANDLE();
+
+        //mOgitorsRoot->GetProjectFile()->createFile(*fileorig, filenameorig.c_str());
+        //mOgitorsRoot->GetProjectFile()->openFile(*filebackup, filenamebackup.c_str(), OFS::OFS_READ);
+
+        //{
+        //    OgreTerrainConverter conv;
+
+        //    Ogre::DataStreamPtr stream_in = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), filebackup));
+        //    Ogre::DataStreamPtr stream_out = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), fileorig));
+        //    Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filenameorig, stream_in));
+        //    Ogre::StreamSerialiser ser_in(compressStream);
+        //    Ogre::StreamSerialiser ser_out(stream_out);
+
+        //    conv.Upgrade( ser_in, ser_out );
+        //}
 }
 //-----------------------------------------------------------------------------

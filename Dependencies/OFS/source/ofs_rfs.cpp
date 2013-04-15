@@ -1497,7 +1497,7 @@ namespace OFS
         if(actual_read != NULL)
             *actual_read = length;
 
-        handle.mReadPos = handle.mStream.tell();
+        handle.mPos = handle.mStream.tell();
 
         return OFS_OK;
     }
@@ -1529,29 +1529,29 @@ namespace OFS
 
         length = handle.mStream.write(src, length);
 
-        handle.mReadPos = handle.mStream.tell();
+        handle.mPos = handle.mStream.tell();
 
-        if( handle.mReadPos > handle.mEntryDesc->FileSize )
-            handle.mEntryDesc->FileSize = handle.mReadPos;
+        if( handle.mPos > handle.mEntryDesc->FileSize )
+            handle.mEntryDesc->FileSize = handle.mPos;
 
         return OFS_OK;
     }
 
 //------------------------------------------------------------------------------
 
-    ofs64 _OfsRfs::seekr(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
+    ofs64 _OfsRfs::seek(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
     {
         LOCK_AUTO_MUTEX
 
         if(!mActive)
         {
-            OFS_EXCEPT("_OfsRfs::seekr, Operation called on an unmounted file system.");
+            OFS_EXCEPT("_OfsRfs::seek, Operation called on an unmounted file system.");
             return 0;
         }
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_OfsRfs::seekr, Supplied OfsHandle is not valid.");
+            OFS_EXCEPT("_OfsRfs::seek, Supplied OfsHandle is not valid.");
             return 0;
         }
 
@@ -1565,84 +1565,30 @@ namespace OFS
                           break;
         }
 
-        handle.mReadPos = handle.mStream.tell();
+        handle.mPos = handle.mStream.tell();
 
-        return handle.mReadPos;
+        return handle.mPos;
     }
 
 //------------------------------------------------------------------------------
 
-    ofs64 _OfsRfs::seekw(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
+    ofs64 _OfsRfs::tell(OFSHANDLE& handle)
     {
         LOCK_AUTO_MUTEX
 
         if(!mActive)
         {
-            OFS_EXCEPT("_OfsRfs::seekw, Operation called on an unmounted file system.");
+            OFS_EXCEPT("_OfsRfs::tell, Operation called on an unmounted file system.");
             return 0;
         }
 
         if(!handle._valid())
         {
-            OFS_EXCEPT("_OfsRfs::seekw, Supplied OfsHandle is not valid.");
+            OFS_EXCEPT("_OfsRfs::tell, Supplied OfsHandle is not valid.");
             return 0;
         }
 
-        switch(dir)
-        {
-        case OFS_SEEK_BEGIN:handle.mStream.seek( pos, SEEK_SET);
-                            break;
-        case OFS_SEEK_CURRENT:handle.mStream.seek( pos, SEEK_CUR);
-                              break;
-        case OFS_SEEK_END:handle.mStream.seek( pos, SEEK_END);
-                          break;
-        }
-
-        handle.mReadPos = handle.mStream.tell();
-
-        return handle.mReadPos;
-    }
-
-//------------------------------------------------------------------------------
-
-    ofs64 _OfsRfs::tellr(OFSHANDLE& handle)
-    {
-        LOCK_AUTO_MUTEX
-
-        if(!mActive)
-        {
-            OFS_EXCEPT("_OfsRfs::tellr, Operation called on an unmounted file system.");
-            return 0;
-        }
-
-        if(!handle._valid())
-        {
-            OFS_EXCEPT("_OfsRfs::tellr, Supplied OfsHandle is not valid.");
-            return 0;
-        }
-
-        return handle.mReadPos;
-    }
-
-//------------------------------------------------------------------------------
-
-    ofs64 _OfsRfs::tellw(OFSHANDLE& handle)
-    {
-        LOCK_AUTO_MUTEX
-
-        if(!mActive)
-        {
-            OFS_EXCEPT("_OfsRfs::tellw, Operation called on an unmounted file system.");
-            return 0;
-        }
-
-        if(!handle._valid())
-        {
-            OFS_EXCEPT("_OfsRfs::tellw, Supplied OfsHandle is not valid.");
-            return 0;
-        }
-
-        return handle.mReadPos;
+        return handle.mPos;
     }
 
 //------------------------------------------------------------------------------

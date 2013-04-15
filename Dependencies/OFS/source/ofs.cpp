@@ -118,34 +118,27 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    void OFSHANDLE::_prepareReadWritePointers(bool append)
+    void OFSHANDLE::_preparePointers(bool append)
     {
         assert(mEntryDesc != NULL);
 
-        mReadPos = 0;
-        mReadBlock = 0;
-        mReadBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
-        mRealReadPos = mEntryDesc->UsedBlocks[0].Start + sizeof(_Ofs::strMainEntryHeader);
-        mWritePos = 0;
-        mWriteBlock = 0;
-        mWriteBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
-        mRealWritePos = mEntryDesc->UsedBlocks[0].Start + sizeof(_Ofs::strMainEntryHeader);
+        mPos = 0;
+        mBlock = 0;
+        mBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
+        mRealPos = mEntryDesc->UsedBlocks[0].Start + sizeof(_Ofs::strMainEntryHeader);
 
         if(append)
-            _setWritePos(mEntryDesc->FileSize);
+            _setPos(mEntryDesc->FileSize);
     }
 
 //------------------------------------------------------------------------------
 
-    void OFSHANDLE::_setWritePos(ofs64 value)
+    void OFSHANDLE::_setPos(ofs64 value)
     {
-        if(value > mEntryDesc->FileSize)
-            value = mEntryDesc->FileSize;
-
-        if(mWritePos != value)
+        if(mPos != value)
         {
-            mWritePos = value;
-            mWriteBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
+            mPos = value;
+            mBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
 
             ofs64 block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
             int i = 0;
@@ -158,57 +151,27 @@ namespace OFS
                 if(i != max_i)
                 {
                     block_size = mEntryDesc->UsedBlocks[i].Length - sizeof(_Ofs::strExtendedEntryHeader);
-                    mWriteBlockEnd = mEntryDesc->UsedBlocks[i].Start + mEntryDesc->UsedBlocks[i].Length;
+                    mBlockEnd = mEntryDesc->UsedBlocks[i].Start + mEntryDesc->UsedBlocks[i].Length;
+                }
+                else
+                {
+                    mPos -= value;
+                    value = 0;
                 }
             }
 
-            mWriteBlock = i;
+            mBlock = i;
             if(i == 0)
-                mRealWritePos = mEntryDesc->UsedBlocks[i].Start + sizeof(_Ofs::strMainEntryHeader) + value;
+                mRealPos = mEntryDesc->UsedBlocks[i].Start + sizeof(_Ofs::strMainEntryHeader) + value;
             else if(i == max_i)
-                mRealWritePos = mEntryDesc->UsedBlocks[i - 1].Start + mEntryDesc->UsedBlocks[i - 1].Length;
+                mRealPos = mEntryDesc->UsedBlocks[i - 1].Start + mEntryDesc->UsedBlocks[i - 1].Length;
             else
-                mRealWritePos = mEntryDesc->UsedBlocks[i].Start + sizeof(_Ofs::strExtendedEntryHeader) + value;
+                mRealPos = mEntryDesc->UsedBlocks[i].Start + sizeof(_Ofs::strExtendedEntryHeader) + value;
         }
     }
 
 //------------------------------------------------------------------------------
 
-    void OFSHANDLE::_setReadPos(ofs64 value)
-    {
-        if(value > mEntryDesc->FileSize)
-            value = mEntryDesc->FileSize;
-
-        if(mReadPos != value)
-        {
-            mReadPos = value;
-            mReadBlockEnd = mEntryDesc->UsedBlocks[0].Start + mEntryDesc->UsedBlocks[0].Length;
-
-            ofs64 block_size = mEntryDesc->UsedBlocks[0].Length - sizeof(_Ofs::strMainEntryHeader);
-            int i = 0;
-            ofs64 max_i = mEntryDesc->UsedBlocks.size();
-            while(block_size <= value)
-            {
-                value -= block_size;
-                i++;
-
-                if(i != max_i)
-                {
-                    block_size = mEntryDesc->UsedBlocks[i].Length - sizeof(_Ofs::strExtendedEntryHeader);
-                    mReadBlockEnd = mEntryDesc->UsedBlocks[i].Start + mEntryDesc->UsedBlocks[i].Length;
-                }
-            }
-
-            mReadBlock = i;
-            if(i == 0)
-                mRealReadPos = mEntryDesc->UsedBlocks[i].Start + sizeof(_Ofs::strMainEntryHeader) + value;
-            else if(i == max_i)
-                mRealReadPos = mEntryDesc->UsedBlocks[i - 1].Start + mEntryDesc->UsedBlocks[i - 1].Length;
-            else
-                mRealReadPos = mEntryDesc->UsedBlocks[i].Start + sizeof(_Ofs::strExtendedEntryHeader) + value;
-
-        }
-    }
 
 
 //------------------------------------------------------------------------------
