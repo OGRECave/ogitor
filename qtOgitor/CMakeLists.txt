@@ -96,8 +96,6 @@ else(NOT QT4_FOUND)
         ./src/uiterrainsquare.cpp
         ./include/userdefined.hxx
         ./src/userdefined.cpp
-        ./include/welcome.hxx
-        ./src/welcome.cpp
     )
 
     SET(MOC_SRCS2
@@ -135,7 +133,6 @@ else(NOT QT4_FOUND)
         ./include/terraintoolswidget.hxx
         ./include/uiterrainsquare.hxx
         ./include/userdefined.hxx
-        ./include/welcome.hxx
     )
 
     if(OGITOR_MESHMAGICK_INTERFACE)
