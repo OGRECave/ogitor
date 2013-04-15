@@ -59,6 +59,15 @@ const uint8 OLDDERIVED_DATA_LIGHTMAP = 4;
 // This MUST match the bitwise OR of all the types above with no extra bits!
 const uint8 OLDDERIVED_DATA_ALL = 7;
 
+class OgreTerrainOverride : public Ogre::Terrain
+{
+public:
+    void Sync()
+    {
+        waitForDerivedProcesses();
+    }
+};
+
 
 OgreTerrainConverter::OgreTerrainConverter()
 {
@@ -141,6 +150,7 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
 {
     mGlobalColourMapEnabled = false;
     mCpuColourMapStorage = 0;
+    mCpuCompositeMapStorage = 0;
     mHeightData = 0;
     mLightMapSize = 1024;
     mCompositeMapSize = 1024;
@@ -195,11 +205,14 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
 		uint16 sz;
 		stream_in.read(&sz);
 
-    	uint8* pData = static_cast<uint8*>(OGRE_MALLOC(sz * sz * 4, MEMCATEGORY_GENERAL));
         
         if (name == "normalmap")
 		{
-			stream_in.read(pData, sz * sz * 3);
+    	    uint8* pData = static_cast<uint8*>(OGRE_MALLOC(sz * sz, MEMCATEGORY_GENERAL));
+			stream_in.read(pData, sz * sz);
+			stream_in.read(pData, sz * sz);
+			stream_in.read(pData, sz * sz);
+            OGRE_FREE(pData, MEMCATEGORY_GENERAL);
 		}
 		else if (name == "colourmap")
 		{
@@ -211,16 +224,17 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
 		else if (name == "lightmap")
 		{
 			mLightMapSize = sz;
+    	    uint8* pData = static_cast<uint8*>(OGRE_MALLOC(sz * sz, MEMCATEGORY_GENERAL));
 			stream_in.read(pData, sz * sz);
+            OGRE_FREE(pData, MEMCATEGORY_GENERAL);
 		}
 		else if (name == "compositemap")
 		{
    			mCompositeMapSize = sz;
-			stream_in.read(pData, sz * sz * 4);
+            mCpuCompositeMapStorage = static_cast<uint8*>(OGRE_MALLOC(sz * sz * 4, MEMCATEGORY_GENERAL));
+			stream_in.read(mCpuCompositeMapStorage, sz * sz * 4);
 		}
-
-        OGRE_FREE(pData, MEMCATEGORY_GENERAL);
-
+        
         stream_in.readChunkEnd(OLDTERRAINDERIVEDDATA_CHUNK_ID);
 	}
 
@@ -235,6 +249,9 @@ void OgreTerrainConverter::freeResources()
 
 	OGRE_FREE(mCpuColourMapStorage, MEMCATEGORY_GENERAL);
 	mCpuColourMapStorage = 0;
+
+	OGRE_FREE(mCpuCompositeMapStorage, MEMCATEGORY_GENERAL);
+	mCpuCompositeMapStorage = 0;
 
     for( unsigned int i = 0; i < mCpuBlendMapStorage.size(); i++)
 	{
@@ -290,6 +307,21 @@ bool OgreTerrainConverter::Export(Ogre::StreamSerialiser& stream)
         terrain->setGlobalColourMapEnabled(true, mGlobalColourMapSize);
         PixelBox src(mGlobalColourMapSize, mGlobalColourMapSize, 1, PF_BYTE_RGB, mCpuColourMapStorage);
         terrain->getGlobalColourMap()->getBuffer()->blitFromMemory(src);
+    }
+
+    Ogre::Image img;
+
+    if( mCpuCompositeMapStorage != NULL )
+    {
+        //Well this is a hack, so that the CompositeMap processing is complete before we replace it, 
+        //or else the threaded creation will override what we blit
+        ((OgreTerrainOverride*)terrain)->Sync();
+        
+        PixelBox src(mCompositeMapSize, mCompositeMapSize, 1, PF_BYTE_RGBA, mCpuCompositeMapStorage);
+        terrain->getCompositeMap()->getBuffer()->blitFromMemory(src);
+        
+        terrain->getCompositeMap()->convertToImage(img);
+        img.save("c:\\Programming\\cmp_1.jpg");
     }
 
     terrain->save(stream);

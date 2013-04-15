@@ -72,6 +72,7 @@ protected:
 	Ogre::uint16 mGlobalColourMapSize;
 	bool mGlobalColourMapEnabled;
 	Ogre::uint8* mCpuColourMapStorage;
+    Ogre::uint8* mCpuCompositeMapStorage;
 
     Ogre::uint8 getBlendTextureCount(Ogre::uint8 numLayers);
     
