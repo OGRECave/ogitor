@@ -1796,7 +1796,7 @@ namespace OFS
         fileDesc->UseCount++;
         handle.mEntryDesc = fileDesc;
         handle.mAccessFlags = open_mode;
-        handle._prepareReadWritePointers((open_mode & OFS_APPEND) != 0);
+        handle._preparePointers((open_mode & OFS_APPEND) != 0);
 
         return OFS_OK;
     }
@@ -1876,7 +1876,7 @@ namespace OFS
         fileDesc->UseCount++;
         handle.mEntryDesc = fileDesc;
         handle.mAccessFlags = open_mode;
-        handle._prepareReadWritePointers((open_mode & OFS_APPEND) != 0);
+        handle._preparePointers((open_mode & OFS_APPEND) != 0);
 
         return OFS_OK;
     }
@@ -1951,7 +1951,7 @@ namespace OFS
 
         handle.mEntryDesc = fileDesc;
         handle.mAccessFlags = OFS_READWRITE;
-        handle._prepareReadWritePointers(true);
+        handle._preparePointers(true);
 
         for(unsigned int i = 0;i < mTriggers.size();i++)
         {
@@ -2046,31 +2046,31 @@ namespace OFS
         ofs64 trunc_pos = file_size;
 
         if(file_size < 0)
-            trunc_pos = handle.mWritePos;
+            trunc_pos = handle.mPos;
 
         if(trunc_pos < handle.mEntryDesc->FileSize)
         {
             OfsEntryDesc *desc = handle.mEntryDesc;
             desc->FileSize = trunc_pos;
-            handle._setWritePos(trunc_pos);
+            handle._setPos(trunc_pos);
 
-            for(unsigned int i = handle.mWriteBlock + 1;i < desc->UsedBlocks.size();i++)
+            for(unsigned int i = handle.mBlock + 1;i < desc->UsedBlocks.size();i++)
             {
                 _markUnused(desc->UsedBlocks[i]);
             }
 
-            while((handle.mWriteBlock + 1) < desc->UsedBlocks.size())
-                desc->UsedBlocks.erase(desc->UsedBlocks.begin() + (handle.mWriteBlock + 1));
+            while((handle.mBlock + 1) < desc->UsedBlocks.size())
+                desc->UsedBlocks.erase(desc->UsedBlocks.begin() + (handle.mBlock + 1));
 
             std::sort(mFreeBlocks.begin(), mFreeBlocks.end(), BlockCompare);
 
             mStream.seek(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, FileSize), OFS_SEEK_BEGIN);
             mStream.write((char*)&trunc_pos, sizeof(ofs64)); 
 
-            if(handle.mWriteBlock == 0)
+            if(handle.mBlock == 0)
                 mStream.seek(desc->UsedBlocks[0].Start + offsetof(strMainEntryHeader, NextBlock), OFS_SEEK_BEGIN);
             else
-                mStream.seek(desc->UsedBlocks[handle.mWriteBlock].Start + offsetof(strExtendedEntryHeader, NextBlock), OFS_SEEK_BEGIN);
+                mStream.seek(desc->UsedBlocks[handle.mBlock].Start + offsetof(strExtendedEntryHeader, NextBlock), OFS_SEEK_BEGIN);
 
             trunc_pos = 0;
             mStream.write((char*)&trunc_pos, sizeof(ofs64)); 
@@ -2216,12 +2216,12 @@ namespace OFS
 
         OfsEntryDesc *desc = handle.mEntryDesc;
 
-        if(desc->FileSize < (handle.mReadPos + length))
-            length = (unsigned int)(desc->FileSize - handle.mReadPos);
+        if(desc->FileSize < (handle.mPos + length))
+            length = (unsigned int)(desc->FileSize - handle.mPos);
 
         if(length > 0)
         {
-            ofs64 can_read = handle.mReadBlockEnd - handle.mRealReadPos;
+            ofs64 can_read = handle.mBlockEnd - handle.mRealPos;
             unsigned int tmp_len = length;
 
             bool done = false;
@@ -2229,20 +2229,20 @@ namespace OFS
             {
                 if(can_read >= tmp_len)
                 {
-                    mStream.seek(handle.mRealReadPos, OFS_SEEK_BEGIN);
+                    mStream.seek(handle.mRealPos, OFS_SEEK_BEGIN);
                     mStream.read(dest, tmp_len);
-                    handle._setReadPos(handle.mReadPos + tmp_len);
+                    handle._setPos(handle.mPos + tmp_len);
                     done = true;
                 }
                 else
                 {
-                    mStream.seek(handle.mRealReadPos, OFS_SEEK_BEGIN);
+                    mStream.seek(handle.mRealPos, OFS_SEEK_BEGIN);
                     mStream.read(dest, (unsigned int)can_read);
-                    handle._setReadPos(handle.mReadPos + can_read);
+                    handle._setPos(handle.mPos + can_read);
                     tmp_len -= (unsigned int)can_read;
                     dest += can_read;
 
-                    can_read = handle.mReadBlockEnd - handle.mRealReadPos;
+                    can_read = handle.mBlockEnd - handle.mRealPos;
                 }
             }
         }
@@ -2283,7 +2283,7 @@ namespace OFS
             for(unsigned int i = 1;i < desc->UsedBlocks.size();i++)
                 total_alloc += desc->UsedBlocks[i].Length - sizeof(strExtendedEntryHeader);
 
-            total_alloc -= handle.mWritePos;
+            total_alloc -= handle.mPos;
             unsigned int output_amount = length;
 
             if(total_alloc < length)
@@ -2301,29 +2301,29 @@ namespace OFS
                 output_amount = (unsigned int)total_alloc; 
             }
 
-            ofs64 write_pos_save = handle.mWritePos;
+            ofs64 write_pos_save = handle.mPos;
 
-            ofs64 can_write = handle.mWriteBlockEnd - handle.mRealWritePos;
+            ofs64 can_write = handle.mBlockEnd - handle.mRealPos;
 
             bool done = false;
             while(!done)
             {
                 if(can_write >= output_amount)
                 {
-                    mStream.seek(handle.mRealWritePos, OFS_SEEK_BEGIN);
+                    mStream.seek(handle.mRealPos, OFS_SEEK_BEGIN);
                     mStream.write(src, output_amount);
-                    handle._setWritePos(handle.mWritePos + output_amount);
+                    handle._setPos(handle.mPos + output_amount);
                     done = true;
                 }
                 else
                 {
-                    mStream.seek(handle.mRealWritePos, OFS_SEEK_BEGIN);
+                    mStream.seek(handle.mRealPos, OFS_SEEK_BEGIN);
                     mStream.write(src, (unsigned int)can_write);
-                    handle._setWritePos(handle.mWritePos + can_write);
+                    handle._setPos(handle.mPos + can_write);
                     output_amount -= (unsigned int)can_write;
                     src += can_write;
 
-                    can_write = handle.mWriteBlockEnd - handle.mRealWritePos;
+                    can_write = handle.mBlockEnd - handle.mRealPos;
                 }
             }
 
@@ -2335,7 +2335,7 @@ namespace OFS
                 mStream.flush();
             }
 
-            handle._setWritePos(write_pos_save + length);
+            handle._setPos(write_pos_save + length);
         }
 
         return OFS_OK;
@@ -2343,7 +2343,7 @@ namespace OFS
 
 //------------------------------------------------------------------------------
 
-    ofs64 _Ofs::seekr(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
+    ofs64 _Ofs::seek(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
     {
         LOCK_AUTO_MUTEX
 
@@ -2363,7 +2363,7 @@ namespace OFS
         {
         case OFS_SEEK_BEGIN:if(pos < 0) pos = 0;
                             break;
-        case OFS_SEEK_CURRENT:pos += handle.mReadPos;
+        case OFS_SEEK_CURRENT:pos += handle.mPos;
                               if(pos < 0) pos = 0;
                               break;
         case OFS_SEEK_END:pos += handle.mEntryDesc->FileSize;
@@ -2371,68 +2371,13 @@ namespace OFS
                           break;
         }
 
-        handle._setReadPos(pos);
-        return handle.mReadPos;
+        handle._setPos(pos);
+        return handle.mPos;
     }
 
 //------------------------------------------------------------------------------
 
-    ofs64 _Ofs::seekw(OFSHANDLE& handle, ofs64 pos, SeekDirection dir)
-    {
-        LOCK_AUTO_MUTEX
-
-        if(!mActive)
-        {
-            OFS_EXCEPT("_Ofs::seekw, Operation called on an unmounted file system.");
-            return 0;
-        }
-
-        if(!handle._valid())
-        {
-            OFS_EXCEPT("_Ofs::seekw, Supplied OfsHandle is not valid.");
-            return 0;
-        }
-
-        switch(dir)
-        {
-        case OFS_SEEK_BEGIN:if(pos < 0) pos = 0;
-                            break;
-        case OFS_SEEK_CURRENT:pos += handle.mWritePos;
-                              if(pos < 0) pos = 0;
-                              break;
-        case OFS_SEEK_END:pos += handle.mEntryDesc->FileSize;
-                          if(pos < 0) pos = 0;
-                          break;
-        }
-
-        handle._setWritePos(pos);
-        return handle.mWritePos;
-    }
-
-//------------------------------------------------------------------------------
-
-    ofs64 _Ofs::tellr(OFSHANDLE& handle)
-    {
-        LOCK_AUTO_MUTEX
-
-        if(!mActive)
-        {
-            OFS_EXCEPT("_Ofs::tellr, Operation called on an unmounted file system.");
-            return 0;
-        }
-
-        if(!handle._valid())
-        {
-            OFS_EXCEPT("_Ofs::tellr, Supplied OfsHandle is not valid.");
-            return 0;
-        }
-
-        return handle.mReadPos;
-    }
-
-//------------------------------------------------------------------------------
-
-    ofs64 _Ofs::tellw(OFSHANDLE& handle)
+    ofs64 _Ofs::tell(OFSHANDLE& handle)
     {
         LOCK_AUTO_MUTEX
 
@@ -2448,7 +2393,7 @@ namespace OFS
             return 0;
         }
 
-        return handle.mWritePos;
+        return handle.mPos;
     }
 
 //------------------------------------------------------------------------------
@@ -2469,7 +2414,7 @@ namespace OFS
             return 0;
         }
 
-        return (handle.mReadPos >= handle.mEntryDesc->FileSize);
+        return (handle.mPos >= handle.mEntryDesc->FileSize);
     }
 
 //------------------------------------------------------------------------------
