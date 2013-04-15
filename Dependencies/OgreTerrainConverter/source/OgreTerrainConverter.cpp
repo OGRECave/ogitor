@@ -31,6 +31,9 @@
 ///////////////////////////////////////////////////////////////////////////////////*/
 
 #include "OgreTerrainConverter.h"
+#include "OgreTerrainQuadTreeNode.h"
+#include "OgreHardwarePixelBuffer.h"
+#include "OgreRoot.h"
 
 using namespace Ogre;
 
@@ -56,15 +59,21 @@ const uint8 OLDDERIVED_DATA_LIGHTMAP = 4;
 // This MUST match the bitwise OR of all the types above with no extra bits!
 const uint8 OLDDERIVED_DATA_ALL = 7;
 
-typedef vector<uint8*>::type BytePointerList;
 
+OgreTerrainConverter::OgreTerrainConverter()
+{
+}
 
-uint8 getBlendTextureCount(uint8 numLayers)
+OgreTerrainConverter::~OgreTerrainConverter()
+{
+}
+
+uint8 OgreTerrainConverter::getBlendTextureCount(uint8 numLayers)
 {
 	return ((numLayers - 1) / 4) + 1;
 }
 
-bool readLayerDeclaration(StreamSerialiser& stream, TerrainLayerDeclaration& targetdecl)
+bool OgreTerrainConverter::readLayerDeclaration(StreamSerialiser& stream, TerrainLayerDeclaration& targetdecl)
 {
 	if (!stream.readChunkBegin(OLDTERRAINLAYERDECLARATION_CHUNK_ID, OLDTERRAINLAYERDECLARATION_CHUNK_VERSION))
 		return false;
@@ -106,7 +115,7 @@ bool readLayerDeclaration(StreamSerialiser& stream, TerrainLayerDeclaration& tar
 }
 
 
-bool readLayerInstanceList(StreamSerialiser& stream, size_t numSamplers, Terrain::LayerInstanceList& targetlayers)
+bool OgreTerrainConverter::readLayerInstanceList(StreamSerialiser& stream, size_t numSamplers, Terrain::LayerInstanceList& targetlayers)
 {
 	uint8 numLayers;
 	stream.read(&numLayers);
@@ -130,28 +139,15 @@ bool readLayerInstanceList(StreamSerialiser& stream, size_t numSamplers, Terrain
 
 bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser& stream_out)
 {
-	float* mHeightData;
-	Real mWorldSize;
-	uint16 mSize;
-	uint16 mMaxBatchSize;
-	uint16 mMinBatchSize;
-	Vector3 mPos;
-    TerrainLayerDeclaration mLayerDecl;
-    Terrain::LayerInstanceList mLayers;
-	uint16 mLayerBlendMapSize;
-	uint16 mLayerBlendMapSizeActual;
-	BytePointerList mCpuBlendMapStorage;
-	uint16 mGlobalColourMapSize;
-	bool mGlobalColourMapEnabled;
-	uint8* mCpuColourMapStorage;
+    mGlobalColourMapEnabled = false;
+    mCpuColourMapStorage = 0;
+    mHeightData = 0;
 
-
-    
     if (!stream_in.readChunkBegin(OLDTERRAIN_CHUNK_ID, OLDTERRAIN_CHUNK_VERSION))
 		return false;
 
-	uint8 align;
-	stream_in.read(&align);
+	
+	stream_in.read(&mAlign);
 	stream_in.read(&mSize);
 	stream_in.read(&mWorldSize);
 
@@ -225,5 +221,71 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
         stream_in.readChunkEnd(OLDTERRAINDERIVEDDATA_CHUNK_ID);
 	}
 
-	return true;
+	return Export(stream_out);
+}
+
+
+void OgreTerrainConverter::freeResources()
+{
+	OGRE_FREE(mHeightData, MEMCATEGORY_GEOMETRY);
+	mHeightData = 0;
+
+	OGRE_FREE(mCpuColourMapStorage, MEMCATEGORY_GENERAL);
+	mCpuColourMapStorage = 0;
+
+    for( unsigned int i = 0; i < mCpuBlendMapStorage.size(); i++)
+	{
+		OGRE_FREE(mCpuBlendMapStorage[i], MEMCATEGORY_RESOURCE);
+	}
+
+    mCpuBlendMapStorage.clear();
+}
+
+bool OgreTerrainConverter::Export(Ogre::StreamSerialiser& stream)
+{
+    Ogre::TerrainGlobalOptions *mTerrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
+
+    mTerrainGlobalOptions->setLayerBlendMapSize(mLayerBlendMapSize);
+    mTerrainGlobalOptions->setUseVertexCompressionWhenAvailable(false);
+
+
+    SceneManager *OSM = Root::getSingletonPtr()->getSceneManagerIterator().begin()->second;
+    
+    Terrain *terrain = OGRE_NEW Terrain(OSM);
+
+    Terrain::ImportData data;
+
+    data.inputFloat = mHeightData;
+    data.layerDeclaration = mLayerDecl;
+    data.layerList = mLayers;
+    data.maxBatchSize = mMaxBatchSize;
+    data.minBatchSize = mMinBatchSize;
+    data.pos = mPos;
+    data.terrainAlign = (Terrain::Alignment)mAlign;
+    data.terrainSize = mSize;
+    data.worldSize = mWorldSize;
+    
+    terrain->prepare(data);
+    terrain->load(0);
+
+    for( unsigned int i = 0; i < mCpuBlendMapStorage.size(); i++)
+	{
+    	PixelBox src(mLayerBlendMapSize, mLayerBlendMapSize, 1, PF_BYTE_RGBA, mCpuBlendMapStorage[i]);
+        terrain->getLayerBlendTexture(i)->getBuffer()->blitFromMemory(src);
+	}
+
+    if( mGlobalColourMapEnabled)
+    {
+        terrain->setGlobalColourMapEnabled(true, mGlobalColourMapSize);
+        PixelBox src(mGlobalColourMapSize, mGlobalColourMapSize, 1, PF_BYTE_RGB, mCpuColourMapStorage);
+        terrain->getGlobalColourMap()->getBuffer()->blitFromMemory(src);
+    }
+
+    terrain->save(stream);
+
+    OGRE_DELETE terrain;
+
+    freeResources();
+
+    return true;
 }

@@ -948,33 +948,19 @@ typedef off_t ofs64;
         */
         virtual OfsResult    write(OFSHANDLE& handle, const char *src, unsigned int length) = 0;
         /**
-        * Sets Read Position in a file
+        * Sets Position in a file
         * @param handle handle of the file
         * @param pos relative position to set
         * @param dir direction of seek operation
         * @return Returns final read position
         */
-        virtual ofs64 seekr(OFSHANDLE& handle, ofs64 pos, SeekDirection dir) = 0;
-        /**
-        * Sets Write Position in a file
-        * @param handle handle of the file
-        * @param pos relative position to set
-        * @param dir direction of seek operation
-        * @return Returns final write position
-        */
-        virtual ofs64 seekw(OFSHANDLE& handle, ofs64 pos, SeekDirection dir) = 0;
+        virtual ofs64 seek(OFSHANDLE& handle, ofs64 pos, SeekDirection dir) = 0;
         /**
         * Retrieves Current Read Position in a file
         * @param handle handle of the file
         * @return Returns current read position
         */
-        virtual ofs64 tellr(OFSHANDLE& handle) = 0;
-        /**
-        * Retrieves Current Write Position in a file
-        * @param handle handle of the file
-        * @return Returns current write position
-        */
-        virtual ofs64 tellw(OFSHANDLE& handle) = 0;
+        virtual ofs64 tell(OFSHANDLE& handle) = 0;
         /**
         * Checks if Read Pointer is at the End Of File
         * @param handle handle of the file
@@ -1042,8 +1028,7 @@ typedef off_t ofs64;
         friend class _OfsRfs;
     public:
 
-        OFSHANDLE() : mEntryDesc(NULL), mAccessFlags(0), mReadBlock(0), mReadBlockEnd(0), mReadPos(0), mRealReadPos(0), 
-                      mWriteBlock(0), mWriteBlockEnd(0), mWritePos(0), mRealWritePos(0) {}
+        OFSHANDLE() : mEntryDesc(NULL), mAccessFlags(0), mBlock(0), mBlockEnd(0), mPos(0), mRealPos(0) {}
         ~OFSHANDLE() { };
 
         inline unsigned int getAcessFlags() const { return mAccessFlags; };
@@ -1058,18 +1043,13 @@ typedef off_t ofs64;
         _OfsBase::OfsEntryDesc *mEntryDesc;
         FileStream    mStream;
         unsigned int  mAccessFlags;
-        unsigned int  mReadBlock;
-        unsigned int  mWriteBlock;
+        unsigned int  mBlock;
 
-        ofs64         mReadBlockEnd;
-        ofs64         mReadPos;
-        ofs64         mRealReadPos;
+        ofs64         mBlockEnd;
+        ofs64         mPos;
+        ofs64         mRealPos;
 
-        ofs64         mWriteBlockEnd;
-        ofs64         mWritePos;
-        ofs64         mRealWritePos;
-
-        OFSHANDLE(_OfsBase::OfsEntryDesc *_entryDesc) : mEntryDesc(_entryDesc), mAccessFlags(0), mReadBlock(0), mReadPos(0), mRealReadPos(0), mWriteBlock(0), mWritePos(0), mRealWritePos(0) 
+        OFSHANDLE(_OfsBase::OfsEntryDesc *_entryDesc) : mEntryDesc(_entryDesc), mAccessFlags(0), mBlock(0), mPos(0), mRealPos(0)
         {
         };
 
@@ -1077,19 +1057,13 @@ typedef off_t ofs64;
         * Prepares Read and Write pointers' initial positions
         * @param append pass true to set write pointer to end of file 
         */
-        void  _prepareReadWritePointers(bool append);
+        void  _preparePointers(bool append);
 
         /**
-        * Sets the Write pointer position
+        * Sets the pointer position
         * @param value New write position
         */
-        void _setWritePos(ofs64 value);
-
-        /**
-        * Sets the Read pointer position
-        * @param value New read position
-        */
-        void _setReadPos(ofs64 value);
+        void _setPos(ofs64 value);
 
     private:
 
