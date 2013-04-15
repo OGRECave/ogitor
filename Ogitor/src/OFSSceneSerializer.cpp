@@ -38,6 +38,9 @@
 #include "OgitorsSystem.h"
 #include "OFSSceneSerializer.h"
 #include "OgreTerrainConverter.h"
+#include "OgreDeflate.h"
+#include "OFSDataStream.h"
+#include "OgreRoot.h"
 
 #include "ofs.h"
 
@@ -186,14 +189,20 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
             mSystem->DisplayMessageDialog(mSystem->Translate("OGSCENE files with version 1 cannot be upgraded automatically. Please contact the Ogitor team for further details."), DLGTYPE_OK);
             return SCF_ERRPARSE;
         }
+
         if(version > 1)
-            if(!mSystem->CopyFile(importfile, importfile + ".backup"))
+        {
+            if((mFile->getFileSystemType() == OFS::OFS_PACKED) && (!mSystem->CopyFile(importfile, importfile + ".backup")))
                 mSystem->DisplayMessageDialog(mSystem->Translate("Error while trying to create backup file."), DLGTYPE_OK);
-        
+        }
         switch(version)
         {
          case 2:
             _upgradeOgsceneFileFrom2To3(ogitorSceneNode);
+            _upgradeOgsceneFileFrom3To4(ogitorSceneNode);
+            break;
+         case 3:
+            _upgradeOgsceneFileFrom3To4(ogitorSceneNode);
             break;
         }
 
@@ -320,9 +329,9 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         mSystem->DisplayMessageDialog(mSystem->Translate("Could not create objects of types:\n" + invalidTypesResultString), DLGTYPE_OK);
     }
 
-    // Save directly after upgrade
-    if(upgradeExecuted)
-        Export(false, importfile);
+    //// Save directly after upgrade
+    //if(upgradeExecuted)
+    //    Export(false, importfile);
 
     ogRoot->AfterLoadScene();
 
@@ -494,28 +503,56 @@ void Ogitors::COFSSceneSerializer::_upgradeOgsceneFileFrom3To4(TiXmlNode* ogscen
 {
     TiXmlElement* element = ogsceneRootNode->FirstChildElement();   
 
-        //Ogre::String terrainDir = "/" + mOgitorsRoot->GetProjectOptions()->TerrainDirectory + "/terrain/";
-        //Ogre::String filenameorig = terrainDir + terGroup->generateFilename(mPageX->get(), mPageY->get());
-        //Ogre::String filenamebackup = filenameorig + ".backup";
+    OFS::OfsPtr& mFile = OgitorsRoot::getSingletonPtr()->GetProjectFile();
+    OgitorsSystem *mSystem = OgitorsSystem::getSingletonPtr();
 
-        //mOgitorsRoot->GetProjectFile()->renameFile( filenameorig.c_str(), filenamebackup.c_str() );
+    OFS::FileList list;
+    mFile->listFilesRecursive("/", list);
 
-        //OFS::OFSHANDLE *filebackup = new OFS::OFSHANDLE();
-        //OFS::OFSHANDLE *fileorig = new OFS::OFSHANDLE();
+    Ogre::StringVector terFiles;
 
-        //mOgitorsRoot->GetProjectFile()->createFile(*fileorig, filenameorig.c_str());
-        //mOgitorsRoot->GetProjectFile()->openFile(*filebackup, filenamebackup.c_str(), OFS::OFS_READ);
+    for( unsigned int i = 0;i < list.size(); i++ )
+    {
+        if(list[i].flags && OFS::OFS_FILE)
+        {
+            if(list[i].name.substr(list[i].name.size() - 4, 4) == ".ogt")
+            {
+                terFiles.push_back( list[i].name );
+            }
+        }
+    }
 
-        //{
-        //    OgreTerrainConverter conv;
+    if( terFiles.size() > 0 )
+    {
+        Ogre::SceneManager *pUpgSM = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", "UpgradeSCM");
 
-        //    Ogre::DataStreamPtr stream_in = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), filebackup));
-        //    Ogre::DataStreamPtr stream_out = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), fileorig));
-        //    Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filenameorig, stream_in));
-        //    Ogre::StreamSerialiser ser_in(compressStream);
-        //    Ogre::StreamSerialiser ser_out(stream_out);
+        for( unsigned int i = 0;i < terFiles.size(); i++ )
+        {
+            Ogre::String filenameorig = terFiles[i];
+            Ogre::String filenamebackup = filenameorig + ".backup";
 
-        //    conv.Upgrade( ser_in, ser_out );
-        //}
+            mFile->renameFile( filenameorig.c_str(), filenamebackup.c_str() );
+
+            OFS::OFSHANDLE *filebackup = new OFS::OFSHANDLE();
+            OFS::OFSHANDLE *fileorig = new OFS::OFSHANDLE();
+
+            mFile->createFile(*fileorig, filenameorig.c_str());
+            mFile->openFile(*filebackup, filenamebackup.c_str(), OFS::OFS_READ);
+
+            {
+                OgreTerrainConverter conv;
+
+                Ogre::DataStreamPtr stream_in = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mFile, filebackup));
+                Ogre::DataStreamPtr stream_out = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mFile, fileorig));
+                Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filenameorig, stream_in));
+                Ogre::StreamSerialiser ser_in(compressStream);
+                Ogre::StreamSerialiser ser_out(stream_out);
+
+                conv.Upgrade( ser_in, ser_out );
+            }
+        }
+
+        Ogre::Root::getSingletonPtr()->destroySceneManager(pUpgSM);
+    }
 }
 //-----------------------------------------------------------------------------
