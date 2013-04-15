@@ -319,9 +319,6 @@ bool OgreTerrainConverter::Export(Ogre::StreamSerialiser& stream)
         
         PixelBox src(mCompositeMapSize, mCompositeMapSize, 1, PF_BYTE_RGBA, mCpuCompositeMapStorage);
         terrain->getCompositeMap()->getBuffer()->blitFromMemory(src);
-        
-        terrain->getCompositeMap()->convertToImage(img);
-        img.save("c:\\Programming\\cmp_1.jpg");
     }
 
     terrain->save(stream);
