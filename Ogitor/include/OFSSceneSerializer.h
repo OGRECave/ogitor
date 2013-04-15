@@ -75,6 +75,7 @@ namespace Ogitors
     private:
         int  _writeFile(Ogre::String exportfile = "", const bool forceSave=true);
         void _upgradeOgsceneFileFrom2To3(TiXmlNode* ogsceneRootNode);
+        void _upgradeOgsceneFileFrom3To4(TiXmlNode* ogsceneRootNode);
     };
 };
 

@@ -52,6 +52,35 @@ public:
     ~OgreTerrainConverter();
 
     bool Upgrade(Ogre::StreamSerialiser& stream_in, Ogre::StreamSerialiser& stream_out);
+
+protected:
+    typedef Ogre::vector<Ogre::uint8*>::type BytePointerList;
+
+	float* mHeightData;
+    Ogre::uint8 mAlign;
+	Ogre::Real mWorldSize;
+	Ogre::uint16 mSize;
+	Ogre::uint16 mMaxBatchSize;
+	Ogre::uint16 mMinBatchSize;
+	Ogre::Vector3 mPos;
+    Ogre::TerrainLayerDeclaration mLayerDecl;
+    Ogre::Terrain::LayerInstanceList mLayers;
+	Ogre::uint16 mLayerBlendMapSize;
+	Ogre::uint16 mLayerBlendMapSizeActual;
+	BytePointerList mCpuBlendMapStorage;
+	Ogre::uint16 mGlobalColourMapSize;
+	bool mGlobalColourMapEnabled;
+	Ogre::uint8* mCpuColourMapStorage;
+
+    Ogre::uint8 getBlendTextureCount(Ogre::uint8 numLayers);
+    
+    bool readLayerDeclaration(Ogre::StreamSerialiser& stream, Ogre::TerrainLayerDeclaration& targetdecl);
+    
+    bool readLayerInstanceList(Ogre::StreamSerialiser& stream, size_t numSamplers, Ogre::Terrain::LayerInstanceList& targetlayers);
+
+    void freeResources();
+
+    bool Export(Ogre::StreamSerialiser& stream);
 };
 
 

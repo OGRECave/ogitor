@@ -437,33 +437,19 @@ namespace OFS
         */
         OfsResult    write(OFSHANDLE& handle, const char *src, unsigned int length);
         /**
-        * Sets Read Position in a file
+        * Sets Position in a file
         * @param handle handle of the file
         * @param pos relative position to set
         * @param dir direction of seek operation
         * @return Returns final read position
         */
-        ofs64 seekr(OFSHANDLE& handle, ofs64 pos, SeekDirection dir);
+        ofs64 seek(OFSHANDLE& handle, ofs64 pos, SeekDirection dir);
         /**
-        * Sets Write Position in a file
-        * @param handle handle of the file
-        * @param pos relative position to set
-        * @param dir direction of seek operation
-        * @return Returns final write position
-        */
-        ofs64 seekw(OFSHANDLE& handle, ofs64 pos, SeekDirection dir);
-        /**
-        * Retrieves Current Read Position in a file
+        * Retrieves Current Position in a file
         * @param handle handle of the file
         * @return Returns current read position
         */
-        ofs64 tellr(OFSHANDLE& handle);
-        /**
-        * Retrieves Current Write Position in a file
-        * @param handle handle of the file
-        * @return Returns current write position
-        */
-        ofs64 tellw(OFSHANDLE& handle);
+        ofs64 tell(OFSHANDLE& handle);
         /**
         * Checks if Read Pointer is at the End Of File
         * @param handle handle of the file
