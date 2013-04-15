@@ -1555,9 +1555,10 @@ bool findScriptFile(QString &filename)
         return true;
 
     Ogre::String fileN = OgitorsUtils::ExtractFileName(filename.toStdString());
-    Ogre::String file = OgitorsUtils::QualifyPath("../Scripts/" + fileN);
+    //Ogre::String file = OgitorsUtils::QualifyPath("../Scripts/" + fileN);
     //Ogre::String file = OgitorsUtils::QualifyPath(Ogitors::Globals::SCRIPTS_PATH + "/" + fileN);
     //FIXME: how do we deal with scripts embedded in OFS?
+    Ogre::String file = fileN;
 
     if(QFile(file.c_str()).exists())
     {
