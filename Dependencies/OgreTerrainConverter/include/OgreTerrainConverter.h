@@ -66,7 +66,8 @@ protected:
     Ogre::TerrainLayerDeclaration mLayerDecl;
     Ogre::Terrain::LayerInstanceList mLayers;
 	Ogre::uint16 mLayerBlendMapSize;
-	Ogre::uint16 mLayerBlendMapSizeActual;
+	Ogre::uint16 mLightMapSize;
+	Ogre::uint16 mCompositeMapSize;
 	BytePointerList mCpuBlendMapStorage;
 	Ogre::uint16 mGlobalColourMapSize;
 	bool mGlobalColourMapEnabled;
