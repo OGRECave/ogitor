@@ -66,9 +66,10 @@ namespace Ogitors
     r = engine->RegisterObjectMethod(name, "string getTypeName()", asMETHODPR(classname, getTypeName, (), std::string), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "int getType()", asMETHODPR(classname, getEditorType, (), Ogitors::EDITORTYPE), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "int getID()", asMETHODPR(classname, getObjectID, (), unsigned int), asCALL_THISCALL);assert(r >= 0);\
-    r = engine->RegisterObjectMethod(name, "OgitorsPropertySet@ getProperties()", asMETHOD(classname, getProperties), asCALL_THISCALL);assert(r >= 0);\
-    r = engine->RegisterObjectMethod(name, "OgitorsCustomPropertySet@ getCustomProperties()", asMETHOD(classname, getCustomProperties), asCALL_THISCALL);assert(r >= 0);\
-    r = engine->RegisterObjectMethod(name, "OgitorsPropertyBase@ getProperty(const string &in)", asMETHOD(classname, getProperty), asCALL_THISCALL);assert(r >= 0);\
+    r = engine->RegisterObjectMethod(name, "PropertySet@ getProperties()", asMETHOD(classname, getProperties), asCALL_THISCALL);assert(r >= 0);\
+    r = engine->RegisterObjectMethod(name, "CustomPropertySet@ getCustomProperties()", asMETHOD(classname, getCustomProperties), asCALL_THISCALL);assert(r >= 0);\
+    r = engine->RegisterObjectMethod(name, "Property@ getProperty(string &in)", asMETHOD(classname, getProperty), asCALL_THISCALL);assert(r >= 0);\
+    r = engine->RegisterObjectMethod(name, "bool hasProperty(string &in)", asMETHOD(classname, hasProperty), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "bool getModified()", asMETHODPR(classname, isModified, (), bool), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "bool getLoaded()", asMETHODPR(classname, isLoaded, (), bool), asCALL_THISCALL);assert(r >= 0);\
     r = engine->RegisterObjectMethod(name, "BaseEditor@ getParent()", asMETHODPR(classname, getParent, (), CBaseEditor*), asCALL_THISCALL);assert(r >= 0);\
