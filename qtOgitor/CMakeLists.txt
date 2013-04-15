@@ -22,6 +22,8 @@ else(NOT QT4_FOUND)
     file(GLOB UI_FILES *.ui)
 
     set(SRCS
+        ./include/application.hxx
+        ./src/application.cpp
         ./include/aboutdialog.hxx
         ./src/aboutdialog.cpp
         ./include/actiontoolbar.hxx
@@ -99,6 +101,7 @@ else(NOT QT4_FOUND)
     )
 
     SET(MOC_SRCS2
+        ./include/application.hxx
         ./include/aboutdialog.hxx
         ./include/actiontoolbar.hxx
         ./include/addscriptactiondialog.hxx
