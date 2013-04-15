@@ -220,6 +220,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/vector3"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/debugger"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OgreTerrainConverter/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
@@ -329,6 +330,7 @@ add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
 add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
+add_subdirectory(Dependencies/OgreTerrainConverter)
 add_subdirectory(Dependencies/ImageConverter)
 add_subdirectory(Dependencies/GenericTextEditor)
 add_subdirectory(Dependencies/GenericImageEditor)

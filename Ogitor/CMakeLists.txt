@@ -150,7 +150,7 @@ set_target_properties(Ogitor PROPERTIES COMPILE_DEFINITIONS "${OGITOR_PREPROCESS
 message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 
 message(STATUS ${OGRE_LIBRARY})
-target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
+target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS OgreTerrainConverter ${Boost_LIBRARIES})
 
 # specify a precompiled header to use
 use_precompiled_header(Ogitor 
