@@ -142,6 +142,8 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
     mGlobalColourMapEnabled = false;
     mCpuColourMapStorage = 0;
     mHeightData = 0;
+    mLightMapSize = 1024;
+    mCompositeMapSize = 1024;
 
     if (!stream_in.readChunkBegin(OLDTERRAIN_CHUNK_ID, OLDTERRAIN_CHUNK_VERSION))
 		return false;
@@ -170,7 +172,6 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
 	// Packed layer blend data
 	uint8 numLayers = (uint8)mLayers.size();
 	stream_in.read(&mLayerBlendMapSize);
-	mLayerBlendMapSizeActual = mLayerBlendMapSize; // for now, until we check
 	// load packed CPU data
 	int numBlendTex = getBlendTextureCount(numLayers);
 	for (int i = 0; i < numBlendTex; ++i)
@@ -209,10 +210,12 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
 		}
 		else if (name == "lightmap")
 		{
+			mLightMapSize = sz;
 			stream_in.read(pData, sz * sz);
 		}
 		else if (name == "compositemap")
 		{
+   			mCompositeMapSize = sz;
 			stream_in.read(pData, sz * sz * 4);
 		}
 
@@ -244,10 +247,18 @@ void OgreTerrainConverter::freeResources()
 bool OgreTerrainConverter::Export(Ogre::StreamSerialiser& stream)
 {
     Ogre::TerrainGlobalOptions *mTerrainGlobalOptions = Ogre::TerrainGlobalOptions::getSingletonPtr();
+    bool mFreeGlobalOptions = false;
+
+    if( mTerrainGlobalOptions == NULL )
+    {
+        mTerrainGlobalOptions = OGRE_NEW Ogre::TerrainGlobalOptions();
+        mFreeGlobalOptions = true;
+    }
 
     mTerrainGlobalOptions->setLayerBlendMapSize(mLayerBlendMapSize);
     mTerrainGlobalOptions->setUseVertexCompressionWhenAvailable(false);
-
+    mTerrainGlobalOptions->setLightMapSize(mLightMapSize);
+    mTerrainGlobalOptions->setCompositeMapSize(mCompositeMapSize);
 
     SceneManager *OSM = Root::getSingletonPtr()->getSceneManagerIterator().begin()->second;
     
@@ -284,6 +295,9 @@ bool OgreTerrainConverter::Export(Ogre::StreamSerialiser& stream)
     terrain->save(stream);
 
     OGRE_DELETE terrain;
+
+    if( mFreeGlobalOptions )
+        OGRE_DELETE mTerrainGlobalOptions;
 
     freeResources();
 
