@@ -1554,11 +1554,7 @@ bool findScriptFile(QString &filename)
     if(QFile(filename).exists())
         return true;
 
-    Ogre::String fileN = OgitorsUtils::ExtractFileName(filename.toStdString());
-    //Ogre::String file = OgitorsUtils::QualifyPath("../Scripts/" + fileN);
-    //Ogre::String file = OgitorsUtils::QualifyPath(Ogitors::Globals::SCRIPTS_PATH + "/" + fileN);
-    //FIXME: how do we deal with scripts embedded in OFS?
-    Ogre::String file = fileN;
+    Ogre::String file = OgitorsUtils::ExtractFileName(filename.toStdString());
 
     if(QFile(file.c_str()).exists())
     {
@@ -1568,7 +1564,7 @@ bool findScriptFile(QString &filename)
 
     if(OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
     {
-        filename = QString("proj:/Scripts/") + QString(fileN.c_str());
+        filename = QString("proj:/Scripts/") + QString(file.c_str());
 
         return true;
     }
