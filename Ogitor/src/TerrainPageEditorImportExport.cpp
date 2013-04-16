@@ -503,8 +503,9 @@ bool CTerrainPageEditor::calculateBlendMap()
             if(!(params[ids + "img"].empty()))
             {
                 Ogre::String mTextureDiffuse = params[ids + "img"];
-                Ogre::String mTextureNormal = "";
-    
+                Ogre::String mTextureNormal = params[ids + "img"];
+                mTextureNormal = Ogre::StringUtil::replaceAll(mTextureNormal, "_diffusespecular", "_normalheight");
+
                 int pos = mTextureDiffuse.find(";");
                 if(pos != -1)
                 {
