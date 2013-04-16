@@ -539,11 +539,15 @@ bool CTerrainPageEditor::calculateBlendMap()
 
             }
             else
-                break;
+                if(i < mLayerCount->get())
+                    _deleteLayer(i);
         }
 
         while(i < mLayerCount->get())
+        {
             _deleteLayer(i);
+            i++;
+        }
 
         if(layerdata.size() > 0)
         {
