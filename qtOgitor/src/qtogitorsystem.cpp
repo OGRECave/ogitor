@@ -824,7 +824,7 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             params[keyst + "sr"] = mCalcBlendmapDlg->sr5->text().toStdString();
         }
 
-        return (position > 0);
+        return true;
     }
     else
         return false;
