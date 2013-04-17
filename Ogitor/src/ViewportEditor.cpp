@@ -402,7 +402,7 @@ void CViewportEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mCamViewMode    , "camera::viewmode"  ,int              ,CVM_FREE                ,0, SETTER(int, CViewportEditor, _setCamViewMode));
     PROPERTY_PTR(mCamPosition    , "camera::position"  ,Ogre::Vector3    ,Ogre::Vector3::ZERO     ,0, SETTER(Ogre::Vector3, CViewportEditor, _setCamPosition));
     PROPERTY_PTR(mCamOrientation , "camera::orientation",Ogre::Quaternion,Ogre::Quaternion::IDENTITY,0, SETTER(Ogre::Quaternion, CViewportEditor, _setCamOrientation));
-    PROPERTY_PTR(mCamClipDistance, "camera::clipdistance",Ogre::Vector2  ,Ogre::Vector2(1,3000)   ,0, SETTER(Ogre::Vector2, CViewportEditor, _setCamClipDistance));
+    PROPERTY_PTR(mCamClipDistance, "camera::clipdistance",Ogre::Vector2  ,Ogre::Vector2(0.1f,9000.0f)   ,0, SETTER(Ogre::Vector2, CViewportEditor, _setCamClipDistance));
     PROPERTY_PTR(mCamPolyMode    , "camera::polymode"  ,int              ,Ogre::PM_SOLID          ,0, SETTER(int, CViewportEditor, _setCamPolyMode));
     PROPERTY_PTR(mCamFOV         , "camera::fov"       ,Ogre::Real       ,1.0f                    ,0, SETTER(Ogre::Real, CViewportEditor, _setCamFOV));
 

@@ -456,7 +456,7 @@ void CCameraEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mPosition, "position",Ogre::Vector3,Ogre::Vector3::ZERO,0,SETTER(Ogre::Vector3, CCameraEditor, _setPosition));
     PROPERTY_PTR(mOrientation, "orientation",Ogre::Quaternion,Ogre::Quaternion::IDENTITY,0,SETTER(Ogre::Quaternion, CCameraEditor, _setOrientation));
     PROPERTY_PTR(mAutoAspectRatio, "autoaspectratio", bool, true, 0, SETTER(bool, CCameraEditor, _setAutoAspectRatio));
-    PROPERTY_PTR(mClipDistance, "clipdistance",Ogre::Vector2,Ogre::Vector2(0.1f,1000.0f),0,SETTER(Ogre::Vector2, CCameraEditor, _setClipDistance));
+    PROPERTY_PTR(mClipDistance, "clipdistance",Ogre::Vector2,Ogre::Vector2(0.1f,9000.0f),0,SETTER(Ogre::Vector2, CCameraEditor, _setClipDistance));
     PROPERTY_PTR(mFOV, "fov",Ogre::Real,1.0f,0, SETTER(Ogre::Real, CCameraEditor, _setFOV));
     PROPERTY_PTR(mAutoTrackTarget, "autotracktarget",Ogre::String,"None",0,SETTER(Ogre::String, CCameraEditor, _setAutoTrackTarget));
     PROPERTY_PTR(mPolygonMode, "polygonmode",int,Ogre::PM_SOLID,0,SETTER(int, CCameraEditor, _setPolygonMode));
