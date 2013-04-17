@@ -222,7 +222,7 @@ void CViewportEditor::setCameraEditor(CCameraEditor *camed)
     mCamFOV->initAndSignal(fval);
     mActiveCamera->getProperties()->getValue("polygonmode", ival);
     mCamPolyMode->initAndSignal(ival);
-    if(ival != Ogitors::SHADED)
+    if(ival != Ogre::PM_SOLID)
         mHandle->setVisibilityMask(0x7FFFFFFF);
     else
         mHandle->setVisibilityMask(0xFFFFFFFF);
@@ -358,7 +358,7 @@ bool CViewportEditor::_setCamPolyMode(OgitorsPropertyBase* property, const int& 
     if(mViewCamera)
     {
         mViewCamera->setPolygonMode(value);
-        if(value != Ogitors::TEXTURED)
+        if(value != Ogre::PM_SOLID)
             mHandle->setVisibilityMask(0x7FFFFFFF);
         else
             mHandle->setVisibilityMask(0xFFFFFFFF);
@@ -403,7 +403,7 @@ void CViewportEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mCamPosition    , "camera::position"  ,Ogre::Vector3    ,Ogre::Vector3::ZERO     ,0, SETTER(Ogre::Vector3, CViewportEditor, _setCamPosition));
     PROPERTY_PTR(mCamOrientation , "camera::orientation",Ogre::Quaternion,Ogre::Quaternion::IDENTITY,0, SETTER(Ogre::Quaternion, CViewportEditor, _setCamOrientation));
     PROPERTY_PTR(mCamClipDistance, "camera::clipdistance",Ogre::Vector2  ,Ogre::Vector2(0.1f,9000.0f)   ,0, SETTER(Ogre::Vector2, CViewportEditor, _setCamClipDistance));
-    PROPERTY_PTR(mCamPolyMode    , "camera::polymode"  ,int              ,Ogitors::TEXTURED          ,0, SETTER(int, CViewportEditor, _setCamPolyMode));
+    PROPERTY_PTR(mCamPolyMode    , "camera::polymode"  ,int              ,Ogre::PM_SOLID          ,0, SETTER(int, CViewportEditor, _setCamPolyMode));
     PROPERTY_PTR(mCamFOV         , "camera::fov"       ,Ogre::Real       ,1.0f                    ,0, SETTER(Ogre::Real, CViewportEditor, _setCamFOV));
 
     mProperties.initValueMap(params);

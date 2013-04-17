@@ -292,7 +292,7 @@ bool CCameraEditor::_setPolygonMode(OgitorsPropertyBase* property, const int& va
 {
     if(mHandle)
     {
-        mOgitorsRoot->SetViewDetail((Ogitors::ViewDetail)value);
+        mHandle->setPolygonMode((Ogre::PolygonMode)value);
     }
     return true;
 }
@@ -459,7 +459,7 @@ void CCameraEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mClipDistance, "clipdistance",Ogre::Vector2,Ogre::Vector2(0.1f,9000.0f),0,SETTER(Ogre::Vector2, CCameraEditor, _setClipDistance));
     PROPERTY_PTR(mFOV, "fov",Ogre::Real,1.0f,0, SETTER(Ogre::Real, CCameraEditor, _setFOV));
     PROPERTY_PTR(mAutoTrackTarget, "autotracktarget",Ogre::String,"None",0,SETTER(Ogre::String, CCameraEditor, _setAutoTrackTarget));
-    PROPERTY_PTR(mPolygonMode, "polygonmode",int,Ogitors::TEXTURED,0,SETTER(int, CCameraEditor, _setPolygonMode));
+    PROPERTY_PTR(mPolygonMode, "polygonmode",int,Ogre::PM_SOLID,0,SETTER(int, CCameraEditor, _setPolygonMode));
 
     mProperties.initValueMap(params);
 }
@@ -587,10 +587,9 @@ CCameraEditorFactory::CCameraEditorFactory(OgitorsView *view) : CBaseEditorFacto
     mUsesHelper = true;
 
     mCameraPolygonModes.clear();
-    mCameraPolygonModes.push_back(PropertyOption("TEXTURED",Ogre::Any((int)Ogitors::TEXTURED)));
-    mCameraPolygonModes.push_back(PropertyOption("SHADED",Ogre::Any((int)Ogitors::SHADED)));
-    mCameraPolygonModes.push_back(PropertyOption("HIDDEN_LINE",Ogre::Any((int)Ogitors::HIDDEN_LINE)));
-    mCameraPolygonModes.push_back(PropertyOption("WIREFRAME",Ogre::Any((int)Ogitors::WIREFRAME)));
+    mCameraPolygonModes.push_back(PropertyOption("PM_SOLID",Ogre::Any((int)Ogre::PM_SOLID)));
+    mCameraPolygonModes.push_back(PropertyOption("PM_POINTS",Ogre::Any((int)Ogre::PM_POINTS)));
+    mCameraPolygonModes.push_back(PropertyOption("PM_WIREFRAME",Ogre::Any((int)Ogre::PM_WIREFRAME)));
 
     mCameraViewModes.clear();
     mCameraViewModes.push_back(PropertyOption("FREE", Ogre::Any((int)CVM_FREE)));
