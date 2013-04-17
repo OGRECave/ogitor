@@ -126,6 +126,234 @@ namespace Ogitors
         return &GlobalOgitorsRootPropertySetListener;
     }
     //-----------------------------------------------------------------------------------------
+
+    /** Context structure that can be attached to other things. */
+    struct RenderableContext
+    {
+        bool selected;
+        bool ignoreViewDetail;
+
+        RenderableContext() : selected(false), ignoreViewDetail(false) {}
+        friend std::ostream& operator<<(std::ostream& o, const RenderableContext& c)
+        {
+            o << "RenderableContext {selected: " << c.selected << "}";
+            return o;
+        }
+    };
+    //-----------------------------------------------------------------------------------------
+
+    class ViewOgreTechniqueSwitcher : public Ogre::RenderQueue::RenderableListener
+    {
+    public:
+        const static int SOLIDMATCOUNT = 5;
+
+        ViewOgreTechniqueSwitcher(const Ogre::ColourValue& bgColour)
+            :backColour(bgColour), active(false)
+        {
+            // get default materials
+            wireSelectionMaterial = Ogre::MaterialManager::getSingleton().getByName("GesWireSel");
+            if (wireSelectionMaterial.isNull())
+            {
+                wireSelectionMaterial = Ogre::MaterialManager::getSingleton().create("GesWireSel",
+                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                Ogre::Pass* p = wireSelectionMaterial->getTechnique(0)->getPass(0);
+                p->setLightingEnabled(false);
+                p->setPolygonMode(Ogre::PM_WIREFRAME);
+                p->setCullingMode(Ogre::CULL_NONE);
+                wireSelectionMaterial->load();
+            }
+            solidSelectionMaterial = Ogre::MaterialManager::getSingleton().getByName("GesFlatSel");
+            if (solidSelectionMaterial.isNull())
+            {
+                solidSelectionMaterial = Ogre::MaterialManager::getSingleton().create("GesFlatSel",
+                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                Ogre::Pass* p = solidSelectionMaterial->getTechnique(0)->getPass(0);
+                p->setLightingEnabled(false);
+                // need a depth bias
+                p->setDepthBias(2);
+                // need to colour this red, and alpha blend
+                Ogre::TextureUnitState* t = p->createTextureUnitState();
+                t->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT,
+                    Ogre::ColourValue::Red);
+                t->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT, 0.2);
+                p->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+                p->setDepthWriteEnabled(false);
+
+                p = solidSelectionMaterial->getTechnique(0)->createPass();
+                p->setPolygonMode(Ogre::PM_WIREFRAME);
+                p->setLightingEnabled(false);
+                p->setDepthWriteEnabled(false);
+                p->setDepthBias(10);
+                solidSelectionMaterial->load();
+            }
+            for (int i = 0; i < SOLIDMATCOUNT; ++i)
+            {
+                Ogre::StringUtil::StrStreamType str;
+                str << "GesSolidCol" << i;
+                solidColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
+                if (solidColourMaterials[i].isNull())
+                {
+                    solidColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
+                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                    Ogre::Pass* p = solidColourMaterials[i]->getTechnique(0)->getPass(0);
+                    p->setAmbient(backColour * 0.5f);
+                    //p->setLightingEnabled(false);
+                    // need to colour this, use hue range
+                    // distribute equally across hue spectrum
+                    // Solid colours should be a bit less saturated
+                    Ogre::ColourValue col;
+                    col.setHSB((float)i/(float)(SOLIDMATCOUNT-1), 0.25, 1.0);
+
+                    Ogre::TextureUnitState* t = p->createTextureUnitState();
+                    t->setColourOperationEx(Ogre::LBX_MODULATE, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT,
+                        col);
+                    solidColourMaterials[i]->load();
+                }
+                str.str(Ogre::StringUtil::BLANK);
+                str << "GesWireCol" << i;
+                wireColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
+                if (wireColourMaterials[i].isNull())
+                {
+                    wireColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
+                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                    Ogre::Pass* p = wireColourMaterials[i]->getTechnique(0)->getPass(0);
+                    p->setLightingEnabled(false);
+                    p->setPolygonMode(Ogre::PM_WIREFRAME);
+                    p->setCullingMode(Ogre::CULL_NONE);
+                    // need to colour this, use hue range
+                    // distribute equally across hue spectrum
+                    Ogre::ColourValue col;
+                    col.setHSB((float)i/(float)(SOLIDMATCOUNT-1), 0.5, 1.0);
+
+                    Ogre::TextureUnitState* t = p->createTextureUnitState();
+                    t->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT,
+                        col);
+                    wireColourMaterials[i]->load();
+                }
+                str.str(Ogre::StringUtil::BLANK);
+                str << "GesHiddenLineCol" << i;
+                hiddenLineColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
+                if (hiddenLineColourMaterials[i].isNull())
+                {
+                    hiddenLineColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
+                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                    Ogre::Pass* p = hiddenLineColourMaterials[i]->getTechnique(0)->getPass(0);
+                    // Hidden line passes should have an initial pass setting the
+                    // background colour, then a wire pass over the top
+                    p->setLightingEnabled(false);
+                    Ogre::TextureUnitState* t = p->createTextureUnitState();
+                    t->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT,
+                        backColour);
+
+
+                    p = hiddenLineColourMaterials[i]->getTechnique(0)->createPass();
+                    p->setLightingEnabled(false);
+                    p->setDepthBias(10);
+                    p->setPolygonMode(Ogre::PM_WIREFRAME);
+                    // need to colour this, use hue range
+                    // distribute equally across hue spectrum
+                    Ogre::ColourValue col;
+                    col.setHSB((float)i/(float)(SOLIDMATCOUNT-1), 0.5, 1.0);
+
+                    t = p->createTextureUnitState();
+                    t->setColourOperationEx(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT,
+                        col);
+                    hiddenLineColourMaterials[i]->load();
+                }
+
+            }
+
+
+
+
+        }
+        ~ViewOgreTechniqueSwitcher()
+        {
+        }
+
+        //---------------------------------------------------------------------
+        bool renderableQueued(Ogre::Renderable* rend, Ogre::uint8 groupID,
+            Ogre::ushort priority, Ogre::Technique** ppTech, Ogre::RenderQueue* pQueue)
+        {
+            // Use pointer-based any_cast to try to cast
+            const RenderableContext* ctx = Ogre::any_cast<RenderableContext>(&rend->getUserAny());
+
+            if((groupID <= Ogre::RENDER_QUEUE_2) || (groupID >= Ogre::RENDER_QUEUE_8))
+                return true;
+
+            // Always render normally
+            if (ctx && ctx->ignoreViewDetail)
+                return true;
+
+            // use renderable pointer to determine what colour for now
+            // may want to use a categorisation in future
+            Ogre::RenderOperation op;
+            rend->getRenderOperation(op);
+            int colourIndex = ((int)op.vertexData->vertexCount) % SOLIDMATCOUNT;
+
+            switch(detail)
+            {
+            case TEXTURED:
+                // use default technique
+                // queue an extra renderable if selected
+                if (ctx && ctx->selected)
+                {
+                    // queue selection pass just after this group
+                    pQueue->getQueueGroup(groupID + 1)->addRenderable(rend,
+                        solidSelectionMaterial->getSupportedTechnique(0), priority);
+                }
+                return true;
+            case SHADED:
+                // change to flat shading
+                *ppTech = solidColourMaterials[colourIndex]->getSupportedTechnique(0);
+                // queue an extra renderable if selected
+                if (ctx && ctx->selected)
+                {
+                    // queue selection pass just after this group
+                    pQueue->getQueueGroup(groupID + 1)->addRenderable(rend,
+                        solidSelectionMaterial->getSupportedTechnique(0), priority);
+                }
+                return true;
+            case WIREFRAME:
+                // return a solid-coloured technique depending on selection
+                if (ctx && ctx->selected)
+                {
+                    *ppTech = wireSelectionMaterial->getSupportedTechnique(0);
+                }
+                else
+                {
+                    *ppTech = wireColourMaterials[colourIndex]->getSupportedTechnique(0);
+                }
+                return true;
+            case HIDDEN_LINE:
+                // Change to hidden line removal
+                *ppTech = hiddenLineColourMaterials[colourIndex]->getSupportedTechnique(0);
+                // queue an extra renderable if selected
+                if (ctx && ctx->selected)
+                {
+                    // queue selection pass just after this group
+                    pQueue->getQueueGroup(groupID + 1)->addRenderable(rend,
+                        solidSelectionMaterial->getSupportedTechnique(0), priority);
+                }
+                return true;
+            };
+
+            return true;
+
+        }
+
+        Ogre::MaterialPtr wireColourMaterials[SOLIDMATCOUNT];
+        Ogre::MaterialPtr solidColourMaterials[SOLIDMATCOUNT];
+        Ogre::MaterialPtr hiddenLineColourMaterials[SOLIDMATCOUNT];
+        Ogre::MaterialPtr wireSelectionMaterial;
+        Ogre::MaterialPtr solidSelectionMaterial;
+        ViewDetail detail;
+        Ogre::ColourValue backColour;
+        bool active;
+
+    };
+    //-----------------------------------------------------------------------------------------
+
     OgitorsRoot::OgitorsRoot(Ogre::StringVector* pDisabledPluginPaths) :
     mUndoManager(0), mClipboardManager(0), mSceneManager(0), mSceneManagerEditor(0), mRenderWindow(0), mActiveViewport(0),
         mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO),
@@ -134,7 +362,8 @@ namespace Ogitors
         mMouseListener(0), mKeyboardListener(0),
         mGizmoScale(1.0f), mGizmoNode(0), mGizmoX(0), mGizmoY(0), mGizmoZ(0), 
         mAlwaysSnapGround(false), mWorldSpaceGizmoOrientation(false),
-        mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSource(0)
+        mOldGizmoMode(256), mOldGizmoAxis(256), mWalkAroundMode(false), mActiveDragSource(0),
+        mViewDetail(TEXTURED), mTechSwitcher(0)
     {
         unsigned int i;
 
@@ -236,6 +465,8 @@ namespace Ogitors
         }
 
         mObjectDisplayOrder.clear();
+
+        delete mTechSwitcher;
 
         mRootEditor->destroy();
 
@@ -1741,6 +1972,12 @@ namespace Ogitors
         if(mActiveViewport)
             mActiveViewport->SetCameraSpeed(mProjectOptions.CameraSpeed);
 
+        mTechSwitcher = new ViewOgreTechniqueSwitcher(Ogre::ColourValue(0.4, 0.4, 0.4));
+
+        GetSceneManager()->getRenderQueue()->setRenderableListener(mTechSwitcher);
+
+        SetViewDetail(TEXTURED);
+
         mLayerNames.clear();
 
         for(unsigned int li = 0;li < 31;li++)
@@ -1885,6 +2122,12 @@ namespace Ogitors
         mSelRect->setBoundingBox(Ogre::AxisAlignedBox::BOX_INFINITE);
 
         mSelectionNode->attachObject(mSelRect);
+    }
+    //-----------------------------------------------------------------------------------------
+    void OgitorsRoot::SetViewDetail(ViewDetail v)
+    {
+        mViewDetail = v;
+        mTechSwitcher->detail = v;
     }
     //-----------------------------------------------------------------------------------------
     void OgitorsRoot::SetLightVisiblity(bool visibility)
