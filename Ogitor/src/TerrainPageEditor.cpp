@@ -983,9 +983,9 @@ void CTerrainPageEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mLayerCount, "layercount", int, 1, 0, 0);
     PROPERTY_PTR(mTempModified, "tempmodified", bool, false, 0, 0);
     PROPERTY_PTR(mTempDensityModified, "tempdensitymodified", bool, false, 0, 0);
-    PROPERTY_PTR(mLayerWorldSize[0], "baselayer::worldsize", Ogre::Real, 10.0f, 0, SETTER(Ogre::Real, CTerrainPageEditor, _setLayerWorldSize));
-    PROPERTY_PTR(mLayerDiffuse[0], "baselayer::diffusespecular", Ogre::String, "", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerDiffuseMap));
-    PROPERTY_PTR(mLayerNormal[0], "baselayer::normalheight", Ogre::String, "", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerNormalMap));
+    PROPERTY_PTR(mLayerWorldSize[0], "layer0::worldsize", Ogre::Real, 10.0f, 0, SETTER(Ogre::Real, CTerrainPageEditor, _setLayerWorldSize));
+    PROPERTY_PTR(mLayerDiffuse[0], "layer0::diffusespecular", Ogre::String, "", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerDiffuseMap));
+    PROPERTY_PTR(mLayerNormal[0], "layer0::normalheight", Ogre::String, "", 0, SETTER(Ogre::String, CTerrainPageEditor, _setLayerNormalMap));
 
     int count = 0;
     OgitorsPropertyValueMap::const_iterator it = params.find("layercount");
@@ -1484,12 +1484,6 @@ CTerrainPageEditorFactory::CTerrainPageEditorFactory(OgitorsView *view) : CBaseE
     {
         Ogre::String propStr1 = "layer" + Ogre::StringConverter::toString(i);
         Ogre::String propStr2 = "Layers::Layer" + Ogre::StringConverter::toString(i);
-
-        if(i == 0)
-        {
-            propStr1 = "baselayer";
-            propStr2 = "Layers::BaseLayer";
-        }
 
         AddPropertyDefinition(propStr1 + "::worldsize", propStr2 + "::WorldSize", "Layer's World Size", PROP_REAL);
         definition = AddPropertyDefinition(propStr1 + "::diffusespecular", propStr2 + "::Diffuse Map", "Layer's Diffuse Texture Map", PROP_STRING);
