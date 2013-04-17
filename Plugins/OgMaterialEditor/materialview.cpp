@@ -171,6 +171,16 @@ void MaterialTreeWidget::mouseDoubleClickEvent(QMouseEvent *event)
     if(!OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
         return;
 
+    QList<QTreeWidgetItem*> list = selectedItems();
+
+    if(list.size() == 0)
+        return;
+
+    QTreeWidgetItem *item = list[0];
+
+    if(item->parent() == 0)
+        return;
+
     Ogre::Material* material = static_cast<Ogre::Material*>(mMaterialEditor->getHandle());
     try
     {
