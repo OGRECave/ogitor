@@ -46,6 +46,16 @@ namespace Ogitors
     class OgitorsScriptConsole;
     class OgitorsScriptInterpreter;
 
+    class ViewOgreTechniqueSwitcher;
+
+    enum ViewDetail
+    {
+        WIREFRAME = 0,
+        HIDDEN_LINE = 1,
+        SHADED = 2,
+        TEXTURED = 3
+    };
+
     /** Dock Widget Parent Type: Determines where the widget will be inserted */
     enum DockingParentType
     {
@@ -994,6 +1004,8 @@ namespace Ogitors
 
         const PluginEntryMap*               GetPluginMap() {return &mPlugins; };
 
+        void SetViewDetail(ViewDetail v);
+
         /**
         * Unloads one specific editor plugin
         */
@@ -1163,6 +1175,9 @@ namespace Ogitors
         
         DragDropHandlerMap          mDragDropHandlers;                  /** Drag Drop Handlers list */
         void                       *mActiveDragSource;                  /** Current Drag Source */
+
+        ViewDetail mViewDetail;
+        ViewOgreTechniqueSwitcher* mTechSwitcher;
 
         static PropertyOptionsVector mModelNames;                       /** List of model names in the current user assets directories */
         static PropertyOptionsVector mMaterialNames;                    /** List of material names in the current user assets directories */

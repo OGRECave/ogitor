@@ -174,9 +174,10 @@ public:
     QAction*  actCamSave;
     QAction*  actCamSpeedMinus;
     QAction*  actCamSpeedPlus;
-    QAction*  actCamModeSolid;
+    QAction*  actCamModeShaded;
     QAction*  actCamModeWireframe;
-    QAction*  actCamModePoints;
+    QAction*  actCamModeHiddenline;
+    QAction*  actCamModeTextured;
     QAction*  actLogShowWarnings;
     QAction*  actLogShowErrors;
     QAction*  actLogShowInfo;
