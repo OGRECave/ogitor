@@ -1005,6 +1005,7 @@ namespace Ogitors
         const PluginEntryMap*               GetPluginMap() {return &mPlugins; };
 
         void SetViewDetail(ViewDetail v);
+        ViewDetail GetViewDetail() { return mViewDetail; }
 
         /**
         * Unloads one specific editor plugin

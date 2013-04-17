@@ -485,7 +485,7 @@ void MainWindow::updateActions()
 
     if(viewport && viewport->getCameraEditor())
     {
-        int mode = viewport->getCamPolyMode();
+        int mode = OgitorsRoot::getSingletonPtr()->GetViewDetail();
         actCamModeShaded->setChecked(mode == Ogitors::SHADED);
         actCamModeTextured->setChecked(mode == Ogitors::TEXTURED);
         actCamModeWireframe->setChecked(mode == Ogitors::WIREFRAME);
