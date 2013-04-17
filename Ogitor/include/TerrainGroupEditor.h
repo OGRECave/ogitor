@@ -429,7 +429,7 @@ namespace Ogitors
 
     private:
         /* Sets up the project resources for use in Ogitor */
-        void addEditorResources(bool changeDefaultNames = true);
+        void addEditorResources(bool changeDefaultNames = false);
         static PropertyOptionsVector mColourMapSizeOptions;     /** Colour map size options property(ies) */
         static PropertyOptionsVector mMapSizeOptions;           /** Map size options property(ies) */
         static PropertyOptionsVector mMinBatchSizes;
