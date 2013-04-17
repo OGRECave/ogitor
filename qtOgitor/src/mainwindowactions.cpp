@@ -379,19 +379,12 @@ void MainWindow::addActions()
 
     QSignalMapper *polymapper = new QSignalMapper(this);
 
-    actCamModeWireframe = menuCamPolyMode->addAction(tr("Wireframe"));
-    actCamModeWireframe->setStatusTip(tr("Set Polygon Mode to Wireframe"));
-    actCamModeWireframe->setIcon(QIcon(":icons/pmwireframe.svg"));
-    actCamModeWireframe->setCheckable(true);
-    connect(actCamModeWireframe, SIGNAL(triggered()), polymapper, SLOT(map()));
-    polymapper->setMapping(actCamModeWireframe, (int)0 );
-
-    actCamModeHiddenline = menuCamPolyMode->addAction(tr("HiddenLines"));
-    actCamModeHiddenline->setStatusTip(tr("Set Polygon Mode to HiddenLines"));
-    actCamModeHiddenline->setIcon(QIcon(":icons/pmpoints.svg"));
-    actCamModeHiddenline->setCheckable(true);
-    connect(actCamModeHiddenline, SIGNAL(triggered()), polymapper, SLOT(map()));
-    polymapper->setMapping(actCamModeHiddenline, (int)1 );
+    actCamModeTextured = menuCamPolyMode->addAction(tr("Textured"));
+    actCamModeTextured->setStatusTip(tr("Set Polygon Mode to Textured"));
+    actCamModeTextured->setIcon(QIcon(":icons/polymode.svg"));
+    actCamModeTextured->setCheckable(true);
+    connect(actCamModeTextured, SIGNAL(triggered()), polymapper, SLOT(map()));
+    polymapper->setMapping(actCamModeTextured, (int)3);
 
     actCamModeShaded = menuCamPolyMode->addAction(tr("Shaded"));
     actCamModeShaded->setStatusTip(tr("Set Polygon Mode to Shaded"));
@@ -400,12 +393,19 @@ void MainWindow::addActions()
     connect(actCamModeShaded, SIGNAL(triggered()), polymapper, SLOT(map()));
     polymapper->setMapping(actCamModeShaded, (int)2);
 
-    actCamModeTextured = menuCamPolyMode->addAction(tr("Textured"));
-    actCamModeTextured->setStatusTip(tr("Set Polygon Mode to Textured"));
-    actCamModeTextured->setIcon(QIcon(":icons/pmsolid.svg"));
-    actCamModeTextured->setCheckable(true);
-    connect(actCamModeTextured, SIGNAL(triggered()), polymapper, SLOT(map()));
-    polymapper->setMapping(actCamModeTextured, (int)3);
+    actCamModeHiddenline = menuCamPolyMode->addAction(tr("HiddenLines"));
+    actCamModeHiddenline->setStatusTip(tr("Set Polygon Mode to HiddenLines"));
+    actCamModeHiddenline->setIcon(QIcon(":icons/pmpoints.svg"));
+    actCamModeHiddenline->setCheckable(true);
+    connect(actCamModeHiddenline, SIGNAL(triggered()), polymapper, SLOT(map()));
+    polymapper->setMapping(actCamModeHiddenline, (int)1 );
+
+    actCamModeWireframe = menuCamPolyMode->addAction(tr("Wireframe"));
+    actCamModeWireframe->setStatusTip(tr("Set Polygon Mode to Wireframe"));
+    actCamModeWireframe->setIcon(QIcon(":icons/pmwireframe.svg"));
+    actCamModeWireframe->setCheckable(true);
+    connect(actCamModeWireframe, SIGNAL(triggered()), polymapper, SLOT(map()));
+    polymapper->setMapping(actCamModeWireframe, (int)0 );
 
     connect(polymapper, SIGNAL(mapped( int )), this, SLOT(setCameraPolyMode( int )));
 
@@ -1151,17 +1151,7 @@ void MainWindow::deleteCamera(int id)
 //------------------------------------------------------------------------------------
 void MainWindow::setCameraPolyMode(int value)
 {
-    CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
-    if(ovp && ovp->getCameraEditor())
-    {
-        switch(value)
-        {
-        case 0:ovp->getCameraEditor()->setPolygonMode(Ogitors::TEXTURED);break;
-        case 1:ovp->getCameraEditor()->setPolygonMode(Ogitors::SHADED);break;
-        case 2:ovp->getCameraEditor()->setPolygonMode(Ogitors::HIDDEN_LINE);break;
-        case 3:ovp->getCameraEditor()->setPolygonMode(Ogitors::WIREFRAME);break;
-        }
-    }
+    OgitorsRoot::getSingletonPtr()->SetViewDetail(Ogitors::ViewDetail(value));
 }
 //------------------------------------------------------------------------------
 void MainWindow::cameraAction(int id)
