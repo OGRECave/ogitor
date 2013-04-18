@@ -261,7 +261,7 @@ void ProjectFilesViewWidget::itemDoubleClicked(QTreeWidgetItem* item, int column
     QString path = item->whatsThis(0);
     if(path.endsWith("/"))
     {
-        onRename();
+        //onRename(); Do not rename on double click in a tree view - highly unintuitive!
         return;
     }
 

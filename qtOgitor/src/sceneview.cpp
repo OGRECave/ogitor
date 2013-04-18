@@ -287,13 +287,11 @@ void SceneTreeWidget::keyPressEvent(QKeyEvent *evt)
         QTreeWidget::keyPressEvent(evt);
 }
 //----------------------------------------------------------------------------------------
-void SceneTreeWidget::mouseDoubleClickEvent(QMouseEvent *evt)
+void SceneTreeWidget::itemDoubleClicked(QTreeWidgetItem* item, int column)
 {
     CBaseEditor *target = 0;
-    QTreeWidgetItem *item = itemAt(evt->pos());
     
-    if(item)
-        target = OgitorsRoot::getSingletonPtr()->FindObject(item->text(0).toStdString());
+    target = OgitorsRoot::getSingletonPtr()->FindObject(item->text(0).toStdString());
 
     CViewportEditor *ovp = OgitorsRoot::getSingletonPtr()->GetViewport();
 
