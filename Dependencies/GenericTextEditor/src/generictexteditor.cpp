@@ -242,9 +242,10 @@ void GenericTextEditor::closeTab(int index)
     GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
     setActiveDocument(document);
 
-    if (!list[index]->close())
+    if (!document->close())
         return;
-        
+
+    //if (document == mActiveDocument)
     disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
@@ -328,7 +329,8 @@ void GenericTextEditor::closeEvent(QCloseEvent *event)
 {
     QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
-        closeTab(i);
+        closeTab(0);
+    event->setAccepted(true);
 }
 //-----------------------------------------------------------------------------------------
 ITextEditorCodecFactory* GenericTextEditor::findMatchingCodecFactory(QString extensionOrFileName)

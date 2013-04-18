@@ -208,8 +208,8 @@ void GenericImageEditor::closeTab(int index)
     if (!document->close())
         return;
         
-    if (document == mActiveDocument)
-        disconnectActiveDocument();
+    //if (document == mActiveDocument)
+    disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageEditorCodec* codec)
@@ -299,6 +299,7 @@ void GenericImageEditor::closeEvent(QCloseEvent *event)
     QList<QMdiSubWindow*> list = subWindowList();
     for(int i = 0; i < list.size(); i++)
         closeTab(0);
+    event->setAccepted(true);
 }
 //-----------------------------------------------------------------------------------------
 IImageEditorCodecFactory* GenericImageEditor::findMatchingCodecFactory(QString extensionOrFileName)
