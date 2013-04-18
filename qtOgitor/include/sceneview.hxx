@@ -51,6 +51,7 @@ public:
 public Q_SLOTS:
     void contextMenu(int id);
     void pasteFromClipboardBuffer(int id);
+    void itemDoubleClicked(QTreeWidgetItem* item, int column);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *evt);
@@ -58,7 +59,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *evt);
     void dropEvent(QDropEvent *evt);
     void keyPressEvent(QKeyEvent *evt);
-    void mouseDoubleClickEvent(QMouseEvent *evt);
 };
 
 //-----------------------------------------------------------------------------------------
