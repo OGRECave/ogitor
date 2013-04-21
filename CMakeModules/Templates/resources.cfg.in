@@ -1,4 +1,4 @@
-# Resource locations to be added to the 'boostrap' path
+# Resource locations to be added to the 'bootstrap' path
 [Bootstrap]
 Zip=@OGITOR_MEDIA_PATH@/packs/OgreCore.zip
 Zip=@OGITOR_MEDIA_PATH@/packs/SdkTrays.zip
@@ -12,3 +12,14 @@ FileSystem=@OGITOR_MEDIA_PATH@/editorResources
 
 [Brushes]
 FileSystem=@OGITOR_MEDIA_PATH@/brushes
+
+# Plugin resource locations
+# These can be commented out if they are not used
+[Caelum]
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources/Caelum
+
+[SkyX]
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources/SkyX
+
+[Hydrax]
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources/Hydrax
