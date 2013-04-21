@@ -203,13 +203,17 @@ void GenericImageEditor::closeTab(int index)
     QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
 
     GenericImageEditorDocument* document = static_cast<GenericImageEditorDocument*>(list[index]->widget());
-    setActiveDocument(document);
 
-    if (!document->close())
-        return;
-        
-    if (document == mActiveDocument)
-		disconnectActiveDocument();
+    if(document)
+    {
+        setActiveDocument(document);
+
+        if (!document->close())
+            return;
+
+        if (document == mActiveDocument)
+            disconnectActiveDocument();
+    }
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageEditorCodec* codec)
@@ -263,7 +267,7 @@ void GenericImageEditor::setActiveDocument(GenericImageEditorDocument* document)
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::disconnectActiveDocument()
 {
-    if (mActiveDocument == 0)
+    if (!mActiveDocument)
         return;
 
     /*
