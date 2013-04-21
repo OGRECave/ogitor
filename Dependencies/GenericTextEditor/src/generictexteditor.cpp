@@ -245,8 +245,8 @@ void GenericTextEditor::closeTab(int index)
     if (!document->close())
         return;
 
-    //if (document == mActiveDocument)
-    disconnectActiveDocument();
+    if (document == mActiveDocument)
+		disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec)
