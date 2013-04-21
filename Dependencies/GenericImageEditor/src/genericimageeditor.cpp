@@ -208,8 +208,8 @@ void GenericImageEditor::closeTab(int index)
     if (!document->close())
         return;
         
-    //if (document == mActiveDocument)
-    disconnectActiveDocument();
+    if (document == mActiveDocument)
+		disconnectActiveDocument();
 }
 //-----------------------------------------------------------------------------------------
 void GenericImageEditor::addTab(GenericImageEditorDocument* newDocument, IImageEditorCodec* codec)
