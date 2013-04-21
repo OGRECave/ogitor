@@ -240,13 +240,17 @@ void GenericTextEditor::closeTab(int index)
     QList<QMdiSubWindow*> list = findChildren<QMdiSubWindow*>();
 
     GenericTextEditorDocument* document = static_cast<GenericTextEditorDocument*>(list[index]->widget());
-    setActiveDocument(document);
 
-    if (!document->close())
-        return;
+    if(document)
+    {
+        setActiveDocument(document);
 
-    if (document == mActiveDocument)
-		disconnectActiveDocument();
+        if (!document->close())
+            return;
+
+        if (document == mActiveDocument)
+            disconnectActiveDocument();
+    }
 }
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::addTab(GenericTextEditorDocument* newDocument, ITextEditorCodec* codec)
@@ -299,7 +303,7 @@ void GenericTextEditor::setActiveDocument(GenericTextEditorDocument* document)
 //-----------------------------------------------------------------------------------------
 void GenericTextEditor::disconnectActiveDocument()
 {
-    if (mActiveDocument == 0)
+    if (!mActiveDocument)
         return;
 
     disconnect(mActSave, SIGNAL(triggered()), mActiveDocument, SLOT(save()));
