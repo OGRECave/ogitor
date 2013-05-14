@@ -33,13 +33,13 @@ Do not extract the files into the build directory, even though it might make sen
 
 The install target will copy the files over.
 
-* [Building Ogitor](https://bitbucket.org/jacmoe/ogitor/wiki/Building_Ogitor)
+* [Building Ogitor](http://www.ogitor.org/wiki/Building_Ogitor)
 
 ----
 
 ## Links
 
-* [Ogitor Wiki](https://www.ogitor.org/wiki/Home)
+* [Ogitor Wiki](http://www.ogitor.org/wiki/Home)
 
 * [Ogitor home page](http://www.ogitor.org/)
 
