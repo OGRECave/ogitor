@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////////*
 ```
 
-This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing environment for OGRE (www.ogre3d.org)
+_This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing environment for OGRE (www.ogre3d.org)_
 
 
 **IMPORTANT NOTE:**
@@ -37,7 +37,7 @@ The install target will copy the files over.
 
 ----
 
-== Links ==
+## Links
 
 * [Ogitor Wiki](https://www.ogitor.org/wiki/Home)
 
