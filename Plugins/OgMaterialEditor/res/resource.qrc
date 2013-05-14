@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/material.svg</file>
+        <file>syntax_highlighting/matDataTypes.txt</file>
+        <file>syntax_highlighting/matEnums.txt</file>
+        <file>syntax_highlighting/matKeys.txt</file>
+    </qresource>
+</RCC>
