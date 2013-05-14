@@ -29,7 +29,7 @@ https://bitbucket.org/jacmoe/ogitor/wiki/Building_Ogitor
 ------
 
 Ogitor Wiki:
-https://bitbucket.org/jacmoe/ogitor/wiki/Home
+https://www.ogitor.org/wiki/Home
 
 Ogitor home page:
 http://www.ogitor.org/
