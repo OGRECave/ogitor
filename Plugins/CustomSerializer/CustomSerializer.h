@@ -1,4 +1,4 @@
-/*/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 /// An
 ///    ___   ____ ___ _____ ___  ____
 ///   / _ \ / ___|_ _|_   _/ _ \|  _ \
@@ -28,31 +28,46 @@
 /// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
-////////////////////////////////////////////////////////////////////////////////*/
+//////////////////////////////////////////////////////////////////////////////////
 
-#include "application.hxx"
+#ifndef CUSTOM_SERIALIZER_H
+#define CUSTOM_SERIALIZER_H
 
-Application::Application(int &argc, char *argv[]) :
-    QApplication(argc, argv)
+#include "Ogitors.h"
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+   #ifdef PLUGIN_EXPORT
+     #define PluginExport __declspec (dllexport)
+   #else
+     #define PluginExport __declspec (dllimport)
+   #endif
+#else
+   #define PluginExport
+#endif
+
+namespace Ogitors
 {
+
+    class PluginExport CCustomSerializer: public CBaseSerializer
+    {
+    public:
+        CCustomSerializer();
+        virtual ~CCustomSerializer() {};
+
+        /// Does the serializer need a TerminateScene before Import?
+        virtual bool RequiresTerminateScene() {return true;};
+        /// The function to Export Data
+        virtual int  Export(bool SaveAs = false, Ogre::String exportfile = "");
+        /// The function to Import Data
+        virtual int  Import(Ogre::String importfile = "");
+    };
+
 }
 
-bool Application::notify(QObject *receiver, QEvent *event)
-{
-    try
-    {
-        return QApplication::notify(receiver, event);
-    }
-    catch(const std::exception &e)
-    {
-        std::string error("Application::notify caught an exception: " + std::string(e.what() ? e.what() : "(null)"));
-        std::cout << error << std::endl;
-        //throw;
-    }
-    catch(...)
-    {
-        std::string error("Application::notify caught an unknown exception!");
-        std::cout << error << std::endl;
-        //throw;
-    }
-}
+extern "C" bool PluginExport dllStartPlugin(void *identifier, Ogre::String& name);
+
+extern "C" bool PluginExport dllGetPluginName(Ogre::String& name);
+
+extern "C" bool PluginExport dllStopPlugin(void);
+
+#endif

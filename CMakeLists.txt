@@ -350,6 +350,8 @@ add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 add_subdirectory(Plugins/OgScreenEffectEditor)
+add_subdirectory(Plugins/CustomSerializer)
+
 
 add_subdirectory(OgreOfsPlugin)
 
