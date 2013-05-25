@@ -991,7 +991,7 @@ void CHydraxEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mFullReflectionDistance, "full_reflection_distance", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setFullReflectionDistance));
     PROPERTY_PTR(mGlobalTransparency, "global_transparency", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setGlobalTransparency));
     PROPERTY_PTR(mNormalDistortion, "normal_distortion", Ogre::Real, 0, 0, SETTER(Ogre::Real, CHydraxEditor, _setNormalDistortion));
-    PROPERTY_PTR(mOriginalWaterColour, "watercolour", Ogre::ColourValue, Ogre::ColourValue(0,0,0), 0, 0);
+    PROPERTY_PTR(mOriginalWaterColour, "watercolour", Ogre::ColourValue, Ogre::ColourValue(0,0,0), 0, SETTER(Ogre::ColourValue, CHydraxEditor, _setWaterColour));
 
     PROPERTY_PTR(mComponentSun, "components::sun", bool, 0, 0, SETTER(bool, CHydraxEditor, _setComponentSun));
     PROPERTY_PTR(mComponentFoam, "components::foam", bool, 0, 0, SETTER(bool, CHydraxEditor, _setComponentFoam));
