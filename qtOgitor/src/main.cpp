@@ -52,7 +52,7 @@ Shortcuts            *shortCuts;
 void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 {
     // Create the main ogre object
-    mOgreRoot = OGRE_NEW Ogre::Root( plugins);
+    mOgreRoot = OGRE_NEW Ogre::Root(plugins);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     // load additional plugins
