@@ -56,7 +56,7 @@ namespace Ogitors
 
     //! Camera editor class
     /*!  
-        A camera editor class that assists in editing camera(s) on the scene
+    A camera editor class that assists in editing camera(s) on the scene
     */
     class OgitorExport CCameraEditor: public CBaseEditor
     {
@@ -64,78 +64,79 @@ namespace Ogitors
 
     public:
 
-        inline void setPosition(const Ogre::Vector3& position) { mPosition->set(position); }
-        inline void setOrientation(const Ogre::Quaternion& orientation) { mOrientation->set(orientation); }
-        inline void setClipDistance(const Ogre::Vector2& value) { mClipDistance->set(value); }
-        inline void setFOV(Ogre::Real value) { mFOV->set(value); }
-        inline void setPolygonMode(int value) { mPolygonMode->set(value); }
-        inline void setViewMode(int value) { mViewMode->set(value); }
+        inline void					setPosition(const Ogre::Vector3& position) { mPosition->set(position); }
+        inline void					setOrientation(const Ogre::Quaternion& orientation) { mOrientation->set(orientation); }
+        inline void					setClipDistance(const Ogre::Vector2& value) { mClipDistance->set(value); }
+        inline void					setFOV(Ogre::Real value) { mFOV->set(value); }
+        inline void					setPolygonMode(int value) { mPolygonMode->set(value); }
+        inline void					setViewMode(int value) { mViewMode->set(value); }
 
-        inline Ogre::Vector3    getPosition() { return mPosition->get(); }
-        inline Ogre::Quaternion getOrientation() { return mOrientation->get(); }
-        inline CameraViewMode   getViewMode() { return (CameraViewMode)mViewMode->get(); }
-        inline Ogre::Vector2    getClipDistance() { return mClipDistance->get(); }
-        inline int              getPolygonMode() { return mPolygonMode->get(); }
-        inline Ogre::Real       getFOV() { return mFOV->get(); }
-        inline Ogre::Vector3    getDirection() { return (getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z); }
+        inline Ogre::Vector3		getPosition() { return mPosition->get(); }
+        inline Ogre::Quaternion		getOrientation() { return mOrientation->get(); }
+        inline CameraViewMode		getViewMode() { return (CameraViewMode)mViewMode->get(); }
+        inline Ogre::Vector2		getClipDistance() { return mClipDistance->get(); }
+        inline int					getPolygonMode() { return mPolygonMode->get(); }
+        inline Ogre::Real			getFOV() { return mFOV->get(); }
+        inline Ogre::Vector3		getDirection() { return (getDerivedOrientation() * Ogre::Vector3::NEGATIVE_UNIT_Z); }
 
         /// This function is called when user right clicks a property to get that property specific popup menu
         /// returns false if no menu present (Disabled Menu Items has a "D" prefix where Enabled Menu Items have "E" prefix
-        virtual bool     getObjectContextMenu(UTFStringVector &menuitems);
-        /// This function is called when user selects a menuitem from ContextMenu
-        virtual void     onObjectContextMenu(int menuresult);
-        virtual TiXmlElement* exportDotScene(TiXmlElement *pParent);
+        virtual bool				getObjectContextMenu(UTFStringVector &menuitems);
+        /// This function is called when user selects a menu item from ContextMenu
+        virtual void				onObjectContextMenu(int menuresult);
+        virtual bool				onBeforeDestroy();
+        virtual TiXmlElement*		exportDotScene(TiXmlElement *pParent);
         /** @copydoc CBaseEditor::setParentImpl(CBaseEditor *,CBaseEditor *) */
-        virtual void     setParentImpl(CBaseEditor *oldparent, CBaseEditor *newparent);
+        virtual void				setParentImpl(CBaseEditor *oldparent, CBaseEditor *newparent);
         /** @copydoc CBaseEditor::setLayerImpl(unsigned int) */
-        virtual bool     setLayerImpl(unsigned int newlayer);
+        virtual bool				setLayerImpl(unsigned int newlayer);
         /** @copydoc CBaseEditor::load(bool) */
-        virtual bool     load(bool async = true);
+        virtual bool				load(bool async = true);
         /** @copydoc CBaseEditor::unLoad() */
-        virtual bool     unLoad();
+        virtual bool				unLoad();
         /** @copydoc CBaseEditor::setSelectedImpl(bool) */
-        virtual void     setSelectedImpl(bool bSelected);
+        virtual void				setSelectedImpl(bool bSelected);
         /** @copydoc CBaseEditor::setHighlightedImpl(bool) */
-        virtual bool     setHighlightedImpl(bool bSelected);
+        virtual bool				setHighlightedImpl(bool bSelected);
         /** @copydoc CBaseEditor::showBoundingBox(bool) */
-        virtual void     showBoundingBox(bool bShow);
+        virtual void				showBoundingBox(bool bShow);
         /**
         * Fetches camera handle
         * @return camera handle
         */
-        inline Ogre::Camera*  getCamera() {return mHandle;};
+        inline Ogre::Camera*		getCamera() {return mHandle;};
         /** @copydoc CBaseEditor::postSceneUpdate(Ogre::SceneManager *, Ogre::Camera *, Ogre::RenderWindow *) */
-        virtual bool     postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *Camera, Ogre::RenderWindow *RenderWindow);
+        virtual bool				postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *Camera, Ogre::RenderWindow *RenderWindow);
         /** @copydoc CBaseEditor::getHandle() */
-        inline virtual void *getHandle() {return static_cast<void*>(mHandle);};
+        inline virtual void			*getHandle() {return static_cast<void*>(mHandle);};
         /** @copydoc CBaseEditor::createProperties(Ogre::NameValuePairList &) */
-        virtual void     createProperties(OgitorsPropertyValueMap &params);
+        virtual void				createProperties(OgitorsPropertyValueMap &params);
 
         /**
         * Sets camera yaw value
         * @param value camera yaw value
         */
-        void             yaw(const Ogre::Radian &value);
+        void						yaw(const Ogre::Radian &value);
         /**
         * Sets camera pitch value
         * @param value camera pitch value
         */
-        void             pitch(const Ogre::Radian &value);
+        void						pitch(const Ogre::Radian &value);
         /**
         * Sets camera roll value
         * @param value camera roll value
         */
-        void             roll(const Ogre::Radian &value);
+        void						roll(const Ogre::Radian &value);
         /**
         * Sets camera direction
         * @param value camera direction vector
         */
-        void             setDirection(const Ogre::Vector3 &vec);
+        void						setDirection(const Ogre::Vector3 &vec);
         /**
         * Sets camera look-at vector coordinate
         * @param value camera look-at vector coordinate
         */
-        void             lookAt(const Ogre::Vector3 &value);
+        void						lookAt(const Ogre::Vector3 &value);
 
         /** @copydoc CBaseEditor::getAABB() */
         virtual Ogre::AxisAlignedBox getAABB();
@@ -145,11 +146,11 @@ namespace Ogitors
         virtual Ogre::Vector3        getDerivedPosition();
         /** @copydoc CBaseEditor::setDerivedPosition(Ogre::Vector3) */
         virtual void                 setDerivedPosition(Ogre::Vector3 val);
-         /** @copydoc CBaseEditor::getDerivedOrientation() */
+        /** @copydoc CBaseEditor::getDerivedOrientation() */
         virtual Ogre::Quaternion     getDerivedOrientation();
 
     protected:
-        Ogre::Camera     *mHandle;                                 /** Camera handle */
+        Ogre::Camera					   *mHandle;               /** Camera handle */
         OgitorsProperty<Ogre::Vector3>     *mPosition;             /** Camera position (wrapper) */
         OgitorsProperty<Ogre::Quaternion>  *mOrientation;          /** Camera orientation (wrapper) */
         OgitorsProperty<Ogre::Vector2>     *mClipDistance;         /** Camera clipping distance (wrapper) */
@@ -214,19 +215,19 @@ namespace Ogitors
         * Delegate function that is called when tracking target was destroyed
         * @param value <unused>
         */
-        void OnTrackTargetDestroyed(const OgitorsPropertyBase* property, Ogre::Any value);
+        void onTrackTargetDestroyed(const OgitorsPropertyBase* property, Ogre::Any value);
         /**
         * Delegate function that is called when tracking target' position has changed
         * @param value tracking target new position
         */
-        void OnTrackTargetPositionChange(const OgitorsPropertyBase* property, Ogre::Any value);
+        void onTrackTargetPositionChange(const OgitorsPropertyBase* property, Ogre::Any value);
         /**
         * Delegate function that is called when tracking target' name has changed
         * @param value tracking target new name
         */
-        void OnTrackTargetNameChange(const OgitorsPropertyBase* property, Ogre::Any value);
+        void onTrackTargetNameChange(const OgitorsPropertyBase* property, Ogre::Any value);
     };
-    
+
     //! Camera editor factory class
     /*!  
     A class that instantiates camera editor and tracks it thereafter

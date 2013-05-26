@@ -355,7 +355,7 @@ namespace Ogitors
     //-----------------------------------------------------------------------------------------
 
     OgitorsRoot::OgitorsRoot(Ogre::StringVector* pDisabledPluginPaths) :
-    mUndoManager(0), mClipboardManager(0), mSceneManager(0), mSceneManagerEditor(0), mRenderWindow(0), mActiveViewport(0),
+        mUndoManager(0), mClipboardManager(0), mSceneManager(0), mSceneManagerEditor(0), mRenderWindow(0), mActiveViewport(0),
         mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO),
         mTerrainEditor(0), mTerrainEditorObject(0), mPagingEditor(0), mPagingEditorObject(0), mIsSceneModified(false),
         mGlobalLightVisiblity(true), mGlobalCameraVisiblity(true), mSelRect(0), mSelectionNode(0),
@@ -1356,33 +1356,6 @@ namespace Ogitors
     //-----------------------------------------------------------------------------------------
     void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreelist, bool display)
     {
-        // Index0 Viewport can not be deleted
-        if(object->getEditorType() == ETYPE_VIEWPORT)
-        {
-            CViewportEditor *viewport = static_cast<CViewportEditor*>(object);
-
-            if(viewport->getViewportIndex() == 1)
-            {
-                OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Cannot delete the main viewport!"), DLGTYPE_OK);
-                return;
-            }
-
-            if(mActiveViewport == viewport)
-            {
-                NameObjectPairList::const_iterator vt = mNamesByType[ETYPE_VIEWPORT].begin();
-                while(vt != mNamesByType[ETYPE_VIEWPORT].end())
-                {
-                    if(vt->second == object)
-                    {
-                        vt++;
-                        continue;
-                    }
-                    mActiveViewport = static_cast<CViewportEditor*>(vt->second);
-                    break;
-                }
-            }
-        }
-
         if(mMultiSelection->contains(object))
         {
             object->setSelected(false);
@@ -1394,7 +1367,7 @@ namespace Ogitors
 
         while(vit != viewports.end())
         {
-            static_cast<CViewportEditor*>(vit->second)->OnObjectDestroyed(object);
+            static_cast<CViewportEditor*>(vit->second)->onObjectDestroyed(object);
 
             vit++;
         }
@@ -1456,6 +1429,8 @@ namespace Ogitors
 
         if(mPagingEditor)
             mPagingEditor->removeObject(object);
+
+        object->onDuringDestroy();
 
         object->destroy(true);
 

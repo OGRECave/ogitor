@@ -48,7 +48,7 @@ PropertyOptionsVector CCameraEditorFactory::mCameraViewModes;
 
 //-----------------------------------------------------------------------------------------
 CCameraEditor::CCameraEditor(CBaseEditorFactory *factory) : CBaseEditor(factory), 
-mAutoTrackTargetPtr(0)
+    mAutoTrackTargetPtr(0)
 {
     mHandle = 0;
     mHelper = 0;
@@ -56,13 +56,13 @@ mAutoTrackTargetPtr(0)
 //-----------------------------------------------------------------------------------------
 CCameraEditor::~CCameraEditor()
 {
- 
+
 }
 //-----------------------------------------------------------------------------------------
 bool CCameraEditor::postSceneUpdate(Ogre::SceneManager *SceneMngr, Ogre::Camera *Camera, Ogre::RenderWindow *RenderWindow)
 {
     Ogre::String target = mAutoTrackTarget->get();
-    
+
     if(target != "" && target != "None")
         _setAutoTrackTarget(0, target);
 
@@ -76,7 +76,7 @@ void CCameraEditor::setParentImpl(CBaseEditor *oldparent, CBaseEditor *newparent
 
     if(oldparent) 
         mHandle->detachFromParent();
-    
+
     if(newparent) 
         newparent->getNode()->attachObject(mHandle);
 }
@@ -94,7 +94,7 @@ void CCameraEditor::setSelectedImpl(bool bSelected)
     CBaseEditor::setSelectedImpl(bSelected);
     if(mOgitorsRoot->GetViewport()->getCameraEditor() == this)
     {
-       bSelected = false;
+        bSelected = false;
     }
 
     showBoundingBox(bSelected);
@@ -121,7 +121,7 @@ void CCameraEditor::showBoundingBox(bool bShow)
             if(mSelected->get())
                 ++matpos;
         }
-        
+
         mOBBoxRenderable->setMaterial(mOBBMaterials[matpos]);
         mBBoxNode->setVisible((bShow || mSelected->get() || mHighlighted->get()) && (mOgitorsRoot->GetViewport()->getCameraEditor() != this));
     }
@@ -202,7 +202,7 @@ void CCameraEditor::yaw(const Ogre::Radian &value)
 
     q.FromAngleAxis(value, Ogre::Vector3::UNIT_Y);
     q.normalise();
-    
+
     mOrientation->set(q * mOrientation->get());
 }
 //-----------------------------------------------------------------------------------------
@@ -212,7 +212,7 @@ void CCameraEditor::pitch(const Ogre::Radian &value)
     Ogre::Vector3 axis = mOrientation->get() * Ogre::Vector3::UNIT_X;
     q.FromAngleAxis(value, axis);
     q.normalise();
-    
+
     mOrientation->set(q * mOrientation->get());
 }
 //-----------------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ void CCameraEditor::roll(const Ogre::Radian &value)
     Ogre::Vector3 axis = mOrientation->get() * Ogre::Vector3::UNIT_Z;
     q.FromAngleAxis(value, axis);
     q.normalise();
-    
+
     mOrientation->set(q * mOrientation->get());
 }
 //-----------------------------------------------------------------------------------------
@@ -359,14 +359,14 @@ bool CCameraEditor::_setAutoTrackTarget(OgitorsPropertyBase* property, const Ogr
         mAutoTrackTargetConnection[1].disconnect();
         mAutoTrackTargetConnection[2].disconnect();
     }
-    
+
     mAutoTrackTargetPtr = mOgitorsRoot->FindObject(targetname);
-    
+
     if(mAutoTrackTargetPtr)
     {
-        CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"destroyed", CCameraEditor, OnTrackTargetDestroyed, mAutoTrackTargetConnection[0]); 
-        CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"name", CCameraEditor, OnTrackTargetNameChange, mAutoTrackTargetConnection[1]); 
-        CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"position", CCameraEditor, OnTrackTargetPositionChange, mAutoTrackTargetConnection[2]); 
+        CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"destroyed", CCameraEditor, onTrackTargetDestroyed, mAutoTrackTargetConnection[0]); 
+        CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"name", CCameraEditor, onTrackTargetNameChange, mAutoTrackTargetConnection[1]); 
+        CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"position", CCameraEditor, onTrackTargetPositionChange, mAutoTrackTargetConnection[2]); 
 
         if(mHandle)
         {
@@ -387,7 +387,7 @@ bool CCameraEditor::_setAutoTrackTarget(OgitorsPropertyBase* property, const Ogr
 
         if(targetname == "None")
             return true;
-        
+
         return false;
     }
 }
@@ -401,7 +401,7 @@ bool CCameraEditor::load(bool async)
         return false;
 
     mHandle = mOgitorsRoot->GetSceneManager()->createCamera(mName->get());
-    
+
     mHandle->setPosition(mPosition->get());
     mHandle->setOrientation(mOrientation->get());
     mHandle->setNearClipDistance(mClipDistance->get().x);
@@ -445,7 +445,7 @@ bool CCameraEditor::unLoad()
         OGRE_DELETE mHelper;
         mHelper = 0;
     }
-    
+
     mLoaded->set(false);
     return true;
 }
@@ -481,18 +481,18 @@ Ogre::Quaternion CCameraEditor::getDerivedOrientation()
 }
 //-----------------------------------------------------------------------------------------
 /** Auto Track Target Related **/
-void CCameraEditor::OnTrackTargetDestroyed(const OgitorsPropertyBase* property, Ogre::Any value)
+void CCameraEditor::onTrackTargetDestroyed(const OgitorsPropertyBase* property, Ogre::Any value)
 {
     mAutoTrackTarget->set("None");
 }
 //-----------------------------------------------------------------------------------------
-void CCameraEditor::OnTrackTargetPositionChange(const OgitorsPropertyBase* property, Ogre::Any value)
+void CCameraEditor::onTrackTargetPositionChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
     if(mHandle)
         mOrientation->set(mHandle->getOrientation());
 }
 //-----------------------------------------------------------------------------------------
-void CCameraEditor::OnTrackTargetNameChange(const OgitorsPropertyBase* property, Ogre::Any value)
+void CCameraEditor::onTrackTargetNameChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
     mAutoTrackTarget->set(Ogre::any_cast<Ogre::String>(value));
 }
@@ -619,7 +619,7 @@ CCameraEditorFactory::CCameraEditorFactory(OgitorsView *view) : CBaseEditorFacto
     AddPropertyDefinition("fov","FOV","The camera's Field of View.",PROP_REAL);
     definition = AddPropertyDefinition("autotracktarget","Tracking Target","The object's tracking target.",PROP_STRING);
     definition->setOptions(OgitorsRoot::GetAutoTrackTargets());
-    
+
     definition = AddPropertyDefinition("polygonmode","Polygon Mode","The camera's polygon mode.",PROP_INT);
     definition->setOptions(&mCameraPolygonModes);
 
@@ -655,5 +655,17 @@ CBaseEditor *CCameraEditorFactory::CreateObject(CBaseEditor **parent, OgitorsPro
 
     mInstanceCount++;
     return object;
+}
+//-----------------------------------------------------------------------------------------
+bool Ogitors::CCameraEditor::onBeforeDestroy()
+{
+    // This editor is the current camera and therefore cannot be destroyed.
+    if(mOgitorsRoot->GetViewport()->getCameraEditor() == this)
+    {
+        OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("This camera is the active camera and therefore cannot be deleted."), DLGTYPE_OK);
+        return false;
+    }
+    else
+        return true;
 }
 //-----------------------------------------------------------------------------------------
