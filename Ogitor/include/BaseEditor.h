@@ -46,7 +46,7 @@
     Ogitors::OgitorsPropertyDefMap::iterator defi = mFactory->mPropertyDefs.find(name);\
     if (defi != mFactory->mPropertyDefs.end())\
     {\
-        mProperties.addProperty(OGRE_NEW Ogitors::OgitorsProperty<type>(&(defi->second), value, tag, setter));\
+    mProperties.addProperty(OGRE_NEW Ogitors::OgitorsProperty<type>(&(defi->second), value, tag, setter));\
     }\
 }\
 
@@ -56,8 +56,8 @@
     ptr = 0;\
     if (defi != mFactory->mPropertyDefs.end())\
     {\
-        ptr = OGRE_NEW Ogitors::OgitorsProperty<type>(&(defi->second), value, tag, setter);\
-        mProperties.addProperty( ptr );\
+    ptr = OGRE_NEW Ogitors::OgitorsProperty<type>(&(defi->second), value, tag, setter);\
+    mProperties.addProperty( ptr );\
     }\
     assert(ptr != 0);\
 }\
@@ -81,7 +81,7 @@ namespace Ogitors
         inline CBaseEditorFactory *getFactoryDynamic() { return mFactory; }
         /** Static initialization */
         static void _initStatic(OgitorsRoot *root);
-        
+
         inline void setModified(bool value) { mModified->set(value); }
         inline void setSelected(bool value) { mSelected->set(value); }
         inline void setHighlighted(bool value) { mHighlighted->set(value); }
@@ -239,6 +239,19 @@ namespace Ogitors
         */
         void                        destroy(bool informparent = false);
         /**
+        * Called when destruction of an editor is requested. Can be used to notify the user that this editor
+        * cannot be destroyed right now (although it can in general as indicated by the factory settings).
+        * @return only if 'true' is returned, while the destruction process actually be executed.
+        */
+        virtual bool				onBeforeDestroy() {return true;};
+        /**
+        * Called when destruction of an editor is in process, more precisely: At this stage,
+        * the user has no further chance of canceling the process anymore, but the editor is still present
+        * and has not been cleaned up / destroyed by its factory. This is the last chance to do some
+        * custom steps with the soon-to-be-vanished editor object.
+        */
+        virtual void				onDuringDestroy() {};
+        /**
         * Returns a list with object's name and all of its children names recursively
         * @param list the list to be filled with names
         */
@@ -317,107 +330,107 @@ namespace Ogitors
         * Creates editor object
         * @return true if this object is successfully, otherwise false (also forces object's parent to load too)
         */
-        virtual bool     load(bool async = true) {mLoaded->set(true);return true;};
+        virtual bool				load(bool async = true) {mLoaded->set(true);return true;};
         /**
         * Unloads editor object and all of its children
         * @return false if editor was not loaded properly, otherwise true
         */
-        virtual bool     unLoad() {unLoadAllChildren();mLoaded->set(false);return true;};
+        virtual bool				unLoad() {unLoadAllChildren();mLoaded->set(false);return true;};
         /**
         * Writes custom files during an export procedure
         * @param forced Force to save even if data is not changed
         */
-        virtual void     onSave(bool forced = false) {};
+        virtual void				onSave(bool forced = false) {};
         /**
         * Shows or hides editor' bounding box
         * @param bShow flag to signify whether to show or hide bounding box
         */
-        virtual void     showBoundingBox(bool bShow);
+        virtual void				showBoundingBox(bool bShow);
         /**
         * Assigns a visual helper for a objects without mass (Light or camera, for example)
         * @param objHelper helper object
         */
-        virtual void     setHelper(CVisualHelper *objHelper);
+        virtual void				setHelper(CVisualHelper *objHelper);
         /**
         * Shows or hides helper object
         * @param show flag to signify whether to hide or show helper object
         */
-        virtual void     showHelper(bool show);
+        virtual void				showHelper(bool show);
         /**
         * Tests if any object is selected
         * @return true if this object is selected, otherwise false
         */
-        inline bool      getSelected() { return mSelected->get(); }
+        inline bool					getSelected() { return mSelected->get(); }
         /**
         * Called before displaying an object properties in properties view 
         */
-        virtual void             prepareBeforePresentProperties() {};
+        virtual void				prepareBeforePresentProperties() {};
         /**
         * Fetches context-based properties menu for specified property type 
         * @param propertyName name of the property for which a menu is requested
         * @param menuitems menu entries for the property
         * @return true if any properties were returned, otherwise false
         */
-        virtual bool             getPropertyContextMenu(Ogre::String propertyName, UTFStringVector &menuitems) {menuitems.clear();return false;};
+        virtual bool				getPropertyContextMenu(Ogre::String propertyName, UTFStringVector &menuitems) {menuitems.clear();return false;};
         /**
         * Delegate function that is called when menu entry for context-based properties menu is selected
         * @param propertyName name of the property for which a menu is requested
         * @param menuresult the index of selected menu item
         */
-        virtual void             onPropertyContextMenu(Ogre::String propertyName, int menuresult) {};
+        virtual void				onPropertyContextMenu(Ogre::String propertyName, int menuresult) {};
         /**
         * Fetches a context-based object menu (right-click on the scene)
         * @param menu item menu items the menu contains
         * @return true if menu has entries, otherwise false
         */
-        virtual bool             getObjectContextMenu(UTFStringVector &menuitems) {menuitems.clear();return false;};
+        virtual bool				getObjectContextMenu(UTFStringVector &menuitems) {menuitems.clear();return false;};
         /**
         * Delegate function that is called when an object is selected in objects context menu
         * @param menuresult result of menu selection
         */
-        virtual void             onObjectContextMenu(int menuresult) {};
+        virtual void				onObjectContextMenu(int menuresult) {};
         /**
         * Delegate function that is called when material is dropped onto the scene
         * @param position position of where it is dropped on
         * @param materialname name of the material being dropped
         */
-        virtual void             onDropMaterial(Ogre::Ray ray, Ogre::Vector3 position, const Ogre::String& materialname) {};
+        virtual void				onDropMaterial(Ogre::Ray ray, Ogre::Vector3 position, const Ogre::String& materialname) {};
         /**
         * Tests if editor object is serializable
         * @return true if editor object is serializable, otherwise false
         * @remarks Some objects may be temporary and should not be stored in project file
         */
-        virtual bool            isSerializable() {return true;};
+        virtual bool				isSerializable() {return true;};
         /**
         * Tests if editor object is of node type (Overridden by editor class if it has node capabilities)
         * @return true if editor object has node capabilities, otherwise false
         */
-        virtual bool            isNodeType() {return false;};
+        virtual bool				isNodeType() {return false;};
         /**
         * Tests if editor object can be auto tracked
         * @return true if editor object can be auto tracked
         */
-        virtual bool            isAutoTrackTarget() {return false;};
+        virtual bool				isAutoTrackTarget() {return false;};
         /**
         * Tests if editor object is of terrain type (Overridden by editor class if it has terrain capabilities)
         * @return true if editor object has terrain capabilities, otherwise false
         */
-        virtual bool            isTerrainType() {return false;};
+        virtual bool				isTerrainType() {return false;};
         /**
         * Fetches terrain editor associated with editor object
         * @return terrain editor associated with editor object
         */
-        virtual ITerrainEditor* getTerrainEditor() {return 0;};
+        virtual ITerrainEditor*		getTerrainEditor() {return 0;};
         /**
         * Fetches paging editor associated with editor object
         * @return paging editor associated with editor object
         */
-        virtual IPagingEditor* getPagingEditor() {return 0;};
+        virtual IPagingEditor*		getPagingEditor() {return 0;};
         /**
         * Delegate function that is called when terrain editor associated with editor object is destroyed
         * @return true when destruction procedure is completed successfully, otherwise false
         */
-        virtual bool            onTerrainDestroyed() {return false;};
+        virtual bool				onTerrainDestroyed() {return false;};
 
         /// VARIOUS GETXXX FUNCTIONS OVERRIDEN BY EDITOR OBJECTS TO STANDARDIZE
         /// PROPERTY RETRIEVAL FROM UNDERLYING OGRE OBJECTS
@@ -524,17 +537,17 @@ namespace Ogitors
         * This function supplies a widget that displays object specific tools
         * @return Handle to any custom tools widget that object wants to show
         */
-        void *getCustomToolsWindow();
+        void						*getCustomToolsWindow();
         /**
         * This function supplies a widget which extends the current properties view
         * @return Handle to any custom "property widget" that object wants to show
         */
-        void *getPropertyEditorToolWindow();
+        void						*getPropertyEditorToolWindow();
 
         /** Script related reference counting ++ref */
-        void             _addRef();
+        void						_addRef();
         /** Script related reference counting --ref */
-        void             _release();
+        void						_release();
 
     protected:
         static Ogre::String      mOBBMaterials[3];
@@ -544,7 +557,7 @@ namespace Ogitors
 
         CBaseEditorFactory      *mFactory;                  /** The factory that created the object */
         OgitorsView             *mView;                     /** The View instantiating the object, NULL for OgitorsRoot */
-        
+
         NameObjectPairList       mChildren;                 /** Hash map of children object(s)*/
         CVisualHelper           *mHelper;                   /** Visual helper object handle */
         Ogre::SceneNode         *mBoxParentNode;            /** Custom bounding box' parent node */
@@ -716,7 +729,7 @@ namespace Ogitors
         bool                    mUsesGizmos;                 /** A flag signifying  that editor object uses gizmos when selected*/
 
         OgitorsPropertyDefMap   mPropertyDefs;              /** Class holding all static property definition data */
-        
+
         void                    *mToolsWindow;
         void                    *mPropertyEditorToolWindow;
 
