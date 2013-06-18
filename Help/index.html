@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Ogitor Help - Introduction</title>
+<link href="application.css" media="all" rel="stylesheet" type="text/css">
+<link href="jstoolbar.css" media="screen" rel="stylesheet" type="text/css">
+<link href="scm.css" media="all" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="wrapper">
+<div class="" id="main">
+<div id="content">
+<div class="wiki">
+  <h1 id="Introduction">Introduction<a href="#Introduction" class="wiki-anchor">.</a></h1>
+
+
+	<p><strong>Ogitor</strong> is a Plug-In based WYSIWYG editor environment for OGRE. It allows easy creation of scenes which can be loaded in an OGRE application for both rapid prototyping purposes and as final application content. The Ogre inspired Plug-In concept allows user to implement custom Ogre libraries to use them directly in Ogitor. The default scene description format is the XML based ".ogscene" format but ofcourse it is possible to provide and use custom importer/exporter Plug-Ins as well.</p>
+
+
+	<p><img src="intro1.png" alt="" /></p>
+
+	<p>The primary focus of <strong>Ogitor</strong> in difference to other Editor implementations is its Plug-In interface concept which allows the creation of custom plugable modules by users. This allows the addition of new features to Ogitor without changing the core. Obvious additional features are e.g. physic libraries, sound libraries, custom ogre scenemanagers, available ogre plugins etc. Depending on the actual implementation it is possible to fully control these in Ogitor via properties directly.</p>
+
+
+	<p><strong>Ogitor</strong> is using the <strong>Qt toolkit</strong> as its graphical interface, previous GUIs (<strong>MFC</strong>, <strong>wxWidgets</strong>) have been discontinued.</p>
+
+
+	<h2 id="Features">Features<a href="#Features" class="wiki-anchor">.</a></h2>
+
+
+	<h3 id="Scene-Development">Scene Development<a href="#Scene-Development" class="wiki-anchor">.</a></h3>
+
+
+	<ul>
+	<li>Project based management</li>
+
+		<li>Management of Ogre mesh and material files as well as textures</li>
+		<li>Adding/removing SceneNodes/Entities/Lights/Cameras via a hierarchical scene tree</li>
+		<li>Undo/Redo</li>
+		<li>Multi-Selection</li>
+		<li>Skyboxes</li>
+		<li>General Plug-In interface which allows creation of custom Ogitor Plug-Ins e.g. for your favourite Ogre Plug-In (for example Plug-Ins see below)</li>
+
+		<li>Support for the XML based ".ogscene" import/export format</li>
+		<li>Exporter/Importer Plug-In interface which allows the use of custom scene description formats</li>
+		<li>Custom data support for scene objects</li>
+		<li>Object Node Locking/Unlocking</li>
+		<li>Multiple Viewports with their own compositors and mouse response</li>
+		<li>Support for "On Demand" creation of underlying objects (for Paging)</li>
+
+		<li>GUI Hook plugins interface</li>
+	</ul>
+
+
+	<h3 id="Supported-PlugIns">Supported PlugIns<a href="#Supported-PlugIns" class="wiki-anchor">.</a></h3>
+
+
+	<ul>
+	<li>Hydrax</li>
+
+		<li>Caelum</li>
+		<li>Ogre Paging/Terrain framework (in development)</li>
+		<li>PagedGeometry</li>
+	</ul>
+
+
+	<h2 id="Roadmap">Roadmap<a href="#Roadmap" class="wiki-anchor">.</a></h2>
+
+	<ul>
+	<li>Integrating paging system and Ogre Terrain as soon as they are implemented in Ogre</li>
+		<li>In Editor file editing (Material-/Compositor-/Shader scripts) (with possible syntax highlighting)</li>
+		<li>Multi functional entity panel supporting mesh editing (via mesh magick)</li>
+		<li>Integrating a physic layer (which allows support for upcoming OgPhysX/OgODE/OgNewton plugins)</li>
+		<li>Increasing usability (improve Gizmos, support HotKeys, feed preferences dialog)</li>
+
+		<li>Implementation of time line support to create a foundation for advanced Particle effects and animation</li>
+		<li>Implementation scripting backend (LUA? Falcon? Python?) which allows chaining of properties and events</li>
+		<li>Implementation of basic shadow techniques which hopefully improve the scene composition...</li>
+	</ul>
+
+
+	<p>Please feel free to brainstorm/dump ideas, suggestions and feature requests at the <strong>Ogitor Forum</strong>.</p>
+
+
+	<p></p>
+
+</div>
+</div>
+</div>
+</div>
+</body></html>
