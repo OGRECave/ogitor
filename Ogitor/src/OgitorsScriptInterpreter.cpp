@@ -57,7 +57,7 @@ namespace Ogitors
     {
         list.clear();
         
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         
         for(unsigned int i = start;i < mBuffer.size();i++)
         {

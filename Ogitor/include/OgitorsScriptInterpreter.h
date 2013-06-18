@@ -102,7 +102,7 @@ namespace Ogitors
         OgitorsRoot        *mOgitorsRoot;
         OgitorsSystem      *mSystem;
         bool                mInitialized;
-        OGRE_AUTO_MUTEX
+        OGRE_AUTO_MUTEX;
         OutputDataVector    mBuffer;
         static float        mTimeSinceLastFrame;
     };
