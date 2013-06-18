@@ -104,6 +104,6 @@ namespace Ogitors
         std::string         mPrompt;
         State               mState;
         bool                mFirstLine;
-        OGRE_AUTO_MUTEX
+        OGRE_AUTO_MUTEX;
     };
 }

@@ -69,7 +69,7 @@ namespace Ogitors
     {
         list.clear();
 
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         
         for(unsigned int i = start;i < mOutput.size();i++)
         {
@@ -82,7 +82,7 @@ namespace Ogitors
     // Adds a line to output
     void OgitorsScriptConsole::addOutput(const std::string& text)
     {
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         
         mOutput.push_back(text);
     }
@@ -91,7 +91,7 @@ namespace Ogitors
     // Insert (another) line of text into the interpreter.
     OgitorsScriptConsole::State OgitorsScriptConsole::insertLine( std::string& line, bool fInsertInOutput )
     {
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         if( fInsertInOutput == true )
         {
             mOutput.push_back(line);
@@ -134,7 +134,7 @@ namespace Ogitors
     {
         Ogre::StringVector result = mInterpreter->buildString(console_str, arg);
         
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         
         for(unsigned int i = 0;i < result.size();i++)
             mOutput.push_back(result[i]);
@@ -143,7 +143,7 @@ namespace Ogitors
     void OgitorsScriptConsole::runScript(std::string &file)
     {
         Ogre::StringVector result = mInterpreter->runScript(console_str, file);
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         mOutput.push_back("Running Script : " + file);
         for(unsigned int i = 0;i < result.size();i++)
             mOutput.push_back(result[i]);
@@ -152,7 +152,7 @@ namespace Ogitors
     void OgitorsScriptConsole::testScript(std::string &file)
     {
         Ogre::StringVector result = mInterpreter->compileModule(console_str, file);
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         mOutput.push_back("Testing Script : " + file);
         for(unsigned int i = 0;i < result.size();i++)
             mOutput.push_back(result[i]);
@@ -161,7 +161,7 @@ namespace Ogitors
     void OgitorsScriptConsole::testScript(const char *source)
     {
         Ogre::StringVector result = mInterpreter->compileModule(console_str, source);
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         mOutput.push_back("Compiling Script...");
         for(unsigned int i = 0;i < result.size();i++)
             mOutput.push_back(result[i]);
@@ -170,7 +170,7 @@ namespace Ogitors
     void OgitorsScriptConsole::addFunction(std::string &arg)
     {
         Ogre::StringVector result = mInterpreter->addFunction(console_str, arg);
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         for(unsigned int i = 0;i < result.size();i++)
             mOutput.push_back(result[i]);
     }
@@ -178,7 +178,7 @@ namespace Ogitors
     void OgitorsScriptConsole::listFunctions()
     {
         Ogre::StringVector result = mInterpreter->listFunctions(console_str);
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         for(unsigned int i = 0;i < result.size();i++)
             mOutput.push_back(result[i]);
     }
@@ -186,7 +186,7 @@ namespace Ogitors
     void OgitorsScriptConsole::execString(std::string &arg)
     {
         Ogre::StringVector result = mInterpreter->execString(console_str, arg);
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         mOutput.push_back("Executing : " + arg);
         for(unsigned int i = 0;i < result.size();i++)
             mOutput.push_back(result[i]);

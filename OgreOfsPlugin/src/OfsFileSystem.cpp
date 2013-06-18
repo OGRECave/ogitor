@@ -226,7 +226,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void OFSArchive::load()
     {
-		OGRE_LOCK_AUTO_MUTEX
+		OGRE_LOCK_AUTO_MUTEX;
 
         // test to see if this folder is writeable
 		String testPath = mFileSystemName + "__testwrite.ogre";
@@ -246,7 +246,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void OFSArchive::unload()
     {
-		OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
 
         mOfs.unmount();
     }
