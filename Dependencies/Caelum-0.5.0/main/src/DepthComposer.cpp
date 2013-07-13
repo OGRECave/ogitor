@@ -300,7 +300,11 @@ namespace Caelum
 		Ogre::String uniqueId = Ogre::StringConverter::toString ((size_t)this);
 
         // Not cloned!
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         mDepthRenderMaterial = MaterialManager::getSingleton ().getByName ("Caelum/DepthRender");
+#else
+        mDepthRenderMaterial = MaterialManager::getSingleton ().getByName ("Caelum/DepthRender").staticCast<Ogre::Material>();
+#endif
         mDepthRenderMaterial->load();
         if (!mDepthRenderMaterial->getBestTechnique ()) {
             CAELUM_THROW_UNSUPPORTED_EXCEPTION (

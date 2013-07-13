@@ -696,7 +696,11 @@ void ModularZoneEditor::setDesignModeMaterial(void)
         Ogre::String matName = this->mZoneMesh->getSubEntity(index)->getMaterialName() + "Wireframe";
         
         //check with MaterialManager if matName exists, if it does, rerieve that material
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr designMat = Ogre::MaterialManager::getSingleton().getByName(matName);
+#else
+        Ogre::MaterialPtr designMat = Ogre::MaterialManager::getSingleton().getByName(matName).staticCast<Ogre::Material>();
+#endif
         //otherwise, create a new material
         if(designMat.isNull())
         {

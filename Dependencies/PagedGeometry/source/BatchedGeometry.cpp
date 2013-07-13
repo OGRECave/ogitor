@@ -383,15 +383,27 @@ BatchedGeometry::SubBatch::SubBatch(BatchedGeometry *parent, SubEntity *ent)
 	requireVertexColors = false;
 
 	// Material must always exist
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 	Material *origMat = ((MaterialPtr)MaterialManager::getSingleton().getByName(ent->getMaterialName())).getPointer();
+#else
+	Material *origMat = MaterialManager::getSingleton().getByName(ent->getMaterialName()).staticCast<Ogre::Material>().getPointer();
+#endif
 	if (origMat) {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		material = MaterialManager::getSingleton().getByName(getMaterialClone(*origMat)->getName());
+#else
+		material = MaterialManager::getSingleton().getByName(getMaterialClone(*origMat)->getName()).staticCast<Ogre::Material>();
+#endif
 	} else {
 		MaterialManager::ResourceCreateOrRetrieveResult result = MaterialManager::getSingleton().createOrRetrieve("PagedGeometry_Batched_Material", "General");
 		if (result.first.isNull()) {
 			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "BatchedGeometry failed to create a material for entity with invalid material.", "BatchedGeometry::SubBatch::SubBatch(BatchedGeometry *parent, SubEntity *ent)");
 		}
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		material = result.first;
+#else
+		material = result.first.staticCast<Ogre::Material>();
+#endif
 	}
 
 	//Setup vertex/index data structure
@@ -436,7 +448,11 @@ BatchedGeometry::SubBatch::~SubBatch()
 Material *BatchedGeometry::SubBatch::getMaterialClone(Material &mat)
 {
 	String clonedName = mat.getName() + "_Batched";
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 	MaterialPtr clonedMat = MaterialManager::getSingleton().getByName(clonedName);
+#else
+	MaterialPtr clonedMat = MaterialManager::getSingleton().getByName(clonedName).staticCast<Ogre::Material>();
+#endif
 	if (clonedMat.isNull())
 		clonedMat = mat.clone(clonedName);
 	

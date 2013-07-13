@@ -74,10 +74,18 @@ Ogre::MaterialPtr CSceneManagerEditor::buildDepthShadowMaterial(const Ogre::Stri
 {
     Ogre::String matName = "DepthShadows/" + textureName;
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr ret = Ogre::MaterialManager::getSingleton().getByName(matName);
+#else
+    Ogre::MaterialPtr ret = Ogre::MaterialManager::getSingleton().getByName(matName).staticCast<Ogre::Material>();
+#endif
     if (ret.isNull())
     {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr baseMat = Ogre::MaterialManager::getSingleton().getByName("Ogre/shadow/depth/integrated/pssm");
+#else
+        Ogre::MaterialPtr baseMat = Ogre::MaterialManager::getSingleton().getByName("Ogre/shadow/depth/integrated/pssm").staticCast<Ogre::Material>();
+#endif
         ret = baseMat->clone(matName);
         Ogre::Pass* p = ret->getTechnique(0)->getPass(0);
         p->getTextureUnitState("diffuse")->setTextureName(textureName);
@@ -101,7 +109,11 @@ Ogre::MaterialPtr CSceneManagerEditor::buildDepthShadowMaterial(Ogre::MaterialPt
     {
         Ogre::String matName = "DepthShadows/" + cpyMat->getName();
 
-        Ogre::MaterialPtr ret = Ogre::MaterialManager::getSingleton().getByName(matName);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+    Ogre::MaterialPtr ret = Ogre::MaterialManager::getSingleton().getByName(matName);
+#else
+    Ogre::MaterialPtr ret = Ogre::MaterialManager::getSingleton().getByName(matName).staticCast<Ogre::Material>();
+#endif
         if (ret.isNull())
         {
             ret = cpyMat->clone(matName);

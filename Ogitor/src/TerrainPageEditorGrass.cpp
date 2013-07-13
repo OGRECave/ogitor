@@ -188,7 +188,11 @@ void CTerrainPageEditor::_loadGrassLayers()
     Ogre::AxisAlignedBox bBox = mHandle->getWorldAABB();
     TBounds bounds(bBox.getMinimum().x, bBox.getMinimum().z, bBox.getMaximum().x, bBox.getMaximum().z);
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::TexturePtr denptr = Ogre::TextureManager::getSingletonPtr()->createOrRetrieve(mName->get() + "_densitymap", PROJECT_TEMP_RESOURCE_GROUP).first;
+#else
+    Ogre::TexturePtr denptr = Ogre::TextureManager::getSingletonPtr()->createOrRetrieve(mName->get() + "_densitymap", PROJECT_TEMP_RESOURCE_GROUP).first.staticCast<Ogre::Texture>();
+#endif
     denptr->loadImage(mPGDensityMap);
 
     for(int i = 0;i < 4;i++)
@@ -345,7 +349,11 @@ bool CTerrainPageEditor::_setPGActive(OgitorsPropertyBase* property, const bool&
             Ogre::AxisAlignedBox bBox = mHandle->getWorldAABB();
             TBounds bounds(bBox.getMinimum().x, bBox.getMinimum().z, bBox.getMaximum().x, bBox.getMaximum().z);
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             Ogre::TexturePtr denptr = Ogre::TextureManager::getSingletonPtr()->getByName(mName->get() + "_densitymap", PROJECT_TEMP_RESOURCE_GROUP);
+#else
+            Ogre::TexturePtr denptr = Ogre::TextureManager::getSingletonPtr()->getByName(mName->get() + "_densitymap", PROJECT_TEMP_RESOURCE_GROUP).staticCast<Ogre::Texture>();
+#endif
 
             mPGLayers[idx] = parentEditor->getGrassLoaderHandle()->addLayer(mPGMaterial[idx]->get());
 

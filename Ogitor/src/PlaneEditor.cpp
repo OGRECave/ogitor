@@ -71,7 +71,11 @@ Ogre::Entity *CPlaneEditor::_createPlane()
     CSceneManagerEditor *mSceneMgr = mOgitorsRoot->GetSceneManagerEditor();
     if(mSceneMgr->getShadowsEnabled())
     {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterial->get());
+#else
+        Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterial->get()).staticCast<Ogre::Material>();
+#endif
         mPlaneHandle->setMaterial(mSceneMgr->buildDepthShadowMaterial(matEnt));
     }
     else
@@ -200,7 +204,11 @@ bool CPlaneEditor::_setMaterial(OgitorsPropertyBase* property, const Ogre::Strin
         CSceneManagerEditor *mSceneMgr = mOgitorsRoot->GetSceneManagerEditor();
         if(mSceneMgr->getShadowsEnabled())
         {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(value);
+#else
+            Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(value).staticCast<Ogre::Material>();
+#endif
             mPlaneHandle->setMaterial(mSceneMgr->buildDepthShadowMaterial(matEnt));
         }
         else

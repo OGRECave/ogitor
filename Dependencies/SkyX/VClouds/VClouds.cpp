@@ -51,8 +51,13 @@ namespace SkyX { namespace VClouds
 		, mGeometryManager(new GeometryManager(this))
 		, mLightningManager(new LightningManager(this))
 		, mCamerasData(std::vector<CameraData>())
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		, mVolCloudsMaterial(Ogre::MeshPtr())
 		, mVolCloudsLightningMaterial(Ogre::MeshPtr())
+#else
+		, mVolCloudsMaterial(Ogre::MaterialPtr())
+		, mVolCloudsLightningMaterial(Ogre::MaterialPtr())
+#endif
 	{
 	}
 
@@ -69,8 +74,13 @@ namespace SkyX { namespace VClouds
 	{
 		remove();
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		mVolCloudsMaterial = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds"));
 		mVolCloudsLightningMaterial = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds_Lightning"));
+#else
+		mVolCloudsMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds").staticCast<Ogre::Material>();
+		mVolCloudsLightningMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds_Lightning").staticCast<Ogre::Material>();
+#endif
 
 		if (mVolCloudsMaterial.isNull() || mVolCloudsLightningMaterial.isNull())
 		{

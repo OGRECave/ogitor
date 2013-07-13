@@ -295,7 +295,11 @@ namespace Hydrax{namespace Noise
 		// Build our material
 
 		Ogre::MaterialPtr &mNormalMapMaterial = mGPUNormalMapManager->getNormalMapMaterial();
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		mNormalMapMaterial = Ogre::MaterialManager::getSingleton().create("_Hydrax_GPU_Normal_Map_Material", HYDRAX_RESOURCE_GROUP);
+#else
+		mNormalMapMaterial = Ogre::MaterialManager::getSingleton().create("_Hydrax_GPU_Normal_Map_Material", HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
+#endif
 
 		Ogre::Pass *Technique0_Pass0 = mNormalMapMaterial->getTechnique(0)->getPass(0);
 

@@ -32,13 +32,17 @@ namespace Hydrax
 	Mesh::Mesh(Hydrax *h)
             : mHydrax(h)
 			, mCreated(false)
-            , mMesh(0)
-            , mSubMesh(0)
-            , mEntity(0)
-            , mNumFaces(0)
-            , mNumVertices(0)
-            , mVertexBuffer(0)
-            , mIndexBuffer(0)
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+			, mMesh(0)
+#else
+			, mMesh()
+#endif
+			, mSubMesh(0)
+			, mEntity(0)
+			, mNumFaces(0)
+			, mNumVertices(0)
+			, mVertexBuffer(0)
+			, mIndexBuffer(0)
 			, mSceneNode(0)
             , mMaterialName("_NULL_")
     {
@@ -412,14 +416,22 @@ namespace Hydrax
 
 		if (mCreated)
 		{
-			mWorldMatrix = mEntity->getParentSceneNode()->_getFullTransform();
+	#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7
+			 mWorldMatrix = mEntity->getParentSceneNode()->_getFullTransform();
+	#else
+			 mEntity->getParentSceneNode()->getWorldTransforms(&mWorldMatrix);
+	#endif
 		}
 		else
 		{
 			Ogre::SceneNode *mTmpSN = new Ogre::SceneNode(0);
 		    mTmpSN->setPosition(mHydrax->getPosition());
 
-			mWorldMatrix = mTmpSN->_getFullTransform();
+	#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7
+			 mWorldMatrix = mTmpSN->_getFullTransform();
+	#else
+			 mTmpSN->getWorldTransforms(&mWorldMatrix);
+	#endif
 
 		    delete mTmpSN;
 		}
@@ -433,14 +445,22 @@ namespace Hydrax
 
 		if (mCreated)
 		{
-            mWorldMatrix = mEntity->getParentSceneNode()->_getFullTransform();
-        }
+	#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7
+			 mWorldMatrix = mEntity->getParentSceneNode()->_getFullTransform();
+	#else
+			 mEntity->getParentSceneNode()->getWorldTransforms(&mWorldMatrix);
+	#endif
+		}
 		else
 		{
 			Ogre::SceneNode *mTmpSN = new Ogre::SceneNode(0);
 		    mTmpSN->setPosition(mHydrax->getPosition());
 
-			mWorldMatrix = mTmpSN->_getFullTransform();
+	#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7
+			 mWorldMatrix = mTmpSN->_getFullTransform();
+	#else
+			 mTmpSN->getWorldTransforms(&mWorldMatrix);
+	#endif
 
 		    delete mTmpSN;
 		}

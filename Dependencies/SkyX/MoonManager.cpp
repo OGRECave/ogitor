@@ -51,7 +51,11 @@ namespace SkyX
 			return;
 		}
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		mMoonMaterial = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName("SkyX_Moon"));
+#else
+		mMoonMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyX_Moon").staticCast<Ogre::Material>();
+#endif
 
 		if (mMoonMaterial.isNull())
 		{

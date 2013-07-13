@@ -387,7 +387,11 @@ void PortalEditor::_createMaterial()
     Ogre::ResourceManager::ResourceCreateOrRetrieveResult result = Ogre::MaterialManager::getSingleton().createOrRetrieve("MZP_Portal_Material", "General");
     if(result.second)
     {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         material = result.first;
+#else
+        material = result.first.staticCast<Ogre::Material>();
+#endif
         material->getTechnique(0)->getPass(0)->setPolygonMode(Ogre::PM_POINTS);
     }
 

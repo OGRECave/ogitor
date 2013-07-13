@@ -97,7 +97,11 @@ ImageConverter::~ImageConverter()
 QImage ImageConverter::fromOgreMaterialName(const Ogre::String& name, const Ogre::String& resourceGroup)
 {
     mResourceGroup = resourceGroup;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->load(name, mResourceGroup);
+#else
+    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->load(name, mResourceGroup).staticCast<Ogre::Material>();
+#endif
     return _getRenderTarget(material->getName());
 }
 //----------------------------------------------------------------------------------------
@@ -136,7 +140,11 @@ QImage ImageConverter::_imageFromRenderTarget(const Ogre::Image& img)
     Ogre::TextureManager::getSingletonPtr()->loadImage("QTTextureName", "QTImageConverter", img);
 
     // create our material
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("terrainMaterial", "QTImageConverter");
+#else
+    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("terrainMaterial", "QTImageConverter").staticCast<Ogre::Material>();
+#endif
     Ogre::Technique * technique = material->getTechnique(0);
     Ogre::Pass* pass = technique->getPass(0);
     Ogre::TextureUnitState* textureUnit = pass->createTextureUnitState();
