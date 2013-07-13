@@ -81,6 +81,7 @@ namespace SkyX
 
 		bool gammaCorrection = mSkyX->getLightingMode() == SkyX::LM_HDR;
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		// SkyX_Starfield.png
 		static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(getSkydomeMaterialName()))
 			->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setHardwareGammaEnabled(gammaCorrection);
@@ -90,6 +91,17 @@ namespace SkyX
 			->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setHardwareGammaEnabled(gammaCorrection);
 		static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(getMoonMaterialName()))
 			->getTechnique(0)->getPass(0)->getTextureUnitState(1)->setHardwareGammaEnabled(gammaCorrection);
+#else
+		// SkyX_Starfield.png
+		Ogre::MaterialManager::getSingleton().getByName(getSkydomeMaterialName()).staticCast<Ogre::Material>()
+			->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setHardwareGammaEnabled(gammaCorrection);
+
+		// SkyX_Moon.png and SkyX_MoonHalo.png
+		Ogre::MaterialManager::getSingleton().getByName(getMoonMaterialName()).staticCast<Ogre::Material>()
+			->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setHardwareGammaEnabled(gammaCorrection);
+		Ogre::MaterialManager::getSingleton().getByName(getMoonMaterialName()).staticCast<Ogre::Material>()
+			->getTechnique(0)->getPass(0)->getTextureUnitState(1)->setHardwareGammaEnabled(gammaCorrection);
+#endif
 
 		_setTextureHWGammaCorrection("SkyX_Starfield.png", gammaCorrection);
 		_setTextureHWGammaCorrection("SkyX_Moon.png", gammaCorrection);
@@ -347,7 +359,11 @@ namespace SkyX
 
 	void GPUManager::_setTextureHWGammaCorrection(const Ogre::String& n, const bool& g)
 	{
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		Ogre::TexturePtr tex = Ogre::TextureManager::getSingleton().getByName(n);
+#else
+		Ogre::TexturePtr tex = Ogre::TextureManager::getSingleton().getByName(n).staticCast<Ogre::Texture>();
+#endif
 
 		if (!tex.isNull())
 		{

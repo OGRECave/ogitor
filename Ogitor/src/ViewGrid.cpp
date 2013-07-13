@@ -246,7 +246,11 @@ void ViewportGrid::createGrid()
     Ogre::MaterialManager &matMgr = Ogre::MaterialManager::getSingleton();
     if(!matMgr.resourceExists(sMatName))
     {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr pMaterial = matMgr.create(sMatName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+#else
+        Ogre::MaterialPtr pMaterial = matMgr.create(sMatName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
+#endif
         pMaterial->setLightingEnabled(false);
         pMaterial->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
     }

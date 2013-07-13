@@ -187,7 +187,11 @@ void MaterialTextEditorCodec::onContextMenu(QContextMenuEvent* event)
         mGenTexEdDoc->setTextCursor(cursor);
 
         QColor oldColour;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialName.toStdString());
+#else
+        Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialName.toStdString()).staticCast<Ogre::Material>();
+#endif
         
         // If null then the material was probably not made a scene asset yet.
         if(!mat.isNull())
@@ -355,7 +359,11 @@ void MaterialTextEditorCodec::onKeyPressEvent(QKeyEvent *event)
             // that there is a script error proceed anyway.
             Ogre::MaterialPtr mat;
             if( materialList.count() > 0 )
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                 mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+#else
+                mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString()).staticCast<Ogre::Material>();
+#endif
 
             if(mat.isNull() && !mScriptError)
             {
@@ -384,7 +392,11 @@ void MaterialTextEditorCodec::onRefresh()
     // that there is a script error proceed anyway.
     Ogre::MaterialPtr mat;
     if( materialList.count() > 0 )
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString());
+#else
+        mat = Ogre::MaterialManager::getSingletonPtr()->getByName(materialList[0].toStdString()).staticCast<Ogre::Material>();
+#endif
 
     if(mat.isNull() && !mScriptError)
     {
@@ -447,7 +459,11 @@ void MaterialTextEditorCodec::reloadMaterials(QStringList materialList)
     for(int i = 0; i < materialList.size(); i++)
     {
         QString matName = materialList[i];
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(matName.toStdString());
+#else
+        Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingletonPtr()->getByName(matName.toStdString()).staticCast<Ogre::Material>();
+#endif
         mat->unload();
         Ogre::MaterialManager::getSingletonPtr()->remove(matName.toStdString());
 
@@ -462,7 +478,11 @@ void MaterialTextEditorCodec::reloadMaterials(QStringList materialList)
 
             if(!mScriptError)
             {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                 Ogre::MaterialPtr reloadedMaterial = Ogre::MaterialManager::getSingleton().getByName(matName.toStdString());
+#else
+                Ogre::MaterialPtr reloadedMaterial = Ogre::MaterialManager::getSingleton().getByName(matName.toStdString()).staticCast<Ogre::Material>();
+#endif
                 if(!reloadedMaterial.isNull())
                 {
                     reloadedMaterial->compile();

@@ -59,7 +59,11 @@ void CEntityEditor::onDropMaterial(Ogre::Ray ray, Ogre::Vector3 position, const 
 
             if(mSceneMgr->getShadowsEnabled())
             {
-                Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(materialname); 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+                Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(materialname);
+#else
+                Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(materialname).staticCast<Ogre::Material>();
+#endif
                 mEntityHandle->getSubEntity(submeshid)->setMaterial(mSceneMgr->buildDepthShadowMaterial(matEnt));
             }
             else
@@ -126,7 +130,11 @@ bool CEntityEditor::_setSubMaterial(OgitorsPropertyBase* property, const Ogre::S
 
         if(mSceneMgr->getShadowsEnabled())
         {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(value);
+#else
+            Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(value).staticCast<Ogre::Material>();
+#endif
             mEntityHandle->getSubEntity(property->getTag())->setMaterial(mSceneMgr->buildDepthShadowMaterial(matEnt));
         }
         else
@@ -232,7 +240,11 @@ bool CEntityEditor::load(bool async)
 
                 if(mSceneMgr->getShadowsEnabled())
                 {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                     Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(mEntityHandle->getSubEntity(ix)->getMaterialName());
+#else
+                    Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(mEntityHandle->getSubEntity(ix)->getMaterialName()).staticCast<Ogre::Material>();
+#endif
                     mEntityHandle->getSubEntity(ix)->setMaterial(mSceneMgr->buildDepthShadowMaterial(matEnt));
                 }
             }
@@ -251,7 +263,11 @@ bool CEntityEditor::load(bool async)
                 mProperties.getValue(propname + "::visible", visible);
                 if(mSceneMgr->getShadowsEnabled())
                 {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                     Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(material);
+#else
+                    Ogre::MaterialPtr matEnt = Ogre::MaterialManager::getSingletonPtr()->getByName(material).staticCast<Ogre::Material>();
+#endif
                     mEntityHandle->getSubEntity(ix)->setMaterial(mSceneMgr->buildDepthShadowMaterial(matEnt));
                 }
                 else

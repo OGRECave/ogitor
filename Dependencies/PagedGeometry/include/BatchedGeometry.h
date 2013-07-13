@@ -58,7 +58,11 @@ public:
 		void clear();
 		
 		void setMaterial(Ogre::MaterialPtr &mat) { material = mat; }
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		void setMaterialName(const Ogre::String &mat) { material = Ogre::MaterialManager::getSingleton().getByName(mat); }
+#else
+		void setMaterialName(const Ogre::String &mat) { material = Ogre::MaterialManager::getSingleton().getByName(mat).staticCast<Ogre::Material>(); }
+#endif
 		inline Ogre::String getMaterialName() const { return material->getName(); }
 
 		void addSelfToRenderQueue(Ogre::RenderQueue *queue, Ogre::uint8 group);

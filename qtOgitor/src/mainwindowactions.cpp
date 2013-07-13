@@ -1293,7 +1293,11 @@ void MainWindow::openSceneOptions()
         }
     }
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().getByName("SelectionBBMaterial", "General");
+#else
+    Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().getByName("SelectionBBMaterial", "General").staticCast<Ogre::Material>();
+#endif
     if(!matPtr.isNull())
     {
         matPtr->getTechnique(0)->getPass(0)->setDiffuse(pOpt->SelectionBBColour);
@@ -1302,7 +1306,11 @@ void MainWindow::openSceneOptions()
         matPtr.setNull();
     }
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     matPtr = Ogre::MaterialManager::getSingleton().getByName("HighlightBBMaterial", "General");
+#else
+    matPtr = Ogre::MaterialManager::getSingleton().getByName("HighlightBBMaterial", "General").staticCast<Ogre::Material>();
+#endif
     if(!matPtr.isNull())
     {
         matPtr->getTechnique(0)->getPass(0)->setDiffuse(pOpt->HighlightBBColour);
@@ -1311,7 +1319,11 @@ void MainWindow::openSceneOptions()
         matPtr.setNull();
     }
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     matPtr = Ogre::MaterialManager::getSingleton().getByName("SelectHighlightBBMaterial", "General");
+#else
+    matPtr = Ogre::MaterialManager::getSingleton().getByName("SelectHighlightBBMaterial", "General").staticCast<Ogre::Material>();
+#endif
     if(!matPtr.isNull())
     {
         matPtr->getTechnique(0)->getPass(0)->setDiffuse(pOpt->SelectHighlightBBColour);
@@ -1320,7 +1332,11 @@ void MainWindow::openSceneOptions()
         matPtr.setNull();
     }
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     matPtr = Ogre::MaterialManager::getSingleton().getByName("mtSELECTION", "EditorResources");
+#else
+    matPtr = Ogre::MaterialManager::getSingleton().getByName("mtSELECTION", "EditorResources").staticCast<Ogre::Material>();
+#endif
     if(!matPtr.isNull())
     {
         matPtr->getTechnique(0)->getPass(0)->setDiffuse(pOpt->SelectionRectColour);

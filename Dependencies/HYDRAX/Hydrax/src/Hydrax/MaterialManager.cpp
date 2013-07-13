@@ -747,9 +747,15 @@ namespace Hydrax
 
 		// Build our material
 		Ogre::MaterialPtr &WaterMaterial = getMaterial(MAT_WATER);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		WaterMaterial = Ogre::MaterialManager::getSingleton().
 			create(_def_Water_Material_Name,
-			       HYDRAX_RESOURCE_GROUP);
+				   HYDRAX_RESOURCE_GROUP);
+#else
+		WaterMaterial = Ogre::MaterialManager::getSingleton().
+			create(_def_Water_Material_Name,
+				   HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
+#endif
 
 		Ogre::Pass *WM_Technique0_Pass0 = WaterMaterial->getTechnique(0)->getPass(0);
 		
@@ -953,9 +959,15 @@ namespace Hydrax
 
 		// Build our material
 		Ogre::MaterialPtr &DepthMaterial = getMaterial(MAT_DEPTH);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		DepthMaterial = Ogre::MaterialManager::getSingleton().
 			create(_def_Depth_Material_Name,
-			       HYDRAX_RESOURCE_GROUP);
+				   HYDRAX_RESOURCE_GROUP);
+#else
+		DepthMaterial = Ogre::MaterialManager::getSingleton().
+			create(_def_Depth_Material_Name,
+				   HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
+#endif
 
 		DepthMaterial->getTechnique(0)->setSchemeName("HydraxDepth");
 
@@ -1552,9 +1564,15 @@ namespace Hydrax
 
 		// Second: build our material
 		Ogre::MaterialPtr &UnderwaterMaterial = getMaterial(MAT_UNDERWATER);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		UnderwaterMaterial = Ogre::MaterialManager::getSingleton().
 			create(_def_Underwater_Material_Name,
-			       HYDRAX_RESOURCE_GROUP);
+				   HYDRAX_RESOURCE_GROUP);
+#else
+		UnderwaterMaterial = Ogre::MaterialManager::getSingleton().
+			create(_def_Underwater_Material_Name,
+				   HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
+#endif
 
 		Ogre::Pass *UM_Technique0_Pass0 = UnderwaterMaterial->getTechnique(0)->getPass(0);
 
@@ -1797,9 +1815,15 @@ namespace Hydrax
 	
 		// Build our material
 		Ogre::MaterialPtr &UnderwaterCompositorMaterial = getMaterial(MAT_UNDERWATER_COMPOSITOR);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		UnderwaterCompositorMaterial = Ogre::MaterialManager::getSingleton().
 			create(_def_Underwater_Compositor_Material_Name,
-			       HYDRAX_RESOURCE_GROUP);
+				   HYDRAX_RESOURCE_GROUP);
+#else
+		UnderwaterCompositorMaterial = Ogre::MaterialManager::getSingleton().
+			create(_def_Underwater_Compositor_Material_Name,
+				   HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
+#endif
 
 		Ogre::Pass *DM_Technique0_Pass0 = UnderwaterCompositorMaterial->getTechnique(0)->getPass(0);
 
@@ -1855,8 +1879,13 @@ namespace Hydrax
 		UnderwaterCompositorMaterial->load();
 
 		Ogre::CompositorPtr &UnderwaterCompositor = getCompositor(COMP_UNDERWATER);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		UnderwaterCompositor = Ogre::CompositorManager::getSingleton().
 			create(_def_Underwater_Compositor_Name, HYDRAX_RESOURCE_GROUP);
+#else
+		UnderwaterCompositor = Ogre::CompositorManager::getSingleton().
+			create(_def_Underwater_Compositor_Name, HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Compositor>();
+#endif
 
 		Ogre::CompositionTechnique* UnderWaterComp_Technique = UnderwaterCompositor->createTechnique();
 
@@ -1903,9 +1932,13 @@ namespace Hydrax
 	bool MaterialManager::_createSimpleColorMaterial(const Ogre::ColourValue& Color, const MaterialType& MT, const Ogre::String& Name, const bool& DepthCheck, const bool& DepthWrite)
 	{
 		Ogre::MaterialPtr &SimpleColorMaterial = getMaterial(MT);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		SimpleColorMaterial = Ogre::MaterialManager::getSingleton().
-			create(Name,
-			       HYDRAX_RESOURCE_GROUP);
+			create(Name, HYDRAX_RESOURCE_GROUP);
+#else
+		SimpleColorMaterial = Ogre::MaterialManager::getSingleton().
+			create(Name, HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
+#endif
 
 		Ogre::Pass *SCM_T0_Pass0 = SimpleColorMaterial->getTechnique(0)->getPass(0);
 		SCM_T0_Pass0->setLightingEnabled(false);

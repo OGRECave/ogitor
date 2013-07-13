@@ -151,22 +151,40 @@ namespace Ogitors
             :backColour(bgColour), active(false)
         {
             // get default materials
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             wireSelectionMaterial = Ogre::MaterialManager::getSingleton().getByName("GesWireSel");
+#else
+            wireSelectionMaterial = Ogre::MaterialManager::getSingleton().getByName("GesWireSel").staticCast<Ogre::Material>();
+#endif
             if (wireSelectionMaterial.isNull())
             {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                 wireSelectionMaterial = Ogre::MaterialManager::getSingleton().create("GesWireSel",
                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+#else
+                wireSelectionMaterial = Ogre::MaterialManager::getSingleton().create("GesWireSel",
+                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
+#endif
                 Ogre::Pass* p = wireSelectionMaterial->getTechnique(0)->getPass(0);
                 p->setLightingEnabled(false);
                 p->setPolygonMode(Ogre::PM_WIREFRAME);
                 p->setCullingMode(Ogre::CULL_NONE);
                 wireSelectionMaterial->load();
             }
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             solidSelectionMaterial = Ogre::MaterialManager::getSingleton().getByName("GesFlatSel");
+#else
+            solidSelectionMaterial = Ogre::MaterialManager::getSingleton().getByName("GesFlatSel").staticCast<Ogre::Material>();
+#endif
             if (solidSelectionMaterial.isNull())
             {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                 solidSelectionMaterial = Ogre::MaterialManager::getSingleton().create("GesFlatSel",
                     Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+#else
+                solidSelectionMaterial = Ogre::MaterialManager::getSingleton().create("GesFlatSel",
+                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
+#endif
                 Ogre::Pass* p = solidSelectionMaterial->getTechnique(0)->getPass(0);
                 p->setLightingEnabled(false);
                 // need a depth bias
@@ -190,11 +208,20 @@ namespace Ogitors
             {
                 Ogre::StringUtil::StrStreamType str;
                 str << "GesSolidCol" << i;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                 solidColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
+#else
+                solidColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str()).staticCast<Ogre::Material>();
+#endif
                 if (solidColourMaterials[i].isNull())
                 {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                     solidColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
                         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+#else
+                    solidColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
+                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
+#endif
                     Ogre::Pass* p = solidColourMaterials[i]->getTechnique(0)->getPass(0);
                     p->setAmbient(backColour * 0.5f);
                     //p->setLightingEnabled(false);
@@ -211,11 +238,20 @@ namespace Ogitors
                 }
                 str.str(Ogre::StringUtil::BLANK);
                 str << "GesWireCol" << i;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                 wireColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
+#else
+                wireColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str()).staticCast<Ogre::Material>();
+#endif
                 if (wireColourMaterials[i].isNull())
                 {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                     wireColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
                         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+#else
+                    wireColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
+                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
+#endif
                     Ogre::Pass* p = wireColourMaterials[i]->getTechnique(0)->getPass(0);
                     p->setLightingEnabled(false);
                     p->setPolygonMode(Ogre::PM_WIREFRAME);
@@ -232,11 +268,20 @@ namespace Ogitors
                 }
                 str.str(Ogre::StringUtil::BLANK);
                 str << "GesHiddenLineCol" << i;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                 hiddenLineColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
+#else
+                hiddenLineColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str()).staticCast<Ogre::Material>();
+#endif
                 if (hiddenLineColourMaterials[i].isNull())
                 {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
                     hiddenLineColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
                         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+#else
+                    hiddenLineColourMaterials[i] = Ogre::MaterialManager::getSingleton().create(str.str(),
+                        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
+#endif
                     Ogre::Pass* p = hiddenLineColourMaterials[i]->getTechnique(0)->getPass(0);
                     // Hidden line passes should have an initial pass setting the
                     // background colour, then a wire pass over the top
@@ -1905,7 +1950,11 @@ namespace Ogitors
         Ogre::ResourceManager::ResourceCreateOrRetrieveResult result = Ogre::MaterialManager::getSingleton().createOrRetrieve("SelectionBBMaterial", "General");
         if(!result.first.isNull())
         {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#else
+            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first.staticCast<Ogre::Material>();
+#endif
             matptrOBBoxManualMaterial->setReceiveShadows(false);
             matptrOBBoxManualMaterial->getTechnique(0)->setLightingEnabled(true);
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setDiffuse(mProjectOptions.SelectionBBColour);
@@ -1916,7 +1965,11 @@ namespace Ogitors
         result = Ogre::MaterialManager::getSingleton().createOrRetrieve("HighlightBBMaterial", "General");
         if(!result.first.isNull())
         {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#else
+            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first.staticCast<Ogre::Material>();
+#endif
             matptrOBBoxManualMaterial->setReceiveShadows(false);
             matptrOBBoxManualMaterial->getTechnique(0)->setLightingEnabled(true);
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setDiffuse(mProjectOptions.HighlightBBColour);
@@ -1927,7 +1980,11 @@ namespace Ogitors
         result = Ogre::MaterialManager::getSingleton().createOrRetrieve("SelectHighlightBBMaterial", "General");
         if(!result.first.isNull())
         {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
             Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#else
+            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first.staticCast<Ogre::Material>();
+#endif
             matptrOBBoxManualMaterial->setReceiveShadows(false);
             matptrOBBoxManualMaterial->getTechnique(0)->setLightingEnabled(true);
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setDiffuse(mProjectOptions.SelectHighlightBBColour);
@@ -1935,7 +1992,11 @@ namespace Ogitors
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setSelfIllumination(mProjectOptions.SelectHighlightBBColour);
         }
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().getByName("mtSELECTION", "EditorResources");
+#else
+        Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().getByName("mtSELECTION", "EditorResources").staticCast<Ogre::Material>();
+#endif
         if(!matPtr.isNull())
         {
             matPtr->getTechnique(0)->getPass(0)->setDiffuse(mProjectOptions.SelectionRectColour);

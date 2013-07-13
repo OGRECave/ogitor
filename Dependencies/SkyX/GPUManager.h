@@ -114,7 +114,11 @@ namespace SkyX
 		 */
 		inline void _notifySkydomeMaterialChanged()
 		{
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 			mSkydomeMaterial = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(getSkydomeMaterialName()));
+#else
+			mSkydomeMaterial = (Ogre::MaterialManager::getSingleton().getByName(getSkydomeMaterialName())).staticCast<Ogre::Material>();
+#endif
 
 			if (mSkydomeMaterial.isNull())
 			{
