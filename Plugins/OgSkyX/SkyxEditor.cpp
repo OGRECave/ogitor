@@ -467,15 +467,55 @@ TiXmlElement *CSkyxEditor::exportDotScene(TiXmlElement *pParent)
     pWaveLength->SetAttribute("B", Ogre::StringConverter::toString(mWaveLength->get().b).c_str());
 
     TiXmlElement *pvClouds = pSkyX->InsertEndChild(TiXmlElement("vClouds"))->ToElement();
+    pvClouds->SetAttribute("enable", Ogre::StringConverter::toString(mVCEnable->get()).c_str());
+    pvClouds->SetAttribute("autoUpdate", Ogre::StringConverter::toString(mVCAutoUpdate->get()).c_str());
     pvClouds->SetAttribute("windSpeed", Ogre::StringConverter::toString(mVCWindSpeed->get()).c_str());
     pvClouds->SetAttribute("windDirection", Ogre::StringConverter::toString(mVCWindDirection->get()).c_str());
+    pvClouds->SetAttribute("cloudScale", Ogre::StringConverter::toString(mVCCloudScale->get()).c_str());
     pvClouds->SetAttribute("noiseScale", Ogre::StringConverter::toString(mVCNoiseScale->get()).c_str());
+
+    TiXmlElement *pvAmbient = pvClouds->InsertEndChild(TiXmlElement("ambientColor"))->ToElement();
+	pvAmbient->SetAttribute("R", Ogre::StringConverter::toString(mVCAmbientColor->get().r).c_str());
+    pvAmbient->SetAttribute("G", Ogre::StringConverter::toString(mVCAmbientColor->get().g).c_str());
+    pvAmbient->SetAttribute("B", Ogre::StringConverter::toString(mVCAmbientColor->get().b).c_str());
+
+    TiXmlElement *pvLightReponse = pvClouds->InsertEndChild(TiXmlElement("lightReponse"))->ToElement();
+	pvLightReponse->SetAttribute("X", Ogre::StringConverter::toString(mVCLightReponse->get().x).c_str());
+    pvLightReponse->SetAttribute("Y", Ogre::StringConverter::toString(mVCLightReponse->get().y).c_str());
+    pvLightReponse->SetAttribute("Z", Ogre::StringConverter::toString(mVCLightReponse->get().z).c_str());
+    pvLightReponse->SetAttribute("W", Ogre::StringConverter::toString(mVCLightReponse->get().w).c_str());
+
+    TiXmlElement *pvAmbientFactors = pvClouds->InsertEndChild(TiXmlElement("ambientFactors"))->ToElement();
+	pvAmbientFactors->SetAttribute("X", Ogre::StringConverter::toString(mVCAmbientFactors->get().x).c_str());
+    pvAmbientFactors->SetAttribute("Y", Ogre::StringConverter::toString(mVCAmbientFactors->get().y).c_str());
+    pvAmbientFactors->SetAttribute("Z", Ogre::StringConverter::toString(mVCAmbientFactors->get().z).c_str());
+    pvAmbientFactors->SetAttribute("W", Ogre::StringConverter::toString(mVCAmbientFactors->get().w).c_str());
+
+    TiXmlElement *pvWeather = pvClouds->InsertEndChild(TiXmlElement("weather"))->ToElement();
+    pvWeather->SetAttribute("X", Ogre::StringConverter::toString(mVCWeather->get().x).c_str());
+    pvWeather->SetAttribute("Y", Ogre::StringConverter::toString(mVCWeather->get().y).c_str());
+
+    TiXmlElement *pLightning = pvClouds->InsertEndChild(TiXmlElement("lightning"))->ToElement();
+    pLightning->SetAttribute("enable", Ogre::StringConverter::toString(mVCLightningEnable->get()).c_str());
+    pLightning->SetAttribute("lightningAT", Ogre::StringConverter::toString(mVCLightningAT->get()).c_str());
+    pLightning->SetAttribute("lightningTM", Ogre::StringConverter::toString(mVCLightningTM->get()).c_str());
+
+    TiXmlElement *pvlightningColor = pLightning->InsertEndChild(TiXmlElement("lightningColor"))->ToElement();
+	pvlightningColor->SetAttribute("R", Ogre::StringConverter::toString(mVCLightningColor->get().r).c_str());
+    pvlightningColor->SetAttribute("G", Ogre::StringConverter::toString(mVCLightningColor->get().g).c_str());
+    pvlightningColor->SetAttribute("B", Ogre::StringConverter::toString(mVCLightningColor->get().b).c_str());
+
+    TiXmlElement *pMoon = pSkyX->InsertEndChild(TiXmlElement("moon"))->ToElement();
+    pMoon->SetAttribute("phase", Ogre::StringConverter::toString(mMoonPhase->get()).c_str());
+    pMoon->SetAttribute("size", Ogre::StringConverter::toString(mMoonSize->get()).c_str());
+    pMoon->SetAttribute("haloIntensity", Ogre::StringConverter::toString(mMoonHaloIntensity->get()).c_str());
+    pMoon->SetAttribute("haloStrength", Ogre::StringConverter::toString(mMoonHaloStrength->get()).c_str());
 
     return pSkyX;
 }
 
 //----------------------------------------------------------------------------
-//----HYDRAXEDITORFACTORY-----------------------------------------------------
+//----SKYXEDITORFACTORY-----------------------------------------------------
 //----------------------------------------------------------------------------
 CSkyxEditorFactory::CSkyxEditorFactory(OgitorsView *view) : CBaseEditorFactory(view)
 {
