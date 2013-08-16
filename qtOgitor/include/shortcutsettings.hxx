@@ -32,7 +32,7 @@
 #ifndef __shortcutsettings_hxx__
 #define __shortcutsettings_hxx__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QStandardItemModel>
 #include <QtCore/QEvent>
 

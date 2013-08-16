@@ -32,8 +32,8 @@
 #ifndef USERDEFINEDDIALOG_HXX
 #define USERDEFINEDDIALOG_HXX
 
-#include <QtGui/QDialog>
-#include <QtGui/QTableWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QTableWidget>
 #include "ui_userdefineddialog.h"
 #include "qttreepropertybrowser.h"
 

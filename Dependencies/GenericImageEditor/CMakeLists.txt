@@ -4,11 +4,11 @@ cmake_policy(SET CMP0003 NEW)
 
 project(GenericImageEditor)
 
-find_package(Qt5Svg REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
-if(NOT Qt5Svg_FOUND)
+if(NOT Qt5Widgets_FOUND)
     MESSAGE(SEND_ERROR "Failed to find Qt 5.0.0 or greater.")
-else(NOT Qt5Svg_FOUND)
+else(NOT Qt5Widgets_FOUND)
     set(CMAKE_PACKAGE_QTGUI TRUE)
 
     file(GLOB UI_FILES *.ui)
@@ -59,7 +59,7 @@ else(NOT Qt5Svg_FOUND)
 
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor ImageConverter)
     ogitor_add_library(GenericImageEditor SHARED ${SRCS})
-    set(LIBRARY_OUTPUT_PATH ../lib)
+    set(LIBRARY_OUTPUT_PATH ../lib)	
 
 	add_dependencies(GenericImageEditor OFS)
 	add_dependencies(GenericImageEditor ImageConverter)
@@ -71,6 +71,8 @@ else(NOT Qt5Svg_FOUND)
     set_target_properties(GenericImageEditor PROPERTIES VERSION ${GenericImageEditor_VERSION} SOVERSION ${GenericImageEditor_VERSION_MAJOR})
     set_target_properties(GenericImageEditor PROPERTIES COMPILE_DEFINITIONS GENERICIMAGEEDITOR_EXPORT)
 
+	qt5_use_modules(GenericImageEditor Widgets)
+	
     if(UNIX AND NOT APPLE)
         add_custom_command(TARGET GenericImageEditor PRE_BUILD
             COMMAND mkdir -p ../../RunPath/lib)
@@ -106,6 +108,6 @@ else(NOT Qt5Svg_FOUND)
         set_target_properties(GenericImageEditor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
    ENDIF(APPLE)
 
-endif(NOT Qt5Svg_FOUND)
+endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

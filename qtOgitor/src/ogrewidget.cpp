@@ -29,6 +29,7 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #include "mainwindow.hxx"
 #include "ogrewidget.hxx"
 #include "entityview.hxx"
@@ -44,6 +45,17 @@
 #include "DefaultEvents.h"
 #include "EventManager.h"
 
+#include <QtGui/QTextOption>
+#include <QtGui/QPainter>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QFocusEvent>
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QDropEvent>
+
+#include <QtCore/QTime>
+#include <QtCore/QDir>
+
 using namespace Ogitors;
 
 bool ViewKeyboard[1024];
@@ -52,11 +64,11 @@ bool ViewKeyboard[1024];
 void OverlayWidget::paintEvent(QPaintEvent* evt)
 {
     QPainter painter(this);
-    painter.setClipRect(0,0,width(),height());
-    painter.setBrush(QBrush(QColor(0,0,0)));
-    painter.fillRect(QRectF(0,0,width(),height()), QColor(0,0,0));
-    painter.setPen(QColor(210,210,210));
-    painter.drawText(QRectF(0,0,width(),height()),msgstr,QTextOption(Qt::AlignVCenter | Qt::AlignHCenter));
+    painter.setClipRect(0, 0, width(), height());
+    painter.setBrush(QBrush(QColor(0, 0, 0)));
+    painter.fillRect(QRectF(0, 0, width(), height()), QColor(0, 0, 0));
+    painter.setPen(QColor(210, 210, 210));
+    painter.drawText(QRectF(0, 0, width(), height()), msgstr, QTextOption(Qt::AlignVCenter | Qt::AlignHCenter));
 }
 //----------------------------------------------------------------------------------------
 OgreWidget::OgreWidget(QWidget *parent, bool doLoadFile, Qt::WindowFlags f): QWidget( parent,  f /*| Qt::MSWindowsOwnDC*/ ),
@@ -83,8 +95,10 @@ mRenderStop(false), mScreenResize(false), mCursorHidden(false), mDoLoadFile(doLo
     layout->setMargin(0);
     layout->addWidget(mOverlayWidget);
     setLayout(layout);
+
+    initializeOGRE();
     
-    EventManager::getSingletonPtr()->connectEvent(EventManager::LOAD_STATE_CHANGE,      this, true, 0, true, 0, EVENT_CALLBACK(OgreWidget, onSceneLoadStateChange));
+    EventManager::getSingletonPtr()->connectEvent(EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(OgreWidget, onSceneLoadStateChange));
 }
 //----------------------------------------------------------------------------------------
 OgreWidget::~OgreWidget()
@@ -141,7 +155,7 @@ void OgreWidget::initializeOGRE()
 
     Ogre::NameValuePairList params;
 
-#if defined(Q_WS_MAC) || defined(Q_WS_WIN)
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     params["externalWindowHandle"] = Ogre::StringConverter::toString((size_t) (this->winId()));
 #else
     const QX11Info info = this->x11Info();
@@ -158,7 +172,7 @@ void OgreWidget::initializeOGRE()
     params["externalWindowHandle"] = winHandle;
 #endif
 
-#if defined(Q_WS_MAC)
+#if defined(Q_OS_MAC)
     params["macAPI"] = "cocoa";   
     params["macAPICocoaUseNSView"] = "true";
 #endif

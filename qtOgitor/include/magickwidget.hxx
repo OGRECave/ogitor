@@ -58,7 +58,7 @@ class Vector4Manager;
 class QtProperty;
 class TiXmlElement;
 
-#if defined(Q_WS_X11)
+#if defined(Q_OS_LINUX)
 #include <QtGui/QX11Info>
 #endif
 

@@ -33,7 +33,7 @@
 #ifndef ENTITYVIEW_HXX
 #define ENTITYVIEW_HXX
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsProperty.h"

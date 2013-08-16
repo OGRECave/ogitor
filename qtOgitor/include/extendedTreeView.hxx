@@ -33,9 +33,9 @@
 #ifndef EXTENDED_TREE_VIEW_HXX
 #define EXTENDED_TREE_VIEW_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QStyledItemDelegate>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QStyledItemDelegate>
 
 //-----------------------------------------------------------------------------------------
 

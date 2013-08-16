@@ -29,12 +29,15 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #include "addscriptactiondialog.hxx"
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+
 #include <QtCore/QFile>
 
-AddScriptActionDialog::AddScriptActionDialog(QWidget *parent, Qt::WFlags flags) :
+AddScriptActionDialog::AddScriptActionDialog(QWidget *parent, Qt::WindowFlags flags) :
     QDialog(parent, flags)
 {
     setupUi(this);
