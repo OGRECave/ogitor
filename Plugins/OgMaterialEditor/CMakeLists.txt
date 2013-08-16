@@ -1,16 +1,14 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 cmake_policy(SET CMP0003 NEW)
 
 project(OgMaterialEditor)
 
-set(QT_MIN_VERSION "4.5.0")
-find_package(Qt4 COMPONENTS QtSvg REQUIRED)
+find_package(Qt5Svg REQUIRED)
 
-if(NOT QT4_FOUND)
-	message(SEND_ERROR "Failed to find Qt 4.5 or greater.")
-else(NOT QT4_FOUND)
-	include(${QT_USE_FILE})
+if(NOT Qt5Svg_FOUND)
+	message(SEND_ERROR "Failed to find Qt 5.0.0 or greater.")
+else(NOT Qt5Svg_FOUND)
 	set(CMAKE_PACKAGE_QTGUI TRUE)
 
 	file(GLOB UI_FILES *.ui)
@@ -42,13 +40,13 @@ else(NOT QT4_FOUND)
 		materialtexteditorcodec.hxx
 	)
 
-	qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2} OPTIONS ${OGITOR_QT_PREPROCESSOR})
-	qt4_wrap_ui(UI_SRCS ${UI_FILES})
+	qt5_wrap_cpp(MOC_SRCS ${MOC_SRCS2} OPTIONS ${OGITOR_QT_PREPROCESSOR})
+	qt5_wrap_ui(UI_SRCS ${UI_FILES})
 
 	source_group("Moc Files" FILES ${MOC_SRCS})
 	source_group("Ui Files" FILES ${UI_FILES})
 
-	qt4_add_resources(RESOURCE_SRCS ./res/resource.qrc)
+	qt5_add_resources(RESOURCE_SRCS ./res/resource.qrc)
 	source_group("Qrc Files" FILES ${RESOURCE_SRCS})
 
 	# if we don't include this CMake will not include ui headers properly:
@@ -111,6 +109,6 @@ else(NOT QT4_FOUND)
         endif(OGITOR_DIST)
     ENDIF(UNIX AND NOT APPLE)
 
-endif(NOT QT4_FOUND)
+endif(NOT Qt5Svg_FOUND)
 
 # vim: set sw=2 ts=2 noet:

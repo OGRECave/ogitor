@@ -5,7 +5,7 @@
 # and provide build configuration options.
 ######################################################################
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11)
 
 # Works around warnings libraries linked against that don't
 # have absolute paths (e.g. -lOgreMain)
@@ -354,8 +354,7 @@ IF(OGITOR_MESHMAGICK_INTERFACE)
     add_subdirectory(Dependencies/MeshMagick)
 ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 
-
-# plugins
+# Plugins
 add_subdirectory(Plugins/OgCaelum)
 add_subdirectory(Plugins/OgHydrax)
 add_subdirectory(Plugins/OgSkyX)
@@ -367,7 +366,6 @@ add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 add_subdirectory(Plugins/OgScreenEffectEditor)
 add_subdirectory(Plugins/CustomSerializer)
-
 
 add_subdirectory(OgreOfsPlugin)
 
@@ -391,7 +389,6 @@ add_custom_target(lupdate
     COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
 )
-
 
 if(WIN32)
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/windows.cmake)
