@@ -33,7 +33,7 @@
 #define COLOURPICKER_HXX
 
 #include "OgitorsPrerequisites.h"
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class ColourPickerWidget : public QWidget
 {

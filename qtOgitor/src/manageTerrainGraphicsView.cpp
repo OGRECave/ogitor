@@ -35,9 +35,8 @@
 
 #include "Ogitors.h"
 #include "OgitorsDefinitions.h"
-#include <QtGui/QtGui>
-#include <QtGui/QGraphicsItem>
-#include <QtCore/QtCore>
+
+#include <QtWidgets/QGraphicsItem>
 
 #include "createterraindialog.hxx"
 #include "OgitorsPrerequisites.h"
@@ -47,7 +46,6 @@
 #include "TerrainEditor.h"
 #include "TerrainPageEditor.h"
 #include "TerrainGroupEditor.h"
-
 
 using namespace Ogitors;
 

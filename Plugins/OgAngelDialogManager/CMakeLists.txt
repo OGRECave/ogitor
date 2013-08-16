@@ -4,11 +4,11 @@ cmake_policy(SET CMP0003 NEW)
 
 project(OgAngelDialogManager)
 
-find_package(Qt5Svg REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
-if(NOT Qt5Svg_FOUND)
+if(NOT Qt5Widgets_FOUND)
 	message(SEND_ERROR "Failed to find Qt 5.0.0 or greater.")
-else(NOT Qt5Svg_FOUND)
+else(NOT Qt5Widgets_FOUND)
 	set(CMAKE_PACKAGE_QTGUI TRUE)
 
 	file(GLOB UI_FILES *.ui)
@@ -63,6 +63,8 @@ else(NOT Qt5Svg_FOUND)
 	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor Angelscript OgAngelScript)
 	add_library(OgAngelDialogManager SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ../lib)
+	
+	qt5_use_modules(OgAngelDialogManager Widgets)
 
     if(NOT OGITOR_DIST)
         set_target_properties(OgAngelDialogManager PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
@@ -100,6 +102,6 @@ else(NOT Qt5Svg_FOUND)
 		endif(OGITOR_DIST)
 	ENDIF(UNIX AND NOT APPLE)
 
-endif(NOT Qt5Svg_FOUND)
+endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

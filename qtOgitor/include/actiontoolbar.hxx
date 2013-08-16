@@ -32,11 +32,14 @@
 #ifndef __ACTIONTOOLBAR_HXX__
 #define __ACTIONTOOLBAR_HXX__
 
-#include <QtGui/QToolBar>
+#include <QtWidgets/QToolBar>
+
 #include <QtCore/QEvent>
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QDropEvent>
+#include <QtGui/QContextMenuEvent>
 #include <QtCore/QStringList>
 #include <QtCore/QMimeData>
-
 
 class ActionToolbar : public QToolBar
 {

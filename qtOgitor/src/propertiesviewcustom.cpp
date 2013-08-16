@@ -29,15 +29,19 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 #include <QtCore/QSignalMapper>
-#include <QtGui/QFileDialog>
-#include <QtGui/QVBoxLayout>
+
 #include <QtGui/QDragMoveEvent>
 #include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
+
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QMenu>
 #include <QtGui/QIcon>
+
 #include "qtpropertymanager.h"
 #include "qteditorfactory.h"
 #include "propertiesviewcustom.hxx"
@@ -775,7 +779,7 @@ void CustomPropertiesViewWidget::quaternionValueChanged(QtProperty *property, co
     if(BLOCKSETFUNCTIONS)
         return;
 
-    QRectF rval = qVariantValue<QRectF>(val);
+    QRectF rval = val.value<QRectF>();
     Ogre::Quaternion qval(rval.height(), rval.x(), rval.y(), rval.width());
 
     QtToOgitorPropertyMap::const_iterator it = mQtToOgitorPropertyMap.find(property);
@@ -803,7 +807,7 @@ void CustomPropertiesViewWidget::vector4ValueChanged(QtProperty *property, const
     if(BLOCKSETFUNCTIONS)
         return;
 
-    QRectF rval = qVariantValue<QRectF>(val);
+    QRectF rval = val.value<QRectF>();
     Ogre::Vector4 qval(rval.x(), rval.y(), rval.width(),rval.height());
 
     QtToOgitorPropertyMap::const_iterator it = mQtToOgitorPropertyMap.find(property);
@@ -831,7 +835,7 @@ void CustomPropertiesViewWidget::vector3ValueChanged(QtProperty *property, const
     if(BLOCKSETFUNCTIONS)
         return;
 
-    QRectF rval = qVariantValue<QRectF>(val);
+    QRectF rval = val.value<QRectF>();
     Ogre::Vector3 qval(rval.x(), rval.y(), rval.width());
 
     QtToOgitorPropertyMap::const_iterator it = mQtToOgitorPropertyMap.find(property);
@@ -859,7 +863,7 @@ void CustomPropertiesViewWidget::vector2ValueChanged(QtProperty *property, const
     if(BLOCKSETFUNCTIONS)
         return;
 
-    QPointF rval = qVariantValue<QPointF>(val);
+    QPointF rval = val.value<QPointF>();
     Ogre::Vector2 qval(rval.x(), rval.y());
 
     QtToOgitorPropertyMap::const_iterator it = mQtToOgitorPropertyMap.find(property);

@@ -32,8 +32,21 @@
 #ifndef MAINWINDOW_HXX
 #define MAINWINDOW_HXX
 
-#include <QtGui/QtGui>
 #include <QtCore/QtCore>
+
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QProgressBar>
+#include <QtWidgets/QFileIconProvider>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QInputDialog>
 
 #include "ofs.h"
 

@@ -49,7 +49,7 @@ QPixmap GenericImageEditorCodec::onBeforeDisplay(Ogre::DataStreamPtr stream)
     if (mPixmap.convertFromImage(imageConverter.fromOgreImage(image)))
         return mPixmap;
 
-    mPixmap = 0;
+    mPixmap.fill();
     return mPixmap;
 }
 //-----------------------------------------------------------------------------------------

@@ -37,6 +37,15 @@
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QFileDialog>
+
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QDropEvent>
+
+#include <QtCore/QMimeData>
+#include <QtCore/QDirIterator>
+
 #define MAX_BUFFER_SIZE 0xFFFFFF
 
 //----------------------------------------------------------------------------------------
@@ -509,7 +518,7 @@ void OfsTreeWidget::dropEvent(QDropEvent *evt)
             {
                 if(!source.endsWith(".OGSCENE", Qt::CaseInsensitive))
                 {
-                    mFile->moveFile(source.toAscii(), target.toAscii());
+                    mFile->moveFile(source.toUtf8(), target.toUtf8());
                     refreshWidget();
                     evt->accept();
                     return;

@@ -30,7 +30,6 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include <QtGui/QtGui>
 #include "genericimageeditordocument.hxx"
 #include "genericimageeditor.hxx"
 #include "heightimageeditorcodec.hxx"
@@ -40,6 +39,9 @@
 #include "DefaultEvents.h"
 #include "EventManager.h"
 #include "OFSDataStream.h"
+
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QToolTip>
 
 GenericImageEditorDocument::GenericImageEditorDocument(QWidget *parent) : QScrollArea(parent), 
 mCodec(0), mDocName(""), mFilePath(""), mFile(0), mIsOfsFile(false)
@@ -188,7 +190,7 @@ void GenericImageEditorDocument::scaleImage(float factor)
     if(getCodec()->getScaleFactor() * factor * mLabel->pixmap()->size().height() < 5120)
     {
         QPixmap map = getCodec()->onScaleImage(factor);
-        qDebug(QString::number(map.height()).toAscii());
+        qDebug(QString::number(map.height()).toUtf8());
         mLabel->resize(getCodec()->onScaleImage(factor).size());
     }
 }

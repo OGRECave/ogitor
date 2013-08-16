@@ -35,8 +35,8 @@
 
 //----------------------------------------------------------------------------------------
 
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
 #include <QtCore/QMap>
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
