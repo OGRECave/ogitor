@@ -41,6 +41,13 @@
 #include "OgitorsRoot.h"
 #include "OgitorsGlobals.h"
 
+#include <QtCore/QTextCodec>
+#include <QtCore/QLibraryInfo>
+#include <QtCore/QTranslator>
+#include <QtCore/QDir>
+
+#include <QtWidgets/QSplashScreen>
+
 extern bool    ViewKeyboard[1024];
 extern QString ConvertToQString(Ogre::UTFString& value);
 

@@ -32,8 +32,18 @@
 #ifndef MAINWINDOW_HXX
 #define MAINWINDOW_HXX
 
-#include <QtGui/QtGui>
-#include <QtCore/QtCore>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QListWidgetItem>
+#include <QtWidgets/QActionGroup>
+#include <QtWidgets/QToolBox>
+#include <QtWidgets/QStackedWidget>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QMenu>
+
+#include <QtCore/QSignalMapper>
+#include <QtWidgets/QFileIconProvider>
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsDefinitions.h"

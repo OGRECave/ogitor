@@ -29,7 +29,8 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#include <../QtGui/qgraphicsitem.h>
+
+#include <QtWidgets/QGraphicsItem>
 
 #include "createterraindialog.hxx"
 #include "OgitorsPrerequisites.h"

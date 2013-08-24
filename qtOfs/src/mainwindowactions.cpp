@@ -29,8 +29,11 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #include "mainwindow.hxx"
 #include "filelistwidget.hxx"
+
+#include <qtwidgets/QFileDialog>
 
 //------------------------------------------------------------------------------
 void MainWindow::addActions()

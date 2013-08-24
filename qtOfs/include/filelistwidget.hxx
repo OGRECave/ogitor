@@ -33,7 +33,7 @@
 #ifndef FILELISTWIDGET_HXX
 #define FILELISTWIDGET_HXX
 
-#include <QtGui/QtGui>
+#include <QtWidgets/QTableWidget>
 
 class FileListWidget : public QTableWidget
 {
