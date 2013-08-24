@@ -40,6 +40,7 @@
 
 #include "OgreArchive.h"
 #include "OgreArchiveFactory.h"
+#include "Threading/OgreThreadHeaders.h"
 
 #include "ofs.h"
 
