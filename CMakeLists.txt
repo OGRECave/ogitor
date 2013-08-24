@@ -5,7 +5,7 @@
 # and provide build configuration options.
 ######################################################################
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11)
 
 # Works around warnings libraries linked against that don't
 # have absolute paths (e.g. -lOgreMain)
@@ -186,6 +186,15 @@ if(UNIX)
     set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
 endif(UNIX)
 
+if(CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64" OR CMAKE_GENERATOR STREQUAL "Visual Studio 11")
+	option(OGITOR_BUILD_MSVC_ZM "Add /Zm256 parameter to Visual Studio to fix PCH error" FALSE)
+else()
+	set(OGITOR_BUILD_MSVC_ZM FALSE CACHE BOOL "Forcing switch off /Zm256 for older Visual Studio versions" FORCE)
+endif()
+if(OGITOR_BUILD_MSVC_ZM)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm256")
+endif ()
+
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("void*" OGITOR_PTR_SIZE BUILTIN_TYPES_ONLY)
 if (OGITOR_PTR_SIZE EQUAL 8)
@@ -354,8 +363,7 @@ IF(OGITOR_MESHMAGICK_INTERFACE)
     add_subdirectory(Dependencies/MeshMagick)
 ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 
-
-# plugins
+# Plugins
 add_subdirectory(Plugins/OgCaelum)
 add_subdirectory(Plugins/OgHydrax)
 add_subdirectory(Plugins/OgSkyX)
@@ -367,7 +375,6 @@ add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 add_subdirectory(Plugins/OgScreenEffectEditor)
 add_subdirectory(Plugins/CustomSerializer)
-
 
 add_subdirectory(OgreOfsPlugin)
 
@@ -391,7 +398,6 @@ add_custom_target(lupdate
     COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
 )
-
 
 if(WIN32)
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/windows.cmake)

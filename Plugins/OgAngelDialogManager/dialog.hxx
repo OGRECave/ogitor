@@ -32,7 +32,8 @@
 #ifndef ANGELDIALOG_HXX
 #define ANGELDIALOG_HXX
 
-#include <QtGui/QtGui>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QPushButton>
 
 class asIScriptEngine;
 

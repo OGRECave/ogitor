@@ -29,10 +29,13 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
-#include <QtGui/QVBoxLayout>
+
+#include <QtWidgets/QVBoxLayout>
 #include <QtGui/QIcon>
+
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
+
 #include "qtpropertymanager.h"
 #include "complexproperties.hxx"
 
@@ -56,27 +59,27 @@ void QuaternionManager::slotValueChanged(QtProperty *property, const QVariant &v
     if (xToProperty.contains(property)) {
         QtProperty *pointProperty = xToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.moveLeft(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.moveLeft(value.value<double>());
         setValue(pointProperty, p);
     } else if (yToProperty.contains(property)) {
         QtProperty *pointProperty = yToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.moveTop(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.moveTop(value.value<double>());
         setValue(pointProperty, p);
     } else if (zToProperty.contains(property)) {
         QtProperty *pointProperty = zToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.setWidth(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.setWidth(value.value<double>());
         setValue(pointProperty, p);
     } else if (wToProperty.contains(property)) {
         QtProperty *pointProperty = wToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.setHeight(qVariantValue<double>(value));
-        setValue(pointProperty, qVariantValue<QRectF>(p));
+        QRectF p = v.value<QRectF>();
+        p.setHeight(value.value<double>());
+        setValue(pointProperty, p);
     }
 }
 //----------------------------------------------------------------------------------------
@@ -126,7 +129,7 @@ QString QuaternionManager::valueText(const QtProperty *property) const
 {
     if (propertyToData.contains(property)) {
         QVariant v = propertyToData[property].value;
-        QRectF p = qVariantValue<QRectF>(v);
+        QRectF p = v.value<QRectF>();
         return QString("(%1;%2;%3;%4)").arg(QString::number(p.height())).arg(QString::number(p.x()))
                                           .arg(QString::number(p.y())).arg(QString::number(p.width()));
     }
@@ -138,7 +141,7 @@ void QuaternionManager::setValue(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         d.value = p;
         if (d.x)
@@ -162,7 +165,7 @@ void QuaternionManager::setMinimum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("minimum", p.x());
@@ -183,7 +186,7 @@ void QuaternionManager::setMaximum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("maximum", p.x());
@@ -204,7 +207,7 @@ void QuaternionManager::setStepSize(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("singleStep", p.x());
@@ -292,27 +295,27 @@ void Vector4Manager::slotValueChanged(QtProperty *property, const QVariant &valu
     if (xToProperty.contains(property)) {
         QtProperty *pointProperty = xToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.moveLeft(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.moveLeft(value.value<double>());
         setValue(pointProperty, p);
     } else if (yToProperty.contains(property)) {
         QtProperty *pointProperty = yToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.moveTop(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.moveTop(value.value<double>());
         setValue(pointProperty, p);
     } else if (zToProperty.contains(property)) {
         QtProperty *pointProperty = zToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.setWidth(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.setWidth(value.value<double>());
         setValue(pointProperty, p);
     } else if (wToProperty.contains(property)) {
         QtProperty *pointProperty = wToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.setHeight(qVariantValue<double>(value));
-        setValue(pointProperty, qVariantValue<QRectF>(p));
+        QRectF p = v.value<QRectF>();
+        p.setHeight(value.value<double>());
+        setValue(pointProperty, p);
     }
 }
 //----------------------------------------------------------------------------------------
@@ -362,7 +365,7 @@ QString Vector4Manager::valueText(const QtProperty *property) const
 {
     if (propertyToData.contains(property)) {
         QVariant v = propertyToData[property].value;
-        QRectF p = qVariantValue<QRectF>(v);
+        QRectF p = v.value<QRectF>();
         return QString("(%1;%2;%3;%4)").arg(QString::number(p.x())).arg(QString::number(p.y()))
                                           .arg(QString::number(p.width())).arg(QString::number(p.height()));
     }
@@ -374,7 +377,7 @@ void Vector4Manager::setValue(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         d.value = p;
         if (d.x)
@@ -398,7 +401,7 @@ void Vector4Manager::setMinimum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("minimum", p.x());
@@ -419,7 +422,7 @@ void Vector4Manager::setMaximum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("maximum", p.x());
@@ -440,7 +443,7 @@ void Vector4Manager::setStepSize(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("singleStep", p.x());
@@ -539,20 +542,20 @@ void Vector3Manager::slotValueChanged(QtProperty *property, const QVariant &valu
     if (xToProperty.contains(property)) {
         QtProperty *pointProperty = xToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.moveLeft(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.moveLeft(value.value<double>());
         setValue(pointProperty, p);
     } else if (yToProperty.contains(property)) {
         QtProperty *pointProperty = yToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.moveTop(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.moveTop(value.value<double>());
         setValue(pointProperty, p);
     } else if (zToProperty.contains(property)) {
         QtProperty *pointProperty = zToProperty[property];
         QVariant v = this->value(pointProperty);
-        QRectF p = qVariantValue<QRectF>(v);
-        p.setWidth(qVariantValue<double>(value));
+        QRectF p = v.value<QRectF>();
+        p.setWidth(value.value<double>());
         setValue(pointProperty, p);
     }
 }
@@ -599,7 +602,7 @@ QString Vector3Manager::valueText(const QtProperty *property) const
 {
     if (propertyToData.contains(property)) {
         QVariant v = propertyToData[property].value;
-        QRectF p = qVariantValue<QRectF>(v);
+        QRectF p = v.value<QRectF>();
         return QString("(%1;%2;%3)").arg(QString::number(p.x())).arg(QString::number(p.y()))
                                           .arg(QString::number(p.width()));
     }
@@ -611,7 +614,7 @@ void Vector3Manager::setValue(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         d.value = p;
         if (d.x)
@@ -633,7 +636,7 @@ void Vector3Manager::setMinimum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("minimum", p.x());
@@ -652,7 +655,7 @@ void Vector3Manager::setMaximum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("maximum", p.x());
@@ -671,7 +674,7 @@ void Vector3Manager::setStepSize(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::RectF)
             return;
-        QRectF p = qVariantValue<QRectF>(val);
+        QRectF p = val.value<QRectF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("singleStep", p.x());
@@ -760,14 +763,14 @@ void Vector2Manager::slotValueChanged(QtProperty *property, const QVariant &valu
     if (xToProperty.contains(property)) {
         QtProperty *pointProperty = xToProperty[property];
         QVariant v = this->value(pointProperty);
-        QPointF p = qVariantValue<QPointF>(v);
-        p.setX(qVariantValue<double>(value));
+        QPointF p = v.value<QPointF>();
+        p.setX(value.value<double>());
         setValue(pointProperty, p);
     } else if (yToProperty.contains(property)) {
         QtProperty *pointProperty = yToProperty[property];
         QVariant v = this->value(pointProperty);
-        QPointF p = qVariantValue<QPointF>(v);
-        p.setY(qVariantValue<double>(value));
+        QPointF p = v.value<QPointF>();
+        p.setY(value.value<double>());
         setValue(pointProperty, p);
     }
 }
@@ -810,7 +813,7 @@ QString Vector2Manager::valueText(const QtProperty *property) const
 {
     if (propertyToData.contains(property)) {
         QVariant v = propertyToData[property].value;
-        QPointF p = qVariantValue<QPointF>(v);
+        QPointF p = v.value<QPointF>();
         return QString("(%1;%2)").arg(QString::number(p.x())).arg(QString::number(p.y()));
     }
     return QtVariantPropertyManager::valueText(property);
@@ -821,7 +824,7 @@ void Vector2Manager::setValue(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::PointF)
             return;
-        QPointF p = qVariantValue<QPointF>(val);
+        QPointF p = val.value<QPointF>();
         Data d = propertyToData[property];
         d.value = p;
         if (d.x)
@@ -841,7 +844,7 @@ void Vector2Manager::setMinimum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::PointF)
             return;
-        QPointF p = qVariantValue<QPointF>(val);
+        QPointF p = val.value<QPointF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("minimum", p.x());
@@ -858,7 +861,7 @@ void Vector2Manager::setMaximum(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::PointF)
             return;
-        QPointF p = qVariantValue<QPointF>(val);
+        QPointF p = val.value<QPointF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("maximum", p.x());
@@ -875,7 +878,7 @@ void Vector2Manager::setStepSize(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::PointF)
             return;
-        QPointF p = qVariantValue<QPointF>(val);
+        QPointF p = val.value<QPointF>();
         Data d = propertyToData[property];
         if (d.x)
             d.x->setAttribute("singleStep", p.x());

@@ -32,7 +32,7 @@
 #ifndef IMPORTHEIGHTMAPDIALOG_HXX
 #define IMPORTHEIGHTMAPDIALOG_HXX
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "ui_importheightmapdialog.h"
 

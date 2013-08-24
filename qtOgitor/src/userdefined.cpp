@@ -29,15 +29,19 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 #include <QtCore/QSignalMapper>
-#include <QtGui/QVBoxLayout>
+
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QMenu>
+
+#include <QtGui/QIcon>
 #include <QtGui/QDragMoveEvent>
 #include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QIcon>
-#include <QtGui/QLabel>
+
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "userdefined.hxx"

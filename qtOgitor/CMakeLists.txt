@@ -1,6 +1,8 @@
+cmake_minimum_required(VERSION 2.8.11)
+
 project(QtOgitor)
-set(QT_MIN_VERSION "4.5.0")
-find_package(Qt4 COMPONENTS QtSvg REQUIRED)
+
+find_package(Qt5Widgets REQUIRED)
 
 if(UNIX AND NOT APPLE)
     if(EXISTS /usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
@@ -13,13 +15,12 @@ if(UNIX AND NOT APPLE)
     endif()
 endif(UNIX AND NOT APPLE)
 
-if(NOT QT4_FOUND)
-    message(SEND_ERROR "Failed to find Qt 4.5 or greater.")
-else(NOT QT4_FOUND)
-    include(${QT_USE_FILE})
+if(NOT Qt5Widgets_FOUND)
+    message(SEND_ERROR "Failed to find Qt 5.0.0 or greater.")
+else(NOT Qt5Widgets_FOUND)
     set(CMAKE_PACKAGE_QTGUI TRUE)
-
-    file(GLOB UI_FILES *.ui)
+	
+	file(GLOB UI_FILES *.ui)
 
     set(SRCS
         ./include/application.hxx
@@ -144,8 +145,8 @@ else(NOT QT4_FOUND)
 
     message(STATUS "INFO QTOGITOR PREPROCESSOR: " ${OGITOR_QT_PREPROCESSOR})
 
-    qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2} OPTIONS ${OGITOR_QT_PREPROCESSOR})
-    qt4_wrap_ui(UI_SRCS ${UI_FILES})
+    qt5_wrap_cpp(MOC_SRCS ${MOC_SRCS2} OPTIONS ${OGITOR_QT_PREPROCESSOR})
+    qt5_wrap_ui(UI_SRCS ${UI_FILES})
 
     source_group("Moc Files" FILES ${MOC_SRCS})
     source_group("Ui Files" FILES ${UI_FILES})
@@ -155,7 +156,7 @@ else(NOT QT4_FOUND)
     include_directories(./include)
     include_directories(${DEPENDENCIES_INCLUDES})
 
-    qt4_add_resources(RESOURCE_SRCS ./res/qtOgitor.qrc)
+    qt5_add_resources(RESOURCE_SRCS ./res/qtOgitor.qrc)
     source_group("Qrc Files" FILES ${RESOURCE_SRCS})
 
     set(SRCS ${SRCS} ${MOC_SRCS} ${UI_FILES})
@@ -224,7 +225,7 @@ else(NOT QT4_FOUND)
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND mkdir -p ${qtOgitorLocationAppdir}/Contents/Resources && mkdir -p ${qtOgitorLocationAppdir}/Contents/Components && mkdir -p ${qtOgitorLocationAppdir}/Contents/Plugins/Ogitor && mkdir -p ${qtOgitorLocationAppdir}/Contents/Frameworks)
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})
     endif(NOT APPLE)
-
+	
     if(OGITOR_MESHMAGICK_INTERFACE)
         TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     else(OGITOR_MESHMAGICK_INTERFACE)
@@ -252,6 +253,8 @@ else(NOT QT4_FOUND)
         add_custom_command(TARGET qtOgitor POST_BUILD
             COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
     endif(WIN32)
+	
+	qt5_use_modules(qtOgitor Widgets)
 
     if(UNIX AND NOT APPLE)
         get_target_property(OGITORFILE qtOgitor LOCATION)
@@ -316,45 +319,45 @@ else(NOT QT4_FOUND)
         endif(OGITOR_MESHMAGICK_INTERFACE)
 
         install(FILES
-            ${QT_DLL_DIR}/QtCore4.dll
-            ${QT_DLL_DIR}/QtGui4.dll
-            ${QT_DLL_DIR}/QtSvg4.dll
+            ${QT_DLL_DIR}/QtCore5.dll
+            ${QT_DLL_DIR}/QtGui5.dll
+            ${QT_DLL_DIR}/QtSvg5.dll
             ${QT_BINARY_DIR}/assistant.exe
-            ${QT_DLL_DIR}/QtHelp4.dll
-            ${QT_DLL_DIR}/QtNetwork4.dll
-            ${QT_DLL_DIR}/QtSql4.dll
-            ${QT_DLL_DIR}/QtWebKit4.dll
-            ${QT_DLL_DIR}/QtCLucene4.dll
-            ${QT_DLL_DIR}/QtXml4.dll
-            ${QT_DLL_DIR}/QtXmlPatterns4.dll
-            ${QT_DLL_DIR}/phonon4.dll
+            ${QT_DLL_DIR}/QtHelp5.dll
+            ${QT_DLL_DIR}/QtNetwork5.dll
+            ${QT_DLL_DIR}/QtSql5.dll
+            ${QT_DLL_DIR}/QtWebKit5.dll
+            ${QT_DLL_DIR}/QtCLucene5.dll
+            ${QT_DLL_DIR}/QtXml5.dll
+            ${QT_DLL_DIR}/QtXmlPatterns5.dll
+            ${QT_DLL_DIR}/phonon5.dll
             DESTINATION bin
             CONFIGURATIONS Release)
         install(FILES
-            ${QT_DLL_DIR}/QtCored4.dll
-            ${QT_DLL_DIR}/QtGuid4.dll
-            ${QT_DLL_DIR}/QtSvgd4.dll
+            ${QT_DLL_DIR}/QtCored5.dll
+            ${QT_DLL_DIR}/QtGuid5.dll
+            ${QT_DLL_DIR}/QtSvgd5.dll
             ${QT_BINARY_DIR}/assistant.exe
-            ${QT_DLL_DIR}/QtHelpd4.dll
-            ${QT_DLL_DIR}/QtNetworkd4.dll
-            ${QT_DLL_DIR}/QtSqld4.dll
-            ${QT_DLL_DIR}/QtWebKitd4.dll
-            ${QT_DLL_DIR}/QtCLucened4.dll
-            ${QT_DLL_DIR}/QtXmld4.dll
-            ${QT_DLL_DIR}/QtXmlPatternsd4.dll
-            ${QT_DLL_DIR}/phonond4.dll
+            ${QT_DLL_DIR}/QtHelpd5.dll
+            ${QT_DLL_DIR}/QtNetworkd5.dll
+            ${QT_DLL_DIR}/QtSqld5.dll
+            ${QT_DLL_DIR}/QtWebKitd5.dll
+            ${QT_DLL_DIR}/QtCLucened5.dll
+            ${QT_DLL_DIR}/QtXmld5.dll
+            ${QT_DLL_DIR}/QtXmlPatternsd5.dll
+            ${QT_DLL_DIR}/phonond5.dll
             DESTINATION bin
             CONFIGURATIONS Debug)
-        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon4.dll
+        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon5.dll
             DESTINATION bin/iconengines
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond4.dll
+        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond5.dll
             DESTINATION bin/iconengines
             CONFIGURATIONS Debug)
-        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll
+        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite5.dll
             DESTINATION bin/sqldrivers
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited4.dll
+        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited5.dll
             DESTINATION bin/sqldrivers
             CONFIGURATIONS Debug)
         install(TARGETS qtOgitor
@@ -366,6 +369,6 @@ else(NOT QT4_FOUND)
             configure_file(${Ogitor_SOURCE_DIR}/CMakeModules/VisualStudioUserFile.vcxproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/QtOgitor.vcxproj.user @ONLY)
         endif ()
     endif(WIN32)
-endif(NOT QT4_FOUND)
+endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

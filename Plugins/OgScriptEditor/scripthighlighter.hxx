@@ -33,10 +33,10 @@
 #ifndef SCRIPT_HIGHLIGHTER_HXX
 #define SCRIPT_HIGHLIGHTER_HXX
 
-#include <QtGui/QWidget>
+#include <QtWidgets//QWidget>
 #include <QtGui/QSyntaxHighlighter>
 #include <QtGui/QTextCharFormat>
-#include <QtGui/QStringListModel>
+#include <QtCore/QStringListModel>
 #include <QtGui/QTextObjectInterface>
 
 //-----------------------------------------------------------------------------------------

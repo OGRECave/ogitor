@@ -41,6 +41,16 @@
 #include "OgitorsClipboardManager.h"
 #include "MultiSelEditor.h"
 
+#include <QtGui/QMouseEvent>
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QDropEvent>
+#include <QtGui/QKeyEvent>
+
+#include <QtCore/QSignalMapper>
+
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QApplication>
+
 using namespace Ogitors;
 //----------------------------------------------------------------------------------------
 void adjustOgitorLayerParameters()
