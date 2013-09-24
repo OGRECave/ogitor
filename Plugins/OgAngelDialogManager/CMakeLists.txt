@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 2.8.10)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 cmake_policy(SET CMP0003 NEW)
 
+# CMake policy introduced in relation to Qt 5.1
+if("${CMAKE_VERSION}" VERSION_GREATER 2.8.10)   
+	cmake_policy(SET CMP0020 OLD)
+endif()
+
 project(OgAngelDialogManager)
 
 find_package(Qt5Widgets REQUIRED)

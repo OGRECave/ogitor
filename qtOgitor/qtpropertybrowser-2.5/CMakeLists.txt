@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 2.8.10)
 
+# CMake policy introduced in relation to Qt 5.1
+if("${CMAKE_VERSION}" VERSION_GREATER 2.8.10)   
+	cmake_policy(SET CMP0020 OLD)
+endif()
+
 PROJECT(QtSolutions_PropertyBrowser)
 
 FIND_PACKAGE(Qt5Widgets REQUIRED)
