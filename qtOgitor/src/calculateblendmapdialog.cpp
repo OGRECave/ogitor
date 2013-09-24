@@ -30,7 +30,7 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include "calculateblendmapdialog.hxx"
 
 CalculateBlendMapDialog::CalculateBlendMapDialog(QWidget *parent) :

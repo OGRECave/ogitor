@@ -42,6 +42,12 @@
 #include "OgitorsClipboardManager.h"
 #include "MultiSelEditor.h"
 
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QDragMoveEvent>
+#include <QtGui/QDropEvent>
+
+#include <QtWidgets/QVBoxLayout>
+
 using namespace Ogitors;
 //----------------------------------------------------------------------------------------
 SceneTreeWidget::SceneTreeWidget(QWidget *parent) : ExtendedTreeWidget(parent) 

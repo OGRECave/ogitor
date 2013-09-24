@@ -24,9 +24,11 @@
 #include "NodeEditor.h"
 #include "EntityEditor.h"
 #include "ModularZoneEditor.h"
+
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
-#include <QtGui/QDialog>
+
+#include <QtWidgets/QDialog>
 
 using namespace Ogitors;
 using namespace MZP;

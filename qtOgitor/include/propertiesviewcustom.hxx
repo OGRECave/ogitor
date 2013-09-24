@@ -33,8 +33,8 @@
 #ifndef PROPERTIESVIEWCUSTOM_HXX
 #define PROPERTIESVIEWCUSTOM_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPushButton>
 #include <Ogre.h>
 #include "qttreepropertybrowser.h"
 #include "OgitorsPrerequisites.h"

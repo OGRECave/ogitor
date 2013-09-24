@@ -33,8 +33,9 @@
 #define __OGREWIDGET_HXX__
 
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QWidget>
+
 #include "OgitorsPrerequisites.h"
 #include "BaseEditor.h"
 #include "OgitorsSystem.h"
@@ -43,8 +44,10 @@
 #include "ViewportEditor.h"
 #include "TerrainEditor.h"
 
-#if defined(Q_WS_X11)
+#if QT_VERSION < 0x050000 || QT_VERSION >= 0x050100
+#if defined(Q_OS_LINUX)
 #include <QtGui/QX11Info>
+#endif
 #endif
 
 //-----------------------------------------------------------------------------------------

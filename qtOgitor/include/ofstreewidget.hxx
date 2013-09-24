@@ -33,8 +33,8 @@
 #ifndef OFSTREEWIDGET_HXX
 #define OFSTREEWIDGET_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
 #include <QtCore/QThread>
 #include <QtCore/QMutex>
 
