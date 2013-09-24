@@ -44,8 +44,10 @@
 #include "ViewportEditor.h"
 #include "TerrainEditor.h"
 
+#if QT_VERSION < 0x050000 || QT_VERSION >= 0x050100
 #if defined(Q_OS_LINUX)
 #include <QtGui/QX11Info>
+#endif
 #endif
 
 //-----------------------------------------------------------------------------------------

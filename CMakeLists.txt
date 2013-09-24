@@ -5,7 +5,7 @@
 # and provide build configuration options.
 ######################################################################
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.10)
 
 # Works around warnings libraries linked against that don't
 # have absolute paths (e.g. -lOgreMain)

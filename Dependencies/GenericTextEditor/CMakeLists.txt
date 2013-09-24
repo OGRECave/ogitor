@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.10)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 cmake_policy(SET CMP0003 NEW)
 
@@ -54,7 +54,7 @@ else(NOT Qt5Widgets_FOUND)
 
     include_directories(.)
     include_directories(${OGITOR_INCLUDES})
-        include_directories(../OFS/include)
+    include_directories(../OFS/include)
 
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor)
     ogitor_add_library(GenericTextEditor SHARED ${SRCS})

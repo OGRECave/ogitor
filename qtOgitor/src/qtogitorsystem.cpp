@@ -159,7 +159,7 @@ QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0),
     QDir directory(QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QString("\\OgitorProjects"));
     if(!directory.exists())
 #if defined(Q_OS_LINUX)
-    directory.setPath(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+    directory.setPath(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
 #else
     directory.setPath("../Projects/");
 #endif
