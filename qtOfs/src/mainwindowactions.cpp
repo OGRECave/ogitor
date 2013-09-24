@@ -33,7 +33,7 @@
 #include "mainwindow.hxx"
 #include "filelistwidget.hxx"
 
-#include <qtwidgets/QFileDialog>
+#include <QtWidgets/QFileDialog>
 
 //------------------------------------------------------------------------------
 void MainWindow::addActions()
