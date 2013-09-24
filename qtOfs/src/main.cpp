@@ -32,6 +32,8 @@
 
 #include "mainwindow.hxx"
 
+#include <QtWidgets/QMessageBox>
+
 //-------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {

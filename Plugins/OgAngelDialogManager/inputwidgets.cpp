@@ -33,9 +33,18 @@
 #include "angelscript.h"
 
 #include <cassert>
-#include <QtGui/QtGui>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QLabel>
+
 #include "inputwidgets.hxx"
 #include "dialog.hxx"
+
 //-----------------------------------------------------------------------------------------
 // Example REF_CAST behaviour
 template<class A, class B>

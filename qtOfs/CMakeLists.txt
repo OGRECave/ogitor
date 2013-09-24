@@ -1,13 +1,19 @@
+cmake_minimum_required(VERSION 2.8.10)
+
+# CMake policy introduced in relation to Qt 5.1
+if("${CMAKE_VERSION}" VERSION_GREATER 2.8.10)   
+	cmake_policy(SET CMP0020 OLD)
+endif()
+
 project(QtOfs)
-set(QT_MIN_VERSION "4.5.0")
-find_package(Qt4 COMPONENTS QtSvg REQUIRED)
 
-if(NOT QT4_FOUND)
-	message(SEND_ERROR "Failed to find Qt 4.5 or greater.")
-else(NOT QT4_FOUND)
-	include(${QT_USE_FILE})
+find_package(Qt5Widgets REQUIRED)
+
+if(NOT Qt5Widgets_FOUND)
+	message(SEND_ERROR "Failed to find Qt 5.0.0 or greater.")
+else(NOT Qt5Widgets_FOUND)
 	set(CMAKE_PACKAGE_QTGUI TRUE)
-
+	
 	file(GLOB UI_FILES *.ui)
 
 	set(SRCS
@@ -24,10 +30,10 @@ else(NOT QT4_FOUND)
 		./include/mainwindow.hxx
 	)
 
-        set(OFS_QT_PREPROCESSOR "")
+    set(OFS_QT_PREPROCESSOR "")
 
-	qt4_wrap_cpp(MOC_SRCS ${MOC_SRCS2} OPTIONS ${OFS_QT_PREPROCESSOR})
-	qt4_wrap_ui(UI_SRCS ${UI_FILES})
+	qt5_wrap_cpp(MOC_SRCS ${MOC_SRCS2} OPTIONS ${OFS_QT_PREPROCESSOR})
+	qt5_wrap_ui(UI_SRCS ${UI_FILES})
 
 	source_group("Moc Files" FILES ${MOC_SRCS})
 	source_group("Ui Files" FILES ${UI_FILES})
@@ -35,9 +41,9 @@ else(NOT QT4_FOUND)
 	# if we don't include this CMake will not include ui headers properly:
 	include_directories(${CMAKE_CURRENT_BINARY_DIR})
 	include_directories(./include)
-        include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/OFS/include")
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/OFS/include")
 
-	qt4_add_resources(RESOURCE_SRCS ./res/qtOfs.qrc)
+	qt5_add_resources(RESOURCE_SRCS ./res/qtOfs.qrc)
 	source_group("Qrc Files" FILES ${RESOURCE_SRCS})
 
 	set(SRCS ${SRCS} ${MOC_SRCS} ${UI_FILES})
@@ -46,21 +52,23 @@ else(NOT QT4_FOUND)
 		file(GLOB qtOfs_res ./res/*.rc)
 	endif(WIN32)
 
-        ogitor_add_executable(qtOfs WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
+    ogitor_add_executable(qtOfs WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
+	
+	qt5_use_modules(qtOfs Widgets)
 
 	if(WIN32)
 		set_target_properties(qtOfs PROPERTIES DEBUG_POSTFIX _d)
 	endif(WIN32)
 
-        TARGET_LINK_LIBRARIES(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
+	TARGET_LINK_LIBRARIES(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
 
-        if(UNIX)
-            target_link_libraries(qtOfs optimized
-            ${Boost_FILESYSTEM_LIBRARY}
-            ${Boost_SYSTEM_LIBRARY}
-            ${Boost_REGEX_LIBRARY}
-            )
-        endif()
+	if(UNIX)
+		target_link_libraries(qtOfs optimized
+		${Boost_FILESYSTEM_LIBRARY}
+		${Boost_SYSTEM_LIBRARY}
+		${Boost_REGEX_LIBRARY}
+		)
+	endif()
 
 	if(WIN32)
 		add_custom_command(TARGET qtOfs PRE_BUILD
@@ -128,6 +136,6 @@ else(NOT QT4_FOUND)
             RUNTIME DESTINATION bin)
 	endif(WIN32)
 
-endif(NOT QT4_FOUND)
+endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

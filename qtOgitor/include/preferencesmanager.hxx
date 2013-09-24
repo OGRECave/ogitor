@@ -33,12 +33,12 @@
 #ifndef PREFERENCESMANAGER_H
 #define PREFERENCESMANAGER_H
 
-#include <QtGui/QDialog>
-#include <QtGui/QToolButton>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QTreeWidget>
 
 #include <QtCore/QSignalMapper>
 #include <QtCore/QObject>

@@ -30,7 +30,7 @@
 /// THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 
 #include "Ogitors.h"
 #include "Plugin.h"

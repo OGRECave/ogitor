@@ -33,6 +33,10 @@
 #include "mainwindow.hxx"
 #include "filelistwidget.hxx"
 
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QGridLayout>
+#include <QtGui/QCloseEvent>
+
 MainWindow *mOfsMainWindow = 0;
 
 const unsigned int MAX_BUFFER_SIZE = 1024 * 1024 * 16; // 16 MB
@@ -196,7 +200,7 @@ void MainWindow::retranslateUi()
 {
     QString appTitle = "qtOfs ";
     setWindowTitle(appTitle);
-    menuFile->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
+    menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
 }
 //------------------------------------------------------------------------------
 void MainWindow::createListWidget()
@@ -900,8 +904,8 @@ void AddFilesThread::addFiles(const AddFilesList& list)
  
                 if(stream_size >= MAX_BUFFER_SIZE)
                 {
-                    //createFile accepts initial data to be written during alocation
-                    //its an optimization, thats why we dont have to call Ofs:write after createFile
+                    //createFile accepts initial data to be written during allocation
+                    //its an optimization, thats why we don't have to call Ofs:write after createFile
                     stream.read(tmp_buffer, MAX_BUFFER_SIZE);
                     try
                     {
