@@ -133,9 +133,9 @@ bool CTerrainPageEditor::importHeightMap(Ogre::String filename, Ogre::Real fBias
         if(!mSystem->DisplayImportHeightMapDialog(params))
             return false;
 
-        fScale = Ogre::StringConverter::parseReal(params["input1"]);
-        fBias = Ogre::StringConverter::parseReal(params["input2"]);
-        flipV = Ogre::StringConverter::parseBool(params["inputCheckV"]);
+        fScale = Ogre::StringConverter::parseReal(params["scale"]);
+        fBias  = Ogre::StringConverter::parseReal(params["bias"]);
+        flipV  = Ogre::StringConverter::parseBool(params["inverted"]);
     }
 
     float *mHeightData = mHandle->getHeightData();
