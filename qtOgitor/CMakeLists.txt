@@ -232,9 +232,9 @@ else(NOT Qt5Widgets_FOUND)
     endif(NOT APPLE)
 	
     if(OGITOR_MESHMAGICK_INTERFACE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
+        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     else(OGITOR_MESHMAGICK_INTERFACE)
-        TARGET_LINK_LIBRARIES(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
+        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     endif(OGITOR_MESHMAGICK_INTERFACE)
 
     if(UNIX AND NOT APPLE)
@@ -253,6 +253,7 @@ else(NOT Qt5Widgets_FOUND)
 
     if(WIN32)
         set_target_properties(qtOgitor PROPERTIES DEBUG_POSTFIX _d)
+		set_property(TARGET qtOgitor PROPERTY WIN32_EXECUTABLE 0)
         add_custom_command(TARGET qtOgitor PRE_BUILD
             COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
         add_custom_command(TARGET qtOgitor POST_BUILD
@@ -286,9 +287,9 @@ else(NOT Qt5Widgets_FOUND)
 
         endif(OGITOR_DIST)
         
-        INSTALL(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-        INSTALL(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
+        install(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+        install(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
+        install(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
             PATTERN     "*.qm"
             PATTERN     "*.ts" EXCLUDE
@@ -296,7 +297,7 @@ else(NOT Qt5Widgets_FOUND)
             PATTERN     "*.exe" EXCLUDE
             PATTERN     "*.bat" EXCLUDE
         )
-        INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
+        install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
             PATTERN     "qt_*.qm"
             PATTERN     "ogitor_*.qm" EXCLUDE
