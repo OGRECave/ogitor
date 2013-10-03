@@ -85,48 +85,57 @@ else(NOT Qt5Widgets_FOUND)
 	endif(UNIX)
 
 	if(WIN32)
-		set(QT_DLL_DIR ${QT_BINARY_DIR})
+		set(QT_DLL_DIR "$ENV{QTDIR}/bin")
+        set(QT_PLUGINS_DIR "$ENV{QTDIR}/plugins")
 
-		install(FILES 
-			${QT_DLL_DIR}/QtCore4.dll
-			${QT_DLL_DIR}/QtGui4.dll
-			${QT_DLL_DIR}/QtSvg4.dll
-			${QT_BINARY_DIR}/assistant.exe
-			${QT_DLL_DIR}/QtHelp4.dll
-			${QT_DLL_DIR}/QtNetwork4.dll
-			${QT_DLL_DIR}/QtSql4.dll
-			${QT_DLL_DIR}/QtWebKit4.dll
-			${QT_DLL_DIR}/QtCLucene4.dll
-			${QT_DLL_DIR}/QtXml4.dll
-			${QT_DLL_DIR}/QtXmlPatterns4.dll
-			${QT_DLL_DIR}/phonon4.dll
-			DESTINATION bin
-			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-		install(FILES 
-			${QT_DLL_DIR}/QtCored4.dll
-			${QT_DLL_DIR}/QtGuid4.dll
-			${QT_DLL_DIR}/QtSvgd4.dll
-			${QT_BINARY_DIR}/assistant.exe
-			${QT_DLL_DIR}/QtHelpd4.dll
-			${QT_DLL_DIR}/QtNetworkd4.dll
-			${QT_DLL_DIR}/QtSqld4.dll
-			${QT_DLL_DIR}/QtWebKitd4.dll
-			${QT_DLL_DIR}/QtCLucened4.dll
-			${QT_DLL_DIR}/QtXmld4.dll
-			${QT_DLL_DIR}/QtXmlPatternsd4.dll
-			${QT_DLL_DIR}/phonond4.dll
-			DESTINATION bin
-			CONFIGURATIONS Debug)
-		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon4.dll 
+		install(FILES
+            ${QT_DLL_DIR}/Qt5Core.dll
+			${QT_DLL_DIR}/Qt5Widgets.dll
+            ${QT_DLL_DIR}/Qt5Gui.dll
+            ${QT_DLL_DIR}/Qt5Svg.dll
+            ${QT_DLL_DIR}/assistant.exe
+            ${QT_DLL_DIR}/Qt5Help.dll
+            ${QT_DLL_DIR}/Qt5Network.dll
+            ${QT_DLL_DIR}/Qt5Sql.dll
+            ${QT_DLL_DIR}/Qt5WebKit.dll
+            ${QT_DLL_DIR}/Qt5CLucene.dll
+            ${QT_DLL_DIR}/Qt5Xml.dll
+            ${QT_DLL_DIR}/Qt5XmlPatterns.dll
+            ${QT_DLL_DIR}/icudt51.dll
+            ${QT_DLL_DIR}/icuin51.dll
+            ${QT_DLL_DIR}/icuuc51.dll
+            DESTINATION bin
+            CONFIGURATIONS Release)
+
+        install(FILES
+            ${QT_DLL_DIR}/Qt5Cored.dll
+			${QT_DLL_DIR}/Qt5Widgetsd.dll
+            ${QT_DLL_DIR}/Qt5Guid.dll
+            ${QT_DLL_DIR}/Qt5Svgd.dll
+            ${QT_DLL_DIR}/assistant.exe
+            ${QT_DLL_DIR}/Qt5Helpd.dll
+            ${QT_DLL_DIR}/Qt5Networkd.dll
+            ${QT_DLL_DIR}/Qt5Sqld.dll
+            ${QT_DLL_DIR}/Qt5WebKitd.dll
+            ${QT_DLL_DIR}/Qt5CLucened.dll
+            ${QT_DLL_DIR}/Qt5Xmld.dll
+            ${QT_DLL_DIR}/Qt5XmlPatternsd.dll
+            ${QT_DLL_DIR}/icudt51.dll
+            ${QT_DLL_DIR}/icuin51.dll
+            ${QT_DLL_DIR}/icuuc51.dll
+            DESTINATION bin
+            CONFIGURATIONS Debug)
+
+		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll 
 			DESTINATION bin/iconengines
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond4.dll
+		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond.dll
 			DESTINATION bin/iconengines
 			CONFIGURATIONS Debug)
-		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite4.dll
+		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll
 			DESTINATION bin/sqldrivers
 			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited4.dll
+		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited.dll
 			DESTINATION bin/sqldrivers
 			CONFIGURATIONS Debug)
 		install(TARGETS qtOfs
