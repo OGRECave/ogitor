@@ -314,8 +314,9 @@ else(NOT Qt5Widgets_FOUND)
     endif(UNIX)
 
     if(WIN32)
-        set(QT_DLL_DIR ${QT_BINARY_DIR})
-
+		set(QT_DLL_DIR "$ENV{QTDIR}/bin")
+        set(QT_PLUGINS_DIR "$ENV{QTDIR}/plugins")
+		
         if(OGITOR_MESHMAGICK_INTERFACE)
             set_target_properties(qtOgitor PROPERTIES
                 COMPILE_DEFINITIONS "QT_QTPROPERTYBROWSER_IMPORT;OGITOR_MESHMAGICK_INTERFACE")
@@ -325,45 +326,51 @@ else(NOT Qt5Widgets_FOUND)
         endif(OGITOR_MESHMAGICK_INTERFACE)
 
         install(FILES
-            ${QT_DLL_DIR}/QtCore5.dll
-            ${QT_DLL_DIR}/QtGui5.dll
-            ${QT_DLL_DIR}/QtSvg5.dll
-            ${QT_BINARY_DIR}/assistant.exe
-            ${QT_DLL_DIR}/QtHelp5.dll
-            ${QT_DLL_DIR}/QtNetwork5.dll
-            ${QT_DLL_DIR}/QtSql5.dll
-            ${QT_DLL_DIR}/QtWebKit5.dll
-            ${QT_DLL_DIR}/QtCLucene5.dll
-            ${QT_DLL_DIR}/QtXml5.dll
-            ${QT_DLL_DIR}/QtXmlPatterns5.dll
-            ${QT_DLL_DIR}/phonon5.dll
+            ${QT_DLL_DIR}/Qt5Core.dll
+			${QT_DLL_DIR}/Qt5Widgets.dll
+            ${QT_DLL_DIR}/Qt5Gui.dll
+            ${QT_DLL_DIR}/Qt5Svg.dll
+            ${QT_DLL_DIR}/assistant.exe
+            ${QT_DLL_DIR}/Qt5Help.dll
+            ${QT_DLL_DIR}/Qt5Network.dll
+            ${QT_DLL_DIR}/Qt5Sql.dll
+            ${QT_DLL_DIR}/Qt5WebKit.dll
+            ${QT_DLL_DIR}/Qt5CLucene.dll
+            ${QT_DLL_DIR}/Qt5Xml.dll
+            ${QT_DLL_DIR}/Qt5XmlPatterns.dll
+            ${QT_DLL_DIR}/icudt51.dll
+            ${QT_DLL_DIR}/icuin51.dll
+            ${QT_DLL_DIR}/icuuc51.dll
             DESTINATION bin
             CONFIGURATIONS Release)
         install(FILES
-            ${QT_DLL_DIR}/QtCored5.dll
-            ${QT_DLL_DIR}/QtGuid5.dll
-            ${QT_DLL_DIR}/QtSvgd5.dll
-            ${QT_BINARY_DIR}/assistant.exe
-            ${QT_DLL_DIR}/QtHelpd5.dll
-            ${QT_DLL_DIR}/QtNetworkd5.dll
-            ${QT_DLL_DIR}/QtSqld5.dll
-            ${QT_DLL_DIR}/QtWebKitd5.dll
-            ${QT_DLL_DIR}/QtCLucened5.dll
-            ${QT_DLL_DIR}/QtXmld5.dll
-            ${QT_DLL_DIR}/QtXmlPatternsd5.dll
-            ${QT_DLL_DIR}/phonond5.dll
+            ${QT_DLL_DIR}/Qt5Cored.dll
+			${QT_DLL_DIR}/Qt5Widgetsd.dll
+            ${QT_DLL_DIR}/Qt5Guid.dll
+            ${QT_DLL_DIR}/Qt5Svgd.dll
+            ${QT_DLL_DIR}/assistant.exe
+            ${QT_DLL_DIR}/Qt5Helpd.dll
+            ${QT_DLL_DIR}/Qt5Networkd.dll
+            ${QT_DLL_DIR}/Qt5Sqld.dll
+            ${QT_DLL_DIR}/Qt5WebKitd.dll
+            ${QT_DLL_DIR}/Qt5CLucened.dll
+            ${QT_DLL_DIR}/Qt5Xmld.dll
+            ${QT_DLL_DIR}/Qt5XmlPatternsd.dll
+            ${QT_DLL_DIR}/icudt51.dll
+            ${QT_DLL_DIR}/icuin51.dll
+            ${QT_DLL_DIR}/icuuc51.dll
             DESTINATION bin
             CONFIGURATIONS Debug)
-        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon5.dll
+        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll
             DESTINATION bin/iconengines
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond5.dll
+        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond.dll
             DESTINATION bin/iconengines
             CONFIGURATIONS Debug)
-        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite5.dll
+        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll
             DESTINATION bin/sqldrivers
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited5.dll
+        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited.dll
             DESTINATION bin/sqldrivers
             CONFIGURATIONS Debug)
         install(TARGETS qtOgitor
