@@ -88,59 +88,50 @@ else(NOT Qt5Widgets_FOUND)
 		set(QT_DLL_DIR "$ENV{QTDIR}/bin")
         set(QT_PLUGINS_DIR "$ENV{QTDIR}/plugins")
 
-		install(FILES
+        install(FILES
             ${QT_DLL_DIR}/Qt5Core.dll
-			${QT_DLL_DIR}/Qt5Widgets.dll
             ${QT_DLL_DIR}/Qt5Gui.dll
             ${QT_DLL_DIR}/Qt5Svg.dll
-            ${QT_DLL_DIR}/assistant.exe
-            ${QT_DLL_DIR}/Qt5Help.dll
-            ${QT_DLL_DIR}/Qt5Network.dll
-            ${QT_DLL_DIR}/Qt5Sql.dll
-            ${QT_DLL_DIR}/Qt5WebKit.dll
-            ${QT_DLL_DIR}/Qt5CLucene.dll
             ${QT_DLL_DIR}/Qt5Xml.dll
+            ${QT_DLL_DIR}/Qt5Widgets.dll
             ${QT_DLL_DIR}/Qt5XmlPatterns.dll
-            ${QT_DLL_DIR}/icudt51.dll
-            ${QT_DLL_DIR}/icuin51.dll
-            ${QT_DLL_DIR}/icuuc51.dll
+			${QT_DLL_DIR}/libEGL.dll
+			${QT_DLL_DIR}/libGLESv2.dll
+			${QT_DLL_DIR}/icudt51.dll
+			${QT_DLL_DIR}/icuin51.dll
+			${QT_DLL_DIR}/icuuc51.dll
             DESTINATION bin
-            CONFIGURATIONS Release)
-
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
         install(FILES
             ${QT_DLL_DIR}/Qt5Cored.dll
-			${QT_DLL_DIR}/Qt5Widgetsd.dll
             ${QT_DLL_DIR}/Qt5Guid.dll
             ${QT_DLL_DIR}/Qt5Svgd.dll
-            ${QT_DLL_DIR}/assistant.exe
-            ${QT_DLL_DIR}/Qt5Helpd.dll
-            ${QT_DLL_DIR}/Qt5Networkd.dll
-            ${QT_DLL_DIR}/Qt5Sqld.dll
-            ${QT_DLL_DIR}/Qt5WebKitd.dll
-            ${QT_DLL_DIR}/Qt5CLucened.dll
             ${QT_DLL_DIR}/Qt5Xmld.dll
+            ${QT_DLL_DIR}/Qt5Widgetsd.dll
             ${QT_DLL_DIR}/Qt5XmlPatternsd.dll
-            ${QT_DLL_DIR}/icudt51.dll
-            ${QT_DLL_DIR}/icuin51.dll
-            ${QT_DLL_DIR}/icuuc51.dll
+			${QT_DLL_DIR}/libEGLd.dll
+			${QT_DLL_DIR}/libGLESv2d.dll
+			${QT_DLL_DIR}/icudt51.dll
+			${QT_DLL_DIR}/icuin51.dll
+			${QT_DLL_DIR}/icuuc51.dll
             DESTINATION bin
             CONFIGURATIONS Debug)
+        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll
+            DESTINATION bin/iconengines
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond.dll
+            DESTINATION bin/iconengines
+            CONFIGURATIONS Debug)
+        install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows.dll
+            DESTINATION bin/platforms
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+        install(FILES ${QT_PLUGINS_DIR}/platforms/qwindowsd.dll
+            DESTINATION bin/platforms
+            CONFIGURATIONS Debug)
 
-		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll 
-			DESTINATION bin/iconengines
-			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-		install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond.dll
-			DESTINATION bin/iconengines
-			CONFIGURATIONS Debug)
-		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll
-			DESTINATION bin/sqldrivers
-			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-		install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited.dll
-			DESTINATION bin/sqldrivers
-			CONFIGURATIONS Debug)
 		install(TARGETS qtOfs
 			RUNTIME DESTINATION bin
-			CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
     elseif(UNIX AND NOT APPLE)
         install(TARGETS qtOfs
             RUNTIME DESTINATION bin)
