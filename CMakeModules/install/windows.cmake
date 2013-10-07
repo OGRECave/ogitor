@@ -180,6 +180,16 @@ install(FILES
 	${QT_DLL_DIR}/Qt5Network.dll
 	${QT_DLL_DIR}/Qt5Sql.dll
 	${QT_DLL_DIR}/Qt5WebKit.dll
+	${QT_DLL_DIR}/Qt5WebKitWidgets.dll
+	${QT_DLL_DIR}/Qt5WebKitWidgets.dll
+	${QT_DLL_DIR}/Qt5MultimediaWidgets.dll
+	${QT_DLL_DIR}/Qt5Multimedia.dll
+	${QT_DLL_DIR}/Qt5OpenGL.dll
+	${QT_DLL_DIR}/Qt5PrintSupport.dll
+	${QT_DLL_DIR}/Qt5Quick.dll
+	${QT_DLL_DIR}/Qt5Qml.dll
+	${QT_DLL_DIR}/Qt5V8.dll
+	${QT_DLL_DIR}/Qt5Sensors.dll
 	${QT_DLL_DIR}/Qt5CLucene.dll
     DESTINATION bin
     CONFIGURATIONS Release)
@@ -200,6 +210,15 @@ install(FILES
 	${QT_DLL_DIR}/Qt5Networkd.dll
 	${QT_DLL_DIR}/Qt5Sqld.dll
 	${QT_DLL_DIR}/Qt5WebKitd.dll
+	${QT_DLL_DIR}/Qt5WebKitWidgetsd.dll
+	${QT_DLL_DIR}/Qt5MultimediaWidgetsd.dll
+	${QT_DLL_DIR}/Qt5Multimediad.dll
+	${QT_DLL_DIR}/Qt5OpenGLd.dll
+	${QT_DLL_DIR}/Qt5PrintSupportd.dll
+	${QT_DLL_DIR}/Qt5Quickd.dll
+	${QT_DLL_DIR}/Qt5Qmld.dll
+	${QT_DLL_DIR}/Qt5V8d.dll
+	${QT_DLL_DIR}/Qt5Sensorsd.dll
 	${QT_DLL_DIR}/Qt5CLucened.dll
     DESTINATION bin
     CONFIGURATIONS Debug)
