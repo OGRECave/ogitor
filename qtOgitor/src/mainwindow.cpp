@@ -192,7 +192,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     recentMapper = 0;
 
-    setMinimumSize(400,300);
+    setMinimumSize(400, 300);
 
     if(!mArgsFile.isEmpty())
     {
