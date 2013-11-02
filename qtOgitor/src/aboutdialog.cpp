@@ -35,7 +35,7 @@
 #include <QtCore/QSettings>
 
 //------------------------------------------------------------------------------
-aboutdialog::aboutdialog(QWidget *parent, const QString version_string, Qt::WFlags flags) :
+aboutdialog::aboutdialog(QWidget *parent, const QString version_string, Qt::WindowFlags flags) :
     QDialog(parent, flags)
 {
     setupUi(this);

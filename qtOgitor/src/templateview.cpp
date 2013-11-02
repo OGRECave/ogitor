@@ -31,10 +31,14 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include <QtCore/QSignalMapper>
-#include <QtGui/QVBoxLayout>
+
 #include <QtGui/QDragMoveEvent>
+#include <QtGui/QDropEvent>
 #include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
+
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QVBoxLayout>
+
 #include "templateview.hxx"
 #include "BaseEditor.h"
 #include "ViewportEditor.h"

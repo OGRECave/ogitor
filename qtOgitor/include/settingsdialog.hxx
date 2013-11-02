@@ -33,8 +33,8 @@
 #ifndef SETTINGSDIALOG_HXX
 #define SETTINGSDIALOG_HXX
 
-#include <QtGui/QDialog>
-#include <QtGui/QWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QWidget>
 
 #include "OgitorsPrerequisites.h"
 #include "ui_settingsdialog.h"

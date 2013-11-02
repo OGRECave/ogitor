@@ -33,7 +33,7 @@
 #pragma once
 
 #include <QtGui/QtGui>
-#include <QtGui/QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 #include <QtCore/QtCore>
 #include <Ogre.h>
 #include "manageTerrainDialog.hxx"

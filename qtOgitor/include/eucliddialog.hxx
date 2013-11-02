@@ -32,7 +32,7 @@
 #ifndef EUCLIDDIALOG_HXX
 #define EUCLIDDIALOG_HXX
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "ui_eucliddialog.h"
 

@@ -37,8 +37,8 @@
 #ifndef LINEEDITWITHHISTORY_H
 #define LINEEDITWITHHISTORY_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLineEdit>
 
 #include <vector>
 #include <string>
