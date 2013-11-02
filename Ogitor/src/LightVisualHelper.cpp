@@ -92,11 +92,7 @@ mResourceGroup("General")
     mVisualHelperObject->setDynamic(true);
 
     // create a material for the visual representation
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     mMaterial = Ogre::MaterialManager::getSingleton().create("LVH" + parent->getName() + "_Material", mResourceGroup);
-#else
-    mMaterial = Ogre::MaterialManager::getSingleton().create("LVH" + parent->getName() + "_Material", mResourceGroup).staticCast<Ogre::Material>();
-#endif
     mMaterial->setReceiveShadows(false);
     mMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false); 
     mMaterial->getTechnique(0)->getPass(0)->setVertexColourTracking(Ogre::TVC_DIFFUSE);

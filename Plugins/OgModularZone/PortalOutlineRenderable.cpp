@@ -159,7 +159,7 @@ Ogre::Real PortalOutlineRenderable::getSquaredViewDepth(const Ogre::Camera* cam)
 #else
         Ogre::MaterialPtr connectedPortalMaterial = result.first.staticCast<Ogre::Material>();
 #endif
-        connectedPortalMaterial->setReceiveShadows(false);
+		connectedPortalMaterial->setReceiveShadows(false);
         connectedPortalMaterial->getTechnique(0)->setLightingEnabled(true);
         connectedPortalMaterial->getTechnique(0)->getPass(0)->setDiffuse(colour);
         connectedPortalMaterial->getTechnique(0)->getPass(0)->setAmbient(colour);
@@ -176,7 +176,7 @@ Ogre::Real PortalOutlineRenderable::getSquaredViewDepth(const Ogre::Camera* cam)
 #else
         Ogre::MaterialPtr linkedPortalMaterial = result.first.staticCast<Ogre::Material>();
 #endif
-        linkedPortalMaterial->setReceiveShadows(false);
+		linkedPortalMaterial->setReceiveShadows(false);
         linkedPortalMaterial->getTechnique(0)->setLightingEnabled(true);
         linkedPortalMaterial->getTechnique(0)->getPass(0)->setDiffuse(colour);
         linkedPortalMaterial->getTechnique(0)->getPass(0)->setAmbient(colour);

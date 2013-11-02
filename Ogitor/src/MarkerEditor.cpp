@@ -77,11 +77,7 @@ bool CMarkerEditor::load(bool async)
     
     if(CNodeEditor::load())
     {
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         mMaterial = Ogre::MaterialManager::getSingletonPtr()->create("mt" + mName->get(),PROJECT_RESOURCE_GROUP);
-#else
-        mMaterial = Ogre::MaterialManager::getSingletonPtr()->create("mt" + mName->get(),PROJECT_RESOURCE_GROUP).staticCast<Ogre::Material>();
-#endif
         mMaterial->setAmbient(0,0,0);
         mMaterial->setDiffuse(0.1f,0.1f,0.1f,1.0f);
         mMaterial->setSpecular(0,0,0,1);

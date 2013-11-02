@@ -397,11 +397,7 @@ void MaterialViewWidget::prepareView()
 
     for(unsigned int i = 0;i < (*materials).size();i++)
     {
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         matPtr = Ogre::MaterialManager::getSingletonPtr()->getByName((*materials)[i].mKey);
-#else
-        matPtr = Ogre::MaterialManager::getSingletonPtr()->getByName((*materials)[i].mKey).staticCast<Ogre::Material>();
-#endif
         if(matPtr.isNull())
             continue;
 

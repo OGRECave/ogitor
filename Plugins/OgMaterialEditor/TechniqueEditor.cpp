@@ -124,11 +124,7 @@ bool CTechniqueEditor::load(bool async)
     if(mLoaded->get())
         return true;
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterialName);
-#else
-    Ogre::MaterialPtr tmp = Ogre::MaterialManager::getSingletonPtr()->getByName(mMaterialName).staticCast<Ogre::Material>();
-#endif
     mHandle = tmp->getTechnique(mName->get());
 
     mLoaded->set(true);

@@ -582,7 +582,6 @@ namespace SkyX { namespace VClouds
 
 		mVolTextures[static_cast<int>(TexId)]->load();
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		static_cast<Ogre::MaterialPtr>(
 			Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds"))
 			->getTechnique(0)->getPass(0)->getTextureUnitState(static_cast<int>(TexId))
@@ -591,14 +590,6 @@ namespace SkyX { namespace VClouds
 			Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds_Lightning"))
 			->getTechnique(0)->getPass(0)->getTextureUnitState(static_cast<int>(TexId))
 				->setTextureName("_SkyX_VolCloudsData"+Ogre::StringConverter::toString(TexId), Ogre::TEX_TYPE_3D);
-#else
-		Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds").staticCast<Ogre::Material>()
-			->getTechnique(0)->getPass(0)->getTextureUnitState(static_cast<int>(TexId))
-				->setTextureName("_SkyX_VolCloudsData"+Ogre::StringConverter::toString(TexId), Ogre::TEX_TYPE_3D);
-		Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds_Lightning").staticCast<Ogre::Material>()
-			->getTechnique(0)->getPass(0)->getTextureUnitState(static_cast<int>(TexId))
-				->setTextureName("_SkyX_VolCloudsData"+Ogre::StringConverter::toString(TexId), Ogre::TEX_TYPE_3D);
-#endif
 	}
 
 	void DataManager::_updateVolTextureData(Cell ***c, const VolTextureId& TexId, const int& nx, const int& ny, const int& nz)
