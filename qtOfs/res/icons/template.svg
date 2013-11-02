@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="2" y1="119.147" x1="255.848" y2="34.101" x2="375.686" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#fff"/>
+<stop offset="1"/>
+</linearGradient>
+<linearGradient gradientTransform="translate(-2.65767 -.20124)" xlink:href="#linearGradient67" id="linearGradient89" y1="1.147" x1="2.696" y2=".623" x2="3.851" gradientUnits="objectBoundingBox"/>
+<linearGradient id="linearGradient67">
+<stop offset="0" stop-color="#d7ffff" stop-opacity=".898"/>
+<stop offset="1" stop-color="#2ea6b9" stop-opacity=".953"/>
+</linearGradient>
+<radialGradient cx="0" cy="0" gradientTransform="matrix(.8189 0 0 1.22115 .41783 .46264)" id="radialGradient95" r=".242" gradientUnits="objectBoundingBox">
+<stop offset="0" stop-color="#fbddb2" stop-opacity=".992"/>
+<stop offset="1" stop-color="#efa81a" stop-opacity=".953"/>
+</radialGradient>
+<radialGradient cx="0" cy="0" gradientTransform="matrix(.94588 0 0 1.05722 .26437 .25)" r=".773" id="radialGradient88" gradientUnits="objectBoundingBox">
+<stop offset="0" stop-color="#cdffff"/>
+<stop offset="1" stop-color="#0c5d7d" stop-opacity=".906"/>
+</radialGradient>
+</defs>
+<g transform="matrix(.96457 0 0 .96457 -9.30589 -.17328)">
+<path stroke-opacity=".99" fill="url(#radialGradient88)" stroke="#0c5d7d" stroke-width="4.036" d="m35.399,39.1321h241.82l100,98.8519v410.214h-341.82v-509.0659z" transform="matrix(.27875 0 0 .28489 29.8322 1.63322)"/>
+<path stroke-opacity=".82" fill="#fff" stroke="#2ea6b9" fill-opacity=".699" stroke-width="8.969" d="m23.9471,20.1241h241.8199l100,99.9999v414.979h-341.8199l0-514.9789z" transform="matrix(.27875 0 0 .27875 29.8322 3.74844)"/>
+<path fill="url(#2)" d="m276.767,133.124l89-13-100-99.9999" transform="matrix(.27875 0 0 .27875 29.8322 3.74844)"/>
+<path stroke-opacity=".91" fill="url(#linearGradient89)" stroke="#2ea6b9" stroke-width="6.726" d="m265.767,120.124h100l-100-99.9999v99.9999" transform="matrix(.27875 0 0 .27875 29.8322 3.74844)"/>
+</g>
+<path stroke-opacity=".992" fill="url(#radialGradient95)" stroke="#cf5d07" stroke-width="3.125" d="m110.396,116.173l-18.4967-27.8866 29.6267-15.5581-32.7976-6.6405 9.9481-31.9501-27.887,18.4965-15.5583-29.6265-6.6398,32.7969-31.9502-9.9476 18.4964,27.8867-29.6265,15.5581 32.7974,6.6405-9.948,31.9497 27.887-18.495 15.5582,29.626 6.6399-32.798 31.9504,9.948z" transform="matrix(.62585 0 0 .62585 48.4973 53.0247)"/>
+</svg>
