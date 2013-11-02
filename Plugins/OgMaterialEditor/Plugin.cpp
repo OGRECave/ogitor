@@ -48,48 +48,48 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
     name = "Material Editor Plugin";
 
 	mMaterialViewWidget = new MaterialViewWidget();
- //   mMaterialPrefsEditor = new MaterialEditorPrefsEditor();
+    mMaterialPrefsEditor = new MaterialEditorPrefsEditor();
 
-	//Ogitors::DockWidgetData dockWidgetData;
-	//dockWidgetData.mCaption = "Materials";
- //   dockWidgetData.mHandle  = mMaterialViewWidget;
- //   dockWidgetData.mIcon    = ":/icons/material.svg";
- //   dockWidgetData.mParent  = DOCK_RESOURCES;
-	//   
- //   Ogitors::PreferencesEditorData preferencesEditorData;
- //   preferencesEditorData.mCaption      = "Material Editor";
- //   preferencesEditorData.mIcon         = ":/icons/material.svg";
- //   preferencesEditorData.mSectionName  = "materialEditor";
- //   preferencesEditorData.mHandle       = mMaterialPrefsEditor;
+    Ogitors::DockWidgetData dockWidgetData;
+    dockWidgetData.mCaption = "Materials";
+    dockWidgetData.mHandle  = mMaterialViewWidget;
+    dockWidgetData.mIcon    = ":/icons/material.svg";
+    dockWidgetData.mParent  = DOCK_RESOURCES;
 
- //   MaterialTextEditorCodec::mToolBar = new MaterialTextEditorCodecToolBar("Material Actions");
+    Ogitors::PreferencesEditorData preferencesEditorData;
+    preferencesEditorData.mCaption      = "Material Editor";
+    preferencesEditorData.mIcon         = ":/icons/material.svg";
+    preferencesEditorData.mSectionName  = "materialEditor";
+    preferencesEditorData.mHandle       = mMaterialPrefsEditor;
 
- //   MaterialTextEditorCodec::mKeyHighlightList      = GenericTextEditor::modelFromFile(":/syntax_highlighting/matKeys.txt");
- //   MaterialTextEditorCodec::mEnumHighlightList     = GenericTextEditor::modelFromFile(":/syntax_highlighting/matEnums.txt");
- //   MaterialTextEditorCodec::mDataTypeHighlightList = GenericTextEditor::modelFromFile(":/syntax_highlighting/matDataTypes.txt");
+    MaterialTextEditorCodec::mToolBar = new MaterialTextEditorCodecToolBar("Material Actions");
 
- //   QStringList list = MaterialTextEditorCodec::mKeyHighlightList->stringList();
- //   list.append(MaterialTextEditorCodec::mEnumHighlightList->stringList());
- //   list.append(MaterialTextEditorCodec::mDataTypeHighlightList->stringList());
- //   MaterialTextEditorCodec::mCombinedHighlightList = new QStringListModel(list); 
- //   MaterialTextEditorCodec::mCombinedHighlightList->sort(0);
+    MaterialTextEditorCodec::mKeyHighlightList      = GenericTextEditor::modelFromFile(":/syntax_highlighting/matKeys.txt");
+    MaterialTextEditorCodec::mEnumHighlightList     = GenericTextEditor::modelFromFile(":/syntax_highlighting/matEnums.txt");
+    MaterialTextEditorCodec::mDataTypeHighlightList = GenericTextEditor::modelFromFile(":/syntax_highlighting/matDataTypes.txt");
 
- //   MaterialTextEditorCodecFactory* matCodecFactory = new MaterialTextEditorCodecFactory();
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("material",     matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("cg",           matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("hlsl",         matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("glsl",         matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("frag",         matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("vert",         matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("fragment",     matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("vertex",       matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("program",      matCodecFactory);
- //   GenericTextEditor::getSingletonPtr()->registerCodecFactory("compositor",   matCodecFactory);
+    QStringList list = MaterialTextEditorCodec::mKeyHighlightList->stringList();
+    list.append(MaterialTextEditorCodec::mEnumHighlightList->stringList());
+    list.append(MaterialTextEditorCodec::mDataTypeHighlightList->stringList());
+    MaterialTextEditorCodec::mCombinedHighlightList = new QStringListModel(list); 
+    MaterialTextEditorCodec::mCombinedHighlightList->sort(0);
 
- //   OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CMaterialEditorFactory());
- //   OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CTechniqueEditorFactory());
-	//OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, dockWidgetData);
- //   OgitorsRoot::getSingletonPtr()->RegisterPreferenceEditor(identifier, preferencesEditorData);
+    MaterialTextEditorCodecFactory* matCodecFactory = new MaterialTextEditorCodecFactory();
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("material",     matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("cg",           matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("hlsl",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("glsl",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("frag",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("vert",         matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("fragment",     matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("vertex",       matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("program",      matCodecFactory);
+    GenericTextEditor::getSingletonPtr()->registerCodecFactory("compositor",   matCodecFactory);
+
+    OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CMaterialEditorFactory());
+    OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CTechniqueEditorFactory());
+    OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, dockWidgetData);
+    OgitorsRoot::getSingletonPtr()->RegisterPreferenceEditor(identifier, preferencesEditorData);
 
     return true;
 }
