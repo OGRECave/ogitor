@@ -509,6 +509,9 @@ namespace Ogitors
             mNamesByType[i].clear();
         }
 
+        mModelMaterialMap.clear();
+        mLayerNames.clear();
+
         mObjectDisplayOrder.clear();
 
         delete mTechSwitcher;
