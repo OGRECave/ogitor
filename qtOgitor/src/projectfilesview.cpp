@@ -144,7 +144,6 @@ QWidget(parent), mOfsTreeWidget(0)
     mActLinkFileSystem->setEnabled(false);
     mUnlinkFileSystem->setEnabled(false);
 
-
     connect(mActAddFolder,      SIGNAL(triggered()),    this,   SLOT(onAddFolder()));
     connect(mActImportFile,     SIGNAL(triggered()),    this,   SLOT(onImportFile()));
     connect(mActImportFolder,   SIGNAL(triggered()),    this,   SLOT(onImportFolder()));
@@ -177,6 +176,9 @@ ProjectFilesViewWidget::~ProjectFilesViewWidget()
 {
     delete mMenu;
     mMenu = 0;
+
+    delete mUnlinkFileSystem;
+    mUnlinkFileSystem = 0;
 
     delete mToolBar;
     mToolBar = 0;

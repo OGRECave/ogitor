@@ -15,21 +15,22 @@
 _This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing environment for OGRE (www.ogre3d.org)_
 
 
-**IMPORTANT NOTE:**
+**Note: Ogitor now depends on Ogre 1.9!**
 
-**Ogitor depends on Ogre 1.9!**
+The directories ```"RunPath/Media"``` and ```"RunPath/Projects"``` are now available as a separate download.
 
+**Running OGITOR**
 
-The directories ```"RunPath/Media"``` and ```"RunPath/Projects"``` are now available as a seperate download.
-
-To be able to build and run Ogitor, you will need the following files downloaded and extracted into ```"RunPath"``` folder:
+To be able to run Ogitor, you will need the media.zip archive downloaded and extracted into the OGITOR ```"RunPath"``` folder. The projects.zip archive is optional but advised, since it offers a sample scene to get you started. Both archives can be downloaded under the following links:
 
 * [https://bitbucket.org/jacmoe/ogitor/downloads/media.zip](https://bitbucket.org/jacmoe/ogitor/downloads/media.zip)
 * [https://bitbucket.org/jacmoe/ogitor/downloads/projects.zip](https://bitbucket.org/jacmoe/ogitor/downloads/projects.zip)
 
-Please download those files and extract them to ```"RunPath"``` folder in your SOURCE path before building and installing Ogitor.
+**Building OGITOR**
 
-Do not extract the files into the build directory, even though it might make sense.
+If you are trying to build OGITOR yourself, please download those archives and extract them to ```"RunPath"``` folder in your source (!) path before building and installing OGITOR.
+
+Do not extract the files into the build directory, since they will get automatically get copied over and overwritten from your source directory.
 
 The install target will copy the files over.
 
