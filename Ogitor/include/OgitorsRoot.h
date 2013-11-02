@@ -890,7 +890,7 @@ namespace Ogitors
         void                                AddToRecentFiles(const Ogre::UTFString& entry);
         /**
         * Fetches the list of recent files, the order is: The last used is first in the list
-        * @param list a vector to be flled with ordered recent files list
+        * @param list a vector to be filled with ordered recent files list
         */
         void                                GetRecentFiles(UTFStringVector& list);
         /**
