@@ -32,13 +32,13 @@
 
 #include <iostream>
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QToolButton>
-#include <QtGui/QPushButton>
-#include <QtGui/QTabWidget>
-#include <QtGui/QApplication>
-#include <QtGui/QScrollArea>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QMessageBox>
 
 #include "preferencesmanager.hxx"
 

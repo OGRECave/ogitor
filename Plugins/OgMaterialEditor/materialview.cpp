@@ -31,13 +31,14 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include <QtCore/QSignalMapper>
-#include <QtGui/QtGui>
-#include <QtGui/QVBoxLayout>
+#include <QtCore/QTextCodec>
+
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
+
 #include <QtGui/QDragMoveEvent>
 #include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtCore/QTextCodec>
 
 #include "OgitorsPrerequisites.h"
 #include "BaseEditor.h"

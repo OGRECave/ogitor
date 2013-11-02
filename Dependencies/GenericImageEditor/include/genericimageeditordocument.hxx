@@ -35,14 +35,15 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QWidget>
-#include <QtGui/QScrollBar>
-#include <QtGui/QMdiArea>
-#include <QtGui/QMdiSubWindow>
-#include <QtGui/QLabel>
-#include <QtGui/QToolBar>
-#include <QtGui/QAction>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QMdiArea>
+#include <QtWidgets/QMdiSubWindow>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QAction>
 
 #include "OgreSingleton.h"
 #include "Ogitors.h"

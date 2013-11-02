@@ -33,6 +33,11 @@
 #include "mainwindow.hxx"
 #include "filelistwidget.hxx"
 
+#include <QtWidgets/QHeaderView>
+#include <QtGui/QDropEvent>
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QCloseEvent>
+
 //----------------------------------------------------------------------------------------
 FileListWidget::FileListWidget(int rows, int columns, QWidget *parent) :
     QTableWidget(rows, columns, parent)
@@ -85,8 +90,6 @@ void FileListWidget::mouseReleaseEvent(QMouseEvent *evt)
 //------------------------------------------------------------------------------------
 void FileListWidget::dragEnterEvent(QDragEnterEvent *evt)
 {
-    QWidget *source = evt->source();
-
     // Get the filenames
     QStringList filenames = getFilenames(evt->mimeData());
 
@@ -115,15 +118,11 @@ void FileListWidget::dragLeaveEvent(QDragLeaveEvent *evt)
 //-------------------------------------------------------------------------------------------
 void FileListWidget::dragMoveEvent(QDragMoveEvent *evt)
 {
-    QWidget *source = evt->source();
-
     evt->setAccepted(true);
 }
 //-------------------------------------------------------------------------------------------
 void FileListWidget::dropEvent(QDropEvent *evt)
 {
-    QWidget *source = evt->source();
-
     // Get the dropped filenames
     QStringList filenames = getFilenames(evt->mimeData());
 

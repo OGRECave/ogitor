@@ -21,14 +21,14 @@
 #include "ZoneInfo.h"
 #include "portalsizedialog.hxx"
 #include "OgitorsSystem.h"
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QApplication>
+
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QApplication>
+
 #include "tinyxml.h"
 #include "TerrainEditor.h"
 #include "ofs.h"
-//#include "OgreArchiveManager.h"
-
 
 using namespace Ogitors;
 using namespace MZP;

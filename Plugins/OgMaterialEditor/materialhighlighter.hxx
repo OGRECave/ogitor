@@ -32,10 +32,12 @@
 #ifndef MATERIAL_HIGHLIGHTER_HXX
 #define MATERIAL_HIGHLIGHTER_HXX
 
-#include <QtGui/QWidget>
+#include <QtCore/QStringListModel>
+
+#include <QtWidgets/QWidget>
+
 #include <QtGui/QSyntaxHighlighter>
 #include <QtGui/QTextCharFormat>
-#include <QtGui/QStringListModel>
 #include <QtGui/QTextObjectInterface>
 
 //-----------------------------------------------------------------------------------------
