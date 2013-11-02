@@ -59,8 +59,8 @@ QString GenericImageEditorCodec::onToolTip(QMouseEvent* event)
     // Read the pixel in question from the pixmap into a 1x1 pixel image
     QImage image = mPixmap.copy(pos.x(), pos.y(), 1, 1).toImage();
     QColor rgb = image.pixel(0, 0);
-    return QString("X: %1 Y: %2\nR: %3 G: %4 B: %5").arg(pos.x()).arg(pos.y())
-        .arg(rgb.red()).arg(rgb.green()).arg(rgb.blue());
+    return QString("X: %1 Y: %2\nR: %3 G: %4 B: %5 A: %6").arg(pos.x()).arg(pos.y())
+        .arg(rgb.red()).arg(rgb.green()).arg(rgb.blue()).arg(rgb.alpha());
 }
 //-----------------------------------------------------------------------------------------
 IImageEditorCodec* GenericImageEditorCodecFactory::create(GenericImageEditorDocument* genImgEdDoc, QString docName)
