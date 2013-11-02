@@ -643,12 +643,8 @@ namespace Hydrax
 
 			for(k = 0; k < CurrentEntity->getNumSubEntities(); k++)
 			{
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 				SubEntMat = Ogre::MaterialManager::getSingleton().getByName(CurrentEntity->getSubEntity(k)->getMaterialName());
-#else
-				SubEntMat = Ogre::MaterialManager::getSingleton().getByName(CurrentEntity->getSubEntity(k)->getMaterialName()).staticCast<Ogre::Material>();
-#endif
-				
+                
 				if (!SubEntMat.isNull())
 				{
 					Ogre::Material::TechniqueIterator TechIt = SubEntMat->getTechniqueIterator();
@@ -787,12 +783,8 @@ namespace Hydrax
 
 			for(k = 0; k < CurrentEntity->getNumSubEntities(); k++)
 			{
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 				SubEntMat = Ogre::MaterialManager::getSingleton().getByName(CurrentEntity->getSubEntity(k)->getMaterialName());
-#else
-				SubEntMat = Ogre::MaterialManager::getSingleton().getByName(CurrentEntity->getSubEntity(k)->getMaterialName()).staticCast<Ogre::Material>();
-#endif
-				
+                
 				if (!SubEntMat.isNull())
 				{
 					Ogre::Material::TechniqueIterator TechIt = SubEntMat->getTechniqueIterator();
