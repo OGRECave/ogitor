@@ -30,15 +30,19 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
-#include <QtGui/QPainter>
-#include <QtGui/QColorDialog>
+#include <QtCore/QUrl>
 #include <QtCore/QEvent>
 #include <QtCore/QDirIterator>
+#include <QtCore/QTimer>
+
+#include <QtGui/QPainter>
 #include <QtGui/QDragEnterEvent>
-#include <QtCore/QUrl>
+
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QColorDialog>
+
 #include "settingsdialog.hxx"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"

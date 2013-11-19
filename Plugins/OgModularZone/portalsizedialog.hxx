@@ -1,16 +1,16 @@
 #ifndef PORTALSIZEDIALOG_H
 #define PORTALSIZEDIALOG_H
 
-//#include <QtGui/QMainWindow>
-#include <QtGui/QDialog>
 #include "PortalEditor.h"
+
+#include <QtWidgets/QDialog>
 
 namespace Ui
 {
     class PortalSizeDialog;
 }
 
-class PortalSizeDialog : public QDialog//QMainWindow
+class PortalSizeDialog : public QDialog
 {
     Q_OBJECT
 

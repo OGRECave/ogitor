@@ -33,10 +33,16 @@
 #include "generictexteditor.hxx"
 #include "xmltexteditorcodec.hxx"
 
-#include <QtGui/QtGui>
-
 #include "DefaultEvents.h"
 #include "EventManager.h"
+
+#include <QtWidgets/QTabBar>
+#include <QtWidgets/QMainWindow>
+
+#include <QtCore/QFileInfo>
+#include <QtCore/QMimeData>
+
+#include <QtGui/QClipboard>
 
 //-----------------------------------------------------------------------------------------
 

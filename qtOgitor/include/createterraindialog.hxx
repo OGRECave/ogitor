@@ -33,7 +33,7 @@
 #ifndef CREATETERRAINDIALOG_HXX
 #define CREATETERRAINDIALOG_HXX
 
-#include <QtGui/QDialog>
+#include <QtWidgets//QDialog>
 #include <Ogre.h>
 #include "ui_createterraindialog.h"
 

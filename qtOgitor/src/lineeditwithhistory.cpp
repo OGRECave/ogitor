@@ -37,7 +37,8 @@
 
 #include <math.h>
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
+
 #include <QtCore/QEvent>
 #include <QtGui/QKeyEvent>
 

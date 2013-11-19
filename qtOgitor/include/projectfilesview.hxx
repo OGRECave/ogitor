@@ -35,7 +35,11 @@
 
 //------------------------------------------------------------------------------
 
-#include <QtGui/QtGui>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QTreeWidgetItem>
+#include <QtWidgets/QToolBar>
 
 class OfsTreeWidget;
 

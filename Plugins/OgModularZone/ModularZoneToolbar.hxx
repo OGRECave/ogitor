@@ -20,12 +20,12 @@
 #ifndef MODULAR_ZONE_TOOLBAR_H
 #define MODULAR_ZONE_TOOLBAR_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QToolBar>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QAction>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QAction>
 #include <Ogre.h>
 #include "ZoneListWidget.hxx"
 

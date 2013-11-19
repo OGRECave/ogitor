@@ -37,7 +37,7 @@
 
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QToolBar>
+#include <QtWidgets/QToolBar>
 
 //----------------------------------------------------------------------------------------
 

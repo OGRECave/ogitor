@@ -33,7 +33,7 @@
 #include "ui_shortcutsettings.h"
 #include "shortcuts.hxx"
 
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QKeyEvent>
 
 ShortCutSettings::ShortCutSettings(QWidget *parent) :
@@ -252,7 +252,7 @@ QString ShortCutSettings::getKeyText ( int KeyC )
         res += "Alt+";
     if ( ( KeyC & Qt::SHIFT ) != 0 )
         res += "Shift+";
-    return res + QString ( QKeySequence ( KeyC & ~ ( Qt::META | Qt::CTRL | Qt::ALT | Qt::SHIFT ) ) );
+    return res + QString ( QKeySequence(KeyC & ~ (Qt::META | Qt::CTRL | Qt::ALT | Qt::SHIFT)).toString() );
 }
 
 void ShortCutSettings::shortcutSet ( const QString &shortcut, const int &keycode )

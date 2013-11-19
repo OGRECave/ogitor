@@ -32,7 +32,7 @@
 
 #pragma once
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 #include <iostream>
 

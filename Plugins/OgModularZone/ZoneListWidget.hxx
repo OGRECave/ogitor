@@ -22,7 +22,7 @@
 #ifndef ZONE_LIST_WIDGET_H
 #define ZONE_LIST_WIDGET_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsProperty.h"
