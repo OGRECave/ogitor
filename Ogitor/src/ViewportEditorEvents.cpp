@@ -1042,6 +1042,8 @@ namespace Ogitors
                 }
                 if(OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(strWarn, DLGTYPE_YESNO) == DLGRET_YES)
                     cont = true;
+                else
+                    cont = false;
             }
             else
                 cont = true;
