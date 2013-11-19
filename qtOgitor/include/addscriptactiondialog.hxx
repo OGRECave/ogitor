@@ -32,7 +32,7 @@
 #ifndef ADDSCRIPTACTIONDIALOG_HXX
 #define ADDSCRIPTACTIONDIALOG_HXX
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "ui_addscriptaction.h"
 
@@ -40,7 +40,7 @@ class AddScriptActionDialog : public QDialog, public Ui::addscriptaction {
     Q_OBJECT
     //Q_DISABLE_COPY(aboutdialog)
 public:
-    AddScriptActionDialog(QWidget *parent = 0, Qt::WFlags flags = Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+    AddScriptActionDialog(QWidget *parent = 0, Qt::WindowFlags flags = Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
     virtual ~AddScriptActionDialog();
 public Q_SLOTS:
     void verifyOK();

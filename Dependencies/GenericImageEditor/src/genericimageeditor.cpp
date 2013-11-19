@@ -30,7 +30,6 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include <QtGui/QtGui>
 #include "genericimageeditor.hxx"
 #include "heightimageeditorcodec.hxx"
 
@@ -39,6 +38,11 @@
 #include "DefaultEvents.h"
 #include "EventManager.h"
 #include "OFSDataStream.h"
+
+#include <QtWidgets/QTabBar>
+#include <QtWidgets/QMainWindow>
+
+#include <QtCore/QFileInfo>
 
 //-----------------------------------------------------------------------------------------
 

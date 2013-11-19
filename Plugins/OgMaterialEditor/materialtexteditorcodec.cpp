@@ -38,9 +38,10 @@
 #include "OgitorsRoot.h"
 #include "OgreTechnique.h"
 
-#include <QtGui/QColorDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QApplication>
+#include <QtWidgets/QColorDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QApplication>
+
 #include <QtCore/QObject>
 #include <QtCore/QSettings>
 
@@ -342,7 +343,7 @@ void MaterialTextEditorCodec::handleError(Ogre::ScriptCompiler *compiler, Ogre::
     mGenTexEdDoc->setExtraSelections(extraSelections);
 
     QString message = QString("Script Compiler error: %1\nLine: %2").arg(msg.c_str()).arg(line);
-    QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr(message.toAscii()));
+    QMessageBox::information(QApplication::activeWindow(), "qtOgitor", QObject::tr(message.toUtf8()));
 }
 //-----------------------------------------------------------------------------------------
 void MaterialTextEditorCodec::onKeyPressEvent(QKeyEvent *event)

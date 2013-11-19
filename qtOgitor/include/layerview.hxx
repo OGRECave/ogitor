@@ -27,9 +27,9 @@
 #ifndef LAYERVIEW_HXX
 #define LAYERVIEW_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QToolBar>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QTreeWidget>
 
 class LayerTreeWidget : public QTreeWidget
 {

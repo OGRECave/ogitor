@@ -30,10 +30,12 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include <QtGui/QtGui>
 #include <QtGui/QPainter>
-#include <QtGui/QColorDialog>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QPaintEvent>
+#include <QtWidgets/QColorDialog>
 #include <QtCore/QEvent>
+
 #include "colourpicker.hxx"
 
 //----------------------------------------------------------------------------------

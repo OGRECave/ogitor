@@ -33,8 +33,9 @@
 #ifndef TEMPLATEVIEW_HXX
 #define TEMPLATEVIEW_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
+
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 

@@ -32,7 +32,7 @@
 #ifndef ABOUTDIALOG_HXX
 #define ABOUTDIALOG_HXX
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "ui_aboutdialog.h"
 
@@ -40,7 +40,7 @@ class aboutdialog : public QDialog, protected Ui::aboutdialog {
     Q_OBJECT
     //Q_DISABLE_COPY(aboutdialog)
 public:
-    aboutdialog(QWidget *parent = 0, const QString version_string = QString(), Qt::WFlags flags = Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+    aboutdialog(QWidget *parent = 0, const QString version_string = QString(), Qt::WindowFlags flags = Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
     virtual ~aboutdialog();
 };
 

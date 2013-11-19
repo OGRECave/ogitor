@@ -36,7 +36,7 @@
 #include "itexteditorcodec.hxx"
 #include "generictexteditor.hxx"
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 
 #include <OgreString.h>
 #include <OgreScriptCompiler.h>

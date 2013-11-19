@@ -32,7 +32,7 @@
 #ifndef CALCULATEBLENDMAPDIALOG_HXX
 #define CALCULATEBLENDMAPDIALOG_HXX
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "ui_calculateblendmapdialog.h"
 
