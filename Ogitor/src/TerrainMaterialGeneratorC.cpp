@@ -277,18 +277,10 @@ namespace Ogre
 			// it's important that the names are deterministic for a given terrain, so
 			// use the terrain pointer as an ID
 			const String& matName = terrain->getMaterialName();
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 			mat = matMgr.getByName(matName);
-#else
-			mat = matMgr.getByName(matName).staticCast<Ogre::Material>();
-#endif
 			if (mat.isNull())
 			{
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 				mat = matMgr.create(matName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-#else
-				mat = matMgr.create(matName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
-#endif
 			}
 		}
 		// clear everything
@@ -324,18 +316,10 @@ namespace Ogre
 			// it's important that the names are deterministic for a given terrain, so
 			// use the terrain pointer as an ID
 			const String& matName = terrain->getMaterialName() + "/comp";
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 			mat = matMgr.getByName(matName);
-#else
-			mat = matMgr.getByName(matName).staticCast<Ogre::Material>();
-#endif
 			if (mat.isNull())
 			{
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 				mat = matMgr.create(matName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-#else
-				mat = matMgr.create(matName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).staticCast<Ogre::Material>();
-#endif
 			}
 		}
 		// clear everything
@@ -770,11 +754,7 @@ namespace Ogre
 	{
 		HighLevelGpuProgramManager& mgr = HighLevelGpuProgramManager::getSingleton();
 		String progName = getVertexProgramName(prof, terrain, tt);
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
@@ -799,11 +779,7 @@ namespace Ogre
 		HighLevelGpuProgramManager& mgr = HighLevelGpuProgramManager::getSingleton();
 		String progName = getFragmentProgramName(prof, terrain, tt);
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
@@ -1559,11 +1535,7 @@ namespace Ogre
 		HighLevelGpuProgramManager& mgr = HighLevelGpuProgramManager::getSingleton();
 		String progName = getVertexProgramName(prof, terrain, tt);
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
@@ -1594,11 +1566,7 @@ namespace Ogre
 		String progName = getFragmentProgramName(prof, terrain, tt);
 
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
@@ -1642,11 +1610,7 @@ namespace Ogre
 			break;
 		}
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
@@ -1668,11 +1632,7 @@ namespace Ogre
 		HighLevelGpuProgramManager& mgr = HighLevelGpuProgramManager::getSingleton();
 		String progName = getFragmentProgramName(prof, terrain, tt);
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
@@ -1708,11 +1668,7 @@ namespace Ogre
 			break;
 		}
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
@@ -1734,11 +1690,7 @@ namespace Ogre
 		HighLevelGpuProgramManager& mgr = HighLevelGpuProgramManager::getSingleton();
 		String progName = getFragmentProgramName(prof, terrain, tt);
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		HighLevelGpuProgramPtr ret = mgr.getByName(progName);
-#else
-		HighLevelGpuProgramPtr ret = mgr.getByName(progName).staticCast<Ogre::HighLevelGpuProgram>();
-#endif
 		if (ret.isNull())
 		{
 			ret = mgr.createProgram(progName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 

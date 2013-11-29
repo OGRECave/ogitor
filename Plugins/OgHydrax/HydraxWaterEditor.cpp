@@ -792,11 +792,7 @@ void CHydraxEditor::addDepthTechnique(const Ogre::String& matname)
     if(!mHandle)
         return;
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr pMat = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(matname));
-#else
-    Ogre::MaterialPtr pMat = Ogre::MaterialManager::getSingleton().getByName(matname).staticCast<Ogre::Material>();
-#endif
     
     if(pMat.isNull())
         return;
@@ -811,11 +807,7 @@ void CHydraxEditor::addDepthTechnique(const Ogre::String& matname)
 //---------------------------------------------------------------------------------
 void CHydraxEditor::removeDepthTechnique(const Ogre::String& matname)
 {
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr pMat = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(matname));
-#else
-    Ogre::MaterialPtr pMat = Ogre::MaterialManager::getSingleton().getByName(matname).staticCast<Ogre::Material>();
-#endif
 
     for(unsigned int i = 0;i < pMat->getNumTechniques();i++)
     {

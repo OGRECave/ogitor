@@ -85,11 +85,8 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
 				shaderLanguage = "cg";
 
 			//First shader, simple camera-alignment
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
-			HighLevelGpuProgramPtr vertexShader = HighLevelGpuProgramManager::getSingleton().getByName("Sprite_vp");
-#else
-			HighLevelGpuProgramPtr vertexShader = HighLevelGpuProgramManager::getSingleton().getByName("Sprite_vp").staticCast<Ogre::HighLevelGpuProgram>();
-#endif
+			HighLevelGpuProgramPtr vertexShader;
+			vertexShader = HighLevelGpuProgramManager::getSingleton().getByName("Sprite_vp");
 			if (vertexShader.isNull()){
 				String vertexProg;
 				if(!shaderLanguage.compare("hlsl") || !shaderLanguage.compare("cg"))
@@ -175,11 +172,8 @@ StaticBillboardSet::StaticBillboardSet(SceneManager *mgr, SceneNode *rootSceneNo
 			}
 
 			//Second shader, camera alignment and distance based fading
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
-			HighLevelGpuProgramPtr vertexShader2 = HighLevelGpuProgramManager::getSingleton().getByName("SpriteFade_vp");
-#else
-			HighLevelGpuProgramPtr vertexShader2 = HighLevelGpuProgramManager::getSingleton().getByName("SpriteFade_vp").staticCast<Ogre::HighLevelGpuProgram>();
-#endif
+			HighLevelGpuProgramPtr vertexShader2;
+			vertexShader2 = HighLevelGpuProgramManager::getSingleton().getByName("SpriteFade_vp");
 			if (vertexShader2.isNull()){
 				String vertexProg2;
 				if(!shaderLanguage.compare("hlsl") || !shaderLanguage.compare("cg"))
@@ -545,11 +539,7 @@ void StaticBillboardSet::setMaterial(const String &materialName)
 					SBMaterialRef::removeMaterialRef(materialPtr);
 			}
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 			materialPtr = MaterialManager::getSingleton().getByName(materialName);
-#else
-			materialPtr = MaterialManager::getSingleton().getByName(materialName).staticCast<Ogre::Material>();
-#endif
 			if (fadeEnabled) {
 				fadeMaterialPtr = getFadeMaterial(fadeVisibleDist, fadeInvisibleDist);
 				SBMaterialRef::addMaterialRef(fadeMaterialPtr, bbOrigin);
@@ -568,11 +558,7 @@ void StaticBillboardSet::setMaterial(const String &materialName)
 		}
 	} else {
 		if (materialPtr.isNull() || materialPtr->getName() != materialName){
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 			materialPtr = MaterialManager::getSingleton().getByName(materialName);
-#else
-			materialPtr = MaterialManager::getSingleton().getByName(materialName).staticCast<Ogre::Material>();
-#endif
 			fallbackSet->setMaterialName(materialPtr->getName());
 		}
 	}

@@ -277,11 +277,7 @@ bool CMaterialEditor::load(bool async)
     if(mLoaded->get())
         return true;
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     mHandle = Ogre::MaterialManager::getSingletonPtr()->getByName(mName->get());
-#else
-    mHandle = Ogre::MaterialManager::getSingletonPtr()->getByName(mName->get()).staticCast<Ogre::Material>();
-#endif
 
     mLoaded->set(true);
     return true;
