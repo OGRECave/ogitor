@@ -31,9 +31,9 @@ namespace SkyX
 		: mSkyX(s)
 		, mCreated(false)
 #if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
-		, mMesh(0)
+			, mMesh(0)
 #else
-		, mMesh()
+			, mMesh()
 #endif
         , mSubMesh(0)
         , mEntity(0)

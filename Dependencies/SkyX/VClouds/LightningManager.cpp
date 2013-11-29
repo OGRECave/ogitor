@@ -53,13 +53,8 @@ namespace SkyX { namespace VClouds
 	{
 		remove();
 
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		mVolCloudsLightningMaterial = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds_Lightning"));
 		mLightningMaterial = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName("SkyX_Lightning"));
-#else
-		mVolCloudsLightningMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyX_VolClouds_Lightning").staticCast<Ogre::Material>();
-		mLightningMaterial = Ogre::MaterialManager::getSingleton().getByName("SkyX_Lightning").staticCast<Ogre::Material>();
-#endif
 
 		if (mLightningMaterial.isNull())
 		{

@@ -532,15 +532,9 @@ namespace Hydrax
 		}
 		
 		// Build our material
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		mMaterials[0] = Ogre::MaterialManager::getSingleton().
 			create(_def_GodRays_Material_Name,
-				   HYDRAX_RESOURCE_GROUP);
-#else
-		mMaterials[0] = Ogre::MaterialManager::getSingleton().
-			create(_def_GodRays_Material_Name,
-				   HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
-#endif
+			       HYDRAX_RESOURCE_GROUP);
 
 		Ogre::Pass *GR_Technique0_Pass0 = mMaterials[0]->getTechnique(0)->getPass(0);
 
@@ -644,15 +638,9 @@ namespace Hydrax
 		}
 
 		// Build our material
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		mMaterials[1] = Ogre::MaterialManager::getSingleton().
 			create(_def_GodRaysDepth_Material_Name,
-				   HYDRAX_RESOURCE_GROUP);
-#else
-		mMaterials[1] = Ogre::MaterialManager::getSingleton().
-			create(_def_GodRaysDepth_Material_Name,
-				   HYDRAX_RESOURCE_GROUP).staticCast<Ogre::Material>();
-#endif
+			       HYDRAX_RESOURCE_GROUP);
 
 		Ogre::Pass *GRD_Technique0_Pass0 = mMaterials[1]->getTechnique(0)->getPass(0);
 

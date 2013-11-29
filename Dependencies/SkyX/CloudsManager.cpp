@@ -222,15 +222,9 @@ namespace SkyX
 		CloudLayer *NewCloudLayer = new CloudLayer(mSkyX, o);
 
 		// TODO
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 		NewCloudLayer->_registerCloudLayer(static_cast<Ogre::MaterialPtr>(
 			Ogre::MaterialManager::getSingleton().getByName(mSkyX->getGPUManager()->getSkydomeMaterialName()))
 			->getTechnique(0)->createPass());
-#else
-		NewCloudLayer->_registerCloudLayer(
-			Ogre::MaterialManager::getSingleton().getByName(mSkyX->getGPUManager()->getSkydomeMaterialName()).staticCast<Ogre::Material>()
-			->getTechnique(0)->createPass());
-#endif
 
 		mCloudLayers.push_back(NewCloudLayer);
 
@@ -290,15 +284,9 @@ namespace SkyX
 	{
 		for(unsigned int k = 0; k < mCloudLayers.size(); k++)
 		{
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 			mCloudLayers.at(k)->_registerCloudLayer(static_cast<Ogre::MaterialPtr>(
 				Ogre::MaterialManager::getSingleton().getByName(mSkyX->getGPUManager()->getSkydomeMaterialName()))
 				->getTechnique(0)->createPass());
-#else
-			mCloudLayers.at(k)->_registerCloudLayer(
-				Ogre::MaterialManager::getSingleton().getByName(mSkyX->getGPUManager()->getSkydomeMaterialName()).staticCast<Ogre::Material>()
-				->getTechnique(0)->createPass());
-#endif
 		}
 	}
 
