@@ -62,7 +62,7 @@ public:
     GenericTextEditor(QString editorName, QWidget *parent = 0);
     virtual ~GenericTextEditor();
 	
-	 /// Get reference to singleton instance; or crash if N/A.
+    /// Get reference to singleton instance; or crash if N/A.
     static GenericTextEditor& getSingleton(void);
     /// Get pointer to singleton instance; or pointer if N/A.
     static GenericTextEditor* getSingletonPtr(void);
