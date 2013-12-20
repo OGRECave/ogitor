@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include "tinyxml.h"
+
 #include "OgitorsSingleton.h"
 
 namespace Ogitors

@@ -31,7 +31,6 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "OgitorsPrerequisites.h"
-#include "tinyxml.h"
 #include "OgitorsClipboardManager.h"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
