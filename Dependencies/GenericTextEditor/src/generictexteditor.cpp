@@ -43,6 +43,15 @@
 template<> GenericTextEditor* Ogre::Singleton<GenericTextEditor>::msSingleton = 0;
 TextCodecExtensionFactoryMap GenericTextEditor::mRegisteredCodecFactories = TextCodecExtensionFactoryMap();
 
+GenericTextEditor* GenericTextEditor::getSingletonPtr () {
+    return msSingleton;
+}
+
+GenericTextEditor& GenericTextEditor::getSingleton () {  
+    assert (msSingleton);
+    return *msSingleton;  
+}
+
 //-----------------------------------------------------------------------------------------
 GenericTextEditor::GenericTextEditor(QString editorName, QWidget *parent) : QMdiArea(parent)
 {
