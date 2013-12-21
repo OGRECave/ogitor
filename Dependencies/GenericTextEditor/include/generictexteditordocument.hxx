@@ -38,18 +38,18 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <QtCore/QStringListModel>
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QWidget>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QScrollBar>
-#include <QtGui/QMdiArea>
-#include <QtGui/QMdiSubWindow>
-#include <QtGui/QToolBar>
-#include <QtGui/QStringListModel>
-#include <QtGui/QCompleter>
-#include <QtGui/QAction>
-
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QMdiArea>
+#include <QtWidgets/QMdiSubWindow>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QCompleter>
+#include <QtWidgets/QAction>
 
 class QPaintEvent;
 class QResizeEvent;

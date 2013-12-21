@@ -45,6 +45,9 @@
 #include "DefaultEvents.h"
 #include "EventManager.h"
 
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QLineEdit>
+
 //----------------------------------------------------------------------------------------
 ProjectFilesViewWidget::ProjectFilesViewWidget(QWidget *parent) :
 QWidget(parent), mOfsTreeWidget(0)

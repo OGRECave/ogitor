@@ -22,7 +22,8 @@
 #include "ModularZoneFactory.h"
 #include "PortalFactory.h"
 #include "ZoneListWidget.hxx"
-#include <QtGui/QDockWidget>
+
+#include <QtWidgets/QDockWidget>
 
 using namespace Ogitors;
 using namespace MZP;

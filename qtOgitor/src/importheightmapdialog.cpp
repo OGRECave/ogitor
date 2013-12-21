@@ -31,7 +31,9 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include <QtCore/QtCore>
-#include <QtGui/QFileDialog>
+
+#include <QtWidgets/QFileDialog>
+
 #include "importheightmapdialog.hxx"
 #include "Ogitors.h"
 

@@ -33,8 +33,9 @@
 #ifndef PROPERTIESVIEWGENERAL_HXX
 #define PROPERTIESVIEWGENERAL_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
+
 #include <Ogre.h>
 #include "qttreepropertybrowser.h"
 #include "OgitorsPrerequisites.h"

@@ -31,10 +31,14 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #ifndef __qtogitorsystem_h__431D421B_ADFE_44b2_B788_1E94A4A1A418
 #define __qtogitorsystem_h__431D421B_ADFE_44b2_B788_1E94A4A1A418
+
 #include "OgitorsPrerequisites.h"
 #include "OgitorsSystem.h"
+
 #include <QtCore/QStringList>
 #include <QtCore/QSettings>
+
+#include <QtWidgets/QProgressDialog>
 
 class SceneViewWidget;
 class LayerViewWidget;
