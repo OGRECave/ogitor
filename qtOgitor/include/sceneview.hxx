@@ -33,8 +33,8 @@
 #ifndef SCENEVIEW_HXX
 #define SCENEVIEW_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
 
 #include "extendedTreeView.hxx"
 

@@ -42,10 +42,13 @@
 #include "EventManager.h"
 #include "ofs.h"
 
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGridLayout>
+
 #define GRID_SIZE_X 52
 #define GRID_SIZE_Y 64
 #define ICON_SIZE 48
-
 
 using namespace Ogitors;
 

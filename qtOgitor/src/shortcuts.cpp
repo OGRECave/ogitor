@@ -31,8 +31,8 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 #include "shortcuts.hxx"
 
-#include <QtGui/QAction>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QMessageBox>
 
 Shortcuts* Shortcuts::instance = 0;
 //------------------------------------------------------------------------------

@@ -32,7 +32,7 @@
 #ifndef ADDTEMPLATEDIALOG_HXX
 #define ADDTEMPLATEDIALOG_HXX
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "ui_addtemplatedialog.h"
 

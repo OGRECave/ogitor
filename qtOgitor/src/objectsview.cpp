@@ -42,6 +42,8 @@
 #include "ViewportEditor.h"
 #include "SceneManagerEditor.h"
 
+#include <QtWidgets/QVBoxLayout>
+
 extern bool ViewKeyboard[1024];
 
 using namespace Ogitors;

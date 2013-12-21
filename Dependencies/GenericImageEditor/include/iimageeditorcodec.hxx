@@ -37,7 +37,7 @@
 
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QToolBar>
+#include <QtWidgets/QToolBar>
 
 #include <Ogre.h>
 
@@ -131,14 +131,14 @@ public:
     */
     virtual QToolBar*   getCustomToolBar(){return 0;};
 
-    QPixmap getPixmap(){return mPixmap;}
-    QString getDocumentIcon(){return mDocumentIcon;}
-    bool isUseDefaultSaveLogic(){return mUseDefaultSaveLogic;};
-    float getScaleFactor(){return mScaleFactor;}
+    QPixmap getPixmap() {return mPixmap;}
+    QString getDocumentIcon() {return mDocumentIcon;}
+    bool isUseDefaultSaveLogic() {return mUseDefaultSaveLogic;}
+    float getScaleFactor() {return mScaleFactor;}
 
 protected:
     GenericImageEditorDocument*     mGenImgEdDoc;
-    unsigned char*                 mBuffer;
+    unsigned char*                  mBuffer;
     QPixmap                         mPixmap;
     QString                         mDocName;
     QString                         mDocumentIcon;

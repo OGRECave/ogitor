@@ -34,7 +34,11 @@
 #include "generictexteditordocument.hxx"
 #include "xmltexteditorcodec.hxx"
 
-#include <QtGui/QtGui>
+#include <QtWidgets/QAbstractItemView>
+#include <QtWidgets/QMessageBox>
+#include <QtCore/QSettings>
+#include <QtGui/QPainter>
+
 #include "Ogitors.h"
 #include "OgreSingleton.h"
 #include "OgitorsDefinitions.h"
@@ -394,7 +398,7 @@ int GenericTextEditorDocument::calculateIndentation(const QString& str)
 
     for(int i = 0; i < str_len; i++)
     {
-        c = str.at(i).toAscii();
+        c = str.at(i).toLatin1();
         
         if(c == '{')
             ++indent;
@@ -442,13 +446,13 @@ bool GenericTextEditorDocument::saveDefaultLogic()
         if(pos > 0)
             savePath = savePath.remove(0, pos + 2);
 
-        OFS::OfsResult res = mOfsPtr->openFile(mOfsFileHandle, savePath.toAscii(), OFS::OFS_WRITE);
+        OFS::OfsResult res = mOfsPtr->openFile(mOfsFileHandle, savePath.toUtf8(), OFS::OFS_WRITE);
 
         if(res != OFS::OFS_OK)
             return false;
 
         QString text = toPlainText();
-        res = mOfsPtr->write(mOfsFileHandle, text.toAscii(), text.toAscii().length());    
+        res = mOfsPtr->write(mOfsFileHandle, text.toUtf8(), text.toUtf8().length());    
         mOfsPtr->closeFile(mOfsFileHandle);
 
         if(res != OFS::OFS_OK)
@@ -461,7 +465,7 @@ bool GenericTextEditorDocument::saveDefaultLogic()
         mFile.close();
         mFile.open(QIODevice::ReadWrite | QIODevice::Truncate);
         QString text = toPlainText();
-        if(mFile.write(text.toAscii()) == -1)
+        if(mFile.write(text.toUtf8()) == -1)
             return false;
 
         mFile.close();
