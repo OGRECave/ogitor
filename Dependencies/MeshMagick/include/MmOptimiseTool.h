@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <OgreMesh.h>
 #include <OgreMeshSerializer.h>
 #include <OgreSubMesh.h>
-#include <OgreProgressiveMesh.h>
+#include <OgreProgressiveMeshGenerator.h>
 #include <OgreVector3.h>
 #include <OgreVector4.h>
 
