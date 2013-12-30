@@ -31,6 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MmStatefulMeshSerializer.h"
 #include "MmStatefulSkeletonSerializer.h"
 
+namespace Ogre
+{
+class LodStrategyManager;
+}
+
 namespace meshmagick
 {
     class _MeshMagickExport OgreEnvironment : public Ogre::Singleton<OgreEnvironment>
@@ -59,6 +64,7 @@ namespace meshmagick
         Ogre::ResourceGroupManager* mResourceGroupMgr;
         Ogre::Math* mMath;
         Ogre::MeshManager* mMeshMgr;
+        Ogre::LodStrategyManager* mLodStrategyMgr;
         Ogre::MaterialManager* mMaterialMgr;
         Ogre::SkeletonManager* mSkeletonMgr;
         StatefulMeshSerializer* mMeshSerializer;
