@@ -278,12 +278,12 @@ mTechniqueEditor(0)
 //----------------------------------------------------------------------------------------
 MaterialViewWidget::~MaterialViewWidget()
 {
-    destroyScene();
+    destroyView();
     Ogitors::EventManager::getSingletonPtr()->disconnectEvent(EventManager::LOAD_STATE_CHANGE, this);
     Ogitors::EventManager::getSingletonPtr()->disconnectEvent(EventManager::GLOBAL_PREPARE_VIEW, this);
 }
 //----------------------------------------------------------------------------------------
-void MaterialViewWidget::destroyScene()
+void MaterialViewWidget::destroyView()
 {
     if(mMaterialEditor)
         mMaterialEditor->destroy();
@@ -441,7 +441,7 @@ void MaterialViewWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
         if(state == LS_LOADED)
             prepareView();
         else if(state == LS_UNLOADED)
-            destroyScene();
+            destroyView();
     }
 }
 //----------------------------------------------------------------------------------------

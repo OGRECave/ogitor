@@ -355,7 +355,7 @@ namespace Ogitors
     //-----------------------------------------------------------------------------------------
 
     OgitorsRoot::OgitorsRoot(Ogre::StringVector* pDisabledPluginPaths) :
-    mUndoManager(0), mClipboardManager(0), mSceneManager(0), mSceneManagerEditor(0), mRenderWindow(0), mActiveViewport(0),
+        mUndoManager(0), mClipboardManager(0), mSceneManager(0), mSceneManagerEditor(0), mRenderWindow(0), mActiveViewport(0),
         mRootEditor(0), mMultiSelection(0), mLastTranslationDelta(Vector3::ZERO),
         mTerrainEditor(0), mTerrainEditorObject(0), mPagingEditor(0), mPagingEditorObject(0), mIsSceneModified(false),
         mGlobalLightVisiblity(true), mGlobalCameraVisiblity(true), mSelRect(0), mSelectionNode(0),
@@ -463,6 +463,9 @@ namespace Ogitors
         {
             mNamesByType[i].clear();
         }
+
+        mModelMaterialMap.clear();
+        mLayerNames.clear();
 
         mObjectDisplayOrder.clear();
 
@@ -748,37 +751,37 @@ namespace Ogitors
         _RegisterEditorFactory(OGRE_NEW CPGInstanceEditorFactory());
         _RegisterEditorFactory(OGRE_NEW CPGInstanceManagerFactory());
         _RegisterEditorFactory(OGRE_NEW CEditableMeshEditorFactory());
-        Ogre::StringVector ScriptPluginList, PluginList;
+        Ogre::StringVector scriptPluginList, pluginList;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-        mSystem->GetFileList("../Plugins/debug/*Script_d.dll", ScriptPluginList);
+        mSystem->GetFileList("../Plugins/*Script_d.dll", scriptPluginList);
 #else
-        mSystem->GetFileList("../Plugins/*Script.dll", ScriptPluginList);
+        mSystem->GetFileList("../Plugins/*Script.dll", scriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*Script_d.so", ScriptPluginList);
+        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script_d.so", scriptPluginList);
 #else
-        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so", ScriptPluginList);
+        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*Script.so", scriptPluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
-        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*Script_d.dylib", ScriptPluginList);
+        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*Script_d.dylib", scriptPluginList);
 #else
-        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*Script.dylib", ScriptPluginList);
+        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*Script.dylib", scriptPluginList);
 #endif
 #endif
-        for(unsigned int i = 0;i < ScriptPluginList.size();i++)
+        for(unsigned int i = 0;i < scriptPluginList.size();i++)
         {
             // Is plugin disabled and therefore do not register it?
-            if(std::find(pDisabledPluginPaths->begin(), pDisabledPluginPaths->end(), ScriptPluginList[i]) == pDisabledPluginPaths->end())
-                LoadPlugin(ScriptPluginList[i]);
+            if(std::find(pDisabledPluginPaths->begin(), pDisabledPluginPaths->end(), scriptPluginList[i]) == pDisabledPluginPaths->end())
+                LoadPlugin(scriptPluginList[i]);
             else
-                LoadPlugin(ScriptPluginList[i], true);
+                LoadPlugin(scriptPluginList[i], true);
         }
 
-        PluginList.clear();
+        pluginList.clear();
 
         if(mScriptInterpreterList["AngelScript"] != 0)
         {
@@ -793,30 +796,30 @@ namespace Ogitors
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #ifdef DEBUG
-        mSystem->GetFileList("../Plugins/debug/*_d.dll", PluginList);
+        mSystem->GetFileList("../Plugins/*_d.dll", pluginList);
 #else
-        mSystem->GetFileList("../Plugins/*.dll", PluginList);
+        mSystem->GetFileList("../Plugins/*.dll", pluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #ifdef DEBUG
-        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/debug/*_d.so", PluginList);
+        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*_d.so", pluginList);
 #else
-        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so", PluginList);
+        mSystem->GetFileList(Ogitors::Globals::OGITOR_PLUGIN_PATH + "/*.so", pluginList);
 #endif
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #ifdef DEBUG
-        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*_d.dylib", PluginList);
+        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*_d.dylib", pluginList);
 #else
-        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*.dylib", PluginList);
+        mSystem->GetFileList(OgitorsUtils::GetMacBundlePath() + "/Contents/Plugins/Ogitor/*.dylib", pluginList);
 #endif
 #endif
-        for(unsigned int i = 0; i < PluginList.size(); i++)
+        for(unsigned int i = 0; i < pluginList.size(); i++)
         {
             // Is plugin disabled and therefore do not register it?
-            if(std::find(pDisabledPluginPaths->begin(), pDisabledPluginPaths->end(), PluginList[i]) == pDisabledPluginPaths->end())
-                LoadPlugin(PluginList[i]);
+            if(std::find(pDisabledPluginPaths->begin(), pDisabledPluginPaths->end(), pluginList[i]) == pDisabledPluginPaths->end())
+                LoadPlugin(pluginList[i]);
             else
-                LoadPlugin(PluginList[i], true);
+                LoadPlugin(pluginList[i], true);
         }
 
         EditorObjectFactoryMap::iterator it = mEditorObjectFactories.begin();
@@ -937,24 +940,15 @@ namespace Ogitors
 
         while(it != mPlugins.end())
         {
-            if(it->second.mLoaded)
-            {
-                Ogre::DynLib *lib = static_cast<Ogre::DynLib*>(it->first);
-                DLL_STOP_PLUGIN pFunc = (DLL_STOP_PLUGIN)lib->getSymbol("dllStopPlugin");
-                // Call stop function
-                if(pFunc)
-                    pFunc();
-
-                lib->unload();
-                OGRE_DELETE lib;
-            }
+            UnLoadPlugin(it->first);
+            
             it++;
         }
 
         mPlugins.clear();
     }
     //-----------------------------------------------------------------------------------------
-    void OgitorsRoot::RegisterObjectName(Ogre::String name,CBaseEditor *obj)
+    void OgitorsRoot::RegisterObjectName(Ogre::String name, CBaseEditor *obj)
     {
         mNameList.insert(NameObjectPairList::value_type(name, obj));
         mNamesByType[obj->getEditorType()].insert(NameObjectPairList::value_type(name, obj));
@@ -1356,33 +1350,6 @@ namespace Ogitors
     //-----------------------------------------------------------------------------------------
     void OgitorsRoot::DestroyEditorObject(CBaseEditor *object, bool removefromtreelist, bool display)
     {
-        // Index0 Viewport can not be deleted
-        if(object->getEditorType() == ETYPE_VIEWPORT)
-        {
-            CViewportEditor *viewport = static_cast<CViewportEditor*>(object);
-
-            if(viewport->getViewportIndex() == 1)
-            {
-                OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(OTR("Cannot delete the main viewport!"), DLGTYPE_OK);
-                return;
-            }
-
-            if(mActiveViewport == viewport)
-            {
-                NameObjectPairList::const_iterator vt = mNamesByType[ETYPE_VIEWPORT].begin();
-                while(vt != mNamesByType[ETYPE_VIEWPORT].end())
-                {
-                    if(vt->second == object)
-                    {
-                        vt++;
-                        continue;
-                    }
-                    mActiveViewport = static_cast<CViewportEditor*>(vt->second);
-                    break;
-                }
-            }
-        }
-
         if(mMultiSelection->contains(object))
         {
             object->setSelected(false);
@@ -1394,7 +1361,7 @@ namespace Ogitors
 
         while(vit != viewports.end())
         {
-            static_cast<CViewportEditor*>(vit->second)->OnObjectDestroyed(object);
+            static_cast<CViewportEditor*>(vit->second)->onObjectDestroyed(object);
 
             vit++;
         }
@@ -1456,6 +1423,8 @@ namespace Ogitors
 
         if(mPagingEditor)
             mPagingEditor->removeObject(object);
+
+        object->onDuringDestroy();
 
         object->destroy(true);
 
@@ -1930,8 +1899,12 @@ namespace Ogitors
         Ogre::ResourceManager::ResourceCreateOrRetrieveResult result = Ogre::MaterialManager::getSingleton().createOrRetrieve("SelectionBBMaterial", "General");
         if(!result.first.isNull())
         {
-            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
-            matptrOBBoxManualMaterial->setReceiveShadows(false);
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+             Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#else
+            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first.staticCast<Ogre::Material>();
+#endif
+			matptrOBBoxManualMaterial->setReceiveShadows(false);
             matptrOBBoxManualMaterial->getTechnique(0)->setLightingEnabled(true);
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setDiffuse(mProjectOptions.SelectionBBColour);
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setAmbient(mProjectOptions.SelectionBBColour);
@@ -1941,7 +1914,11 @@ namespace Ogitors
         result = Ogre::MaterialManager::getSingleton().createOrRetrieve("HighlightBBMaterial", "General");
         if(!result.first.isNull())
         {
-            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+             Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#else
+            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first.staticCast<Ogre::Material>();
+#endif
             matptrOBBoxManualMaterial->setReceiveShadows(false);
             matptrOBBoxManualMaterial->getTechnique(0)->setLightingEnabled(true);
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setDiffuse(mProjectOptions.HighlightBBColour);
@@ -1952,7 +1929,11 @@ namespace Ogitors
         result = Ogre::MaterialManager::getSingleton().createOrRetrieve("SelectHighlightBBMaterial", "General");
         if(!result.first.isNull())
         {
-            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+             Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first;
+#else
+            Ogre::MaterialPtr matptrOBBoxManualMaterial = result.first.staticCast<Ogre::Material>();
+#endif
             matptrOBBoxManualMaterial->setReceiveShadows(false);
             matptrOBBoxManualMaterial->getTechnique(0)->setLightingEnabled(true);
             matptrOBBoxManualMaterial->getTechnique(0)->getPass(0)->setDiffuse(mProjectOptions.SelectHighlightBBColour);

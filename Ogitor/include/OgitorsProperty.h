@@ -260,7 +260,7 @@ namespace Ogitors
 
         unsigned int getTag() const { return mTag; } 
 
-        /// Get the description of the property
+        /// Get the definition of the property
         const OgitorsPropertyDef* getDefinition() const { return mDef; }
 
         /// Get the type of the property

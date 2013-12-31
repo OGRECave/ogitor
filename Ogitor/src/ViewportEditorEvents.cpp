@@ -982,7 +982,7 @@ namespace Ogitors
                 Ogre::Terrain *ter = static_cast<Ogre::Terrain*>(focus_object->getHandle());
                 pos = ter->getWorldAABB().getCenter();
                 pos.y = ter->getHeightAtTerrainPosition( 0.5f, 0.5f ) + 50.0f;
-                
+
                 Ogre::Vector3 lookat = (mActiveCamera->getCamera()->getDerivedDirection() * 5.0f);
                 mNewCamPosition = pos - lookat;
             }
@@ -1016,6 +1016,12 @@ namespace Ogitors
         if(selected->supports(CAN_DELETE))
         {
             bool cont = false;
+
+            cont = selected->onBeforeDestroy();
+
+            if(!cont)
+                return;
+
             if(!silent)
             {
                 Ogre::UTFString strWarn;
@@ -1036,6 +1042,8 @@ namespace Ogitors
                 }
                 if(OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(strWarn, DLGTYPE_YESNO) == DLGRET_YES)
                     cont = true;
+                else
+                    cont = false;
             }
             else
                 cont = true;
@@ -1315,7 +1323,7 @@ namespace Ogitors
         return false;
     }
     //-------------------------------------------------------------------------------
-    void CViewportEditor::OnObjectDestroyed(CBaseEditor *object)
+    void CViewportEditor::onObjectDestroyed(CBaseEditor *object)
     {
         NameObjectPairList::iterator it = mHighLighted.find(object->getName());
         if(it != mHighLighted.end())

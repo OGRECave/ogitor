@@ -97,7 +97,11 @@ ImageConverter::~ImageConverter()
 QImage ImageConverter::fromOgreMaterialName(const Ogre::String& name, const Ogre::String& resourceGroup)
 {
     mResourceGroup = resourceGroup;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->load(name, mResourceGroup);
+#else
+    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->load(name, mResourceGroup).staticCast<Ogre::Material>();
+#endif
     return _getRenderTarget(material->getName());
 }
 //----------------------------------------------------------------------------------------

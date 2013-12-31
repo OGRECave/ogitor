@@ -589,7 +589,11 @@ bool    ProjectPos    (Camera* cam,const Ogre::Vector3& pos,Ogre::Real& x,Ogre::
 //-----------------------------------------------------------------------------------------
 void OgitorsRoot::CreateGizmo()
 {
-    Ogre::MaterialPtr gizmoMaterial = MaterialManager::getSingletonPtr()->createOrRetrieve("AxisGizmo_Material", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).first;
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+     Ogre::MaterialPtr gizmoMaterial = MaterialManager::getSingletonPtr()->createOrRetrieve("AxisGizmo_Material", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).first;
+#else
+    Ogre::MaterialPtr gizmoMaterial = MaterialManager::getSingletonPtr()->createOrRetrieve("AxisGizmo_Material", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).first.staticCast<Ogre::Material>();
+#endif
     gizmoMaterial->setReceiveShadows(false);
     gizmoMaterial->getTechnique(0)->getPass(0)->setLightingEnabled(false); 
     gizmoMaterial->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
@@ -1623,7 +1627,12 @@ void OgitorsRoot::PrepareProjectResources()
             OgitorsSystem::getSingletonPtr()->DisplayMessageDialog(e.getFullDescription(), DLGTYPE_OK);
         }
 
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr planeMaterial = MaterialManager::getSingletonPtr()->createOrRetrieve("DefaultPlaneMaterial", PROJECT_RESOURCE_GROUP).first;
+#else
+        Ogre::MaterialPtr planeMaterial = MaterialManager::getSingletonPtr()->createOrRetrieve("DefaultPlaneMaterial", PROJECT_RESOURCE_GROUP).first.staticCast<Ogre::Material>();
+#endif
+
         planeMaterial->getTechnique(0)->getPass(0)->setAmbient(0.4f, 0.4f, 0.4f);
         planeMaterial->getTechnique(0)->getPass(0)->setDiffuse(0.8f, 0.8f, 0.8f, 0.8f);
         planeMaterial->getTechnique(0)->getPass(0)->setSpecular(1.0f, 1.0f, 1.0f, 1.0f);

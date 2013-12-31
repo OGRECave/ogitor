@@ -52,7 +52,7 @@ Shortcuts            *shortCuts;
 void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 {
     // Create the main ogre object
-    mOgreRoot = OGRE_NEW Ogre::Root( plugins);
+    mOgreRoot = OGRE_NEW Ogre::Root(plugins);
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     // load additional plugins
@@ -191,8 +191,6 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
         disabledPluginPaths.push_back(settings.value(keyList[i]).toString().toStdString());
     settings.endGroup();
     mOgitorsRoot = OGRE_NEW Ogitors::OgitorsRoot(&disabledPluginPaths);
-
-
 }
 //------------------------------------------------------------------------------------
 void readRecentFiles(QSettings& settings)
@@ -248,15 +246,15 @@ void writeRecentFiles()
 //-------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    Application a(argc, argv);
+    Application app(argc, argv);
 
-    QDir::setCurrent(a.applicationDirPath());
+    QDir::setCurrent(app.applicationDirPath());
 
     // See if we are loading something from the command line.
     QString fileArg("");
     QString suffix("");
-    QString argument = a.arguments().last();
-    QFileInfo info(a.arguments().last());
+    QString argument = app.arguments().last();
+    QFileInfo info(app.arguments().last());
     if(info.exists() && info.isFile())
     {
         if(info.suffix() == "ofs")
@@ -269,14 +267,14 @@ int main(int argc, char *argv[])
         {
             // We are trying to load something we can't load
             // Exit the application.
-            QMessageBox msg(QMessageBox::Critical, "Ogitor Error", "We can only load Ogitor Scenes.\nExiting..");
+            QMessageBox msg(QMessageBox::Critical, "Ogitor Error", "We can only load Ogitor Scenes.\nExiting...");
             msg.exec();
             return 0;
         }
     }
 
-    a.setOrganizationName(QString("Ogitor"));
-    a.setApplicationName(QString("Ogitor ") + QString(Ogitors::Globals::OGITOR_VERSION.c_str()));
+    app.setOrganizationName(QString("Ogitor"));
+    app.setApplicationName(QString("Ogitor ") + QString(Ogitors::Globals::OGITOR_VERSION.c_str()));
 
     QSettings settings;
     QString languageFile = settings.value("preferences/customLanguage").toString();
@@ -294,10 +292,10 @@ int main(int argc, char *argv[])
         if(QFile::exists(lang) && QFile::exists(lang2))
         {
             if(qtTranslator.load(lang))
-                a.installTranslator(&qtTranslator);
+                app.installTranslator(&qtTranslator);
 
             if(ogitorTranslator.load(lang2))
-                a.installTranslator(&ogitorTranslator);
+                app.installTranslator(&ogitorTranslator);
         }
         else
         {
@@ -305,18 +303,18 @@ int main(int argc, char *argv[])
             if(qtTranslator.load("qt_" + QLocale::system().name(),
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
             {
-                a.installTranslator(&qtTranslator);
+                app.installTranslator(&qtTranslator);
             }
             // Otherwise: load our own Qt translation file.
             else if(qtTranslator.load(QString(Ogitors::Globals::LANGUAGE_PATH.c_str()) + QString("/qt_") + QLocale::system().name()))
             {
-                a.installTranslator(&qtTranslator);
+                app.installTranslator(&qtTranslator);
             }
 
             // Install qtOgitor translator
             if(ogitorTranslator.load(QString(Ogitors::Globals::LANGUAGE_PATH.c_str()) + QString("/ogitor_") + QLocale::system().name()))
             {
-                a.installTranslator(&ogitorTranslator);
+                app.installTranslator(&ogitorTranslator);
             }
         }
     }
@@ -342,7 +340,7 @@ int main(int argc, char *argv[])
     mOgitorMainWindow = new MainWindow();
     mOgitorMainWindow->show();
 
-    mOgitorMainWindow->setApplicationObject(&a);
+    mOgitorMainWindow->setApplicationObject(&app);
 
     QString sceneToLoad = "";
     QString lastLoadedScene = settings.value("preferences/lastLoadedScene", "").toString();
@@ -377,7 +375,7 @@ int main(int argc, char *argv[])
         delete splash;
     }
 
-    int retval = a.exec();
+    int retval = app.exec();
 
     writeRecentFiles();
 

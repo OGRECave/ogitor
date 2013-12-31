@@ -32,8 +32,12 @@ namespace Hydrax
 	Mesh::Mesh(Hydrax *h)
             : mHydrax(h)
 			, mCreated(false)
-            , mMesh(0)
-            , mSubMesh(0)
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+			, mMesh(0)
+#else
+			, mMesh()
+#endif
+			, mSubMesh(0)
             , mEntity(0)
             , mNumFaces(0)
             , mNumVertices(0)

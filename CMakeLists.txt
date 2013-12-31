@@ -58,41 +58,6 @@ set(OGITOR_PREPROCESSOR "OGITOR_EXPORT")
 
 set(OGITOR_QT_PREPROCESSOR "")
 
-
-# Find Boost
-# Prefer static linking in all cases
-if (NOT OGRE_BUILD_PLATFORM_IPHONE)
-    if (WIN32 OR APPLE)
-        set(Boost_USE_STATIC_LIBS TRUE)
-    else ()
-        # Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
-        set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
-    endif ()
-    set(Boost_ADDITIONAL_VERSIONS "1.38.0" "1.38" "1.39.0" "1.39" "1.40.0" "1.40" "1.44.0" "1.44" "1.45" "1.46" "1.47" "1.48" "1.49" "1.49.0" "1.50" "1.50.0" "1.51" "1.51.0" "1.52" "1.52.0" "1.53" "1.53.0" "1.54" "1.54.0")
-    # Components that need linking (NB does not include header-only components like bind)
-    set(OGRE_BOOST_COMPONENTS thread date_time regex system filesystem)
-    find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-    if (NOT Boost_FOUND)
-        # Try again with the other type of libs
-        set(Boost_USE_STATIC_LIBS NOT ${Boost_USE_STATIC_LIBS})
-        find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-    endif()
-    if (Boost_FOUND AND WIN32)
-        if(Boost_VERSION GREATER 104700)
-            set(OGRE_BOOST_COMPONENTS thread date_time regex system)
-        endif(Boost_VERSION GREATER 104700)
-        if(Boost_VERSION GREATER 104900)
-            set(OGRE_BOOST_COMPONENTS thread date_time regex system chrono)
-        endif(Boost_VERSION GREATER 104900)
-        find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-    endif(Boost_FOUND AND WIN32)
-    find_package(Boost QUIET)
-	if (Boost_FOUND)
-		set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
-		set(OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-	endif (Boost_FOUND)
-endif(NOT OGRE_BUILD_PLATFORM_IPHONE)
-
 # Somehow, relative paths doesn't work on Linux when installing files..
 if(UNIX)
     set(PREFIX ${CMAKE_INSTALL_PREFIX})
@@ -136,6 +101,57 @@ if(UNIX AND NOT OGITOR_DIST)
 endif(UNIX AND NOT OGITOR_DIST)
 
 find_package(OGRE REQUIRED)
+
+# Find Boost
+# Prefer static linking in all cases
+if (NOT OGRE_BUILD_PLATFORM_IPHONE)
+	if (WIN32 OR APPLE)
+		set(Boost_USE_STATIC_LIBS TRUE)
+	else ()
+		# Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
+		set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
+	endif ()
+
+	if (APPLE AND OGRE_BUILD_PLATFORM_APPLE_IOS)
+		set(Boost_USE_MULTITHREADED OFF)
+	endif()
+
+	set(Boost_ADDITIONAL_VERSIONS "1.55" "1.55.0" "1.54" "1.54.0" "1.53" "1.53.0" "1.52" "1.52.0" "1.51" "1.51.0" "1.50" "1.50.0" "1.49" "1.49.0" "1.48" "1.48.0" "1.47" "1.47.0" "1.46" "1.46.0" "1.45" "1.45.0" "1.44" "1.44.0" "1.42" "1.42.0" "1.41.0" "1.41" "1.40.0" "1.40")
+
+	# Components that need linking (NB does not include header-only components like bind)
+	set(OGRE_BOOST_COMPONENTS thread date_time system regex filesystem)
+
+	find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
+
+	if (NOT Boost_FOUND)
+		# Try again with the other type of libs
+		if(Boost_USE_STATIC_LIBS)
+			set(Boost_USE_STATIC_LIBS OFF)
+		else()
+			set(Boost_USE_STATIC_LIBS ON)
+		endif()
+
+		find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
+	endif()
+
+	if(Boost_FOUND AND Boost_VERSION GREATER 104900)
+		if(Boost_VERSION GREATER 105300)
+			set(OGRE_BOOST_COMPONENTS thread date_time system atomic chrono regex filesystem)
+		else()
+			set(OGRE_BOOST_COMPONENTS thread date_time system chrono regex filesystem)
+		endif()
+		find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
+	endif()
+
+	if(Boost_FOUND AND NOT WIN32)
+	  list(REMOVE_DUPLICATES Boost_LIBRARIES)
+	endif()
+
+	if (Boost_FOUND)
+		set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
+		set(OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+	endif (Boost_FOUND)
+endif(NOT OGRE_BUILD_PLATFORM_IPHONE)
 
 if(UNIX AND NOT APPLE)
     # Newer ld versions need this linked explicitly
@@ -350,6 +366,8 @@ add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 add_subdirectory(Plugins/OgScreenEffectEditor)
+add_subdirectory(Plugins/CustomSerializer)
+
 
 add_subdirectory(OgreOfsPlugin)
 

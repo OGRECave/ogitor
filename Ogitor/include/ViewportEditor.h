@@ -120,13 +120,16 @@ namespace Ogitors
         */    
         virtual TiXmlElement* exportDotScene(TiXmlElement *pParent);
 
-        virtual void OnObjectDestroyed(CBaseEditor *object);
+        virtual void onObjectDestroyed(CBaseEditor *object);
+		virtual bool onBeforeDestroy();
+		virtual void onDuringDestroy();
+
     protected:
-        Ogre::Viewport                      *mHandle;               /** Viewport handle */       
+        Ogre::Viewport                     *mHandle;                /** Viewport handle */       
 
         OgitorsProperty<int>               *mViewportIndex;         /** Viewport index property handle */
         OgitorsProperty<Ogre::Vector4>     *mPlacement;             /** Placement coordinates property handle */
-        OgitorsProperty<bool>              *mOverlays;              /** Overlay(s) flagproperty handle */
+        OgitorsProperty<bool>              *mOverlays;              /** Overlay(s) flag property handle */
         OgitorsProperty<bool>              *mSkies;                 /** Sky(ies) flag property handle */
         OgitorsProperty<bool>              *mShadows;               /** Shadow(s) property handle */
         OgitorsProperty<int>               *mCamViewMode;           /** Camera view mode property handle */
@@ -139,8 +142,8 @@ namespace Ogitors
 
         OgitorsScopedConnection             mCameraConnections[6];
 
-        CCameraEditor               *mActiveCamera;                 /** Active camera handle */
-        CCameraEditor               *mViewCamera;                   /** View camera handle */
+        CCameraEditor						*mActiveCamera;         /** Active camera handle */
+        CCameraEditor						*mViewCamera;           /** View camera handle */
 
         /**
         * Constructor

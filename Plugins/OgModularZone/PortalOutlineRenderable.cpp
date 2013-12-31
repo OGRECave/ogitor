@@ -137,7 +137,11 @@ Ogre::Real PortalOutlineRenderable::getSquaredViewDepth(const Ogre::Camera* cam)
     Ogre::ResourceManager::ResourceCreateOrRetrieveResult result = Ogre::MaterialManager::getSingleton().createOrRetrieve(matname, "General");
     if(result.second)
     {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr freePortalMaterial = result.first;
+#else
+        Ogre::MaterialPtr freePortalMaterial = result.first.staticCast<Ogre::Material>();
+#endif
         freePortalMaterial->setReceiveShadows(false);
         freePortalMaterial->getTechnique(0)->setLightingEnabled(true);
         freePortalMaterial->getTechnique(0)->getPass(0)->setDiffuse(colour);
@@ -150,8 +154,12 @@ Ogre::Real PortalOutlineRenderable::getSquaredViewDepth(const Ogre::Camera* cam)
     result = Ogre::MaterialManager::getSingleton().createOrRetrieve(matname, "General");
     if(result.second)
     {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr connectedPortalMaterial = result.first;
-        connectedPortalMaterial->setReceiveShadows(false);
+#else
+        Ogre::MaterialPtr connectedPortalMaterial = result.first.staticCast<Ogre::Material>();
+#endif
+		connectedPortalMaterial->setReceiveShadows(false);
         connectedPortalMaterial->getTechnique(0)->setLightingEnabled(true);
         connectedPortalMaterial->getTechnique(0)->getPass(0)->setDiffuse(colour);
         connectedPortalMaterial->getTechnique(0)->getPass(0)->setAmbient(colour);
@@ -163,8 +171,12 @@ Ogre::Real PortalOutlineRenderable::getSquaredViewDepth(const Ogre::Camera* cam)
     result = Ogre::MaterialManager::getSingleton().createOrRetrieve(matname, "General");
     if(result.second)
     {
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::MaterialPtr linkedPortalMaterial = result.first;
-        linkedPortalMaterial->setReceiveShadows(false);
+#else
+        Ogre::MaterialPtr linkedPortalMaterial = result.first.staticCast<Ogre::Material>();
+#endif
+		linkedPortalMaterial->setReceiveShadows(false);
         linkedPortalMaterial->getTechnique(0)->setLightingEnabled(true);
         linkedPortalMaterial->getTechnique(0)->getPass(0)->setDiffuse(colour);
         linkedPortalMaterial->getTechnique(0)->getPass(0)->setAmbient(colour);

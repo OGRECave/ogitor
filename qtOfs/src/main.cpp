@@ -35,15 +35,15 @@
 //-------------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
-    QDir::setCurrent(a.applicationDirPath());
+    QDir::setCurrent(app.applicationDirPath());
 
     // See if we are loading something from the command line.
     QString fileArg("");
     QString suffix("");
-    QString argument = a.arguments().last();
-    QFileInfo info(a.arguments().last());
+    QString argument = app.arguments().last();
+    QFileInfo info(app.arguments().last());
     if(info.exists() && info.isFile())
     {
         if(info.suffix() == "ofs")
@@ -56,23 +56,23 @@ int main(int argc, char *argv[])
         {
             // We are trying to load something we can't load
             // Exit the application.
-            QMessageBox msg(QMessageBox::Critical, "Ofs Error", "We can only load Ofs files.\nExiting..");
+            QMessageBox msg(QMessageBox::Critical, "Ofs Error", "We can only load Ofs files.\nExiting...");
             msg.exec();
             return 0;
         }
     }
 
-    a.setOrganizationName(QString("Ofs"));
-    a.setApplicationName("qtOfs");
+    app.setOrganizationName(QString("Ofs"));
+    app.setApplicationName("qtOfs");
 
     mOfsMainWindow = new MainWindow(fileArg);
     mOfsMainWindow->show();
     
-    mOfsMainWindow->setApplicationObject(&a);
+    mOfsMainWindow->setApplicationObject(&app);
 
     mOfsMainWindow->repaint();
 
-    int retval = a.exec();
+    int retval = app.exec();
 
     delete mOfsMainWindow;
 

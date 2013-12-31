@@ -890,7 +890,7 @@ namespace Ogitors
         void                                AddToRecentFiles(const Ogre::UTFString& entry);
         /**
         * Fetches the list of recent files, the order is: The last used is first in the list
-        * @param list a vector to be flled with ordered recent files list
+        * @param list a vector to be filled with ordered recent files list
         */
         void                                GetRecentFiles(UTFStringVector& list);
         /**
@@ -935,7 +935,7 @@ namespace Ogitors
         * Fetches mapping of models to their default materials
         * @return mapping of models to their default materials
         */
-        static Ogre::NameValuePairList      *GetModelMaterialMap() { return &mModelMaterialMap;  }
+        static Ogre::NameValuePairList      *GetModelMaterialMap() { return &mModelMaterialMap; }
 
         /**
         * Fetches a list of properties containing skybox materials
@@ -953,13 +953,13 @@ namespace Ogitors
         * Fetches names of auto track targets in the scene
         * @return names of auto track targets in the scene
         */
-        static PropertyOptionsVector        *GetAutoTrackTargets() {return &mAutoTrackTargets;};
+        static PropertyOptionsVector        *GetAutoTrackTargets() { return &mAutoTrackTargets; }
 
         /**
         * Fetches names of layers in the scene
         * @return names of layers in the scene
         */
-        static PropertyOptionsVector        *GetLayerNames() {return &mLayerNames;};
+        static PropertyOptionsVector        *GetLayerNames() { return &mLayerNames; }
 
         /**
         * Fetches diffuse texture name(s) property(ies)
@@ -1251,7 +1251,7 @@ namespace Ogitors
         Class to handle all resource loading conflicts by unloading the existing resource
         and replacing it with the newly attempted to be loaded one
     */
-    class OgitorExport ResourceLoadingListener : public Ogre::ResourceLoadingListener
+    class OgitorExport ResourceLoadingListener : public Ogre::ResourceLoadingListener, public Ogre::GeneralAllocatedObject
     {
     public:
         bool resourceCollision(Ogre::Resource *resource, Ogre::ResourceManager *resourceManager);

@@ -79,7 +79,7 @@ public:
     virtual Ogitors::CMaterialEditor *getMaterialEditor() {return mMaterialEditor;}
 
     void prepareView();
-    void destroyScene();
+    void destroyView();
 
     void onSceneLoadStateChange(Ogitors::IEvent* evt);
     void onGlobalPrepareView(Ogitors::IEvent* evt);

@@ -82,13 +82,13 @@ public:
     ~LogBuffer() {};
     void getBuffer(LogDataVector& buffer)
     {
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
             buffer = mData;
         mData.clear();
     };
     void append(int lvl, const Ogre::String& msg)
     {
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
             if(mOgitorMainWindow && mOgitorMainWindow->getOgreWidget() && mOgitorMainWindow->getOgreWidget()->isSizing())
                 return;
 
@@ -104,7 +104,7 @@ public:
         mData.push_back(data);
     };
 private:
-    OGRE_AUTO_MUTEX
+    OGRE_AUTO_MUTEX;
         LogDataVector mData;
 };
 
@@ -192,7 +192,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     recentMapper = 0;
 
-    setMinimumSize(400,300);
+    setMinimumSize(400, 300);
 
     if(!mArgsFile.isEmpty())
     {

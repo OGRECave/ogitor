@@ -169,13 +169,7 @@ void OgreWidget::initializeOGRE()
         false,
         &params );
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-    mRenderWindow->windowMovedOrResized();
-    //resizeEvent(0);
-#endif
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     mRenderWindow->resize(width(), height());
-#endif
 
     mOgreRoot->getRenderSystem()->addListener(this);
     OgitorsRoot::getSingletonPtr()->SetRenderWindow(mRenderWindow);
@@ -269,11 +263,7 @@ void OgreWidget::resizeEvent(QResizeEvent* evt)
 
     mScreenResize = true;
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     mRenderWindow->resize(width(), height());
-#endif
-
-    mRenderWindow->windowMovedOrResized();
 
     if(OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
         OgitorsRoot::getSingletonPtr()->RenderWindowResized();

@@ -222,7 +222,7 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
     int errpos;
 
     {
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         errpos = mBuffer.size();
     }
     r = mBuilder->BuildModule();
@@ -231,7 +231,7 @@ Ogre::StringVector AngelScriptInterpreter::runScript(std::string &section, std::
         // An error occurred. Instruct the script writer to fix the
         // compilation errors that were listed in the output stream.
 
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         for(unsigned int i = errpos;i < mBuffer.size();i++)
         {
             char buf[1000];
@@ -351,7 +351,7 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, s
     int errpos;
 
     {
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         errpos = mBuffer.size();
     }
 
@@ -363,7 +363,7 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, s
         ret.push_back("Please correct the errors in the script and try again.");
         ret.push_back("Following errors found in script:");
 
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         for(unsigned int i = errpos;i < mBuffer.size();i++)
         {
             char buf[1000];
@@ -396,7 +396,7 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, c
     int errpos;
 
     {
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         errpos = mBuffer.size();
     }
 
@@ -408,7 +408,7 @@ Ogre::StringVector AngelScriptInterpreter::compileModule(std::string &section, c
         ret.push_back("Please correct the errors in the script and try again.");
         ret.push_back("Following errors found in script:");
 
-        OGRE_LOCK_AUTO_MUTEX
+        OGRE_LOCK_AUTO_MUTEX;
         for(unsigned int i = errpos;i < mBuffer.size();i++)
         {
             char buf[1000];
@@ -623,7 +623,7 @@ static OutputData data;
 //----------------------------------------------------------------------------
 void AngelScriptInterpreter::MessageCallback(const asSMessageInfo *msg)
 {
-    OGRE_LOCK_AUTO_MUTEX
+    OGRE_LOCK_AUTO_MUTEX;
 
     data.mType = (int)msg->type;
     data.mSection = msg->section;

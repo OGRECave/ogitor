@@ -57,13 +57,13 @@ void adjustOgitorLayerParameters()
 
     OgitorsRoot::getSingletonPtr()->GetSceneManager()->setVisibilityMask(vismask);
 
-    PropertyOptionsVector *LayerNames = OgitorsRoot::GetLayerNames();
+    PropertyOptionsVector *layerNames = OgitorsRoot::GetLayerNames();
     
-    LayerNames->clear();
+    layerNames->clear();
 
     for(unsigned int li = 0;li < (unsigned int)pOpt->LayerCount;li++)
     {
-        LayerNames->push_back(PropertyOption(pOpt->LayerNames[li], Ogre::Any(li)));
+        layerNames->push_back(PropertyOption(pOpt->LayerNames[li], Ogre::Any(li)));
     }
 }
 //----------------------------------------------------------------------------------------

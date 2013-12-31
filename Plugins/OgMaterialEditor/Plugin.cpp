@@ -50,17 +50,17 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 	mMaterialViewWidget = new MaterialViewWidget();
     mMaterialPrefsEditor = new MaterialEditorPrefsEditor();
 
-	Ogitors::DockWidgetData dockWidgetData;
-	dockWidgetData.mCaption = "Materials";
-    dockWidgetData.mHandle = mMaterialViewWidget;
-    dockWidgetData.mIcon = ":/icons/material.svg";
-    dockWidgetData.mParent = DOCK_RESOURCES;
-	   
+    Ogitors::DockWidgetData dockWidgetData;
+    dockWidgetData.mCaption = "Materials";
+    dockWidgetData.mHandle  = mMaterialViewWidget;
+    dockWidgetData.mIcon    = ":/icons/material.svg";
+    dockWidgetData.mParent  = DOCK_RESOURCES;
+
     Ogitors::PreferencesEditorData preferencesEditorData;
-    preferencesEditorData.mCaption = "Material Editor";
-    preferencesEditorData.mIcon = ":/icons/material.svg";
-    preferencesEditorData.mSectionName = "materialEditor";
-    preferencesEditorData.mHandle = mMaterialPrefsEditor;
+    preferencesEditorData.mCaption      = "Material Editor";
+    preferencesEditorData.mIcon         = ":/icons/material.svg";
+    preferencesEditorData.mSectionName  = "materialEditor";
+    preferencesEditorData.mHandle       = mMaterialPrefsEditor;
 
     MaterialTextEditorCodec::mToolBar = new MaterialTextEditorCodecToolBar("Material Actions");
 
@@ -88,7 +88,7 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CMaterialEditorFactory());
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, OGRE_NEW CTechniqueEditorFactory());
-	OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, dockWidgetData);
+    OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, dockWidgetData);
     OgitorsRoot::getSingletonPtr()->RegisterPreferenceEditor(identifier, preferencesEditorData);
 
     return true;
@@ -102,6 +102,17 @@ bool dllGetPluginName(Ogre::String& name)
 //----------------------------------------------------------------------------
 bool dllStopPlugin(void)
 {
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("material");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("cg");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("hlsl");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("glsl");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("frag");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("vert");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("fragment");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("vertex");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("program");
+    GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("compositor");
+    
     return true;
 }
 //----------------------------------------------------------------------------

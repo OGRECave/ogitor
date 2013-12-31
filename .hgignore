@@ -50,5 +50,6 @@ glob:qtOgitor/languages/translate.pro
 glob:RunPath/Media/*
 glob:RunPath/Projects/*
 CMakeLists.txt.user
+CMakeLists.txt.user*
 syntax: glob
 qtOgitor/languages/ogitor_*.qm
