@@ -188,7 +188,6 @@ install(FILES
 	${QT_DLL_DIR}/Qt5PrintSupport.dll
 	${QT_DLL_DIR}/Qt5Quick.dll
 	${QT_DLL_DIR}/Qt5Qml.dll
-	${QT_DLL_DIR}/Qt5V8.dll
 	${QT_DLL_DIR}/Qt5Sensors.dll
 	${QT_DLL_DIR}/Qt5CLucene.dll
     DESTINATION bin
@@ -217,7 +216,6 @@ install(FILES
 	${QT_DLL_DIR}/Qt5PrintSupportd.dll
 	${QT_DLL_DIR}/Qt5Quickd.dll
 	${QT_DLL_DIR}/Qt5Qmld.dll
-	${QT_DLL_DIR}/Qt5V8d.dll
 	${QT_DLL_DIR}/Qt5Sensorsd.dll
 	${QT_DLL_DIR}/Qt5CLucened.dll
     DESTINATION bin
