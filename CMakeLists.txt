@@ -82,7 +82,7 @@ if(WIN32)
 	set(CMAKE_DEBUG_POSTFIX "_d")
 endif(WIN32)
 
-if(MSVC_VERSION GREATER 1500 OR MSVC_VERSION EQUAL 1500)
+if(NOT (MSVC_VERSION LESS 1500) )
 	# Option is to enable the /MP switch for Visual Studio 2005 or later
 	option(OGITOR_MSVC_ENABLE_MP
 		"Set to ON to build Ogitor with the /MP option (Visual Studio 2005 and above)." ON)
@@ -191,11 +191,12 @@ if(UNIX)
     set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
 endif(UNIX)
 
-if(CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64" OR CMAKE_GENERATOR STREQUAL "Visual Studio 11")
-	option(OGITOR_BUILD_MSVC_ZM "Add /Zm256 parameter to Visual Studio to fix PCH error" FALSE)
+if(NOT (MSVC_VERSION LESS 1500) )
+	option(OGITOR_BUILD_MSVC_ZM "Add /Zm256 parameter to Visual Studio to fix PCH error" ON)
 else()
-	set(OGITOR_BUILD_MSVC_ZM FALSE CACHE BOOL "Forcing switch off /Zm256 for older Visual Studio versions" FORCE)
+	set(OGITOR_BUILD_MSVC_ZM OFF CACHE BOOL "Forcing switch off /Zm256 for older Visual Studio versions" FORCE)
 endif()
+
 if(OGITOR_BUILD_MSVC_ZM)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm256")
 endif ()
