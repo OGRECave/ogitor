@@ -87,10 +87,6 @@ IF(UNIX AND NOT APPLE)
 
     if(OGITOR_DIST)
         install(TARGETS SkyX
-            LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-
-        install(TARGETS SkyX
             LIBRARY DESTINATION lib
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
     endif(OGITOR_DIST)

@@ -236,7 +236,7 @@ set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Hydrax/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
@@ -354,7 +354,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals
 add_subdirectory(Ogitor)
 
 # Setup Dependencies
-add_subdirectory(Dependencies/HYDRAX/Hydrax/src/Hydrax)
+add_subdirectory(Dependencies/Hydrax/src)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
