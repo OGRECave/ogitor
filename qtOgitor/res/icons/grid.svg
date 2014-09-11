@@ -1,0 +1,21 @@
+<svg width="40" xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 0 32 32">
+<g fill="none" stroke="#6f84ee">
+<g>
+<path stroke-opacity=".99" stroke-linejoin="round" fill-opacity=".992" stroke-linecap="round" stroke-width="1.597" d="m1.8062,2.0313h28.0032v27.8474h-28.0032z"/>
+</g>
+<g stroke-opacity=".992" fill-rule="evenodd" stroke-width="1.6">
+<g>
+<path d="m7.4078,2.4242c0,27.6364 0,27.7056 0,27.7056"/>
+<path d="m13.0078,2.4935c0,27.6364 0,27.7056 0,27.7056"/>
+<path d="m18.6078,2.355c0,27.6364 0,27.7056 0,27.7056"/>
+<path d="m24.2078,2.355c0,27.6364 0,27.7056 0,27.7056"/>
+</g>
+<g transform="matrix(0 1 -1 0 32.20779 1.07706)">
+<path d="m7.2,2.1472c0,27.6364 0,27.7056 0,27.7056"/>
+<path d="m12.8,2.632c0,27.6364 0,27.7056 0,27.7056"/>
+<path d="m18.4,2.0779c0,27.6364 0,27.7056 0,27.7056"/>
+<path d="m24,2.0779c0,27.6364 0,27.7056 0,27.7056"/>
+</g>
+</g>
+</g>
+</svg>
