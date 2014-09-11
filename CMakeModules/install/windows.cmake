@@ -43,7 +43,7 @@ install(FILES ${GenericTextEditor_headers}
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 )
 # SDK: Hydrax headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Hydrax/src
 	DESTINATION ${PREFIX}/sdk/dependencies/include
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 	PATTERN "*.cpp" EXCLUDE
