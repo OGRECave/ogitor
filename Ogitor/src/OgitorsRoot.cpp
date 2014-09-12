@@ -77,8 +77,7 @@ namespace Ogitors
 {
     PropertyOptionsVector OgitorsRoot::mModelNames;
     PropertyOptionsVector OgitorsRoot::mMaterialNames;
-    PropertyOptionsVector OgitorsRoot::mCompositorNames;
-    Ogre::NameValuePairList OgitorsRoot::mModelMaterialMap;
+    PropertyOptionsVector OgitorsRoot::mCompositorNames;    
     PropertyOptionsVector OgitorsRoot::mSkyboxMaterials;
     PropertyOptionsVector OgitorsRoot::mAutoTrackTargets;
     PropertyOptionsVector OgitorsRoot::mLayerNames;
@@ -88,10 +87,12 @@ namespace Ogitors
     PropertyOptionsVector OgitorsRoot::mTerrainPlantMaterialNames;
     PropertyOptionsVector OgitorsRoot::mScriptNames;
 
+    Ogre::NameValuePairList OgitorsRoot::mModelMaterialMap;
+
     template<> OgitorsRoot* Singleton<OgitorsRoot>::ms_Singleton = 0;
-    static OgitorsDummySystem *dummySystem = 0;
-    static OgitorsDummyPhysics *dummyPhysics = 0;
-    static OgitorsDummyScriptInterpreter *dummyInterpreter = 0;
+    static OgitorsDummySystem *gDummySystem = 0;
+    static OgitorsDummyPhysics *gDummyPhysics = 0;
+    static OgitorsDummyScriptInterpreter *gDummyInterpreter = 0;
 
     //-----------------------------------------------------------------------------------------
     class OgitorsRootPropertySetListener: public OgitorsPropertySetListener
@@ -188,7 +189,7 @@ namespace Ogitors
             }
             for (int i = 0; i < SOLIDMATCOUNT; ++i)
             {
-                Ogre::StringUtil::StrStreamType str;
+                Ogre::StringStream str;
                 str << "GesSolidCol" << i;
                 solidColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
                 if (solidColourMaterials[i].isNull())
@@ -209,7 +210,7 @@ namespace Ogitors
                         col);
                     solidColourMaterials[i]->load();
                 }
-                str.str(Ogre::StringUtil::BLANK);
+                str.str(Ogre::BLANKSTRING);
                 str << "GesWireCol" << i;
                 wireColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
                 if (wireColourMaterials[i].isNull())
@@ -230,7 +231,7 @@ namespace Ogitors
                         col);
                     wireColourMaterials[i]->load();
                 }
-                str.str(Ogre::StringUtil::BLANK);
+                str.str(Ogre::BLANKSTRING);
                 str << "GesHiddenLineCol" << i;
                 hiddenLineColourMaterials[i] = Ogre::MaterialManager::getSingleton().getByName(str.str());
                 if (hiddenLineColourMaterials[i].isNull())
@@ -379,15 +380,15 @@ namespace Ogitors
         mSystem = OgitorsSystem::getSingletonPtr();
         if(!mSystem)
         {
-            dummySystem = OGRE_NEW OgitorsDummySystem();
-            mSystem = dummySystem;
+            gDummySystem = OGRE_NEW OgitorsDummySystem();
+            mSystem = gDummySystem;
         }
 
         mPhysics = OgitorsPhysics::getSingletonPtr();
         if(!mPhysics)
         {
-            dummyPhysics = OGRE_NEW OgitorsDummyPhysics();
-            mPhysics = dummyPhysics;
+            gDummyPhysics = OGRE_NEW OgitorsDummyPhysics();
+            mPhysics = gDummyPhysics;
         }
 
         new EventManager();
@@ -473,22 +474,22 @@ namespace Ogitors
 
         mRootEditor->destroy();
 
-        EditorObjectFactoryMap::iterator it = mEditorObjectFactories.begin();
-        while(it != mEditorObjectFactories.end())
+        // Clean up registered editor factories
+        EditorObjectFactoryMap::iterator itEditorFactories = mEditorObjectFactories.begin();
+        while(itEditorFactories != mEditorObjectFactories.end())
         {
-            OGRE_DELETE it->second;
-            it++;
+            OGRE_DELETE itEditorFactories->second;
+            itEditorFactories++;
         }
-
         mEditorObjectFactories.clear();
 
         UnLoadPlugins();
 
         OGRE_DELETE mScriptConsole;
-        OGRE_DELETE dummyInterpreter;
+        OGRE_DELETE gDummyInterpreter;
         OGRE_DELETE mUndoManager;
-        OGRE_DELETE dummySystem;
-        OGRE_DELETE dummyPhysics;
+        OGRE_DELETE gDummySystem;
+        OGRE_DELETE gDummyPhysics;
 
         OgitorsUtils::FreeBuffers();
 
@@ -790,8 +791,8 @@ namespace Ogitors
         }
         else
         {
-            dummyInterpreter = OGRE_NEW OgitorsDummyScriptInterpreter;
-            mScriptInterpreter = dummyInterpreter;
+            gDummyInterpreter = OGRE_NEW OgitorsDummyScriptInterpreter;
+            mScriptInterpreter = gDummyInterpreter;
         }
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
@@ -1070,7 +1071,7 @@ namespace Ogitors
         UpdateFrameEvent evt(timePassed);
         EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
 
-        if(mScriptInterpreter != dummyInterpreter && mRunState == RS_RUNNING)
+        if(mScriptInterpreter != gDummyInterpreter && mRunState == RS_RUNNING)
         {
             NameObjectPairList::const_iterator i = mUpdateScriptList.begin();
             while(i != mUpdateScriptList.end())

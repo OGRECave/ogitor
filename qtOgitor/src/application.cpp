@@ -47,12 +47,14 @@ bool Application::notify(QObject *receiver, QEvent *event)
     {
         std::string error("Application::notify caught an exception: " + std::string(e.what() ? e.what() : "(null)"));
         std::cout << error << std::endl;
+        return false;
         //throw;
     }
     catch(...)
     {
         std::string error("Application::notify caught an unknown exception!");
         std::cout << error << std::endl;
+        return false;
         //throw;
     }
 }

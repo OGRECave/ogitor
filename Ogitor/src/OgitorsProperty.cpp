@@ -273,7 +273,7 @@ namespace Ogitors
                 // check type
                 if (j->second->getType() != i->second.propType)
                 {
-                    Ogre::StringUtil::StrStreamType msg;
+                    Ogre::StringStream msg;
                     msg << "Property " << i->first << " mismatched type; incoming type: '"
                         << OgitorsPropertyDef::getTypeName(i->second.propType) << "', property type: '"
                         << OgitorsPropertyDef::getTypeName(j->second->getType()) << "'";

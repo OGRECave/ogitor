@@ -169,7 +169,6 @@ QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0),
 //-------------------------------------------------------------------------------
 QtOgitorSystem::~QtOgitorSystem(void)
 {
-
 }
 //-------------------------------------------------------------------------------
 Ogre::String QtOgitorSystem::GetProjectsDirectory()

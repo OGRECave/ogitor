@@ -70,6 +70,9 @@ bool dllGetPluginName(Ogre::String& name)
 //----------------------------------------------------------------------------
 bool dllStopPlugin(void)
 {
+    if(ScriptTextEditorCodec::mToolBar)
+        delete ScriptTextEditorCodec::mToolBar;
+
     return true;
 }
 //----------------------------------------------------------------------------

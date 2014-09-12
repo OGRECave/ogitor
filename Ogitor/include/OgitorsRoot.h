@@ -138,6 +138,8 @@ namespace Ogitors
    
     typedef Ogre::vector<TabWidgetData>::type TabWidgetDataList;
 
+    typedef Ogre::vector<void*>::type PointerList;
+
     typedef OgitorExport Ogre::vector<PreferencesEditorData>::type PreferencesEditorDataList;
 
     //! This is the Root Class in Charge of All Editors
@@ -847,7 +849,7 @@ namespace Ogitors
         * Fetches a list of toolbars
         * @return list of toolbar handles
         */
-        std::vector<void*>                  GetToolBars() {return mToolBars;};
+        PointerList                         GetToolBars() {return mToolBars;};
         /**
         * Registers QDockWidget-type dockwidget
         * @param dockwidget QDockWidget-type dockwidget
@@ -1167,7 +1169,7 @@ namespace Ogitors
         bool                mClearScreenBackground;                     /** Flag signifying if it is time to clear screen background (used in paintEvent) */
         bool                mWalkAroundMode;                            /** Is the camera movement state WalkAround? */
 
-        std::vector<void*>          mToolBars;                          /** Additional Qt toolbars to display in Ogitor */
+        PointerList                 mToolBars;                          /** Additional Qt toolbars to display in Ogitor */
         DockWidgetDataList          mDockWidgets;                       /** Additional Qt dock widgets to display in Ogitor */
         TabWidgetDataList           mTabWidgets;                        /** Additional Qt tab widgets to display in Ogitor */
         PreferencesEditorDataList   mPrefEditors;                       /** Additional Qt widgets to display in Ogitor preferences*/

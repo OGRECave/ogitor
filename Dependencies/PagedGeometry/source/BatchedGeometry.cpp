@@ -33,6 +33,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include <OgreHardwareBuffer.h>
 #include <OgreMaterialManager.h>
 #include <OgreMaterial.h>
+#include <OgreTechnique.h>
 #include <string>
 using namespace Ogre;
 
@@ -258,7 +259,7 @@ BatchedGeometry::SubBatchIterator BatchedGeometry::getSubBatchIterator() const
 
 String BatchedGeometry::getFormatString(SubEntity *ent)
 {
-	StringUtil::StrStreamType str;
+	StringStream str;
 
 	str << ent->getMaterialName() << "|";
 	str << ent->getSubMesh()->indexData->indexBuffer->getType() << "|";

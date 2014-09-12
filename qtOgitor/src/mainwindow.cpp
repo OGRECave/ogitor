@@ -909,7 +909,7 @@ void MainWindow::createPlayerToolbar()
 //------------------------------------------------------------------------------
 void MainWindow::createCustomToolbars()
 {
-    std::vector<void*> toolbars = OgitorsRoot::getSingletonPtr()->GetToolBars();
+    PointerList toolbars = OgitorsRoot::getSingletonPtr()->GetToolBars();
     for(unsigned int i = 0;i < toolbars.size();i++)
     {
         QToolBar *widget = static_cast<QToolBar*>(toolbars[i]);

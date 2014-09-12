@@ -112,6 +112,9 @@ bool dllStopPlugin(void)
     GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("vertex");
     GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("program");
     GenericTextEditor::getSingletonPtr()->unregisterCodecFactory("compositor");
+
+    if(MaterialTextEditorCodec::mToolBar)
+        delete MaterialTextEditorCodec::mToolBar;
     
     return true;
 }
