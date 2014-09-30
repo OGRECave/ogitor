@@ -527,7 +527,7 @@ void TreeIterator3D::moveNext()
 {
 	//Out of bounds check
 	if (!hasMore)
-		OGRE_EXCEPT(1, "Cannot read past end of TreeIterator list", "TreeIterator::moveNext()");
+		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, "Cannot read past end of TreeIterator list", "TreeIterator::moveNext()");
 
 	//Preserve the last tree
 	prevTreeDat = currentTreeDat;
