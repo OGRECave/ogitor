@@ -102,7 +102,7 @@ namespace Ogre {
                 else if (detailList)
                 {
                     FileInfo fi;
-                    fi.archive = this;
+                    fi.archive = (Archive*)this;
                     fi.filename = directory + retList[i].name;
                     fi.basename = retList[i].name;
                     fi.path = directory;
@@ -132,7 +132,7 @@ namespace Ogre {
                         else if (detailList)
                         {
                             FileInfo fi;
-                            fi.archive = this;
+                            fi.archive = (Archive*)this;
                             fi.filename = directory + retList[i].name;
                             fi.basename = retList[i].name;
                             fi.path = directory;
@@ -251,7 +251,11 @@ namespace Ogre {
         mOfs.unmount();
     }
     //-----------------------------------------------------------------------
+#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
     DataStreamPtr OFSArchive::open(const String& filename, bool readOnly) const
+#else
+	DataStreamPtr OFSArchive::open(const String& filename, bool readOnly)
+#endif
     {
         String name = concatenate_path(mDir, filename);
 
@@ -360,8 +364,13 @@ namespace Ogre {
 
     }
     //-----------------------------------------------------------------------
+#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
     FileInfoListPtr OFSArchive::findFileInfo(const String& pattern, 
         bool recursive, bool dirs) const
+#else
+    FileInfoListPtr OFSArchive::findFileInfo(const String& pattern, 
+        bool recursive, bool dirs)
+#endif
     {
 		// Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
 		FileInfoListPtr ret(OGRE_NEW_T(FileInfoList, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
