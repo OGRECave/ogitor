@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10)
 
-# CMake policy introduced in relation to Qt 5.1
+# CMake policy introduced in relation to Qt 5
 if("${CMAKE_VERSION}" VERSION_GREATER 2.8.11)   
 	cmake_policy(SET CMP0020 OLD)
 endif()
@@ -54,8 +54,8 @@ else(NOT Qt5Widgets_FOUND)
         ./src/entityview.cpp
         ./include/eucliddialog.hxx
         ./src/eucliddialog.cpp
-	   ./include/extendedTreeView.hxx
-	   ./src/extendedTreeView.cpp
+	    ./include/extendedTreeView.hxx
+	    ./src/extendedTreeView.cpp
         ./include/importheightmapdialog.hxx
         ./src/importheightmapdialog.cpp
         ./include/layerview.hxx
@@ -120,7 +120,7 @@ else(NOT Qt5Widgets_FOUND)
         ./include/createterraindialog.hxx
         ./include/entityview.hxx
         ./include/eucliddialog.hxx
-	   ./include/extendedTreeView.hxx
+	    ./include/extendedTreeView.hxx
         ./include/importheightmapdialog.hxx
         ./include/layerview.hxx
         ./include/lineeditwithhistory.hxx
@@ -156,7 +156,7 @@ else(NOT Qt5Widgets_FOUND)
     source_group("Moc Files" FILES ${MOC_SRCS})
     source_group("Ui Files" FILES ${UI_FILES})
 
-    # if we don't include this CMake will not include ui headers properly:
+    # if we don't include this CMake will not include UI headers properly:
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
     include_directories(./include)
     include_directories(${DEPENDENCIES_INCLUDES})

@@ -473,7 +473,7 @@ void ImpostorTexture::renderTextures(bool force)
 	renderTexture = TextureManager::getSingleton().createManual(getUniqueID("ImpostorTexture"), "Impostors",
 				TEX_TYPE_2D, textureSize * IMPOSTOR_YAW_ANGLES, textureSize * IMPOSTOR_PITCH_ANGLES, 0, PF_A8R8G8B8, TU_RENDERTARGET, loader.get());
 	}
-	renderTexture->setNumMipmaps(MIP_UNLIMITED);
+	renderTexture->setNumMipmaps((Ogre::uint8)MIP_UNLIMITED);
 	
 	//Set up render target
 	renderTarget = renderTexture->getBuffer()->getRenderTarget(); 

@@ -87,7 +87,7 @@ DensityMap::DensityMap(TexturePtr map, MapChannel channel)
 	pixels->data = new uint8[pixels->getConsecutiveSize()];
 
 	if (channel == CHANNEL_COLOR){
-		//Copy to the greyscale density map directly if no channel extraction is necessary
+		//Copy to the gray scale density map directly if no channel extraction is necessary
 		buff->blitToMemory(*pixels);
 	} else {
 		//If channel extraction is necessary, first convert to a PF_R8G8B8A8 format PixelBox
