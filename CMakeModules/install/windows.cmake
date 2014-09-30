@@ -170,11 +170,6 @@ install(FILES
     ${QT_DLL_DIR}/Qt5Xml.dll
     ${QT_DLL_DIR}/Qt5Widgets.dll
     ${QT_DLL_DIR}/Qt5XmlPatterns.dll
-	${QT_DLL_DIR}/libEGL.dll
-	${QT_DLL_DIR}/libGLESv2.dll
-	${QT_DLL_DIR}/icudt51.dll
-	${QT_DLL_DIR}/icuin51.dll
-	${QT_DLL_DIR}/icuuc51.dll
 	${QT_DLL_DIR}/assistant.exe
 	${QT_DLL_DIR}/Qt5Help.dll
 	${QT_DLL_DIR}/Qt5Network.dll
@@ -192,6 +187,18 @@ install(FILES
 	${QT_DLL_DIR}/Qt5CLucene.dll
     DESTINATION bin
     CONFIGURATIONS Release)
+if(EXISTS "${QT_DLL_DIR}/libEGL.dll")
+	install(FILES
+		${QT_DLL_DIR}/libEGL.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
+if(EXISTS "${QT_DLL_DIR}/libGLESv2.dll")
+	install(FILES
+		${QT_DLL_DIR}/libGLESv2.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
 install(FILES
     ${QT_DLL_DIR}/Qt5Cored.dll
     ${QT_DLL_DIR}/Qt5Guid.dll
@@ -199,11 +206,6 @@ install(FILES
     ${QT_DLL_DIR}/Qt5Xmld.dll
     ${QT_DLL_DIR}/Qt5Widgetsd.dll
     ${QT_DLL_DIR}/Qt5XmlPatternsd.dll
-	${QT_DLL_DIR}/libEGLd.dll
-	${QT_DLL_DIR}/libGLESv2d.dll
-	${QT_DLL_DIR}/icudt51.dll
-	${QT_DLL_DIR}/icuin51.dll
-	${QT_DLL_DIR}/icuuc51.dll
 	${QT_DLL_DIR}/assistant.exe
 	${QT_DLL_DIR}/Qt5Helpd.dll
 	${QT_DLL_DIR}/Qt5Networkd.dll
@@ -220,6 +222,18 @@ install(FILES
 	${QT_DLL_DIR}/Qt5CLucened.dll
     DESTINATION bin
     CONFIGURATIONS Debug)
+if(EXISTS "${QT_DLL_DIR}/libEGLd.dll")
+	install(FILES
+		${QT_DLL_DIR}/libEGLd.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
+if(EXISTS "${QT_DLL_DIR}/libGLESv2d.dll")
+	install(FILES
+		${QT_DLL_DIR}/libGLESv2d.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
 install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll
     DESTINATION bin/iconengines
     CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
@@ -238,6 +252,10 @@ install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll
 install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited.dll
     DESTINATION bin/sqldrivers
     CONFIGURATIONS Debug)
+install(DIRECTORY ${QT_DLL_DIR}/
+    DESTINATION "bin"
+    FILES_MATCHING
+    PATTERN "*icu*.dll")
 
 # Runtime libraries
 IF(OGITOR_DIST)
