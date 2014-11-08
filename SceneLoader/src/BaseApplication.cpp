@@ -419,25 +419,25 @@ bool BaseApplication::keyReleased( const OIS::KeyEvent &arg )
 
 bool BaseApplication::mouseMoved(const OIS::MouseEvent &arg)
 {
-    mTrayMgr->injectMouseMove(arg);
+    mTrayMgr->injectPointerMove(arg);
     if (mTrayMgr->isDialogVisible()) return true;   // Don't process any more keys if dialog is up
-    mCameraMan->injectMouseMove(arg);
+    mCameraMan->injectPointerMove(arg);
     return true;
 }
 
 bool BaseApplication::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id)
 {
-    mTrayMgr->injectMouseDown(arg, id);
+    mTrayMgr->injectPointerDown(arg, id);
     if (mTrayMgr->isDialogVisible()) return true;   // Don't process any more keys if dialog is up
-    mCameraMan->injectMouseDown(arg, id);
+    mCameraMan->injectPointerDown(arg, id);
     return true;
 }
 
 bool BaseApplication::mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id)
 {
-    mTrayMgr->injectMouseUp(arg, id);
+    mTrayMgr->injectPointerUp(arg, id);
     if (mTrayMgr->isDialogVisible()) return true;   // Don't process any more keys if dialog is up
-    mCameraMan->injectMouseUp(arg, id);
+    mCameraMan->injectPointerUp(arg, id);
     return true;
 }
 
