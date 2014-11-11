@@ -1,0 +1,14 @@
+<svg width="160" xmlns="http://www.w3.org/2000/svg" height="160" viewBox="0 0 507.946 507.946" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient gradientTransform="matrix(1 -0 -0 1 -0 -0)" xlink:href="#aigrd1" id="linearGradient334" y1=".852" x1=".431" y2="-.078" x2="-.123" gradientUnits="objectBoundingBox"/>
+<radialGradient stroke-opacity=".986" cx="218.94" cy="219.772" stroke="#000" id="aigrd1" r="150.706" stroke-width=".982" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#73ffff"/>
+<stop offset=".281" stop-color="#2ea6b9"/>
+<stop offset="1" stop-color="#006b8b"/>
+</radialGradient>
+</defs>
+<g fill-rule="evenodd" transform="matrix(0 -1 1 0 -17.4722 425.943)">
+<path stroke-opacity=".702" stroke="#a4c9ee" stroke-linejoin="round" stroke-width="10.824" d="m338.593,175.32l96.899,86.516-96.235,93.509-.664-180.025z" transform="matrix(-1.72603 0 -0 -1.94683 820.206 783.932)"/>
+<path stroke-opacity=".992" fill="url(#linearGradient334)" stroke="#0c6671" fill-opacity=".992" stroke-width="9.603" d="m355.635,183.469l82.252,76.467-82.07,82.166-.182-158.633z" transform="matrix(-1.67014 0 -0 -1.75639 818.267 732.367)"/>
+</g>
+</svg>
