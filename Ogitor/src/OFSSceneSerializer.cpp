@@ -131,7 +131,21 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
     OFS::ofs64 file_size = 0;
 
     if(mFile->getFileSize(fileName.c_str(), file_size) != OFS::OFS_OK)
-        return SCF_ERRFILE;
+	{
+		OFS::FileList files = mFile->listFiles("/", OFS::OFS_FILE);
+		for(OFS::FileList::iterator iter = files.begin(); iter != files.end(); iter++)
+		{
+			if(iter->name.size() < 9) continue;
+			if(stricmp(iter->name.c_str() + (iter->name.size() - 8), ".ogscene") == 0)
+			{
+				mFile->renameFile(iter->name.c_str(), fileName.c_str());
+				break;
+			}
+		}
+
+		if(mFile->getFileSize(fileName.c_str(), file_size) != OFS::OFS_OK)
+			return SCF_ERRFILE;
+	}
 
     char *file_data = new char[(unsigned int)file_size + 1];
 
