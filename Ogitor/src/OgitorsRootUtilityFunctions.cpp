@@ -1475,7 +1475,7 @@ void OgitorsRoot::ReloadUserResources()
     mModelNames.clear();
     mModelNames.push_back(PropertyOption("",Ogre::Any(Ogre::String(""))));
 
-    HashMap<Ogre::String, int> tmpEntityList;
+    OGRE_HashMap<Ogre::String, int> tmpEntityList;
 
     Ogre::StringVectorPtr pList = Ogre::ResourceGroupManager::getSingleton().findResourceNames(PROJECT_RESOURCE_GROUP,"*.mesh",false);
 
@@ -1485,12 +1485,12 @@ void OgitorsRoot::ReloadUserResources()
         addstr.erase(addstr.find(".mesh"), 5);
 
         if(tmpEntityList.find(addstr) == tmpEntityList.end())
-            tmpEntityList.insert(HashMap<Ogre::String, int>::value_type(addstr, 0));
+            tmpEntityList.insert(OGRE_HashMap<Ogre::String, int>::value_type(addstr, 0));
     }
 
     pList.setNull();
 
-    HashMap<Ogre::String, int>::iterator eit = tmpEntityList.begin();
+    OGRE_HashMap<Ogre::String, int>::iterator eit = tmpEntityList.begin();
     while(eit != tmpEntityList.end())
     {
         mModelNames.push_back(PropertyOption(eit->first,Ogre::Any(eit->first)));
@@ -1663,7 +1663,7 @@ void OgitorsRoot::PrepareProjectResources()
         mModelNames.clear();
         mModelNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
 
-        HashMap<Ogre::String, int> tmpEntityList;
+        OGRE_HashMap<Ogre::String, int> tmpEntityList;
         
         Ogre::StringVectorPtr pList = Ogre::ResourceGroupManager::getSingleton().findResourceNames(PROJECT_RESOURCE_GROUP, "*.mesh", false);
     
@@ -1673,12 +1673,12 @@ void OgitorsRoot::PrepareProjectResources()
             addstr.erase(addstr.find(".mesh"), 5);
 
             if(tmpEntityList.find(addstr) == tmpEntityList.end())
-                tmpEntityList.insert(HashMap<Ogre::String, int>::value_type(addstr, 0));
+                tmpEntityList.insert(OGRE_HashMap<Ogre::String, int>::value_type(addstr, 0));
         }
 
         pList.setNull();
 
-        HashMap<Ogre::String, int>::iterator eit = tmpEntityList.begin();
+        OGRE_HashMap<Ogre::String, int>::iterator eit = tmpEntityList.begin();
         while(eit != tmpEntityList.end())
         {
             mModelNames.push_back(PropertyOption(eit->first, Ogre::Any(eit->first)));
