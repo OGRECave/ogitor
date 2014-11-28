@@ -1507,7 +1507,7 @@ namespace Ogitors
     void OgitorsRoot::FillTreeView()
     {
         mSystem->ClearTreeItems();
-        void *rootitem = mSystem->CreateTreeRoot(mProjectOptions.ProjectName + ".ogscene");
+        void *rootitem = mSystem->CreateTreeRoot(mProjectOptions.ProjectName + Globals::OGSCENE_FORMAT_EXTENSION);
         mRootEditor->setSceneTreeItemHandle(rootitem);
         RecurseFillTreeView(mRootEditor);
     }
