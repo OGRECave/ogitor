@@ -116,7 +116,7 @@ namespace Ogitors
     typedef OgitorExport Ogre::vector<CBaseEditor*>::type ObjectVector;
 
     /// A Hashed by Name Storage Definition for All Editors
-    typedef OgitorExport HashMap<Ogre::String, CBaseEditor*> NameObjectPairList;
+    typedef OgitorExport OGRE_HashMap<Ogre::String, CBaseEditor*> NameObjectPairList;
 
     /** Load state enumeration */
     enum LoadState

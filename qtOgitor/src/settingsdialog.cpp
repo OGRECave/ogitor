@@ -364,7 +364,7 @@ void SettingsDialog::onAccept()
 
     Ogre::String pathTo = mOptions->ProjectDir;
 
-    HashMap<Ogre::String, int> resDirMap;
+    OGRE_HashMap<Ogre::String, int> resDirMap;
 
     unsigned int i;
     unsigned int itemcount = mResourceListBox->count();
@@ -384,7 +384,7 @@ void SettingsDialog::onAccept()
         }
     }
 
-    HashMap<Ogre::String, int>::const_iterator rit = resDirMap.begin();
+    OGRE_HashMap<Ogre::String, int>::const_iterator rit = resDirMap.begin();
     while(rit != resDirMap.end())
     {
         mOptions->ResourceDirectories.push_back(rit->first);
