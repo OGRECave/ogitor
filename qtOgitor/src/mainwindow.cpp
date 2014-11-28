@@ -1624,7 +1624,7 @@ void MainWindow::onSceneModifiedChange(Ogitors::IEvent* evt)
             else
                 appTitle += QString(" - ");
 
-            appTitle += QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString(".ogscene");
+            appTitle += QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString::fromStdString(Globals::OGSCENE_FORMAT_EXTENSION);
             setWindowTitle(appTitle);
         }
 

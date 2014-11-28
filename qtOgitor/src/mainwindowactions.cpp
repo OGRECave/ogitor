@@ -686,7 +686,7 @@ void MainWindow::newScene()
 
             OFS::OFSHANDLE handle;
             Ogre::String projfilename = "/";
-            projfilename += opt.ProjectName + ".ogscene";
+            projfilename += opt.ProjectName + Globals::OGSCENE_FORMAT_EXTENSION;
 
             mFile->createFile(handle, projfilename.c_str(), outfile.tellp(), outfile.tellp(), outfile.str().c_str());
             mFile->closeFile(handle);
@@ -705,7 +705,7 @@ void MainWindow::newScene()
     }
 
     if(dlg.usePackedOFSFile->checkState() != Qt::Checked)
-        filename += "/" + opt.ProjectName + ".ogscene";
+        filename += "/" + opt.ProjectName + Globals::OGSCENE_FORMAT_EXTENSION;
 
     ogRoot->LoadScene(filename);
     updateRecentFiles();

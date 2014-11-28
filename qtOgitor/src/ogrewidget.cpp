@@ -604,7 +604,7 @@ void OgreWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 
         if(state == LS_LOADED)
         {
-            appTitle += QString(" - ") + QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString(".ogscene");
+            appTitle += QString(" - ") + QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString::fromStdString(Globals::OGSCENE_FORMAT_EXTENSION);
 
             mOgitorMainWindow->setCameraPositions();
 
@@ -620,7 +620,7 @@ void OgreWidget::onSceneLoadStateChange(Ogitors::IEvent* evt)
 
             Ogre::Vector3 pos = OgitorsRoot::getSingletonPtr()->GetViewport()->getCameraEditor()->getCamera()->getDerivedPosition();
             char temp[128];
-            sprintf(temp," X: % .2f, Y: % .2f, Z: % .2f", pos.x, pos.y, pos.z);
+            sprintf(temp, " X: % .2f, Y: % .2f, Z: % .2f", pos.x, pos.y, pos.z);
             QString camtext = QApplication::translate("MainWindow","Camera Position:") + QString(temp);
             mOgitorMainWindow->mCamPosLabel->setText(camtext);
 

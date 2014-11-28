@@ -64,6 +64,7 @@ namespace Ogitors
         static const std::string OGRE_PLUGIN_PATH;
         static const std::string LIBOGREOFSPLUGIN_PATH;
         static const std::string OGSCENE_FORMAT_VERSION;
+        static const std::string OGSCENE_FORMAT_EXTENSION;
     };
 }
 // On MSVC, restore warnings state
