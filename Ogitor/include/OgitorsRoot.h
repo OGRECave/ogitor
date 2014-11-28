@@ -127,10 +127,10 @@ namespace Ogitors
         Ogre::String mPrefsSectionName;
     };
 
-    // A Hashed by Name Storage Definition for All Serializers
-    typedef OgitorExport HashMap<Ogre::String,CBaseSerializer*> SerializerMap;
+    // A hashed by name storage definition for all serializers
+    typedef OgitorExport OGRE_HashMap<Ogre::String, CBaseSerializer*> SerializerMap;
 
-    typedef HashMap<Ogre::String, OgitorsScriptInterpreter*> ScriptInterpreterMap;
+    typedef OGRE_HashMap<Ogre::String, OgitorsScriptInterpreter*> ScriptInterpreterMap;
 
     typedef Ogre::map<unsigned int, CBaseEditor*>::type IDObjectPairList;
     
@@ -142,7 +142,7 @@ namespace Ogitors
 
     typedef OgitorExport Ogre::vector<PreferencesEditorData>::type PreferencesEditorDataList;
 
-    //! This is the Root Class in Charge of All Editors
+    //! This is the root class in charge of all editors
     /*!  
 
     */
