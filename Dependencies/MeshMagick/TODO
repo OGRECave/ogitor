@@ -1,0 +1,4 @@
+* add vertex welding and submesh merging to meshmerge tool.
+* add reorganise tool that reorganises buffer layout in a flexible way.
+* only compile classes into DLL which are needed for library usage.
+* proper documentation.

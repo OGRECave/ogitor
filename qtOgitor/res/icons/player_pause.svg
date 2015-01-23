@@ -1,0 +1,20 @@
+<svg width="160" xmlns="http://www.w3.org/2000/svg" height="160" viewBox="0 0 507.946 507.946" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient xlink:href="#aigrd1" id="linearGradient130" y1=".047" y2=".984" x2="0" gradientUnits="objectBoundingBox"/>
+<radialGradient stroke-opacity=".986" cx="218.94" cy="219.772" stroke="#000" id="aigrd1" r="150.706" stroke-width=".982" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#73ffff"/>
+<stop offset=".281" stop-color="#2ea6b9"/>
+<stop offset="1" stop-color="#006b8b"/>
+</radialGradient>
+</defs>
+<g fill-rule="evenodd">
+<g transform="matrix(0 -1 1 0 -204.668 519.087)">
+<path stroke-opacity=".702" stroke="#a4c9ee" stroke-width="16.034" d="m120.978,297.237h256.376v146.696h-256.376z"/>
+<path stroke-opacity=".992" fill="url(#linearGradient130)" stroke="#0c6671" stroke-width="14.057" d="m134.688,308.204h231.698v124.761h-231.698z"/>
+</g>
+<g transform="matrix(0 -1 1 0 -21.9997 520.689)">
+<path stroke-opacity=".702" stroke="#a4c9ee" stroke-width="16.034" d="m120.978,297.237h256.376v146.696h-256.376z"/>
+<path stroke-opacity=".992" fill="url(#linearGradient130)" stroke="#0c6671" stroke-width="14.057" d="m134.688,308.204h231.698v124.761h-231.698z"/>
+</g>
+</g>
+</svg>
