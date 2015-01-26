@@ -210,6 +210,7 @@ if (OGITOR_PTR_SIZE EQUAL 8)
 else ()
 	set(OGITOR_PLATFORM_X64 FALSE)
 endif ()
+endif(WIN32)
 
 if(UNIX)
   if(NOT OGITOR_PLATFORM_X64)

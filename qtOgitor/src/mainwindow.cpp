@@ -63,6 +63,8 @@
 
 #include <QtCore/QLibraryInfo>
 
+#include <QtCore/QLibraryInfo>
+
 #include <QtWidgets/QWidgetAction>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QDockWidget>
