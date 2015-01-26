@@ -82,7 +82,7 @@ if(WIN32)
 	set(CMAKE_DEBUG_POSTFIX "_d")
 endif(WIN32)
 
-if(NOT (MSVC_VERSION LESS 1500) )
+if(NOT (MSVC_VERSION LESS 1500) AND WIN32)
 	# Option is to enable the /MP switch for Visual Studio 2005 or later
 	option(OGITOR_MSVC_ENABLE_MP
 		"Set to ON to build Ogitor with the /MP option (Visual Studio 2005 and above)." ON)
@@ -191,6 +191,7 @@ if(UNIX)
     set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
 endif(UNIX)
 
+if(WIN32)
 if(NOT (MSVC_VERSION LESS 1500) )
 	option(OGITOR_BUILD_MSVC_ZM "Add /Zm256 parameter to Visual Studio to fix PCH error" ON)
 else()
@@ -200,6 +201,7 @@ endif()
 if(OGITOR_BUILD_MSVC_ZM)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm256")
 endif ()
+endif(WIN32)
 
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("void*" OGITOR_PTR_SIZE BUILTIN_TYPES_ONLY)
@@ -237,7 +239,7 @@ set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Hydrax/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
@@ -355,7 +357,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals
 add_subdirectory(Ogitor)
 
 # Setup Dependencies
-add_subdirectory(Dependencies/Hydrax/src)
+add_subdirectory(Dependencies/HYDRAX/src)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
