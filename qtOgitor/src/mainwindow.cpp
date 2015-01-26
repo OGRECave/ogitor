@@ -61,6 +61,10 @@
 #include <QtCore/QDir>
 #include <QtCore/QDateTime>
 
+#include <QtCore/QLibraryInfo>
+
+#include <QtCore/QLibraryInfo>
+
 #include <QtWidgets/QWidgetAction>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QDockWidget>
@@ -343,7 +347,7 @@ void MainWindow::initHiddenRenderWindow()
 
     hiddenParams["externalWindowHandle"] = winHandle;
 
-#elif QT_VERSION >= 0x050100
+#elif QT_VERSION >= 0x050100 && defined(Q_WS_X11)
     const QX11Info info = this->x11Info();
     Ogre::String winHandle;
     winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
