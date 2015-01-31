@@ -40,14 +40,16 @@ The install target will copy the files over.
 
 ## Links
 
-* [Ogitor Wiki](http://www.ogitor.org/wiki/Home)
-
 * [Ogitor home page](http://www.ogitor.org/)
+
+* [Ogitor Wiki](http://www.ogitor.org/wiki/Home)
 
 * [Forum](http://forum.ogitor.org/)
 
-* [Source code](https://bitbucket.org/ogitor/ogitor/src)
+* [Mercurial repository](https://bitbucket.org/ogitor/ogitor)
 
 * [Issue Tracker](http://tracker.ogitor.org/projects/ogitor)
 
-* [Mercurial repository](https://bitbucket.org/ogitor/ogitor)
+* [google.com/+OgitorOrg](https://www.google.com/+OgitorOrg)
+
+* [@ogitors](https://twitter.com/ogitors)
