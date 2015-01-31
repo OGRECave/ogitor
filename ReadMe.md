@@ -42,11 +42,11 @@ The install target will copy the files over.
 
 * [Ogitor home page](http://www.ogitor.org/)
 
-* [Ogitor Wiki](http://www.ogitor.org/wiki/Home)
-
 * [Forum](http://forum.ogitor.org/)
 
 * [Mercurial repository](https://bitbucket.org/ogitor/ogitor)
+
+* [Ogitor Wiki](http://www.ogitor.org/wiki/Home)
 
 * [Issue Tracker](http://tracker.ogitor.org/projects/ogitor)
 
