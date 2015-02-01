@@ -178,7 +178,7 @@ ELSE(NOT Qt5Widgets_FOUND)
     IF(WIN32)
         install(TARGETS QtSolutions_PropertyBrowser
             RUNTIME DESTINATION bin
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
     ENDIF(WIN32)
 
     IF(UNIX AND NOT APPLE)
