@@ -179,12 +179,13 @@ if(UNIX AND NOT APPLE)
 ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 endif()
 
-if(WIN32)
+if(MSVC_IDE)
 	add_custom_command(TARGET Ogitor PRE_BUILD
 		COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
 	add_custom_command(TARGET Ogitor POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
-
+endif(MSVC_IDE)
+if(WIN32)
 	install(TARGETS Ogitor RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 

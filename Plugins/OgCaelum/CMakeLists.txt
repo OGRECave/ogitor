@@ -46,12 +46,13 @@ if(UNIX AND NOT APPLE)
 		COMMAND cp -r ../lib/libOgCaelum.* ../../RunPath/Plugins/)
 endif(UNIX AND NOT APPLE)
 
-if(WIN32)
+if(MSVC_IDE)
 	add_custom_command(TARGET OgCaelum PRE_BUILD
 		COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
 	add_custom_command(TARGET OgCaelum POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins & if exist ..\\..\\RunPath\\Plugins\\OgCaelum_d.dll move ..\\..\\RunPath\\Plugins\\OgCaelum_d.dll ..\\..\\RunPath\\Plugins\\debug)
-
+endif(MSVC_IDE)
+if(WIN32)
 	install(TARGETS OgCaelum
 		RUNTIME DESTINATION Plugins
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)

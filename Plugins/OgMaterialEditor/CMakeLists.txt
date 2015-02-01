@@ -95,14 +95,15 @@ else(NOT Qt5Widgets_FOUND)
 			COMMAND cp -r ../lib/libOgMaterialEditor.* ../../RunPath/Plugins/)
 	endif(UNIX AND NOT APPLE)
 
-	if(WIN32)
+        if(MSVC_IDE)
 		add_custom_command(TARGET OgMaterialEditor PRE_BUILD
 			COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
 		add_custom_command(TARGET OgMaterialEditor POST_BUILD
 			COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
 		add_custom_command(TARGET OgMaterialEditor POST_BUILD
 			COMMAND if exist ..\\..\\RunPath\\Plugins\\OgMaterialEditor_d.dll move ..\\..\\RunPath\\Plugins\\OgMaterialEditor_d.dll ..\\..\\RunPath\\Plugins\\debug)
-
+        endif(MSVC_IDE)
+        if(WIN32)
 		install(TARGETS OgMaterialEditor
 			RUNTIME DESTINATION Plugins
 			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)

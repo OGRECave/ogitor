@@ -86,14 +86,15 @@ else(NOT Qt5Widgets_FOUND)
 			COMMAND cp -r ../lib/libOgAngelDialogManager.* ../../RunPath/Plugins/)
 	endif(UNIX AND NOT APPLE)
 
-	if(WIN32)
+        if(MSVC_IDE)
 		add_custom_command(TARGET OgAngelDialogManager PRE_BUILD
 			COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
 		add_custom_command(TARGET OgAngelDialogManager POST_BUILD
 			COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
 		add_custom_command(TARGET OgAngelDialogManager POST_BUILD
 			COMMAND if exist ..\\..\\RunPath\\Plugins\\OgAngelDialogManager_d.dll move ..\\..\\RunPath\\Plugins\\OgAngelDialogManager_d.dll ..\\..\\RunPath\\Plugins\\debug)
-
+        endif(MSVC_IDE)
+        if(WIN32)
 		install(TARGETS OgAngelDialogManager
 			RUNTIME DESTINATION Plugins
 			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)

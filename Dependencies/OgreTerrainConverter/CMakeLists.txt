@@ -29,24 +29,23 @@ if(UNIX)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif(UNIX)
 
-if(WIN32)
+if(MSVC_IDE)
 	add_custom_command(TARGET OgreTerrainConverter PRE_BUILD
 		COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
 	add_custom_command(TARGET OgreTerrainConverter POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
-
+endif(MSVC_IDE)
+if(WIN32)
 	install(TARGETS OgreTerrainConverter RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 
 IF(UNIX AND NOT APPLE)
-
     set_target_properties( OgreTerrainConverter PROPERTIES OUTPUT_NAME "OgreTerrainConverter" VERSION
     ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
     install(TARGETS OgreTerrainConverter
         LIBRARY DESTINATION lib
         CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-
 ENDIF(UNIX AND NOT APPLE)
 
 IF (APPLE)

@@ -68,12 +68,13 @@ if(UNIX AND NOT APPLE)
 		COMMAND cp -r ../lib/libOgAngelScript.* ../../RunPath/Plugins/)
 endif(UNIX AND NOT APPLE)
 
-if(WIN32)
+if(MSVC_IDE)
 	add_custom_command(TARGET OgAngelScript PRE_BUILD
 		COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
 	add_custom_command(TARGET OgAngelScript POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins & if exist ..\\..\\RunPath\\Plugins\\OgAngelScript_d.dll move ..\\..\\RunPath\\Plugins\\OgAngelScript_d.dll ..\\..\\RunPath\\Plugins\\debug)
-
+endif(MSVC_IDE)
+if(WIN32)
 	install(TARGETS OgAngelScript
 		RUNTIME DESTINATION Plugins
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)

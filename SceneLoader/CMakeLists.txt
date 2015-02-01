@@ -84,12 +84,13 @@ else(NOT OIS_FOUND)
 		install(TARGETS SampleLoadApp BUNDLE DESTINATION ${PREFIX}Debug CONFIGURATIONS Debug)
 	endif()
 
-	if(WIN32)
+        if(MSVC_IDE)
 		add_custom_command(TARGET SampleLoadApp PRE_BUILD 
 			COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
 		add_custom_command(TARGET SampleLoadApp POST_BUILD 
 			COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
-
+        endif(MSVC_IDE)
+        if(WIN32)
 		install(FILES ${OGRE_PLUGIN_DIR_REL}/OIS.dll
 			DESTINATION bin
 			CONFIGURATIONS Release)
