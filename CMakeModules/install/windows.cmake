@@ -1,13 +1,25 @@
 # SDK : main libs - debug
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug
-	DESTINATION ${PREFIX}/sdk/lib
-	CONFIGURATIONS Debug
-)
-# SDK : main libs - release
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Release
-	DESTINATION ${PREFIX}/sdk/lib
-	CONFIGURATIONS Release RelWithDebInfo MinSizeRel
-)
+if(MSVC_IDE)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Debug
+    )
+    # SDK : main libs - release
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Release
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+    )
+else()
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Debug
+    )
+    # SDK : main libs - release
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+    )
+endif(MSVC_IDE)
 # SDK : Ogitor includes
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include
 	DESTINATION ${PREFIX}/sdk
