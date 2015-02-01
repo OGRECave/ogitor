@@ -1,13 +1,25 @@
 # SDK : main libs - debug
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug
-	DESTINATION ${PREFIX}/sdk/lib
-	CONFIGURATIONS Debug
-)
-# SDK : main libs - release
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Release
-	DESTINATION ${PREFIX}/sdk/lib
-	CONFIGURATIONS Release RelWithDebInfo MinSizeRel
-)
+if(MSVC_IDE)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Debug
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Debug
+    )
+    # SDK : main libs - release
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/Release
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+    )
+else()
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Debug
+    )
+    # SDK : main libs - release
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+            DESTINATION ${PREFIX}/sdk/lib
+            CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+    )
+endif(MSVC_IDE)
 # SDK : Ogitor includes
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include
 	DESTINATION ${PREFIX}/sdk
@@ -43,7 +55,7 @@ install(FILES ${GenericTextEditor_headers}
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 )
 # SDK: Hydrax headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Hydrax/src
 	DESTINATION ${PREFIX}/sdk/dependencies/include
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 	PATTERN "*.cpp" EXCLUDE
@@ -159,6 +171,105 @@ install(FILES ${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.dll
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.wincfg.in ${CMAKE_INSTALL_PREFIX}/bin/plugins.cfg)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins_d.wincfg.in ${CMAKE_INSTALL_PREFIX}/bin/plugins_debug.cfg)
 
+# Qt5 DLLs
+file(TO_CMAKE_PATH $ENV{QTDIR} QTDIR) 
+set(QT_DLL_DIR "${QTDIR}/bin")
+set(QT_PLUGINS_DIR "${QTDIR}/plugins")
+install(FILES
+    ${QT_DLL_DIR}/Qt5Core.dll
+    ${QT_DLL_DIR}/Qt5Gui.dll
+    ${QT_DLL_DIR}/Qt5Svg.dll
+    ${QT_DLL_DIR}/Qt5Xml.dll
+    ${QT_DLL_DIR}/Qt5Widgets.dll
+    ${QT_DLL_DIR}/Qt5XmlPatterns.dll
+	${QT_DLL_DIR}/assistant.exe
+	${QT_DLL_DIR}/Qt5Help.dll
+	${QT_DLL_DIR}/Qt5Network.dll
+	${QT_DLL_DIR}/Qt5Sql.dll
+	${QT_DLL_DIR}/Qt5WebKit.dll
+	${QT_DLL_DIR}/Qt5WebKitWidgets.dll
+	${QT_DLL_DIR}/Qt5WebKitWidgets.dll
+	${QT_DLL_DIR}/Qt5MultimediaWidgets.dll
+	${QT_DLL_DIR}/Qt5Multimedia.dll
+	${QT_DLL_DIR}/Qt5OpenGL.dll
+	${QT_DLL_DIR}/Qt5PrintSupport.dll
+	${QT_DLL_DIR}/Qt5Quick.dll
+	${QT_DLL_DIR}/Qt5Qml.dll
+	${QT_DLL_DIR}/Qt5Sensors.dll
+	${QT_DLL_DIR}/Qt5CLucene.dll
+    DESTINATION bin
+    CONFIGURATIONS Release)
+if(EXISTS "${QT_DLL_DIR}/libEGL.dll")
+	install(FILES
+		${QT_DLL_DIR}/libEGL.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
+if(EXISTS "${QT_DLL_DIR}/libGLESv2.dll")
+	install(FILES
+		${QT_DLL_DIR}/libGLESv2.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
+install(FILES
+    ${QT_DLL_DIR}/Qt5Cored.dll
+    ${QT_DLL_DIR}/Qt5Guid.dll
+    ${QT_DLL_DIR}/Qt5Svgd.dll
+    ${QT_DLL_DIR}/Qt5Xmld.dll
+    ${QT_DLL_DIR}/Qt5Widgetsd.dll
+    ${QT_DLL_DIR}/Qt5XmlPatternsd.dll
+	${QT_DLL_DIR}/assistant.exe
+	${QT_DLL_DIR}/Qt5Helpd.dll
+	${QT_DLL_DIR}/Qt5Networkd.dll
+	${QT_DLL_DIR}/Qt5Sqld.dll
+	${QT_DLL_DIR}/Qt5WebKitd.dll
+	${QT_DLL_DIR}/Qt5WebKitWidgetsd.dll
+	${QT_DLL_DIR}/Qt5MultimediaWidgetsd.dll
+	${QT_DLL_DIR}/Qt5Multimediad.dll
+	${QT_DLL_DIR}/Qt5OpenGLd.dll
+	${QT_DLL_DIR}/Qt5PrintSupportd.dll
+	${QT_DLL_DIR}/Qt5Quickd.dll
+	${QT_DLL_DIR}/Qt5Qmld.dll
+	${QT_DLL_DIR}/Qt5Sensorsd.dll
+	${QT_DLL_DIR}/Qt5CLucened.dll
+    DESTINATION bin
+    CONFIGURATIONS Debug)
+if(EXISTS "${QT_DLL_DIR}/libEGLd.dll")
+	install(FILES
+		${QT_DLL_DIR}/libEGLd.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
+if(EXISTS "${QT_DLL_DIR}/libGLESv2d.dll")
+	install(FILES
+		${QT_DLL_DIR}/libGLESv2d.dll
+		DESTINATION bin
+		CONFIGURATIONS Release)
+endif()
+install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicon.dll
+    DESTINATION bin/iconengines
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+install(FILES ${QT_PLUGINS_DIR}/iconengines/qsvgicond.dll
+    DESTINATION bin/iconengines
+    CONFIGURATIONS Debug)
+install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows.dll
+    DESTINATION bin/platforms
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+install(FILES ${QT_PLUGINS_DIR}/platforms/qwindowsd.dll
+    DESTINATION bin/platforms
+    CONFIGURATIONS Debug)
+install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll
+    DESTINATION bin/sqldrivers
+    CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
+install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlited.dll
+    DESTINATION bin/sqldrivers
+    CONFIGURATIONS Debug)
+install(DIRECTORY ${QT_DLL_DIR}/
+    DESTINATION "bin"
+    FILES_MATCHING
+    PATTERN "*icu*.dll")
+
+# Runtime libraries
 IF(OGITOR_DIST)
 	if(EXISTS redist/dxwebsetup.exe)
 		install(FILES redist/dxwebsetup.exe

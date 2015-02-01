@@ -56,6 +56,20 @@
 #include "projectfilesview.hxx"
 #include "genericimageeditor.hxx"
 
+#include <QtCore/QProcess>
+#include <QtCore/QTime>
+#include <QtCore/QDir>
+#include <QtCore/QDateTime>
+
+#include <QtCore/QLibraryInfo>
+
+#include <QtCore/QLibraryInfo>
+
+#include <QtWidgets/QWidgetAction>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QStatusBar>
+
 #if OGRE_MEMORY_TRACKER
 #include "OgreMemoryTracker.h"
 #endif
@@ -140,21 +154,21 @@ bool OgitorAssistant::startOgitorAssistant()
 
     if (proc->state() != QProcess::Running) {
 
-#if !defined(Q_WS_WIN)
+#if !defined(Q_OS_WIN)
         QString app = QLibraryInfo::location(QLibraryInfo::BinariesPath) + QDir::separator();
 #else
         // we load our own assistant in Windows
         QString app = QString(Ogitors::OgitorsUtils::GetExePath().c_str()) + QDir::separator();
 #endif
 
-#if defined(Q_WS_MAC)
+#if defined(Q_OS_MAC)
         app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");
 #else
         app += QLatin1String("assistant");
 #endif
 
         QStringList args;
-#if defined(Q_WS_X11)
+#if defined(Q_OS_LINUX)
         args << QLatin1String("-collectionFile")
             << QLatin1String(std::string(Ogitors::Globals::RESOURCE_PATH).c_str())
             + QLatin1String("/Help/collection_ogitor.qhc")
@@ -317,37 +331,50 @@ void MainWindow::initHiddenRenderWindow()
 {
     Ogre::NameValuePairList hiddenParams;
 
-#if defined(Q_WS_MAC) || defined(Q_WS_WIN)
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     hiddenParams["externalWindowHandle"] = Ogre::StringConverter::toString((size_t) winId());
 #else
+#if QT_VERSION < 0x050000
     const QX11Info info = this->x11Info();
-    //QX11Info info = x11Info();
-    Ogre::String winHiddenHandle;
-    winHiddenHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
-    winHiddenHandle += ":";
-    winHiddenHandle += Ogre::StringConverter::toString((unsigned int)(info.screen()));
-    winHiddenHandle += ":";
-    winHiddenHandle += Ogre::StringConverter::toString((unsigned long)winId());
-    winHiddenHandle += ":";
-    winHiddenHandle += Ogre::StringConverter::toString((unsigned long)(info.visual()));
+    Ogre::String winHandle;
+    winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
+    winHandle += ":";
+    winHandle += Ogre::StringConverter::toString((unsigned int)(info.screen()));
+    winHandle += ":";
+    winHandle += Ogre::StringConverter::toString((unsigned long)(this->winId()));
+    winHandle += ":";
+    winHandle += Ogre::StringConverter::toString((unsigned long)(info.visual()));
 
-    hiddenParams["externalWindowHandle"] = winHiddenHandle;
+    hiddenParams["externalWindowHandle"] = winHandle;
+
+#elif QT_VERSION >= 0x050100 && defined(Q_WS_X11)
+    const QX11Info info = this->x11Info();
+    Ogre::String winHandle;
+    winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
+    winHandle += ":";
+    winHandle += Ogre::StringConverter::toString((unsigned int)(info.appScreen()));
+    winHandle += ":";
+    winHandle += Ogre::StringConverter::toString((unsigned long)(this->winId()));
+
+    hiddenParams["externalWindowHandle"] = winHandle;
+#else // only for the time between Qt 5.0 and Qt 5.1 when QX11Info was not included
+    hiddenParams["externalWindowHandle"] = Ogre::StringConverter::toString((unsigned long)(this->winId()));
+#endif
 #endif
 
-#if defined(Q_WS_MAC)
+#if defined(Q_OS_MAC)
     hiddenParams["macAPICocoaUseNSView"] = "true";
     hiddenParams["macAPI"] = "cocoa";
 #endif
 
     hiddenParams["border"] = "none";
-    Ogre::RenderWindow* pPrimary = Ogre::Root::getSingletonPtr()->createRenderWindow("Primary1",1,1,false,&hiddenParams);
+    Ogre::RenderWindow* pPrimary = Ogre::Root::getSingletonPtr()->createRenderWindow("Primary1", 1, 1, false, &hiddenParams);
     pPrimary->setVisible(false);
     pPrimary->setAutoUpdated(false);
 
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
     // Load resources
-
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 //------------------------------------------------------------------------------------
@@ -545,13 +572,13 @@ void MainWindow::retranslateUi()
     QString appTitle = "qtOgitor ";
     appTitle += Ogitors::Globals::OGITOR_VERSION.c_str();
     setWindowTitle(appTitle);
-    mExplorerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Explorer", 0, QApplication::UnicodeUTF8));
-    mLayerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Groups", 0, QApplication::UnicodeUTF8));
-    mResourcesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Resources", 0, QApplication::UnicodeUTF8));
-    mPropertiesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Properties", 0, QApplication::UnicodeUTF8));
-    mToolsDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Tools", 0, QApplication::UnicodeUTF8));
-    mProjectFilesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Files", 0, QApplication::UnicodeUTF8));
-    menuFile->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
+    mExplorerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Explorer", 0));
+    mLayerDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Groups", 0));
+    mResourcesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Resources", 0));
+    mPropertiesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Properties", 0));
+    mToolsDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Tools", 0));
+    mProjectFilesDockWidget->setWindowTitle(QApplication::translate("MainWindow", "Files", 0));
+    menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
 }
 //------------------------------------------------------------------------------
 void MainWindow::addDockWidgets(QMainWindow* parent)
@@ -738,7 +765,7 @@ void MainWindow::createSceneRenderWindow()
     mCameraSpeedSlider->setTickPosition(QSlider::TicksBelow);
     mCameraSpeedSlider->setMaximumWidth(100);
 
-    QWidgetAction * sliderActionWidget = new QWidgetAction( this );
+    QWidgetAction *sliderActionWidget = new QWidgetAction( this );
     sliderActionWidget->setDefaultWidget(mCameraSpeedSlider);
     sliderActionWidget->setText(tr("Camera Speed"));
     menuCameraPositionMain->addAction(sliderActionWidget);
@@ -886,7 +913,7 @@ void MainWindow::createPlayerToolbar()
 //------------------------------------------------------------------------------
 void MainWindow::createCustomToolbars()
 {
-    std::vector<void*> toolbars = OgitorsRoot::getSingletonPtr()->GetToolBars();
+    PointerList toolbars = OgitorsRoot::getSingletonPtr()->GetToolBars();
     for(unsigned int i = 0;i < toolbars.size();i++)
     {
         QToolBar *widget = static_cast<QToolBar*>(toolbars[i]);
@@ -1247,7 +1274,7 @@ void MainWindow::setupLog()
     mLogDockWidget = new QDockWidget(this);
     mLogDockWidget->setAllowedAreas(Qt::BottomDockWidgetArea);
     mLogDockWidget->setObjectName(QString::fromUtf8("logDockWidget"));
-    mLogDockWidget->setWindowTitle(QApplication::translate("qtOgitor", "Ogitor Console", 0, QApplication::UnicodeUTF8));
+    mLogDockWidget->setWindowTitle(QApplication::translate("qtOgitor", "Ogitor Console", 0));
 
     mLogWidget = new QListWidget();
     mLogWidget->setObjectName(QString::fromUtf8("logWidget"));
@@ -1601,7 +1628,7 @@ void MainWindow::onSceneModifiedChange(Ogitors::IEvent* evt)
             else
                 appTitle += QString(" - ");
 
-            appTitle += QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString(".ogscene");
+            appTitle += QString(OgitorsRoot::getSingletonPtr()->GetProjectOptions()->ProjectName.c_str()) + QString::fromStdString(Globals::OGSCENE_FORMAT_EXTENSION);
             setWindowTitle(appTitle);
         }
 

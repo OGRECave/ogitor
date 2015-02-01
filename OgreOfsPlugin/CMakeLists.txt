@@ -20,12 +20,13 @@ set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPOR
 
 target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARY} OFS ${Boost_LIBRARIES})
 
-if(WIN32)
+if(MSVC_IDE)
 	add_custom_command(TARGET OgreOfsPlugin PRE_BUILD
 		COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
 	add_custom_command(TARGET OgreOfsPlugin POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
-
+endif(MSVC_IDE)
+if(WIN32)
 	install(TARGETS OgreOfsPlugin RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
 endif(WIN32)
 

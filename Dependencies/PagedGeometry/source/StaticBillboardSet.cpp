@@ -37,6 +37,8 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include <OgreHardwareBuffer.h>
 #include <OgreLogManager.h>
 #include <OgreEntity.h>
+#include <OgreTechnique.h>
+
 using namespace Ogre;
 
 namespace Forests {
@@ -618,7 +620,7 @@ void StaticBillboardSet::setTextureStacksAndSlices(Ogre::uint16 stacks, Ogre::ui
 
 MaterialPtr StaticBillboardSet::getFadeMaterial(Real visibleDist, Real invisibleDist)
 {
-	StringUtil::StrStreamType materialSignature;
+	StringStream materialSignature;
 	materialSignature << entityName << "|";
 	materialSignature << visibleDist << "|";
 	materialSignature << invisibleDist << "|";

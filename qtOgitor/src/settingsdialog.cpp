@@ -30,15 +30,19 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
-#include <QtGui/QPainter>
-#include <QtGui/QColorDialog>
+#include <QtCore/QUrl>
 #include <QtCore/QEvent>
 #include <QtCore/QDirIterator>
+#include <QtCore/QTimer>
+
+#include <QtGui/QPainter>
 #include <QtGui/QDragEnterEvent>
-#include <QtCore/QUrl>
+
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QColorDialog>
+
 #include "settingsdialog.hxx"
 #include "OgitorsRoot.h"
 #include "OgitorsSystem.h"
@@ -360,7 +364,7 @@ void SettingsDialog::onAccept()
 
     Ogre::String pathTo = mOptions->ProjectDir;
 
-    HashMap<Ogre::String, int> resDirMap;
+    OGRE_HashMap<Ogre::String, int> resDirMap;
 
     unsigned int i;
     unsigned int itemcount = mResourceListBox->count();
@@ -380,7 +384,7 @@ void SettingsDialog::onAccept()
         }
     }
 
-    HashMap<Ogre::String, int>::const_iterator rit = resDirMap.begin();
+    OGRE_HashMap<Ogre::String, int>::const_iterator rit = resDirMap.begin();
     while(rit != resDirMap.end())
     {
         mOptions->ResourceDirectories.push_back(rit->first);

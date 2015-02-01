@@ -33,8 +33,8 @@
 #ifndef SCRIPTVIEW_HXX
 #define SCRIPTVIEW_HXX
 
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
 
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"

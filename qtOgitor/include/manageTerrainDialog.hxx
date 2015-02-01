@@ -33,11 +33,11 @@
 
 #include "manageTerrainGraphicsView.hxx"
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QDialog>
-#include <Ogre.h>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QWidget>
 
-#include <QtGui/QWidget>
+#include <Ogre.h>
 
 class ManageTerrainDialog : public QMainWindow
 {

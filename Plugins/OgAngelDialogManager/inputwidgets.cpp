@@ -33,9 +33,18 @@
 #include "angelscript.h"
 
 #include <cassert>
-#include <QtGui/QtGui>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QLabel>
+
 #include "inputwidgets.hxx"
 #include "dialog.hxx"
+
 //-----------------------------------------------------------------------------------------
 // Example REF_CAST behaviour
 template<class A, class B>
@@ -238,7 +247,5 @@ void RegisterInputWidgetBindings(asIScriptEngine *engine)
     r = engine->RegisterObjectMethod("LineEdit", "GUIString getText()",asMETHOD(QLineEdit, text), asCALL_THISCALL); assert( r >= 0 );
 
     REGISTER_REFERENCE_WIDGETOBJECT("Label", QLabel);
-	r = engine->RegisterObjectMethod("Label", "void setText(GUIString &in)",asMETHOD(QLabel, setText), asCALL_THISCALL); assert( r >= 0 );
-    r = engine->RegisterObjectMethod("Label", "GUIString getText()",asMETHOD(QLabel, text), asCALL_THISCALL); assert( r >= 0 );
 }
 //-----------------------------------------------------------------------------------------

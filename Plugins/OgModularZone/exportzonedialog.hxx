@@ -1,7 +1,7 @@
 #ifndef EXPORTZONEDIALOG_H
 #define EXPORTZONEDIALOG_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_exportzonedialog.h"
 #include "OgreString.h"
 

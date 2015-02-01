@@ -5,7 +5,7 @@
 # and provide build configuration options.
 ######################################################################
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.10)
 
 # Works around warnings libraries linked against that don't
 # have absolute paths (e.g. -lOgreMain)
@@ -14,6 +14,11 @@ cmake_policy(SET CMP0003 NEW)
 # Works around warnings about escaped quotes in ADD_DEFINITIONS
 # statements.
 cmake_policy(SET CMP0005 NEW)
+
+# CMake policy introduced in relation to Qt 5.1
+if("${CMAKE_VERSION}" VERSION_GREATER 2.8.11)   
+	cmake_policy(SET CMP0020 OLD)
+endif()
 
 project(Ogitor)
 
@@ -54,6 +59,9 @@ endif(WIN32)
 
 option(OGITOR_MESHMAGICK_INTERFACE "Use MeshMagick widget" FALSE)
 
+option(OGITOR_DOWNLOAD_SAMPLEPROJECT "Download and install sample project" TRUE)
+option(OGITOR_DOWNLOAD_SAMPLEMEDIA "Download and install sample media" TRUE)
+
 set(OGITOR_PREPROCESSOR "OGITOR_EXPORT")
 
 set(OGITOR_QT_PREPROCESSOR "")
@@ -77,7 +85,7 @@ if(WIN32)
 	set(CMAKE_DEBUG_POSTFIX "_d")
 endif(WIN32)
 
-if(MSVC_VERSION GREATER 1500 OR MSVC_VERSION EQUAL 1500)
+if(NOT (MSVC_VERSION LESS 1500) AND WIN32)
 	# Option is to enable the /MP switch for Visual Studio 2005 or later
 	option(OGITOR_MSVC_ENABLE_MP
 		"Set to ON to build Ogitor with the /MP option (Visual Studio 2005 and above)." ON)
@@ -91,7 +99,7 @@ if(MSVC_VERSION GREATER 1500 OR MSVC_VERSION EQUAL 1500)
 	#add_definitions(-DNOMINMAX)
 else()
 	set(OGITOR_MSVC_ENABLE_MP FALSE)
-endif(MSVC_VERSION GREATER 1500 OR MSVC_VERSION EQUAL 1500)
+endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 
@@ -116,7 +124,7 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
 		set(Boost_USE_MULTITHREADED OFF)
 	endif()
 
-	set(Boost_ADDITIONAL_VERSIONS "1.55" "1.55.0" "1.54" "1.54.0" "1.53" "1.53.0" "1.52" "1.52.0" "1.51" "1.51.0" "1.50" "1.50.0" "1.49" "1.49.0" "1.48" "1.48.0" "1.47" "1.47.0" "1.46" "1.46.0" "1.45" "1.45.0" "1.44" "1.44.0" "1.42" "1.42.0" "1.41.0" "1.41" "1.40.0" "1.40")
+	set(Boost_ADDITIONAL_VERSIONS "1.57" "1.57.0" "1.56" "1.56.0" "1.55" "1.55.0" "1.54" "1.54.0" "1.53" "1.53.0" "1.52" "1.52.0" "1.51" "1.51.0" "1.50" "1.50.0" "1.49" "1.49.0" "1.48" "1.48.0" "1.47" "1.47.0" "1.46" "1.46.0" "1.45" "1.45.0" "1.44" "1.44.0" "1.42" "1.42.0" "1.41.0" "1.41" "1.40.0" "1.40")
 
 	# Components that need linking (NB does not include header-only components like bind)
 	set(OGRE_BOOST_COMPONENTS thread date_time system regex filesystem)
@@ -186,6 +194,18 @@ if(UNIX)
     set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
 endif(UNIX)
 
+if(WIN32)
+if(NOT (MSVC_VERSION LESS 1500) )
+	option(OGITOR_BUILD_MSVC_ZM "Add /Zm256 parameter to Visual Studio to fix PCH error" ON)
+else()
+	set(OGITOR_BUILD_MSVC_ZM OFF CACHE BOOL "Forcing switch off /Zm256 for older Visual Studio versions" FORCE)
+endif()
+
+if(OGITOR_BUILD_MSVC_ZM)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm256")
+endif ()
+endif(WIN32)
+
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("void*" OGITOR_PTR_SIZE BUILTIN_TYPES_ONLY)
 if (OGITOR_PTR_SIZE EQUAL 8)
@@ -193,6 +213,7 @@ if (OGITOR_PTR_SIZE EQUAL 8)
 else ()
 	set(OGITOR_PLATFORM_X64 FALSE)
 endif ()
+#endif(WIN32)
 
 if(UNIX)
   if(NOT OGITOR_PLATFORM_X64)
@@ -222,7 +243,7 @@ set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/Hydrax/src/Hydrax"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
@@ -293,17 +314,17 @@ if(UNIX)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
 else(UNIX)
     # We are on Windows
-    set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
-    set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
-    set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path" FORCE)
-    set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/languages" CACHE PATH "Ogitor languages path" FORCE)
+    set(OGITOR_BIN_PATH "." CACHE PATH "Ogitor bin path" FORCE)
+    set(OGITOR_RUN_PATH "." CACHE PATH "Ogitor run path" FORCE)
+    set(OGITOR_RESOURCE_PATH "." CACHE PATH "Ogitor resource path" FORCE)
+    set(OGITOR_LANGUAGE_PATH "../languages" CACHE PATH "Ogitor languages path" FORCE)
     set(OGITOR_MEDIA_PATH "../Media" CACHE PATH "Ogitor media path" FORCE)
-    set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
-    set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
-    set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path" FORCE)
-    set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
-    set(OGITOR_OGRE_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogre plugins path" FORCE)
-    set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "libOgreOfsPlugin path" FORCE)
+    set(OGITOR_PROJECTS_PATH "../Projects" CACHE PATH "Ogitor Projects path" FORCE)
+    set(OGITOR_SCRIPTS_PATH "../Scripts" CACHE PATH "Ogitor scripts path" FORCE)
+    set(OGITOR_PLUGIN_PATH "../Plugins" CACHE PATH "Ogitor plugins path" FORCE)
+    set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
+    set(OGITOR_OGRE_PLUGIN_PATH "." CACHE PATH "Ogre plugins path" FORCE)
+    set(OGITOR_LIBOGREOFSPLUGIN_PATH "." CACHE PATH "libOgreOfsPlugin path" FORCE)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_INSTALL_PREFIX}/bin/resources.cfg)
 endif(UNIX)
 
@@ -326,13 +347,48 @@ endif(UNIX)
 if(UNIX AND NOT APPLE AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media/EditorResources)
   message(SEND_ERROR "An old version of the Media folder was detected in: ${CMAKE_CURRENT_SOURCE_DIR}/RunPath .\nMake sure that you've downloaded the latest version of 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
 endif()
-# Error out if Source_Dir/RunPath/Media and Source_Dir/RunPath/Projects isn't present on the users system
-if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
-  message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media.\nMake sure that you've downloaded 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
-endif(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
-if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects)
-  message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects.\nMake sure that you've downloaded 'projects.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Projects'.")
-endif(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects)
+if(NOT OGITOR_DOWNLOAD_SAMPLEMEDIA)
+    # Error out if Source_Dir/RunPath/Media and Source_Dir/RunPath/Projects isn't present on the users system
+    if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
+      message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media.\nMake sure that you've downloaded 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
+    endif(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
+endif(NOT OGITOR_DOWNLOAD_SAMPLEMEDIA)
+if(NOT OGITOR_DOWNLOAD_SAMPLEPROJECT)
+    if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects)
+      message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects.\nMake sure that you've downloaded 'projects.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Projects'.")
+    endif(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects)
+endif(NOT OGITOR_DOWNLOAD_SAMPLEPROJECT)
+
+# External Projects
+include(ExternalProject)
+
+# download, unpack and copy sample project
+if(OGITOR_DOWNLOAD_SAMPLEPROJECT)
+    ExternalProject_Add(SampleProject
+      URL https://bitbucket.org/ogitor/ogitor/downloads/projects.zip
+      PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+      PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleProject" "${CMAKE_BINARY_DIR}/RunPath/Project"
+      CONFIGURE_COMMAND ""
+      BUILD_COMMAND ""
+      INSTALL_COMMAND ""
+    )
+    set_target_properties(SampleProject PROPERTIES FOLDER Assets)
+endif(OGITOR_DOWNLOAD_SAMPLEPROJECT)
+
+# download, unpack and copy sample media
+if(OGITOR_DOWNLOAD_SAMPLEMEDIA)
+    ExternalProject_Add(SampleMedia
+      URL https://bitbucket.org/ogitor/ogitor/downloads/media.zip
+      PREFIX ${CMAKE_CURRENT_BINARY_DIR}
+      PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleMedia" "${CMAKE_BINARY_DIR}/RunPath/Media"
+      CONFIGURE_COMMAND ""
+      BUILD_COMMAND ""
+      INSTALL_COMMAND ""
+    )
+    set_target_properties(SampleMedia PROPERTIES FOLDER Assets)
+endif(OGITOR_DOWNLOAD_SAMPLEMEDIA)
 
 # Generate OgitorsGlobals.cpp
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals.cpp.in ${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp)
@@ -340,7 +396,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals
 add_subdirectory(Ogitor)
 
 # Setup Dependencies
-add_subdirectory(Dependencies/HYDRAX/Hydrax/src/Hydrax)
+add_subdirectory(Dependencies/HYDRAX/src)
 add_subdirectory(Dependencies/Caelum-0.5.0/main)
 add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
@@ -354,8 +410,7 @@ IF(OGITOR_MESHMAGICK_INTERFACE)
     add_subdirectory(Dependencies/MeshMagick)
 ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 
-
-# plugins
+# Plugins
 add_subdirectory(Plugins/OgCaelum)
 add_subdirectory(Plugins/OgHydrax)
 add_subdirectory(Plugins/OgSkyX)
@@ -367,7 +422,6 @@ add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 add_subdirectory(Plugins/OgScreenEffectEditor)
 add_subdirectory(Plugins/CustomSerializer)
-
 
 add_subdirectory(OgreOfsPlugin)
 
@@ -391,7 +445,6 @@ add_custom_target(lupdate
     COMMAND lupdate -noobsolete ${PROJECT_SOURCE_DIR}/qtOgitor/languages/translate.pro
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
 )
-
 
 if(WIN32)
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/windows.cmake)

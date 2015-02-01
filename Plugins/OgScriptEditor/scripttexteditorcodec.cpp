@@ -34,9 +34,10 @@
 #include "generictexteditor.hxx"
 #include "scripthighlighter.hxx"
 
-#include <QtGui/QColorDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QApplication>
+#include <QtWidgets/QColorDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QApplication>
+
 #include <QtCore/QObject>
 
 #include "OgitorsScriptConsole.h"

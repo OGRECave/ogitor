@@ -58,7 +58,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         extlist.push_back(OTR("Ogitor File System File"));
         extlist.push_back("*.ofs");
         extlist.push_back(OTR("Ogitor Scene File"));
-        extlist.push_back("*.ogscene");
+        extlist.push_back("*" + Globals::OGSCENE_FORMAT_EXTENSION);
 
         importfile = mSystem->GetSetting("system", "oldOpenPath", "");
         importfile = mSystem->DisplayOpenDialog(OTR("Open"), extlist, importfile);
@@ -126,12 +126,33 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
         fileName.erase(typepos, fileName.length() - typepos);
     pOpt->ProjectName = fileName;
 
-    fileName += ".ogscene";
+    fileName += Globals::OGSCENE_FORMAT_EXTENSION;
 
     OFS::ofs64 file_size = 0;
 
     if(mFile->getFileSize(fileName.c_str(), file_size) != OFS::OFS_OK)
-        return SCF_ERRFILE;
+	{		
+        // OGSCENE file name needs to match OFS container file name. If the later was renamed, we 
+        // need to automatically adapt the OGSCENE file name now.
+        OFS::FileList files = mFile->listFiles("/", OFS::OFS_FILE);
+        unsigned int ogsceneFileExtensionLength = strlen(Globals::OGSCENE_FORMAT_EXTENSION.c_str());
+
+		for(OFS::FileList::iterator iter = files.begin(); iter != files.end(); iter++)
+		{
+			// Filter out too short names
+            if(iter->name.size() <= ogsceneFileExtensionLength) 
+                continue;
+
+			if(stricmp(iter->name.c_str() + (iter->name.size() - (ogsceneFileExtensionLength)), Globals::OGSCENE_FORMAT_EXTENSION.c_str()) == 0)
+			{
+				mFile->renameFile(iter->name.c_str(), fileName.c_str());
+				break;
+			}
+		}
+
+		if(mFile->getFileSize(fileName.c_str(), file_size) != OFS::OFS_OK)
+			return SCF_ERRFILE;
+	}
 
     char *file_data = new char[(unsigned int)file_size + 1];
 
@@ -369,7 +390,7 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
         else
         {
             extlist.push_back(OTR("Ogitor Scene File"));
-            extlist.push_back("*.ogscene");
+            extlist.push_back("*" + Globals::OGSCENE_FORMAT_EXTENSION);
         }
 
         Ogre::String newfileLocation = mSystem->DisplaySaveDialog(OTR("Save As"), extlist, fileLocation);
@@ -411,11 +432,11 @@ int COFSSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
 
     if (SaveAs)
     {
-        mFile->deleteFile((pOpt->ProjectName+".ogscene").c_str());
+        mFile->deleteFile((pOpt->ProjectName + Globals::OGSCENE_FORMAT_EXTENSION).c_str());
         pOpt->ProjectName = fileName;
     }
 
-    if (_writeFile(fileName+".ogscene", forceSave) != SCF_OK)
+    if (_writeFile(fileName + Globals::OGSCENE_FORMAT_EXTENSION, forceSave) != SCF_OK)
     {
         return SCF_ERRFILE;
     }

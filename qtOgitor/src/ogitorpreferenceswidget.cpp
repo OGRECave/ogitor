@@ -38,8 +38,8 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QTranslator>
 
-#include <QtGui/QMessageBox>
-#include <QtGui/QPlainTextEdit>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QPlainTextEdit>
 
 #include "ogitorpreferenceswidget.hxx"
 #include "mainwindow.hxx"

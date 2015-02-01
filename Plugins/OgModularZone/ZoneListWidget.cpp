@@ -22,16 +22,17 @@
 #include "ZoneListWidget.hxx"
 #include "ModularZoneEditor.h"
 #include "ModularZoneFactory.h"
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QToolButton>
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QLineEdit>
 #include <QtGui/QPixmap>
 #include <QtGui/QImage>
-#include <QtGui/QLabel>
-#include <QtGui/QFrame>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QFrame>
 #include <QtCore/QEvent>
+
 #include "BaseEditor.h"
 #include "NodeEditor.h"
 #include "ViewportEditor.h"
