@@ -170,10 +170,10 @@ ELSE(NOT Qt5Widgets_FOUND)
     #ADD_DEFINITIONS(-DQT_NO_DEBUG)
     ADD_DEFINITIONS(-DQT_SHARED)
 
-    IF(WIN32)
+    IF(MSVC_IDE)
         add_custom_command( TARGET QtSolutions_PropertyBrowser POST_BUILD
             COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin )
-    ENDIF(WIN32)
+    ENDIF(MSVC_IDE)
 
     IF(WIN32)
         install(TARGETS QtSolutions_PropertyBrowser
