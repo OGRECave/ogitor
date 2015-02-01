@@ -88,14 +88,15 @@ else(NOT Qt5Widgets_FOUND)
 			COMMAND cp -r ../lib/libOgScriptEditor.* ../../RunPath/Plugins/)
 	endif(UNIX AND NOT APPLE)
 
-	if(WIN32)
+        if(MSVC_IDE)
 		add_custom_command(TARGET OgScriptEditor PRE_BUILD
 			COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
 		add_custom_command(TARGET OgScriptEditor POST_BUILD
 			COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
 		add_custom_command(TARGET OgScriptEditor POST_BUILD
 			COMMAND if exist ..\\..\\RunPath\\Plugins\\OgScriptEditor_d.dll move ..\\..\\RunPath\\Plugins\\OgScriptEditor_d.dll ..\\..\\RunPath\\Plugins\\debug)
-
+        endif(MSVC_IDE)
+        if(WIN32)
 		install(TARGETS OgScriptEditor
 			RUNTIME DESTINATION Plugins
 			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)

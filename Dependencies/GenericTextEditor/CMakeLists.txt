@@ -83,12 +83,13 @@ else(NOT Qt5Widgets_FOUND)
             COMMAND cp -r ../lib/libGenericTextEditor_Ogitor.* ../../RunPath/lib/)
     endif(UNIX AND NOT APPLE)
 
-    if(WIN32)
+    if(MSVC_IDE)
         add_custom_command(TARGET GenericTextEditor PRE_BUILD
             COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
         add_custom_command(TARGET GenericTextEditor POST_BUILD
             COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
-
+    endif(MSVC_IDE)
+    if(WIN32)
         install(TARGETS GenericTextEditor
             RUNTIME DESTINATION bin
             CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)

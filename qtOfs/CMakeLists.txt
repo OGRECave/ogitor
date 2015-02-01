@@ -71,12 +71,12 @@ else(NOT Qt5Widgets_FOUND)
 		)
 	endif()
 
-	if(WIN32)
+        if(MSVC_IDE)
 		add_custom_command(TARGET qtOfs PRE_BUILD
 			COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
 		add_custom_command(TARGET qtOfs POST_BUILD
 			COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
-	endif(WIN32)
+        endif(MSVC_IDE)
 
 	if(UNIX)
 		get_target_property(OFSFILE qtOfs LOCATION)
