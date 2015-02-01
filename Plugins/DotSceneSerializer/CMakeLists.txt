@@ -47,14 +47,15 @@ if(UNIX AND NOT APPLE)
 		COMMAND cp -r ../lib/libDotSceneSerializer.* ../../RunPath/Plugins/)
 endif(UNIX AND NOT APPLE)
 
-if(WIN32)
+if(MSVC_IDE)
 	add_custom_command(TARGET DotSceneSerializer PRE_BUILD
 		COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
 	add_custom_command(TARGET DotSceneSerializer POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
 	add_custom_command(TARGET DotSceneSerializer POST_BUILD
 		COMMAND if exist ..\\..\\RunPath\\Plugins\\DotSceneSerializer_d.dll move ..\\..\\RunPath\\Plugins\\DotSceneSerializer_d.dll ..\\..\\RunPath\\Plugins\\debug)
-
+endif(MSVC_IDE)
+if(WIN32)
 	install(TARGETS DotSceneSerializer
 		RUNTIME DESTINATION Plugins
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)

@@ -57,63 +57,60 @@ ITextEditorCodec* XMLTextEditorCodecFactory::create(GenericTextEditorDocument* g
 XMLHighlighter::XMLHighlighter(QTextDocument *parent) : QSyntaxHighlighter(parent)
 {    
     HighlightingRule rule;
-    tagAngleBracketFormat.setForeground(Qt::darkBlue);
-    nameSpaceFormat.setForeground(Qt::red);
-    tagKeyFormat.setForeground(Qt::darkRed);
-    tagKeyFormat.setFontWeight(QFont::Bold);
-    xmlCommentFormat.setForeground(Qt::darkGreen);
-    xmlDefinitionFormat.setForeground(Qt::blue);
+    m_TagFormat.setForeground(Qt::blue);
+    m_AttributeFormat.setForeground(Qt::red);
+    m_CommentFormat.setForeground(Qt::darkGray);
+    m_LiteralFormat.setForeground(QColor(150, 0, 210));
 
-    //rule.pattern = QRegExp("<\\/?(\\w+)>");
-    //rule.format = tagKeyFormat;
-    //formatRules.append(rule);
+    // XML Tags
+    rule.pattern = QRegExp("<[\\/\\w*:?\\w*][^>]*>");
+    rule.format = m_TagFormat;
+    m_FormatRules.append(rule);
 
-    rule.pattern = QRegExp("(<\\/?)\\w+(>)");
-    rule.format = tagAngleBracketFormat;
-    formatRules.append(rule);
+    // String Literals
+    rule.pattern = QRegExp("\\\"[^\\\"]*\\\"");
+    rule.format = m_LiteralFormat;
+    m_FormatRules.append(rule);
 
-    //rule.pattern = QRegExp("(<\\?.+\\?>)");
-    //rule.format = xmlDefinitionFormat;
-    //formatRules.append(rule);
+    // XML Comments
+    m_CommentStartExpression = QRegExp("<!--");
+    m_CommentEndExpression = QRegExp("-->");
 
-    //rule.pattern = QRegExp("(xmlns.+\\\")");
-    //rule.format = nameSpaceFormat;
-    //formatRules.append(rule);
-
-    commentStartExpression = QRegExp("<!--");
-    commentEndExpression = QRegExp("-->");
-
-    //rule.pattern = QRegExp("(<!--.+-->)");
-    //rule.format = xmlCommentFormat;
-    //formatRules.append(rule);
+    // XML Attributes
+    rule.pattern = QRegExp("(\\S*)=");
+    rule.format = m_AttributeFormat;
+    m_FormatRules.append(rule);
 }
 //-----------------------------------------------------------------------------------------
 void XMLHighlighter::highlightBlock(const QString &text)
 {
-    _highlightSimpleRegexList(text, formatRules);
-    
+    /*int index;
+    int length;*/
+
     setCurrentBlockState(0);
 
     int startIndex = 0;
     if(previousBlockState() != 1)
-        startIndex = text.indexOf(commentStartExpression);
+        startIndex = text.indexOf(m_CommentStartExpression);
 
-    while(startIndex >= 0) 
+    while(startIndex >= 0)
     {
-        int endIndex = text.indexOf(commentEndExpression, startIndex);
+        int endIndex = text.indexOf(m_CommentEndExpression, startIndex);
         int commentLength;
-        if (endIndex == -1) 
+        if (endIndex == -1)
         {
             setCurrentBlockState(1);
             commentLength = text.length() - startIndex;
-        } 
-        else 
-        {
-            commentLength = endIndex - startIndex + commentEndExpression.matchedLength();
         }
-        setFormat(startIndex, commentLength, xmlCommentFormat);
-        startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
+        else
+        {
+            commentLength = endIndex - startIndex + m_CommentEndExpression.matchedLength();
+        }
+        setFormat(startIndex, commentLength, m_CommentFormat);
+        startIndex = text.indexOf(m_CommentStartExpression, startIndex + commentLength);
     }
+
+    _highlightSimpleRegexList(text, m_FormatRules);
 }
 //-----------------------------------------------------------------------------------------
 void XMLHighlighter::_highlightSimpleRegexList(const QString text, const QVector<HighlightingRule> rules)
@@ -121,29 +118,17 @@ void XMLHighlighter::_highlightSimpleRegexList(const QString text, const QVector
     int index;
     int length;
 
-    foreach(HighlightingRule rule, rules) 
+    foreach(HighlightingRule rule, rules)
     {
         index = 0;
         QRegExp expression(rule.pattern);
 
-        if((index = expression.indexIn(text, index)) != -1)
+        while((index = expression.indexIn(text, index)) != -1)
         {
-            for(int i = 0; i < expression.captureCount(); i++)
-            {
-                length = expression.cap(i).length();
-                setFormat(index, length, rule.format);
-                index += length;
-            }
-            
-        
+            length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index += length;
         }
-            //while((index = expression.indexIn(text, index)) != -1)
-            //{
-            //    expression.captureCount()
-            //        length = expression.matchedLength();
-            //    setFormat(index, length, rule.format);
-            //    index += length;
-            //}
     }
 }
 //-----------------------------------------------------------------------------------------

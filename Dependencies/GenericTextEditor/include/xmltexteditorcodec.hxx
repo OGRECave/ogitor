@@ -81,16 +81,15 @@ protected:
 private:
     void _highlightSimpleRegexList(const QString text, const QVector<HighlightingRule> rules);
 
-    QVector<HighlightingRule> formatRules;
+    QVector<HighlightingRule>   m_FormatRules;
 
-    QRegExp commentStartExpression;
-    QRegExp commentEndExpression;
+    QRegExp                     m_CommentStartExpression;
+    QRegExp                     m_CommentEndExpression;
 
-    QTextCharFormat tagAngleBracketFormat;
-    QTextCharFormat tagKeyFormat;
-    QTextCharFormat nameSpaceFormat;
-    QTextCharFormat xmlCommentFormat;
-    QTextCharFormat xmlDefinitionFormat;
+    QTextCharFormat             m_TagFormat;
+    QTextCharFormat             m_CommentFormat;
+    QTextCharFormat             m_AttributeFormat;
+    QTextCharFormat             m_LiteralFormat;
 };
 
 //-----------------------------------------------------------------------------------------

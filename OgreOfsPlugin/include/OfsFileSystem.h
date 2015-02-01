@@ -94,7 +94,11 @@ namespace Ogre {
         void unload();
 
         /// @copydoc Archive::open
+#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
         DataStreamPtr open(const String& filename, bool readOnly = true) const;
+#else
+        virtual DataStreamPtr open(const String& filename, bool readOnly = true);
+#endif
 
 		/// @copydoc Archive::create
 		DataStreamPtr create(const String& filename) const;
@@ -113,8 +117,13 @@ namespace Ogre {
             bool dirs = false);
 
         /// @copydoc Archive::findFileInfo
+#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
         FileInfoListPtr findFileInfo(const String& pattern, bool recursive = true,
             bool dirs = false) const;
+#else
+        virtual FileInfoListPtr findFileInfo(const String& pattern, 
+            bool recursive = true, bool dirs = false);
+#endif
 
         /// @copydoc Archive::exists
         bool exists(const String& filename);

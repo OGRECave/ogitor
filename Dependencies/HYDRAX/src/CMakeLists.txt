@@ -71,12 +71,12 @@ set_target_properties(Hydrax PROPERTIES
 COMPILE_DEFINITIONS HYDRAX_LIB
 )
 
-IF(WIN32)
+IF(MSVC_IDE)
 	add_custom_command( TARGET Hydrax PRE_BUILD
 		COMMAND if not exist ..\\..\\..\\..\\..\\RunPath\\bin mkdir ..\\..\\..\\..\\..\\RunPath\\bin )
 	add_custom_command( TARGET Hydrax POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\..\\..\\..\\RunPath\\bin )
-ENDIF(WIN32)
+ENDIF(MSVC_IDE)
 
 set_target_properties(Hydrax PROPERTIES SOLUTION_FOLDER Dependencies)
 
@@ -94,10 +94,6 @@ IF(UNIX AND NOT APPLE)
     ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
     if(OGITOR_DIST)
-        install(TARGETS Hydrax
-            LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-
         install(TARGETS Hydrax
             LIBRARY DESTINATION lib
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)

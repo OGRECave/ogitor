@@ -22,10 +22,13 @@
 #include "ModularZoneFactory.h"
 #include "PortalFactory.h"
 #include "ZoneListWidget.hxx"
-#include <QtGui/QDockWidget>
+
+#include <QtWidgets/QDockWidget>
 
 using namespace Ogitors;
 using namespace MZP;
+
+ModularZoneToolbar* toolbar;
 
 //----------------------------------------------------------------------------
 bool dllStartPlugin(void *identifier, Ogre::String& name)
@@ -34,7 +37,7 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 
     ModularZoneFactory* zonefactory = OGRE_NEW ModularZoneFactory();
     PortalFactory* portalfactory = OGRE_NEW PortalFactory();
-    ModularZoneToolbar* toolbar = new ModularZoneToolbar();
+    toolbar = new ModularZoneToolbar();
     ZoneListWidget* widget = new ZoneListWidget();
     zonefactory->setZoneListWidget(widget);
 
@@ -46,8 +49,8 @@ bool dllStartPlugin(void *identifier, Ogre::String& name)
 
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, zonefactory);
     OgitorsRoot::getSingletonPtr()->RegisterEditorFactory(identifier, portalfactory);
-    OgitorsRoot::getSingletonPtr()->RegisterToolBar(identifier,toolbar->getToolbar());
-    OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier,data);
+    OgitorsRoot::getSingletonPtr()->RegisterToolBar(identifier, toolbar->getToolbar());
+    OgitorsRoot::getSingletonPtr()->RegisterDockWidget(identifier, data);
 
     return true;
 }
@@ -60,6 +63,9 @@ bool dllGetPluginName(Ogre::String& name)
 //----------------------------------------------------------------------------
 bool dllStopPlugin(void)
 {
+    if(toolbar)
+        delete toolbar;
+
     return true;
 }
 //----------------------------------------------------------------------------

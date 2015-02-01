@@ -25,6 +25,8 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include <OgreHighLevelGpuProgram.h>
 #include <OgreHighLevelGpuProgramManager.h>
 #include <OgreLogManager.h>
+#include <OgreTechnique.h>
+
 using namespace Ogre;
 
 namespace Forests {
@@ -196,7 +198,7 @@ void BatchPage::_updateShaders()
 		}
 
 		//Compile the CG shader script based on various material / fade options
-		StringUtil::StrStreamType tmpName;
+		StringStream tmpName;
 		tmpName << "BatchPage_";
 		if (fadeEnabled)
 			tmpName << "fade_";
@@ -420,7 +422,7 @@ void BatchPage::_updateShaders()
 		}
 
 		//Now that the shader is ready to be applied, apply it
-		StringUtil::StrStreamType materialSignature;
+		StringStream materialSignature;
 		materialSignature << "BatchMat|";
 		materialSignature << mat->getName() << "|";
 		if (fadeEnabled){

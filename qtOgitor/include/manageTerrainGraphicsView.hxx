@@ -32,14 +32,14 @@
 
 #pragma once
 
-#include <QtGui/QDialog>
-#include <QtGui/QToolBar>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QGraphicsItem>
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QToolBar>
-#include <QtGui/QAction>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QGraphicsItem>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QAction>
 #include <Ogre.h>
 
 class UITerrainSquare;

@@ -35,6 +35,9 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include "OgreRenderSystemCapabilities.h"
 #include "OgreHighLevelGpuProgram.h"
 #include "OgreHighLevelGpuProgramManager.h"
+#include "OgreTechnique.h"
+#include "OgreSceneNode.h"
+
 using namespace Ogre;
 
 #include <limits> //for numeric_limits
@@ -1101,7 +1104,7 @@ void GrassLayer::_updateShaders()
             //before the page center is out of range.
 
             //Generate a string ID that identifies the current set of vertex shader options
-            StringUtil::StrStreamType tmpName;
+            StringStream tmpName;
             tmpName << "GrassVS_";
             if (animate)
                 tmpName << "anim_";

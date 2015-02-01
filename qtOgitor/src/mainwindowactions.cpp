@@ -29,6 +29,7 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
+
 #include "mainwindow.hxx"
 
 #include "Ogitors.h"
@@ -59,6 +60,12 @@
 #include "terraintoolswidget.hxx"
 #include "generictexteditor.hxx"
 #include "genericimageeditor.hxx"
+
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QFileDialog>    
+#include <QtWidgets/QDockWidget>    
+#include <QtWidgets/QStatusBar>    
 
 //------------------------------------------------------------------------------
 
@@ -679,7 +686,7 @@ void MainWindow::newScene()
 
             OFS::OFSHANDLE handle;
             Ogre::String projfilename = "/";
-            projfilename += opt.ProjectName + ".ogscene";
+            projfilename += opt.ProjectName + Globals::OGSCENE_FORMAT_EXTENSION;
 
             mFile->createFile(handle, projfilename.c_str(), outfile.tellp(), outfile.tellp(), outfile.str().c_str());
             mFile->closeFile(handle);
@@ -698,7 +705,7 @@ void MainWindow::newScene()
     }
 
     if(dlg.usePackedOFSFile->checkState() != Qt::Checked)
-        filename += "/" + opt.ProjectName + ".ogscene";
+        filename += "/" + opt.ProjectName + Globals::OGSCENE_FORMAT_EXTENSION;
 
     ogRoot->LoadScene(filename);
     updateRecentFiles();

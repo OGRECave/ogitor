@@ -32,13 +32,15 @@
 #include "tinyxml.h"
 #include "exportzonedialog.hxx"
 #include "portalsizedialog.hxx"
-#include <QtGui/QFileDialog>
+
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
+
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+
 #include <numeric>
 #include "ofs.h"
 #include <sstream>
-
 
 using namespace Ogitors;
 

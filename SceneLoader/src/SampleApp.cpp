@@ -33,8 +33,8 @@ using namespace Forests;
 SampleApp::SampleApp(void)
 :    mLoader(0),
     mTerrainImported(true),
-    mSceneFile(Ogre::StringUtil::BLANK),
-    mHelpInfo(Ogre::StringUtil::BLANK),
+    mSceneFile(Ogre::BLANKSTRING),
+    mHelpInfo(Ogre::BLANKSTRING),
     mFly(false),
     mFallVelocity(0)
 {

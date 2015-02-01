@@ -78,10 +78,11 @@ set_target_properties(Caelum PROPERTIES VERSION ${Caelum_VERSION} SOVERSION ${Ca
 set_target_properties(Caelum PROPERTIES SOLUTION_FOLDER Dependencies)
 set_target_properties(Caelum PROPERTIES COMPILE_DEFINITIONS CAELUM_LIB)
 
-if(WIN32)
+if(MSVC_IDE)
 	add_custom_command(TARGET Caelum POST_BUILD
 		COMMAND copy \"$(TargetPath)\" ..\\..\\..\\RunPath\\bin)
-
+endif(MSVC_IDE)
+if(WIN32)
 	install(TARGETS Caelum
 		RUNTIME DESTINATION bin
 		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
@@ -93,10 +94,6 @@ IF(UNIX AND NOT APPLE)
     ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 
     if(OGITOR_DIST)
-        install(TARGETS Caelum
-            LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-
         install(TARGETS Caelum
             LIBRARY DESTINATION lib
             CONFIGURATIONS Release RelWithDebInfo MinSizeRel)

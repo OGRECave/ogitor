@@ -47,11 +47,6 @@ namespace Ogitors
         params["init"] = EMPTY_PROPERTY_VALUE;
         return root->CreateEditorObject(parent, objecttypestring, params, true, false); 
     }
-	//-----------------------------------------------------------------------------------------
-	static CBaseEditor *CloneEditorObjectImpl(CBaseEditor *object, OgitorsRoot* root)
-    {
-        return root->CloneEditorObject(object, true, false); 
-    }
     //-----------------------------------------------------------------------------------------
     static CBaseEditor *CreateEntityObjectImpl(CBaseEditor *parent, const Ogre::String& meshfile, OgitorsRoot* root)
     {
@@ -186,7 +181,6 @@ namespace Ogitors
         r = engine->RegisterObjectMethod("OgitorsRoot", "TerrainGroupEditor@ getTerrainEditor()", asMETHOD(OgitorsRoot, GetTerrainEditorObject), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsRoot", "void destroyObject(BaseEditor@, bool, bool)", asMETHOD(OgitorsRoot, DestroyEditorObject), asCALL_THISCALL);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsRoot", "BaseEditor@ createObject(BaseEditor@, const string &in)", asFUNCTION(CreateEditorObjectImpl), asCALL_CDECL_OBJLAST);assert(r >= 0);
-		r = engine->RegisterObjectMethod("OgitorsRoot", "BaseEditor@ cloneObject(BaseEditor@)", asFUNCTION(CloneEditorObjectImpl), asCALL_CDECL_OBJLAST);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsRoot", "EntityEditor@ createEntityObject(BaseEditor@, const string &in)", asFUNCTION(CreateEntityObjectImpl), asCALL_CDECL_OBJLAST);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsRoot", "TerrainPageEditor@ createTerrainPage(int, int, const string &in, const string &in, float)", asFUNCTION(CreateTerrainPageImpl), asCALL_CDECL_OBJLAST);assert(r >= 0);
         r = engine->RegisterObjectMethod("OgitorsRoot", "void getMaterialNames(StringVector &out)", asFUNCTION(GetMaterialNames), asCALL_CDECL_OBJLAST);assert(r >= 0);

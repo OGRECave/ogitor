@@ -158,7 +158,7 @@ int CDotSceneSerializer::Export(bool SaveAs, Ogre::String exportfile)
     Ogre::String newDir = OgitorsUtils::ExtractFilePath(fileName);
 
     extractOFS(newDir);
-    mSystem->DeleteFile(newDir + "/" + pOpt->ProjectName + ".ogscene");
+    mSystem->DeleteFile(newDir + "/" + pOpt->ProjectName + Globals::OGSCENE_FORMAT_EXTENSION);
 
     TiXmlDocument *pXMLDoc = new TiXmlDocument();
     pXMLDoc->InsertEndChild(TiXmlDeclaration("1.0", "UTF-8", ""));

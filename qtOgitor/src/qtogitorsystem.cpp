@@ -36,8 +36,6 @@
 #include "sceneview.hxx"
 #include "layerview.hxx"
 #include "imageconverter.hxx"
-#include "OgitorsRoot.h"
-
 #include "qtpropertymanager.h"
 #include "qteditorfactory.h"
 #include "qttreepropertybrowser.h"
@@ -49,8 +47,14 @@
 #include "calculateblendmapdialog.hxx"
 #include "terraintoolswidget.hxx"
 
+#include "OgitorsRoot.h"
 #include "BaseEditor.h"
 #include "MultiSelEditor.h"
+
+#include <QtCore/QStandardPaths>
+
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QFileDialog>
 
 //-------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
@@ -152,10 +156,10 @@ QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0),
 {
     mIconList.clear();
     Ogitors::OgitorsUtils::SetExePath(QApplication::applicationDirPath().toStdString());
-    QDir directory(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + QString("\\OgitorProjects"));
+    QDir directory(QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QString("\\OgitorProjects"));
     if(!directory.exists())
-#if defined(Q_WS_X11)
-    directory.setPath(QDesktopServices::storageLocation(QDesktopServices::HomeLocation));
+#if defined(Q_OS_LINUX)
+    directory.setPath(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
 #else
     directory.setPath("../Projects/");
 #endif
@@ -165,7 +169,6 @@ QtOgitorSystem::QtOgitorSystem(): mGeneralPropsWidget(0), mCustomPropsWidget(0),
 //-------------------------------------------------------------------------------
 QtOgitorSystem::~QtOgitorSystem(void)
 {
-
 }
 //-------------------------------------------------------------------------------
 Ogre::String QtOgitorSystem::GetProjectsDirectory()
@@ -524,11 +527,7 @@ Ogre::String QtOgitorSystem::DisplayOpenDialog(Ogre::UTFString title, Ogitors::U
     }
 
     QString path = QFileDialog::getOpenFileName(QApplication::activeWindow(), ConvertToQString(title), oldOpenPath, theList , &selectedFilter
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     , QFileDialog::DontUseNativeDialog );
-#else
-    );
-#endif
 
     mOgitorMainWindow->getOgreWidget()->stopRendering(false);
     return path.toStdString();
@@ -589,7 +588,7 @@ void QtOgitorSystem::UpdateLoadProgress(float percentage, Ogre::UTFString msg)
 //-------------------------------------------------------------------------------
 Ogre::UTFString QtOgitorSystem::Translate(Ogre::String& str)
 {
-    QString result = QApplication::translate("QtOgitorSystem", str.c_str(), 0, QApplication::UnicodeUTF8);
+    QString result = QApplication::translate("QtOgitorSystem", str.c_str(), 0);
 
     QTextCodec *codec = QTextCodec::codecForName("UTF-16");
     QByteArray encodedString = codec->fromUnicode(result);
@@ -603,7 +602,7 @@ Ogre::UTFString QtOgitorSystem::Translate(Ogre::String& str)
 //-------------------------------------------------------------------------------
 Ogre::UTFString QtOgitorSystem::Translate(const char * str)
 {
-    QString result =  QApplication::translate("QtOgitorSystem", str, 0, QApplication::UnicodeUTF8);
+    QString result =  QApplication::translate("QtOgitorSystem", str, 0);
 
     QTextCodec *codec = QTextCodec::codecForName("UTF-16");
     QByteArray encodedString = codec->fromUnicode(result);
@@ -739,7 +738,7 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             position++;
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
-            QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex1->itemData(mCalcBlendmapDlg->tex1->currentIndex()));
+            QString str = mCalcBlendmapDlg->tex1->itemData(mCalcBlendmapDlg->tex1->currentIndex()).value<QString>();
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs1->text().toStdString();
@@ -757,7 +756,7 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             position++;
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
-            QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex2->itemData(mCalcBlendmapDlg->tex2->currentIndex()));
+            QString str = mCalcBlendmapDlg->tex2->itemData(mCalcBlendmapDlg->tex2->currentIndex()).value<QString>();
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs2->text().toStdString();
@@ -775,7 +774,7 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             position++;
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
-            QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex3->itemData(mCalcBlendmapDlg->tex3->currentIndex()));
+            QString str = mCalcBlendmapDlg->tex3->itemData(mCalcBlendmapDlg->tex3->currentIndex()).value<QString>();
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs3->text().toStdString();
@@ -793,7 +792,7 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             position++;
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
-            QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex4->itemData(mCalcBlendmapDlg->tex4->currentIndex()));
+            QString str = mCalcBlendmapDlg->tex4->itemData(mCalcBlendmapDlg->tex4->currentIndex()).value<QString>();
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs4->text().toStdString();
@@ -811,7 +810,7 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             position++;
             Ogre::String keyst = Ogre::StringConverter::toString(position) + "::";
 
-            QString str = qVariantValue<QString>(mCalcBlendmapDlg->tex5->itemData(mCalcBlendmapDlg->tex5->currentIndex()));
+            QString str = mCalcBlendmapDlg->tex5->itemData(mCalcBlendmapDlg->tex5->currentIndex()).value<QString>();
 
             params[keyst + "img"] = str.toStdString();
             params[keyst + "hs"] = mCalcBlendmapDlg->hs5->text().toStdString();

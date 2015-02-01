@@ -41,13 +41,20 @@
 #include "OgitorsRoot.h"
 #include "OgitorsGlobals.h"
 
+#include <QtCore/QTextCodec>
+#include <QtCore/QLibraryInfo>
+#include <QtCore/QTranslator>
+#include <QtCore/QDir>
+
+#include <QtWidgets/QSplashScreen>
+
 extern bool    ViewKeyboard[1024];
 extern QString ConvertToQString(Ogre::UTFString& value);
 
 Ogre::Root           *mOgreRoot;
 Ogitors::OgitorsRoot *mOgitorsRoot;
 QtOgitorSystem       *mSystem;
-Shortcuts            *shortCuts;
+Shortcuts            *mShortCuts;
 //-------------------------------------------------------------------------------------
 void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 {
@@ -136,8 +143,8 @@ void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
 
     Ogitors::OgitorsSpecialKeys keys;
     /* Shortcuts class was created only with getInstance() and because of this it's destructor never ran */
-    shortCuts = new Shortcuts();//Shortcuts::getInstance();
-    shortCuts->load();
+    mShortCuts = new Shortcuts();//Shortcuts::getInstance();
+    mShortCuts->load();
     //tmp->add(QKeySequence(Qt::Key_W).toString(), QString("Move Forward"), "SPK_FORWARD", Qt::Key_W);
     //tmp->add(QKeySequence(Qt::Key_A).toString(), QString("Move Left"), "SPK_LEFT", Qt::Key_A);
     //tmp->add(QKeySequence(Qt::Key_S).toString(), QString("Move Backward"), "SPK_BACKWARD", Qt::Key_S);
@@ -380,7 +387,7 @@ int main(int argc, char *argv[])
     writeRecentFiles();
 
     delete mOgitorMainWindow;
-    delete shortCuts;
+    delete mShortCuts;
     OGRE_DELETE mOgitorsRoot;
     OGRE_DELETE mSystem;
     OGRE_DELETE mOgreRoot;

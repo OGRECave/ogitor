@@ -33,6 +33,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include <OgreHardwareBuffer.h>
 #include <OgreMaterialManager.h>
 #include <OgreMaterial.h>
+#include <OgreTechnique.h>
 #include <string>
 using namespace Ogre;
 
@@ -258,7 +259,7 @@ BatchedGeometry::SubBatchIterator BatchedGeometry::getSubBatchIterator() const
 
 String BatchedGeometry::getFormatString(SubEntity *ent)
 {
-	StringUtil::StrStreamType str;
+	StringStream str;
 
 	str << ent->getMaterialName() << "|";
 	str << ent->getSubMesh()->indexData->indexBuffer->getType() << "|";
@@ -471,7 +472,7 @@ void BatchedGeometry::SubBatch::addSubEntity(SubEntity *ent, const Vector3 &posi
 				case VET_COLOUR_ABGR:
 					break;
 				default:
-					OGRE_EXCEPT(0, "Unknown RenderSystem color format", "BatchedGeometry::SubBatch::addSubMesh()");
+					OGRE_EXCEPT(Ogre::Exception::ERR_RENDERINGAPI_ERROR, "Unknown RenderSystem color format", "BatchedGeometry::SubBatch::addSubMesh()");
 					break;
 		}
 	}

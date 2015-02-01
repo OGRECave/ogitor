@@ -24,6 +24,9 @@ Permission is granted to anyone to use this software for any purpose, including 
 #include <OgreEntity.h>
 #include <OgreSubEntity.h>
 #include <OgreHardwarePixelBuffer.h>
+#include <OgreTechnique.h>
+#include <OgreViewport.h>
+
 using namespace Ogre;
 
 namespace Forests {
@@ -298,7 +301,7 @@ void ImpostorBatch::setBillboardOrigin(BillboardOrigin origin)
 
 String ImpostorBatch::generateEntityKey(Entity *entity)
 {
-	StringUtil::StrStreamType entityKey;
+	StringStream entityKey;
 	entityKey << entity->getMesh()->getName();
 	for (uint32 i = 0; i < entity->getNumSubEntities(); ++i){
 		entityKey << "-" << entity->getSubEntity(i)->getMaterialName();
@@ -470,7 +473,7 @@ void ImpostorTexture::renderTextures(bool force)
 	renderTexture = TextureManager::getSingleton().createManual(getUniqueID("ImpostorTexture"), "Impostors",
 				TEX_TYPE_2D, textureSize * IMPOSTOR_YAW_ANGLES, textureSize * IMPOSTOR_PITCH_ANGLES, 0, PF_A8R8G8B8, TU_RENDERTARGET, loader.get());
 	}
-	renderTexture->setNumMipmaps(MIP_UNLIMITED);
+	renderTexture->setNumMipmaps((Ogre::uint8)MIP_UNLIMITED);
 	
 	//Set up render target
 	renderTarget = renderTexture->getBuffer()->getRenderTarget(); 
@@ -654,7 +657,7 @@ void ImpostorTexture::renderTextures(bool force)
 
 String ImpostorTexture::removeInvalidCharacters(String s)
 {
-	StringUtil::StrStreamType s2;
+	StringStream s2;
 
 	for (uint32 i = 0; i < s.length(); ++i){
 		char c = s[i];

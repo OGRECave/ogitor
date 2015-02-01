@@ -30,7 +30,7 @@
 /// THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 
 #include "Ogitors.h"
 #include "Plugin.h"
@@ -70,6 +70,9 @@ bool dllGetPluginName(Ogre::String& name)
 //----------------------------------------------------------------------------
 bool dllStopPlugin(void)
 {
+    if(ScriptTextEditorCodec::mToolBar)
+        delete ScriptTextEditorCodec::mToolBar;
+
     return true;
 }
 //----------------------------------------------------------------------------

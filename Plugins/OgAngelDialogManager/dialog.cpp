@@ -35,6 +35,14 @@
 #include <string>
 #include <cassert>
 #include <QtGui/QtGui>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
 
 #include "dialog.hxx"
 
@@ -104,11 +112,6 @@ void setWindowTitle(const std::string& title, QDialog *obj)
     obj->setWindowTitle(QString(title.c_str()));
 }
 //-----------------------------------------------------------------------------------------
-void processEvents(void *guiobj)
-{
-	QApplication::processEvents();
-}
-//-----------------------------------------------------------------------------------------
 void RegisterDialogBindings(asIScriptEngine *engine)
 {
     int r;
@@ -124,11 +127,9 @@ void RegisterDialogBindings(asIScriptEngine *engine)
     r = engine->RegisterObjectMethod("AngelGUI", "Label@ createLabel(const string &in)", asFUNCTION(createLabel), asCALL_CDECL_OBJLAST);assert(r >= 0);
     r = engine->RegisterObjectMethod("AngelGUI", "ComboBox@ createComboBox()", asFUNCTION(createComboBox), asCALL_CDECL_OBJLAST);assert(r >= 0);
     r = engine->RegisterObjectMethod("AngelGUI", "CheckBox@ createCheckBox(const string &in)", asFUNCTION(createCheckBox), asCALL_CDECL_OBJLAST);assert(r >= 0);
-	r = engine->RegisterObjectMethod("AngelGUI", "void processEvents()", asFUNCTION(processEvents), asCALL_CDECL_OBJLAST);assert(r >= 0);
 
     r = engine->RegisterObjectMethod("Dialog", "void setLayout(Layout@)", asMETHOD(QDialog, setLayout), asCALL_THISCALL);assert(r >= 0);
     r = engine->RegisterObjectMethod("Dialog", "int exec()", asMETHOD(QDialog, exec), asCALL_THISCALL);assert(r >= 0);
-    r = engine->RegisterObjectMethod("Dialog", "int show()", asMETHOD(QDialog, show), asCALL_THISCALL);assert(r >= 0);
     r = engine->RegisterObjectMethod("Dialog", "void destroy()", asFUNCTION(destroyWidget), asCALL_CDECL_OBJLAST);assert(r >= 0);
     r = engine->RegisterObjectMethod("Dialog", "void setWindowTitle(const string &in)", asFUNCTION(setWindowTitle), asCALL_CDECL_OBJLAST);assert(r >= 0);
     r = engine->RegisterObjectMethod("Dialog", "void accept()", asMETHOD(QDialog, accept), asCALL_THISCALL);assert(r >= 0);

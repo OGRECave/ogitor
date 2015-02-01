@@ -33,8 +33,9 @@
 #ifndef OBJECTSVIEW_HXX
 #define OBJECTSVIEW_HXX
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QTimer>
+
 #include "OgitorsPrerequisites.h"
 #include "OgitorsRoot.h"
 #include "OgitorsProperty.h"
