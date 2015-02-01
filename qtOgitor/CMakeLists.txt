@@ -231,6 +231,14 @@ else(NOT Qt5Widgets_FOUND)
         ADD_CUSTOM_COMMAND(TARGET qtOgitor POST_BUILD COMMAND ${MakeBundle})
     endif(NOT APPLE)
 	
+    # tell CMake that qtOgitor might depend on project/media
+    if(OGITOR_DOWNLOAD_SAMPLEPROJECT)
+        add_dependencies(qtOgitor SampleProject)
+    endif(OGITOR_DOWNLOAD_SAMPLEPROJECT)
+    if(OGITOR_DOWNLOAD_SAMPLEMEDIA)
+        add_dependencies(qtOgitor SampleMedia)
+    endif(OGITOR_DOWNLOAD_SAMPLEMEDIA)
+
     if(OGITOR_MESHMAGICK_INTERFACE)
         target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} ${OGRE_Paging_LIBRARY} ${OGRE_Terrain_LIBRARY} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor ${Boost_REGEX_LIBRARY})
     else(OGITOR_MESHMAGICK_INTERFACE)
