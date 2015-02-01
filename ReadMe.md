@@ -14,10 +14,7 @@
 
 _This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing environment for OGRE (www.ogre3d.org)_
 
-
-**Note: Ogitor now depends on Ogre 1.9!**
-
-The directories ```"RunPath/Media"``` and ```"RunPath/Projects"``` are now available as a separate download.
+**Note: Ogitor now depends on Ogre 1.10!**
 
 **Running OGITOR**
 
@@ -28,11 +25,8 @@ To be able to run Ogitor, you will need the media.zip archive downloaded and ext
 
 **Building OGITOR**
 
-If you are trying to build OGITOR yourself, please download those archives and extract them to ```"RunPath"``` folder in your source (!) path before building and installing OGITOR.
-
-Do not extract the files into the build directory, since they will get automatically get copied over and overwritten from your source directory.
-
-The install target will copy the files over.
+By default, the build script will download and install the media and projects archives, so you don't have to worry about getting them yourself.
+You can choose not to by setting OGITOR_INSTALLMEDIA and OGITOR_INSTALLPROJECT to FALSE when configuring the project with CMake.
 
 * [Building Ogitor](http://www.ogitor.org/wiki/getting_started/building_ogitor)
 
