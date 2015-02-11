@@ -61,7 +61,7 @@ else(NOT Qt5Widgets_FOUND)
 		set_property(TARGET qtOfs PROPERTY WIN32_EXECUTABLE 0) 
 	endif(WIN32)
 
-	target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
+	target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Qt5::WinMain)
 
 	if(UNIX)
 		target_link_libraries(qtOfs optimized
