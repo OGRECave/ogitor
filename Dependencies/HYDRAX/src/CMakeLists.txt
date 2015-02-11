@@ -60,7 +60,7 @@ include_directories (.)
 #include_directories ( ${OGITOR_SM_INCLUDES} )
 
 ogitor_add_library(Hydrax SHARED ${HEADER_FILES} ${SOURCE_FILES}  )
-SET(LIBRARY_OUTPUT_PATH  ../../../../lib)
+SET(LIBRARY_OUTPUT_PATH  ../../lib)
 
 set_target_properties(PROPERTIES
         INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE  )
@@ -73,9 +73,9 @@ COMPILE_DEFINITIONS HYDRAX_LIB
 
 IF(MSVC_IDE)
 	add_custom_command( TARGET Hydrax PRE_BUILD
-		COMMAND if not exist ..\\..\\..\\..\\..\\RunPath\\bin mkdir ..\\..\\..\\..\\..\\RunPath\\bin )
+		COMMAND if not exist ..\\..\\..\\RunPath\\bin mkdir ..\\..\\..\\RunPath\\bin )
 	add_custom_command( TARGET Hydrax POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\..\\..\\..\\..\\RunPath\\bin )
+		COMMAND copy \"$(TargetPath)\" ..\\..\\..\\RunPath\\bin )
 ENDIF(MSVC_IDE)
 
 set_target_properties(Hydrax PROPERTIES SOLUTION_FOLDER Dependencies)
