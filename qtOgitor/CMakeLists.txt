@@ -261,7 +261,7 @@ else(NOT Qt5Widgets_FOUND)
 
     if(WIN32)
         set_target_properties(qtOgitor PROPERTIES DEBUG_POSTFIX _d)
-		set_property(TARGET qtOgitor PROPERTY WIN32_EXECUTABLE 0)
+		set_property(TARGET qtOgitor PROPERTY WIN32_EXECUTABLE 1)
     endif(WIN32)
     if(MSVC_IDE)
         add_custom_command(TARGET qtOgitor PRE_BUILD
