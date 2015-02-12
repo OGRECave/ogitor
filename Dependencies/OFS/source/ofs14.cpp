@@ -1746,7 +1746,7 @@ namespace OFS
 
             if(open_mode & OFS_WRITE)
             {
-                if((fileDesc->UseCount > 0) || (fileDesc->Flags & OFS_READONLY) || (fileDesc->Flags & OFS_LINK))
+                if(((fileDesc->UseCount > 0) && !(open_mode & OFS_FORCE)) || (fileDesc->Flags & OFS_READONLY) || (fileDesc->Flags & OFS_LINK))
                     return OFS_ACCESS_DENIED;
 
                 fileDesc->WriteLocked = true;
