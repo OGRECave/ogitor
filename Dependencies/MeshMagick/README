@@ -1,8 +1,0 @@
-MeshMagic is versatile command line Ogre mesh manipulation tool.
-It currently supports the three operations info, meshmerge, optimise, rename and transform.
-
-For help call meshmagick with the -help command line option.
-
-MeshMagick is free open source software released under the LGPL license, which can be found in the COPYING.txt file.
-
-Full source code is available via SVN in https://ogreaddons.svn.sourceforge.net/svnroot/ogreaddons/trunk/meshmagick

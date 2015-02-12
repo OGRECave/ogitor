@@ -241,11 +241,11 @@ set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 
 # Dependencies
 set(DEPENDENCIES_INCLUDES
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/src"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/MeshMagick/include"
+    "${CMAKE_BINARY_DIR}/Dependencies/src/Pagedgeometry/include"
+    "${CMAKE_BINARY_DIR}/Dependencies/src/Caelum/include"
+    "${CMAKE_BINARY_DIR}/Dependencies/src/Hydrax"
+    "${CMAKE_BINARY_DIR}/Dependencies/src/Skyx"
+    "${CMAKE_BINARY_DIR}/Dependencies/src/Meshmagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
     #"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/autowrapper"
@@ -263,6 +263,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
 )
 set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
+set(DEPENDENCIES_LIBPATH "${DEPENDENCIES_LIBPATH};${CMAKE_BINARY_DIR}/Dependencies/lib")
 
 #set_target_properties(ALL_BUILD PROPERTIES SOLUTION_FOLDER CMake)
 #set_target_properties(ZERO_CHECK PROPERTIES SOLUTION_FOLDER CMake)
@@ -396,24 +397,25 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals
 add_subdirectory(Ogitor)
 
 # Setup Dependencies
-add_subdirectory(Dependencies/HYDRAX/src)
-add_subdirectory(Dependencies/Caelum-0.5.0/main)
-add_subdirectory(Dependencies/PagedGeometry)
+add_subdirectory(Dependencies)
+#add_subdirectory(Dependencies/HYDRAX/src)
+#add_subdirectory(Dependencies/Caelum-0.5.0/main)
+#add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
-add_subdirectory(Dependencies/SkyX)
+#add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
 add_subdirectory(Dependencies/OgreTerrainConverter)
 add_subdirectory(Dependencies/ImageConverter)
 add_subdirectory(Dependencies/GenericTextEditor)
 add_subdirectory(Dependencies/GenericImageEditor)
-IF(OGITOR_MESHMAGICK_INTERFACE)
-    add_subdirectory(Dependencies/MeshMagick)
-ENDIF(OGITOR_MESHMAGICK_INTERFACE)
+#IF(OGITOR_MESHMAGICK_INTERFACE)
+#    add_subdirectory(Dependencies/MeshMagick)
+#ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 
 # Plugins
-add_subdirectory(Plugins/OgCaelum)
-add_subdirectory(Plugins/OgHydrax)
-add_subdirectory(Plugins/OgSkyX)
+#add_subdirectory(Plugins/OgCaelum)
+#add_subdirectory(Plugins/OgHydrax)
+#add_subdirectory(Plugins/OgSkyX)
 add_subdirectory(Plugins/DotSceneSerializer)
 add_subdirectory(Plugins/OgModularZone)
 add_subdirectory(Plugins/OgMaterialEditor)
@@ -432,9 +434,9 @@ add_subdirectory(qtOgitor)
 add_subdirectory(qtOfs)
 
 # New version of OIS broke our SceneLoader..
-if(NOT UNIX)
-    add_subdirectory(SceneLoader)
-endif(NOT UNIX)
+#if(NOT UNIX)
+#    add_subdirectory(SceneLoader)
+#endif(NOT UNIX)
 
 add_subdirectory(RunPath)
 
