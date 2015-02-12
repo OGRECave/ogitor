@@ -127,16 +127,20 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
 
     OFS::OFSHANDLE *fileHandle = new OFS::OFSHANDLE();
 
-    mOgitorsRoot->GetProjectFile()->createFile(*fileHandle, filename.c_str());
+    if( mOgitorsRoot->GetProjectFile()->openFile(*fileHandle, filename.c_str(), OFS::OFS_READWRITE | OFS::OFS_FORCE ) != OFS::OFS_OK )
+        mOgitorsRoot->GetProjectFile()->createFile(*fileHandle, filename.c_str() );
 
-    // Force to load highest LoD, or quadTree may contain hole
-    mHandle->load(0, true);
+    if( fileHandle->_valid() )
+    {
+        // Force to load highest LoD, or quadTree may contain hole
+        mHandle->load(0, true);
 
-    Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), fileHandle));
-    //Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filename, stream, tmpCompressFile));
-    //Ogre::StreamSerialiser ser(compressStream);
-    Ogre::StreamSerialiser ser(stream);
-    mHandle->save(ser);
+        Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW OfsDataStream(mOgitorsRoot->GetProjectFile(), fileHandle));
+        //Ogre::DataStreamPtr compressStream(OGRE_NEW Ogre::DeflateStream(filename, stream, tmpCompressFile));
+        //Ogre::StreamSerialiser ser(compressStream);
+        Ogre::StreamSerialiser ser(stream);
+        mHandle->save(ser);
+    }
 }
 //-----------------------------------------------------------------------------------------
 void CTerrainPageEditor::onSave(bool forced)
