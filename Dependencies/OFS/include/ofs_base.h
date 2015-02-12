@@ -179,7 +179,8 @@ typedef off_t ofs64;
         OFS_READ = 1,
         OFS_WRITE = 2,
         OFS_READWRITE = 3,
-        OFS_APPEND = 4
+        OFS_APPEND = 4,
+        OFS_FORCE = 8
     };
 
     enum SeekDirection
