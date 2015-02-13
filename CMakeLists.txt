@@ -262,8 +262,7 @@ set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include"
 )
-set(DEPENDENCIES_LIBPATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lib")
-set(DEPENDENCIES_LIBPATH "${DEPENDENCIES_LIBPATH};${CMAKE_BINARY_DIR}/Dependencies/lib")
+set(DEPENDENCIES_LIBPATH ${CMAKE_BINARY_DIR}/Dependencies/lib)
 
 #set_target_properties(ALL_BUILD PROPERTIES SOLUTION_FOLDER CMake)
 #set_target_properties(ZERO_CHECK PROPERTIES SOLUTION_FOLDER CMake)
@@ -398,11 +397,7 @@ add_subdirectory(Ogitor)
 
 # Setup Dependencies
 add_subdirectory(Dependencies)
-#add_subdirectory(Dependencies/HYDRAX/src)
-#add_subdirectory(Dependencies/Caelum-0.5.0/main)
-#add_subdirectory(Dependencies/PagedGeometry)
 add_subdirectory(Dependencies/Angelscript)
-#add_subdirectory(Dependencies/SkyX)
 add_subdirectory(Dependencies/OFS)
 add_subdirectory(Dependencies/OgreTerrainConverter)
 add_subdirectory(Dependencies/ImageConverter)
@@ -413,9 +408,9 @@ add_subdirectory(Dependencies/GenericImageEditor)
 #ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 
 # Plugins
-#add_subdirectory(Plugins/OgCaelum)
-#add_subdirectory(Plugins/OgHydrax)
-#add_subdirectory(Plugins/OgSkyX)
+add_subdirectory(Plugins/OgCaelum)
+add_subdirectory(Plugins/OgHydrax)
+add_subdirectory(Plugins/OgSkyX)
 add_subdirectory(Plugins/DotSceneSerializer)
 add_subdirectory(Plugins/OgModularZone)
 add_subdirectory(Plugins/OgMaterialEditor)
