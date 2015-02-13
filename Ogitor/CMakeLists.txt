@@ -150,8 +150,12 @@ set_target_properties(Ogitor PROPERTIES COMPILE_DEFINITIONS "${OGITOR_PREPROCESS
 message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 
 message(STATUS ${OGRE_LIBRARY})
-target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS OgreTerrainConverter ${Boost_LIBRARIES})
-
+target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} OFS OgreTerrainConverter ${Boost_LIBRARIES})
+if(WIN32)
+    target_link_libraries(Ogitor debug ${DEPENDENCIES_LIBPATH}/PagedGeometry_d.lib optimized ${DEPENDENCIES_LIBPATH}/PagedGeometry.lib)
+else()
+    target_link_libraries(Ogitor debug ${DEPENDENCIES_LIBPATH}/PagedGeometry_d.a optimized ${DEPENDENCIES_LIBPATH}/PagedGeometry.a)
+endif()
 # specify a precompiled header to use
 use_precompiled_header(Ogitor 
   "${CMAKE_CURRENT_SOURCE_DIR}/include/OgitorsPrerequisites.h"
