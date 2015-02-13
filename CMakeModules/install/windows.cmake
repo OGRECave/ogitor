@@ -55,21 +55,21 @@ install(FILES ${GenericTextEditor_headers}
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 )
 # SDK: Hydrax headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Hydrax/src
+install(DIRECTORY ${CMAKE_BINARY_DIR}/Dependencies/src/Hydrax
 	DESTINATION ${PREFIX}/sdk/dependencies/include
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 	PATTERN "*.cpp" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 )
 # SDK: SkyX headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
+install(DIRECTORY ${CMAKE_BINARY_DIR}/Dependencies/src/SkyX
 	DESTINATION ${PREFIX}/sdk/dependencies/include
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 	PATTERN "*.cpp" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 )
 # SDK: PagedGeometry headers
-FILE(GLOB pg_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
+FILE(GLOB pg_headers "${CMAKE_BINARY_DIR}/Dependencies/src/Pagedgeometry/include/*.h")
 install(FILES ${pg_headers}
 	DESTINATION ${PREFIX}/sdk/dependencies/include/OFS
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
@@ -91,7 +91,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
 	PATTERN "CMakeLists.txt" EXCLUDE
 )
 # SDK: Caelum headers
-FILE(GLOB caelum_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
+FILE(GLOB caelum_headers "${CMAKE_BINARY_DIR}/Dependencies/src/Caelum/include/*.h")
 install(FILES ${caelum_headers}
 	DESTINATION ${PREFIX}/sdk/dependencies/include/Caelum-0.5.0
 	CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
