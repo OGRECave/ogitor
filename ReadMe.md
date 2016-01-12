@@ -28,8 +28,6 @@ To be able to run Ogitor, you will need the media.zip archive downloaded and ext
 By default, the build script will download and install the media and projects archives, so you don't have to worry about getting them yourself.
 You can choose not to by setting OGITOR_DOWNLOAD_SAMPLEMEDIA and OGITOR_DOWNLOAD_SAMPLEPROJECT to FALSE when configuring the project with CMake.
 
-* [Building Ogitor](http://www.ogitor.org/wiki/getting_started/building_ogitor)
-
 ----
 
 ## Links
