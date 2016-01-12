@@ -242,12 +242,8 @@ set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 # Dependencies
 set(DEPENDENCIES_INCLUDES
     "${CMAKE_BINARY_DIR}/Dependencies/src/Pagedgeometry/include"
-    "${CMAKE_BINARY_DIR}/Dependencies/src/Caelum/include"
-    "${CMAKE_BINARY_DIR}/Dependencies/src/Hydrax"
-    "${CMAKE_BINARY_DIR}/Dependencies/src/Skyx"
     "${CMAKE_BINARY_DIR}/Dependencies/src/Meshmagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
-    #"${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/autowrapper"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptbuilder"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/scriptstdstring"
@@ -408,11 +404,8 @@ add_subdirectory(Dependencies/GenericImageEditor)
 #ENDIF(OGITOR_MESHMAGICK_INTERFACE)
 
 # Plugins
-add_subdirectory(Plugins/OgCaelum)
-add_subdirectory(Plugins/OgHydrax)
-add_subdirectory(Plugins/OgSkyX)
 add_subdirectory(Plugins/DotSceneSerializer)
-add_subdirectory(Plugins/OgModularZone)
+#add_subdirectory(Plugins/OgModularZone)
 add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
 add_subdirectory(Plugins/OgScriptEditor)

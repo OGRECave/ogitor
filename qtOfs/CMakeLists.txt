@@ -52,7 +52,12 @@ else(NOT Qt5Widgets_FOUND)
 		file(GLOB qtOfs_res ./res/*.rc)
 	endif(WIN32)
 
-    ogitor_add_executable(qtOfs WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
+	if(UNIX)
+	  ogitor_add_executable(qtOfs ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
+	endif(UNIX)
+	if(WIN32)
+	  ogitor_add_executable(qtOfs WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOfs_res})
+	endif(WIN32)
 	
 	qt5_use_modules(qtOfs Widgets)
 
@@ -61,7 +66,13 @@ else(NOT Qt5Widgets_FOUND)
 		set_property(TARGET qtOfs PROPERTY WIN32_EXECUTABLE 1) 
 	endif(WIN32)
 
-	target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Qt5::WinMain)
+	if(WIN32)
+	  target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Qt5::WinMain)
+	endif(WIN32)
+
+	if(UNIX)
+	  target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
+	endif(UNIX)
 
 	if(UNIX)
 		target_link_libraries(qtOfs optimized
