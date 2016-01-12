@@ -6,7 +6,7 @@
 ///  | |_| | |_| || |  | || |_| |  _ <
 ///   \___/ \____|___| |_| \___/|_| \_\
 ///
-/// Copyright (c) 2008-2015 Ogitor Team
+/// Copyright (c) 2008-2016 Ogitor Team
 ///
 /// Licensed under the MIT License
 ///////////////////////////////////////////////////////////////////////////////////*
@@ -34,15 +34,9 @@ You can choose not to by setting OGITOR_DOWNLOAD_SAMPLEMEDIA and OGITOR_DOWNLOAD
 
 ## Links
 
-* [Ogitor home page](http://www.ogitor.org/)
-
-* [Forum](http://forum.ogitor.org/)
+* [Ogitor home page](http://ogitor.bitbucket.org/)
 
 * [Mercurial repository](https://bitbucket.org/ogitor/ogitor)
-
-* [Ogitor Wiki](http://www.ogitor.org/wiki/Home)
-
-* [Issue Tracker](http://tracker.ogitor.org/projects/ogitor)
 
 * [google.com/+OgitorOrg](https://www.google.com/+OgitorOrg)
 
