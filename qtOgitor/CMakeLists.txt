@@ -273,9 +273,9 @@ else(NOT Qt5Widgets_FOUND)
 	qt5_use_modules(qtOgitor Widgets)
 
     if(UNIX AND NOT APPLE)
-        get_target_property(OGITORFILE qtOgitor LOCATION)
-        add_custom_command(TARGET qtOgitor POST_BUILD
-            COMMAND cp -r ${OGITORFILE} ../RunPath/bin/${TARGET})
+        #get_target_property(OGITORFILE qtOgitor LOCATION)
+        #add_custom_command(TARGET qtOgitor POST_BUILD
+        #    COMMAND cp -r ${OGITORFILE} ../RunPath/bin/${TARGET})
 
 		install(TARGETS qtOgitor
 			RUNTIME DESTINATION bin

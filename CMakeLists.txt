@@ -108,7 +108,8 @@ if(UNIX AND NOT OGITOR_DIST)
  set(CMAKE_INSTALL_RPATH ../lib ../Plugins)
 endif(UNIX AND NOT OGITOR_DIST)
 
-find_package(OGRE REQUIRED)
+find_package(OGRE 1.10 REQUIRED)
+link_directories(${OGRE_LIBRARY_DIRS})
 
 # Find Boost
 # Prefer static linking in all cases
@@ -184,10 +185,6 @@ if(APPLE)
 	set(MAC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mac")
 	set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
 endif(APPLE)
-
-if(NOT ((${OGRE_VERSION} VERSION_EQUAL "1.8.0") OR (${OGRE_VERSION} VERSION_GREATER "1.8.0")))
-    message(SEND_ERROR "You need Ogre 1.8 Byatis or later to build this.")
-endif()
 
 if(UNIX)
     get_filename_component(OGRE_PLUGIN_DIR_LINUX ${OGRE_Plugin_OctreeSceneManager_LIBRARY_REL} PATH)

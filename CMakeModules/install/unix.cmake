@@ -39,20 +39,20 @@ install(FILES ${GenericTextEditor_headers}
 )
 
 # SDK: Hydrax headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/src
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
-    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
-    PATTERN "*.cpp" EXCLUDE
-    PATTERN "CMakeLists.txt" EXCLUDE
-)
+#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/src
+#    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
+#    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+#    PATTERN "*.cpp" EXCLUDE
+#    PATTERN "CMakeLists.txt" EXCLUDE
+#)
 
 # SDK: SkyX headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
-    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
-    PATTERN "*.cpp" EXCLUDE
-    PATTERN "CMakeLists.txt" EXCLUDE
-)
+#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
+#    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
+#    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+#    PATTERN "*.cpp" EXCLUDE
+#    PATTERN "CMakeLists.txt" EXCLUDE
+#)
 
 # SDK: PagedGeometry headers
 file(GLOB pg_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
@@ -83,12 +83,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
 )
 
 # SDK: Caelum headers
-file(GLOB caelum_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
-install(FILES ${caelum_headers}
-    DESTINATION
-        ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Caelum-0.5.0
-    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
-)
+#file(GLOB caelum_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
+#install(FILES ${caelum_headers}
+#    DESTINATION
+#        ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Caelum-0.5.0
+#    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
+#)
 
 # TODO: MeshMagick
 # TODO: lua
