@@ -238,7 +238,7 @@ set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
 
 # Dependencies
 set(DEPENDENCIES_INCLUDES
-    "${CMAKE_BINARY_DIR}/Dependencies/src/Pagedgeometry/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/pagedgeometry/include"
     "${CMAKE_BINARY_DIR}/Dependencies/src/Meshmagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/autowrapper"

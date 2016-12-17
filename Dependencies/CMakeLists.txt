@@ -6,7 +6,7 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/lib")
 
 # External Projects
-include(ExternalProject)
+# include(ExternalProject)
 
 # Caelum
 #ExternalProject_Add(Caelum
@@ -27,14 +27,7 @@ include(ExternalProject)
 #set_target_properties(Hydrax PROPERTIES FOLDER Dependencies)
 
 # Pagedgeometry
-ExternalProject_Add(Pagedgeometry
-  PREFIX ${CMAKE_CURRENT_BINARY_DIR}
-  HG_REPOSITORY https://bitbucket.org/ogreaddons/pagedgeometry
-  CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/RunPath -DCMAKE_DEBUG_POSTFIX=${CMAKE_DEBUG_POSTFIX}
-  BUILD_IN_SOURCE 1
-  INSTALL_COMMAND ""
-)
-set_target_properties(Pagedgeometry PROPERTIES FOLDER Dependencies)
+add_subdirectory(pagedgeometry)
 
 # Skyx
 #ExternalProject_Add(Skyx

@@ -1,0 +1,3 @@
+[submodule "Dependencies/pagedgeometry"]
+	path = Dependencies/pagedgeometry
+	url = https://github.com/OGRECave/ogre-pagedgeometry.git
