@@ -26,10 +26,10 @@ set(OFS_HEADERS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-include_directories(${Boost_INCLUDE_DIR})
+find_package(Boost REQUIRED filesystem)
+include_directories(${Boost_INCLUDE_DIRS})
 
 ogitor_add_library(OFS SHARED ${OFS_SOURCE} ${OFS_HEADERS})
-
 target_link_libraries(OFS ${Boost_LIBRARIES})
 
 set(LIBRARY_OUTPUT_PATH  ../lib)
@@ -64,4 +64,3 @@ IF (APPLE)
         # Set the INSTALL_PATH so that Frameworks can be local
         set_target_properties(OFS PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
 ENDIF(APPLE)
-

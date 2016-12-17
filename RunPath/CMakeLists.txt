@@ -4,7 +4,7 @@
 
 # Set media target directory
 if(WIN32)
-	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/
 		DESTINATION ${PREFIX}
 		CONFIGURATIONS Release RelWithDebInfo MinSizeRel
 		PATTERN ".svn" EXCLUDE
@@ -33,7 +33,7 @@ if(WIN32)
 endif(WIN32)
 
 if(UNIX)
-	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
@@ -46,15 +46,15 @@ if(UNIX)
 	)
 
     if(OGITOR_DIST)
-        install(FILES ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg
-            ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg
+        install(FILES ${CMAKE_BINARY_DIR}/RunPath/bin/plugins.cfg
+            ${CMAKE_BINARY_DIR}/RunPath/bin/resources.cfg
             # Sample app only installed locally ?
             #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
             #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
             DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
         )
     else(OGITOR_DIST)
-        install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+        install(FILES ${CMAKE_SOURCE_DIR}/RunPath/bin/SampleAppConfig.xml
             #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
             DESTINATION bin
         )
@@ -62,6 +62,6 @@ if(UNIX)
 endif(UNIX)
 
 if (APPLE)
-	file(COPY Plugins/Icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Plugins)
+	file(COPY Plugins/Icons DESTINATION ${CMAKE_BINARY_DIR}/Plugins)
 endif(APPLE)
 # vim: set sw=2 ts=2 noet:

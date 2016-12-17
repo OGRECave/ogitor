@@ -1,5 +1,5 @@
 # SDK : Ogitor includes
-file(GLOB ogitor_headers "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include/*.h")
+file(GLOB ogitor_headers "${CMAKE_SOURCE_DIR}/Ogitor/include/*.h")
 install(FILES ${ogitor_headers}
     DESTINATION
         ${CMAKE_INSTALL_PREFIX}/include/ogitor
@@ -7,7 +7,7 @@ install(FILES ${ogitor_headers}
 )
 
 # SDK: OFS headers
-file(GLOB ofs_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/OFS/include/*.h")
+file(GLOB ofs_headers "${CMAKE_SOURCE_DIR}/Dependencies/OFS/include/*.h")
 install(FILES ${ofs_headers}
     DESTINATION
         ${CMAKE_INSTALL_PREFIX}/include/OFS
@@ -15,7 +15,7 @@ install(FILES ${ofs_headers}
 )
 
 # SDK: ImageConverter headers
-file(GLOB ImageConverter_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
+file(GLOB ImageConverter_headers "${CMAKE_SOURCE_DIR}/Dependencies/ImageConverter/include/*.hxx")
 install(FILES ${ImageConverter_headers}
     DESTINATION
         ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/ImageConverter
@@ -23,7 +23,7 @@ install(FILES ${ImageConverter_headers}
 )
 
 # SDK: GenericImageEditor headers
-file(GLOB GenericImageEditor_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericImageEditor/include/*.hxx")
+file(GLOB GenericImageEditor_headers "${CMAKE_SOURCE_DIR}/Dependencies/GenericImageEditor/include/*.hxx")
 install(FILES ${GenericImageEditor_headers}
     DESTINATION
         ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericImageEditor
@@ -31,7 +31,7 @@ install(FILES ${GenericImageEditor_headers}
 )
 
 # SDK: GenericTextEditor headers
-file(GLOB GenericTextEditor_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GenericTextEditor/include/*.hxx")
+file(GLOB GenericTextEditor_headers "${CMAKE_SOURCE_DIR}/Dependencies/GenericTextEditor/include/*.hxx")
 install(FILES ${GenericTextEditor_headers}
     DESTINATION
         ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/GenericTextEditor
@@ -39,7 +39,7 @@ install(FILES ${GenericTextEditor_headers}
 )
 
 # SDK: Hydrax headers
-#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/HYDRAX/src
+#install(DIRECTORY ${CMAKE_SOURCE_DIR}/Dependencies/HYDRAX/src
 #    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
 #    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 #    PATTERN "*.cpp" EXCLUDE
@@ -47,7 +47,7 @@ install(FILES ${GenericTextEditor_headers}
 #)
 
 # SDK: SkyX headers
-#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/SkyX
+#install(DIRECTORY ${CMAKE_SOURCE_DIR}/Dependencies/SkyX
 #    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies
 #    CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 #    PATTERN "*.cpp" EXCLUDE
@@ -55,22 +55,22 @@ install(FILES ${GenericTextEditor_headers}
 #)
 
 # SDK: PagedGeometry headers
-file(GLOB pg_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/PagedGeometry/include/*.h")
+file(GLOB pg_headers "${CMAKE_SOURCE_DIR}/Dependencies/pagedgeometry/include/*.h")
 install(FILES ${pg_headers}
     DESTINATION
-        ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/PagedGeometry
+        ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/pagedgeometry
     CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 )
 
 # SDK: Angelscript headers
-file(GLOB angelscript_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include/*.h")
+file(GLOB angelscript_headers "${CMAKE_SOURCE_DIR}/Dependencies/Angelscript/include/*.h")
 install(FILES ${angelscript_headers}
     DESTINATION
         ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
     CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/Dependencies/Angelscript/add_on
     DESTINATION
     ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Angelscript
     CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
@@ -83,7 +83,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on
 )
 
 # SDK: Caelum headers
-#file(GLOB caelum_headers "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
+#file(GLOB caelum_headers "${CMAKE_SOURCE_DIR}/Dependencies/Caelum-0.5.0/main/include/*.h")
 #install(FILES ${caelum_headers}
 #    DESTINATION
 #        ${CMAKE_INSTALL_PREFIX}/include/ogitor/dependencies/Caelum-0.5.0

@@ -1,6 +1,6 @@
 project(OgreOfsPlugin)
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/OFS/include")
+include_directories("${CMAKE_SOURCE_DIR}/Dependencies/OFS/include")
 include_directories(include)
 
 set(OgreOfsPlugin_hdrs
@@ -18,7 +18,7 @@ set(LIBRARY_OUTPUT_PATH ../lib)
 
 set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPORT")
 
-target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARY} OFS ${Boost_LIBRARIES})
+target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARIES} OFS ${Boost_regex_LIBRARY})
 
 if(MSVC_IDE)
 	add_custom_command(TARGET OgreOfsPlugin PRE_BUILD
@@ -37,7 +37,7 @@ IF(UNIX AND NOT APPLE)
 
     if(OGITOR_DIST)
         install(TARGETS OgreOfsPlugin
-            LIBRARY DESTINATION ${OGRE_PLUGIN_DIR_LINUX}
+            LIBRARY DESTINATION ${OGRE_PLUGIN_DIR}
             CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
     else(OGITOR_DIST)
         install(TARGETS OgreOfsPlugin

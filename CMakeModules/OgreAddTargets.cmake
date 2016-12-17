@@ -55,7 +55,7 @@ macro(create_unity_build_files TARGETNAME)
   list(REMOVE_DUPLICATES _SOURCES)
 
   if (OGITOR_UNITY_BUILD)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+    include_directories(${CMAKE_SOURCE_DIR})
     # create Unity compilation units
     # all source files given will be put into a certain number of
     # compilation units.

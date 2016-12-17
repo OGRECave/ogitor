@@ -32,28 +32,17 @@ set(OGITOR_OGSCENE_FORMAT_VERSION "4")
 message(STATUS "Building Ogitor version ${OGITOR_VERSION_STRING}")
 
 set(abi_version ${OGITOR_VERSION_STRING})
-
-# OGITOR_DIST (global install) is TRUE by default for Linux
-if(UNIX AND NOT APPLE)
-    option(OGITOR_DIST "Ogitor Installer Installation" TRUE)
-else(UNIX AND NOT APPLE)
-    option(OGITOR_DIST "Ogitor Installer Installation" FALSE)
-endif(UNIX AND NOT APPLE)
+option(OGITOR_DIST "Ogitor Installer Installation" FALSE)
 message(STATUS "OGITOR_DIST is set to ${OGITOR_DIST}")
 
 # Handle install prefix
-# On Linux can't change global install prefix to anything but /usr/local
 if(WIN32)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-        set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/RunPath" CACHE PATH "Ogitor install prefix" FORCE)
+        set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/RunPath" CACHE PATH "Ogitor install prefix" FORCE)
     endif (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 else(WIN32)
     if(NOT OGITOR_DIST)
-        set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/RunPath" CACHE PATH "Ogitor install prefix" FORCE)
-    else(NOT OGITOR_DIST)
-        if(NOT CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-            set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Ogitor install prefix" FORCE)
-        endif (NOT CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/RunPath" CACHE PATH "Ogitor install prefix" FORCE)
     endif(NOT OGITOR_DIST)
 endif(WIN32)
 
@@ -62,18 +51,12 @@ option(OGITOR_MESHMAGICK_INTERFACE "Use MeshMagick widget" FALSE)
 option(OGITOR_DOWNLOAD_SAMPLEPROJECT "Download and install sample project" TRUE)
 option(OGITOR_DOWNLOAD_SAMPLEMEDIA "Download and install sample media" TRUE)
 
-set(OGITOR_PREPROCESSOR "OGITOR_EXPORT")
-
-set(OGITOR_QT_PREPROCESSOR "")
-
 # Somehow, relative paths doesn't work on Linux when installing files..
 if(UNIX)
     set(PREFIX ${CMAKE_INSTALL_PREFIX})
 else()
     set(PREFIX "./")
 endif()
-
-set(OGITOR_WORK_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
     # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
@@ -85,23 +68,7 @@ if(WIN32)
 	set(CMAKE_DEBUG_POSTFIX "_d")
 endif(WIN32)
 
-if(NOT (MSVC_VERSION LESS 1500) AND WIN32)
-	# Option is to enable the /MP switch for Visual Studio 2005 or later
-	option(OGITOR_MSVC_ENABLE_MP
-		"Set to ON to build Ogitor with the /MP option (Visual Studio 2005 and above)." ON)
-	mark_as_advanced(OGITOR_MSVC_ENABLE_MP)
-	if(OGITOR_MSVC_ENABLE_MP)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-	endif(OGITOR_MSVC_ENABLE_MP)
-	message(STATUS "Setting Visual Studio 2005+ option /MP to ${OGITOR_MSVC_ENABLE_MP}")
-	#add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-	#add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-	#add_definitions(-DNOMINMAX)
-else()
-	set(OGITOR_MSVC_ENABLE_MP FALSE)
-endif()
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 
 if(UNIX AND NOT OGITOR_DIST)
  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
@@ -111,98 +78,6 @@ endif(UNIX AND NOT OGITOR_DIST)
 find_package(OGRE 1.10 REQUIRED)
 link_directories(${OGRE_LIBRARY_DIRS})
 
-# Find Boost
-# Prefer static linking in all cases
-if (NOT OGRE_BUILD_PLATFORM_IPHONE)
-	if (WIN32 OR APPLE)
-		set(Boost_USE_STATIC_LIBS TRUE)
-	else ()
-		# Statically linking boost to a dynamic Ogre build doesn't work on Linux 64bit
-		set(Boost_USE_STATIC_LIBS ${OGRE_STATIC})
-	endif ()
-
-	if (APPLE AND OGRE_BUILD_PLATFORM_APPLE_IOS)
-		set(Boost_USE_MULTITHREADED OFF)
-	endif()
-
-	set(Boost_ADDITIONAL_VERSIONS "1.58" "1.58.0" "1.57" "1.57.0" "1.56" "1.56.0" "1.55" "1.55.0" "1.54" "1.54.0" "1.53" "1.53.0" "1.52" "1.52.0" "1.51" "1.51.0" "1.50" "1.50.0" "1.49" "1.49.0" "1.48" "1.48.0" "1.47" "1.47.0" "1.46" "1.46.0" "1.45" "1.45.0" "1.44" "1.44.0" "1.42" "1.42.0" "1.41.0" "1.41" "1.40.0" "1.40")
-
-	# Components that need linking (NB does not include header-only components like bind)
-	set(OGRE_BOOST_COMPONENTS thread date_time system regex filesystem)
-
-	find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-
-	if (NOT Boost_FOUND)
-		# Try again with the other type of libs
-		if(Boost_USE_STATIC_LIBS)
-			set(Boost_USE_STATIC_LIBS OFF)
-		else()
-			set(Boost_USE_STATIC_LIBS ON)
-		endif()
-
-		find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-	endif()
-
-	if(Boost_FOUND AND Boost_VERSION GREATER 104900)
-		if(Boost_VERSION GREATER 105300)
-			set(OGRE_BOOST_COMPONENTS thread date_time system atomic chrono regex filesystem)
-		else()
-			set(OGRE_BOOST_COMPONENTS thread date_time system chrono regex filesystem)
-		endif()
-		find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
-	endif()
-
-	if(Boost_FOUND AND NOT WIN32)
-	  list(REMOVE_DUPLICATES Boost_LIBRARIES)
-	endif()
-
-	if (Boost_FOUND)
-		set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
-		set(OGRE_INCLUDE_DIRS ${OGRE_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-	endif (Boost_FOUND)
-endif(NOT OGRE_BUILD_PLATFORM_IPHONE)
-
-if(UNIX AND NOT APPLE)
-    # Newer ld versions need this linked explicitly
-    find_package(Threads REQUIRED)
-    add_definitions(${CMAKE_THREAD_LIBS_INIT})
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed ${CMAKE_THREAD_LIBS_INIT}")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-as-needed ${CMAKE_THREAD_LIBS_INIT}")
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--no-as-needed ${CMAKE_THREAD_LIBS_INIT}")
-endif(UNIX AND NOT APPLE)
-
-if(APPLE)
-    # Newer ld versions need this linked explicitly
-    find_package(Threads REQUIRED)
-    add_definitions(${CMAKE_THREAD_LIBS_INIT})
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl ${CMAKE_THREAD_LIBS_INIT}")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl ${CMAKE_THREAD_LIBS_INIT}")
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl ${CMAKE_THREAD_LIBS_INIT}")
-
-    find_package(CG REQUIRED)
-
-	# Resources (Only used by OSX)
-	set(MAC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Mac")
-	set(RUNPATH "${CMAKE_CURRENT_SOURCE_DIR}/RunPath")
-endif(APPLE)
-
-if(UNIX)
-    get_filename_component(OGRE_PLUGIN_DIR_LINUX ${OGRE_Plugin_OctreeSceneManager_LIBRARY_REL} PATH)
-    set (OGRE_PLUGIN_DIR_LINUX ${OGRE_PLUGIN_DIR_LINUX} CACHE STRING "Ogre plugin dir (release)")
-endif(UNIX)
-
-if(WIN32)
-if(NOT (MSVC_VERSION LESS 1500) )
-	option(OGITOR_BUILD_MSVC_ZM "Add /Zm256 parameter to Visual Studio to fix PCH error" ON)
-else()
-	set(OGITOR_BUILD_MSVC_ZM OFF CACHE BOOL "Forcing switch off /Zm256 for older Visual Studio versions" FORCE)
-endif()
-
-if(OGITOR_BUILD_MSVC_ZM)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm256")
-endif ()
-endif(WIN32)
-
 include(CheckTypeSize)
 CHECK_TYPE_SIZE("void*" OGITOR_PTR_SIZE BUILTIN_TYPES_ONLY)
 if (OGITOR_PTR_SIZE EQUAL 8)
@@ -210,7 +85,6 @@ if (OGITOR_PTR_SIZE EQUAL 8)
 else ()
 	set(OGITOR_PLATFORM_X64 FALSE)
 endif ()
-#endif(WIN32)
 
 if(UNIX)
   if(NOT OGITOR_PLATFORM_X64)
@@ -227,14 +101,10 @@ if(UNIX)
 endif(UNIX)
 
 include_directories(${OGRE_INCLUDE_DIRS})
-include_directories(${OGRE_Terrain_INCLUDE_DIR})
-include_directories(${OGRE_Paging_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIR})
-#library_directories(${Boost_LIBRARY_DIR})
 
 # Ogitor
-set(OGITOR_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/include")
-set(OGITOR_LIBPATH  "${CMAKE_CURRENT_SOURCE_DIR}/Ogitor/lib")
+set(OGITOR_INCLUDES "${CMAKE_SOURCE_DIR}/Ogitor/include")
+set(OGITOR_LIBPATH  "${CMAKE_SOURCE_DIR}/Ogitor/lib")
 
 # Dependencies
 set(DEPENDENCIES_INCLUDES
@@ -262,8 +132,8 @@ set(DEPENDENCIES_LIBPATH ${CMAKE_BINARY_DIR}/Dependencies/lib)
 #set_target_properties(INSTALL PROPERTIES SOLUTION_FOLDER CMake)
 #set_target_properties(PACKAGE PROPERTIES SOLUTION_FOLDER CMake)
 
-file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/Plugins/debug)
-file(MAKE_DIRECTORY ${OGITOR_WORK_DIR}/RunPath/bin)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/RunPath/Plugins/debug)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/RunPath/bin)
 
 # Unity build options
 # A Unity build includes all sources files in just a few actual compilation units
@@ -284,8 +154,7 @@ if(UNIX)
         set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
         set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib/ogitor" CACHE PATH "Ogitor plugins path" FORCE)
         set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
-        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path" FORCE)
-        set(OGITOR_LIBOGREOFSPLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "libOgreOfsPlugin path" FORCE)
+        set(OGITOR_LIBOGREOFSPLUGIN_PATH "${OGRE_PLUGIN_DIR}" CACHE PATH "libOgreOfsPlugin path" FORCE)
     else(OGITOR_DIST)
         # Doing local install
         set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
@@ -297,14 +166,13 @@ if(UNIX)
         set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
         set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path" FORCE)
         set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
-        set(OGITOR_OGRE_PLUGIN_PATH "${OGRE_PLUGIN_DIR_LINUX}" CACHE PATH "Ogre plugins path" FORCE)
         set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "libOgreOfsPlugin path" FORCE)
     endif(OGITOR_DIST)
 	if (APPLE)
 	set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
 	endif(APPLE)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/plugins.cfg)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_WORK_DIR}/RunPath/bin/resources.cfg)
+	file(COPY ${OGRE_CONFIG_DIR}/plugins.cfg DESTINATION ${CMAKE_BINARY_DIR}/RunPath/bin/)
+	configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_BINARY_DIR}/RunPath/bin/resources.cfg)
 else(UNIX)
     # We are on Windows
     set(OGITOR_BIN_PATH "." CACHE PATH "Ogitor bin path" FORCE)
@@ -316,9 +184,8 @@ else(UNIX)
     set(OGITOR_SCRIPTS_PATH "../Scripts" CACHE PATH "Ogitor scripts path" FORCE)
     set(OGITOR_PLUGIN_PATH "../Plugins" CACHE PATH "Ogitor plugins path" FORCE)
     set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
-    set(OGITOR_OGRE_PLUGIN_PATH "." CACHE PATH "Ogre plugins path" FORCE)
     set(OGITOR_LIBOGREOFSPLUGIN_PATH "." CACHE PATH "libOgreOfsPlugin path" FORCE)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_INSTALL_PREFIX}/bin/resources.cfg)
+	configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_INSTALL_PREFIX}/bin/resources.cfg)
 endif(UNIX)
 
 # hide advanced options
@@ -332,12 +199,11 @@ endif(UNIX)
 #    OGITOR_SCRIPTS_PATH
 #    OGITOR_PLUGIN_PATH
 #    OGITOR_PLUGIN_ICON_PATH
-#    OGITOR_OGRE_PLUGIN_PATH
 #    OGITOR_LIBOGREOFSPLUGIN_PATH
 #)
 
 # Error out if old Media folder is detected
-if(UNIX AND NOT APPLE AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media/EditorResources)
+if(UNIX AND NOT APPLE AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/Media/EditorResources)
   message(SEND_ERROR "An old version of the Media folder was detected in: ${CMAKE_CURRENT_SOURCE_DIR}/RunPath .\nMake sure that you've downloaded the latest version of 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
 endif()
 if(NOT OGITOR_DOWNLOAD_SAMPLEMEDIA)
@@ -384,7 +250,7 @@ if(OGITOR_DOWNLOAD_SAMPLEMEDIA)
 endif(OGITOR_DOWNLOAD_SAMPLEMEDIA)
 
 # Generate OgitorsGlobals.cpp
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals.cpp.in ${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp)
+configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals.cpp.in ${CMAKE_BINARY_DIR}/Ogitor/src/OgitorsGlobals.cpp)
 
 add_subdirectory(Ogitor)
 
@@ -442,9 +308,9 @@ if(UNIX)
     include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/unix.cmake)
 
     if(OGITOR_DIST)
-        FILE(GLOB ogitor_cmake_scripts "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
+        FILE(GLOB ogitor_cmake_scripts "${CMAKE_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
         install(FILES ${ogitor_cmake_scripts}
-            DESTINATION "${CMAKE_ROOT}/Modules"
+            DESTINATION lib/ogitor/cmake
             CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel
         )
     endif(OGITOR_DIST)
@@ -464,7 +330,7 @@ if(WIN32 AND NOT UNIX)
 
     #include (InstallRequiredSystemLibraries)
 
-    set(CPACK_INSTALL_CMAKE_PROJECTS "${OGITOR_WORK_DIR};Ogitor;ALL;/")
+    set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};Ogitor;ALL;/")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Ogre Editing Framework")
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "Ogitor_${CPACK_PACKAGE_VERSION}")
     set(CPACK_PACKAGE_NAME "Ogitor_${CPACK_PACKAGE_VERSION}")

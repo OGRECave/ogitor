@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.4)
 project(Dependencies)
 
 SET(CMAKE_DEBUG_POSTFIX "_d")
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/lib")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/lib")
 
 # External Projects
 # include(ExternalProject)

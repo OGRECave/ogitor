@@ -15,11 +15,9 @@ set(OgreTerrainConverter_HEADERS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-include_directories(${Boost_INCLUDE_DIR})
-
 ogitor_add_library(OgreTerrainConverter SHARED ${OgreTerrainConverter_SOURCE} ${OgreTerrainConverter_HEADERS})
 
-target_link_libraries(OgreTerrainConverter ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} ${Boost_LIBRARIES})
+target_link_libraries(OgreTerrainConverter ${OGRE_LIBRARIES})
 
 set(LIBRARY_OUTPUT_PATH  ../lib)
 

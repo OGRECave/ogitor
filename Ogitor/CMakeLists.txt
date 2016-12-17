@@ -133,7 +133,7 @@ set(Ogitor_srcs
 	./src/tinyxml.cpp
 	./src/tinyxmlerror.cpp
 	./src/tinyxmlparser.cpp
-	${OGITOR_WORK_DIR}/Ogitor/src/OgitorsGlobals.cpp	
+	${CMAKE_BINARY_DIR}/Ogitor/src/OgitorsGlobals.cpp	
 )
 
 #add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
@@ -150,7 +150,9 @@ set_target_properties(Ogitor PROPERTIES COMPILE_DEFINITIONS "${OGITOR_PREPROCESS
 message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 
 message(STATUS ${OGRE_LIBRARY})
-target_link_libraries(Ogitor ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} OFS OgreTerrainConverter ${Boost_LIBRARIES} PagedGeometry)
+
+find_package(Boost REQUIRED regex)
+target_link_libraries(Ogitor ${OGRE_LIBRARIES} OFS OgreTerrainConverter ${Boost_LIBRARIES} PagedGeometry)
 
 # specify a precompiled header to use
 use_precompiled_header(Ogitor 
@@ -163,7 +165,7 @@ if(APPLE)
         if (NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
             message(FATAL_ERROR "OGRE Paging and Terrain Components are required dependencies. If you are sure you have them, make sure to set OGRE_SDK to the correct path.")
         endif(NOT OGRE_Paging_FOUND OR NOT OGRE_Terrain_FOUND)
-	target_link_libraries(Ogitor ${Cocoa_LIBRARIES} ${OGRE_LIBRARY} ${OGRE_Terrain_LIBRARY} ${OGRE_Paging_LIBRARY} PagedGeometry OFS ${Boost_LIBRARIES})
+	target_link_libraries(Ogitor ${Cocoa_LIBRARIES})
 	# Setup to be a framework
 	set_target_properties(Ogitor PROPERTIES FRAMEWORK TRUE)
 	set_target_properties(Ogitor PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
