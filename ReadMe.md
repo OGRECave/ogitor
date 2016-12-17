@@ -1,20 +1,6 @@
-```
-/*/////////////////////////////////////////////////////////////////////////////////
-///    ___   ____ ___ _____ ___  ____
-///   / _ \ / ___|_ _|_   _/ _ \|  _ \
-///  | | | | |  _ | |  | || | | | |_) |
-///  | |_| | |_| || |  | || |_| |  _ <
-///   \___/ \____|___| |_| \___/|_| \_\
-///
-/// Copyright (c) 2008-2016 Ogitor Team
-///
-/// Licensed under the MIT License
-///////////////////////////////////////////////////////////////////////////////////*
-```
+<p align="center"><img alt="" src="Resources/ogitorweblogo.png"></p>
 
-_This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing environment for OGRE (www.ogre3d.org)_
-
-**Note: Ogitor now depends on Ogre 1.10!**
+_This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing environment for OGRE_
 
 **Running OGITOR**
 
