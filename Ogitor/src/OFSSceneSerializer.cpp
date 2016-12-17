@@ -169,7 +169,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
 
     TiXmlDocument docImport;
 
-    if(!docImport.LoadFromMemory(file_data, file_size))
+    if(docImport.Parse(file_data) == 0)
     {
         delete [] file_data;
         return SCF_ERRFILE;

@@ -596,7 +596,7 @@ void OgitorsClipboardManager::addTemplateFromFile(Ogre::String filename, bool is
         mFile->read(fileHandle, file_data, (unsigned int)file_size);
         mFile->closeFile(fileHandle);
 
-        if(!docImport.LoadFromMemory(file_data, (unsigned int)file_size))
+        if(docImport.Parse(file_data) == 0)
         {
             delete [] file_data;
             return;
