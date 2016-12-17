@@ -337,9 +337,9 @@ int main(int argc, char *argv[])
     }
 
 #ifdef _DEBUG
-    setupOgre(resourcePath() + Ogre::String("plugins_debug.cfg"), Ogre::String("ogre.cfg"), Ogre::String("ogitor.log"));
+    setupOgre(Ogitors::Globals::OGRE_CONFIG_PATH + "/plugins_d.cfg", Ogre::String("ogre.cfg"), Ogre::String("ogitor.log"));
 #else
-    setupOgre(resourcePath() + Ogre::String("plugins.cfg"), Ogre::String("ogre.cfg"), Ogre::String("ogitor.log"));
+    setupOgre(Ogitors::Globals::OGRE_CONFIG_PATH + "/plugins.cfg", Ogre::String("ogre.cfg"), Ogre::String("ogitor.log"));
 #endif
 
     readRecentFiles(settings);

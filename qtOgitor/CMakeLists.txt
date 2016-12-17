@@ -305,11 +305,6 @@ else(NOT Qt5Widgets_FOUND)
             PATTERN     "*.exe" EXCLUDE
             PATTERN     "*.bat" EXCLUDE
         )
-        install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
-            PATTERN     "qt_*.qm"
-            PATTERN     "ogitor_*.qm" EXCLUDE
-        )
     elseif(WINDOWS)
         # ie Windows
         install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages

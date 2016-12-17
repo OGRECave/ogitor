@@ -10,8 +10,6 @@ if(WIN32)
 		PATTERN ".svn" EXCLUDE
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
-		PATTERN "languages" EXCLUDE
-		PATTERN "sdk" EXCLUDE
 	)
 
 	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
@@ -21,8 +19,6 @@ if(WIN32)
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "bin" EXCLUDE
 		PATTERN "Debug" EXCLUDE
-		PATTERN "languages" EXCLUDE
-		PATTERN "sdk" EXCLUDE
 	)
 
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
@@ -37,16 +33,14 @@ if(UNIX)
 		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
 		PATTERN "CMakeLists.txt" EXCLUDE
 		PATTERN "Debug" EXCLUDE
-		PATTERN "languages" EXCLUDE
         PATTERN "Projects" EXCLUDE
 		PATTERN "bin" EXCLUDE
 		PATTERN ".xml" EXCLUDE
 		PATTERN "Plugins/icon_backup" EXCLUDE
-        PATTERN "sdk" EXCLUDE
 	)
 
     if(OGITOR_DIST)
-        install(FILES ${CMAKE_BINARY_DIR}/RunPath/bin/plugins.cfg
+        install(FILES
             ${CMAKE_BINARY_DIR}/RunPath/bin/resources.cfg
             # Sample app only installed locally ?
             #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml

@@ -160,9 +160,6 @@ install(FILES ${OGRE_PLUGIN_DIR_DBG}/OgreMain_d.dll
     DESTINATION bin
     CONFIGURATIONS Debug)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins.wincfg.in ${CMAKE_INSTALL_PREFIX}/bin/plugins.cfg)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/Templates/plugins_d.wincfg.in ${CMAKE_INSTALL_PREFIX}/bin/plugins_debug.cfg)
-
 # Qt5 DLLs
 file(TO_CMAKE_PATH $ENV{QTDIR} QTDIR) 
 set(QT_DLL_DIR "${QTDIR}/bin")
