@@ -87,36 +87,8 @@ else(NOT Qt5Widgets_FOUND)
     set_target_properties(OgMaterialEditor PROPERTIES VERSION ${OgMaterialEditor_VERSION} SOVERSION ${OgMaterialEditor_VERSION_MAJOR})
 	set_target_properties(OgMaterialEditor PROPERTIES	COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgMaterialEditor PROPERTIES SOLUTION_FOLDER Plugins)
-
-	if(UNIX AND NOT APPLE)
-		add_custom_command(TARGET OgMaterialEditor PRE_BUILD
-			COMMAND mkdir -p ../../RunPath/Plugins)
-		add_custom_command(TARGET OgMaterialEditor POST_BUILD
-			COMMAND cp -r ../lib/libOgMaterialEditor.* ../../RunPath/Plugins/)
-	endif(UNIX AND NOT APPLE)
-
-        if(MSVC_IDE)
-		add_custom_command(TARGET OgMaterialEditor PRE_BUILD
-			COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
-		add_custom_command(TARGET OgMaterialEditor POST_BUILD
-			COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
-		add_custom_command(TARGET OgMaterialEditor POST_BUILD
-			COMMAND if exist ..\\..\\RunPath\\Plugins\\OgMaterialEditor_d.dll move ..\\..\\RunPath\\Plugins\\OgMaterialEditor_d.dll ..\\..\\RunPath\\Plugins\\debug)
-        endif(MSVC_IDE)
-        if(WIN32)
-		install(TARGETS OgMaterialEditor
-			RUNTIME DESTINATION Plugins
-			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-	endif(WIN32)
-
-    IF(UNIX AND NOT APPLE)
-        if(OGITOR_DIST)
-            install(TARGETS OgMaterialEditor
-                LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
-                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        endif(OGITOR_DIST)
-    ENDIF(UNIX AND NOT APPLE)
-
+	
+	install(TARGETS OgMaterialEditor LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

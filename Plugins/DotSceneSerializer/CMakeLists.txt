@@ -40,40 +40,7 @@ set_target_properties(DotSceneSerializer PROPERTIES VERSION ${DotSceneSerializer
 set_target_properties(DotSceneSerializer PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(DotSceneSerializer PROPERTIES SOLUTION_FOLDER Plugins)
 
-if(UNIX AND NOT APPLE)
-	add_custom_command(TARGET DotSceneSerializer PRE_BUILD
-		COMMAND mkdir -p ../../RunPath/Plugins)
-	add_custom_command(TARGET DotSceneSerializer POST_BUILD
-		COMMAND cp -r ../lib/libDotSceneSerializer.* ../../RunPath/Plugins/)
-endif(UNIX AND NOT APPLE)
-
-if(MSVC_IDE)
-	add_custom_command(TARGET DotSceneSerializer PRE_BUILD
-		COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
-	add_custom_command(TARGET DotSceneSerializer POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
-	add_custom_command(TARGET DotSceneSerializer POST_BUILD
-		COMMAND if exist ..\\..\\RunPath\\Plugins\\DotSceneSerializer_d.dll move ..\\..\\RunPath\\Plugins\\DotSceneSerializer_d.dll ..\\..\\RunPath\\Plugins\\debug)
-endif(MSVC_IDE)
-if(WIN32)
-	install(TARGETS DotSceneSerializer
-		RUNTIME DESTINATION Plugins
-		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-endif(WIN32)
-
-IF(UNIX AND NOT APPLE)
-    if(OGITOR_DIST)
-        install(TARGETS DotSceneSerializer
-            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-    endif(OGITOR_DIST)
-ENDIF(UNIX AND NOT APPLE)
-
-if (APPLE)
-	install(TARGETS DotSceneSerializer
-            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-endif(APPLE)
+install(TARGETS DotSceneSerializer LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
 
 
 # vim: set sw=2 ts=2 noet:

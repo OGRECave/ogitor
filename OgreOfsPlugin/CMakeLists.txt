@@ -20,37 +20,5 @@ set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPOR
 
 target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARIES} OFS ${Boost_regex_LIBRARY})
 
-if(MSVC_IDE)
-	add_custom_command(TARGET OgreOfsPlugin PRE_BUILD
-		COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
-	add_custom_command(TARGET OgreOfsPlugin POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
-endif(MSVC_IDE)
-if(WIN32)
-	install(TARGETS OgreOfsPlugin RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-endif(WIN32)
-
-IF(UNIX AND NOT APPLE)
-
-    set_target_properties( OgreOfsPlugin PROPERTIES OUTPUT_NAME "OgreOfsPlugin" VERSION
-    ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
-
-    if(OGITOR_DIST)
-        install(TARGETS OgreOfsPlugin
-            LIBRARY DESTINATION ${OGRE_PLUGIN_DIR}
-            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-    else(OGITOR_DIST)
-        install(TARGETS OgreOfsPlugin
-            LIBRARY DESTINATION lib
-            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-    endif(OGITOR_DIST)
-
-ENDIF(UNIX AND NOT APPLE)
-
-if (APPLE)
-	install(TARGETS OgreOfsPlugin
-            LIBRARY DESTINATION lib
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-endif(APPLE)
-
+install(TARGETS OgreOfsPlugin LIBRARY DESTINATION ${OGITOR_LIBOGREOFSPLUGIN_PATH})
 # vim: set sw=2 ts=2 noet:

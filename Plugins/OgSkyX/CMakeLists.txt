@@ -43,32 +43,5 @@ endif(NOT OGITOR_DIST)
 set_target_properties(OgSkyX PROPERTIES VERSION ${OgSkyX_VERSION} SOVERSION ${OgSkyX_VERSION_MAJOR})
 set_target_properties(OgSkyX PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(OgSkyX PROPERTIES SOLUTION_FOLDER Plugins)
-
-if(UNIX AND NOT APPLE)
-	add_custom_command(TARGET OgSkyX PRE_BUILD
-		COMMAND mkdir -p ../../RunPath/Plugins)
-	add_custom_command(TARGET OgSkyX POST_BUILD
-		COMMAND cp -r ../lib/libOgSkyX.* ../../RunPath/Plugins/)
-endif(UNIX AND NOT APPLE)
-
-if(MSVC_IDE)
-	add_custom_command(TARGET OgSkyX PRE_BUILD
-		COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
-	add_custom_command(TARGET OgSkyX POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins & if exist ..\\..\\RunPath\\Plugins\\OgSkyX_d.dll move ..\\..\\RunPath\\Plugins\\OgSkyX_d.dll ..\\..\\RunPath\\Plugins\\debug)
-endif(MSVC_IDE)
-if(WIN32)
-	install(TARGETS OgSkyX
-		RUNTIME DESTINATION Plugins
-		CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-endif(WIN32)
-
-IF(UNIX AND NOT APPLE)
-    if(OGITOR_DIST)
-        install(TARGETS OgSkyX
-            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-    endif(OGITOR_DIST)
-ENDIF(UNIX AND NOT APPLE)
-
+install(TARGETS OgSkyX LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
 # vim: set sw=2 ts=2 noet:

@@ -66,35 +66,8 @@ else(NOT QT4_FOUND)
 	set_target_properties(ogQtExample PROPERTIES VERSION ${ogQtExample_VERSION} SOVERSION ${ogQtExample_VERSION_MAJOR})
 	set_target_properties(ogQtExample PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(ogQtExample PROPERTIES SOLUTION_FOLDER Plugins)
-
-	if(UNIX AND NOT APPLE)
-		add_custom_command(TARGET ogQtExample PRE_BUILD
-			COMMAND mkdir -p ../../RunPath/Plugins)
-		add_custom_command(TARGET ogQtExample POST_BUILD
-			COMMAND cp -r ../lib/ogQtExample.* ../../RunPath/Plugins/)
-	endif(UNIX AND NOT APPLE)
-
-	if(WIN32)
-		add_custom_command(TARGET ogQtExample PRE_BUILD
-			COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
-		add_custom_command(TARGET ogQtExample POST_BUILD
-			COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
-		add_custom_command(TARGET ogQtExample POST_BUILD
-			COMMAND if exist ..\\..\\RunPath\\Plugins\\ogQtExample_d.dll move ..\\..\\RunPath\\Plugins\\ogQtExample_d.dll ..\\..\\RunPath\\Plugins\\debug)
-
-		install(TARGETS ogQtExample
-			RUNTIME DESTINATION Plugins
-			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-	endif(WIN32)
-
-    IF(UNIX AND NOT APPLE)
-        if(OGITOR_DIST)
-            install(TARGETS ogQtExample
-                LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
-                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        endif(OGITOR_DIST)
-    ENDIF(UNIX AND NOT APPLE)
-
+		
+	install(TARGETS ogQtExample LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:

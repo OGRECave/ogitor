@@ -80,35 +80,8 @@ else(NOT Qt5Widgets_FOUND)
 	set_target_properties(OgScriptEditor PROPERTIES VERSION ${OgScriptEditor_VERSION} SOVERSION ${OgScriptEditor_VERSION_MAJOR})
 	set_target_properties(OgScriptEditor PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgScriptEditor PROPERTIES SOLUTION_FOLDER Plugins)
-
-	if(UNIX AND NOT APPLE)
-		add_custom_command(TARGET OgScriptEditor PRE_BUILD
-			COMMAND mkdir -p ../../RunPath/Plugins)
-		add_custom_command(TARGET OgScriptEditor POST_BUILD
-			COMMAND cp -r ../lib/libOgScriptEditor.* ../../RunPath/Plugins/)
-	endif(UNIX AND NOT APPLE)
-
-        if(MSVC_IDE)
-		add_custom_command(TARGET OgScriptEditor PRE_BUILD
-			COMMAND if not exist ..\\..\\RunPath\\Plugins mkdir ..\\..\\RunPath\\Plugins)
-		add_custom_command(TARGET OgScriptEditor POST_BUILD
-			COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\Plugins)
-		add_custom_command(TARGET OgScriptEditor POST_BUILD
-			COMMAND if exist ..\\..\\RunPath\\Plugins\\OgScriptEditor_d.dll move ..\\..\\RunPath\\Plugins\\OgScriptEditor_d.dll ..\\..\\RunPath\\Plugins\\debug)
-        endif(MSVC_IDE)
-        if(WIN32)
-		install(TARGETS OgScriptEditor
-			RUNTIME DESTINATION Plugins
-			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-	endif(WIN32)
-
-    if(UNIX AND NOT APPLE)
-        if(OGITOR_DIST)
-            install(TARGETS OgScriptEditor
-                LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ogitor
-                CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        endif(OGITOR_DIST)
-    endif(UNIX AND NOT APPLE)
+	
+	install(TARGETS OgScriptEditor LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

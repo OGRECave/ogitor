@@ -144,34 +144,27 @@ set(OGITOR_UNITY_FILES_PER_UNIT "50" CACHE STRING "Number of files per compilati
 # configure global paths for OgitorsGlobals
 if(UNIX)
     set(DBG_POSTFIX "")
+	set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
+	set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
+	set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor" CACHE PATH "Ogitor resource path" FORCE)
+	set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/languages" CACHE PATH "Ogitor languages path" FORCE)
+	set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Media" CACHE PATH "Ogitor media path" FORCE)
+	set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
+	set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
+	set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib/ogitor" CACHE PATH "Ogitor plugins path" FORCE)
+    set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
+	
     if(OGITOR_DIST)
-        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
-        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
-        set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor" CACHE PATH "Ogitor resource path" FORCE)
-        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/languages" CACHE PATH "Ogitor languages path" FORCE)
-        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Media" CACHE PATH "Ogitor media path" FORCE)
-        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
-        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
-        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib/ogitor" CACHE PATH "Ogitor plugins path" FORCE)
-        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
         set(OGITOR_LIBOGREOFSPLUGIN_PATH "${OGRE_PLUGIN_DIR}" CACHE PATH "libOgreOfsPlugin path" FORCE)
     else(OGITOR_DIST)
-        # Doing local install
-        set(OGITOR_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor bin path" FORCE)
-        set(OGITOR_RUN_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor run path" FORCE)
-        set(OGITOR_RESOURCE_PATH "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Ogitor resource path" FORCE)
-        set(OGITOR_LANGUAGE_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/languages" CACHE PATH "Ogitor languages path" FORCE)
-        set(OGITOR_MEDIA_PATH "${CMAKE_INSTALL_PREFIX}/Media" CACHE PATH "Ogitor media path" FORCE)
-        set(OGITOR_PROJECTS_PATH "${CMAKE_INSTALL_PREFIX}/Projects" CACHE PATH "Ogitor Projects path" FORCE)
-        set(OGITOR_SCRIPTS_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Scripts" CACHE PATH "Ogitor scripts path" FORCE)
-        set(OGITOR_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/Plugins" CACHE PATH "Ogitor plugins path" FORCE)
-        set(OGITOR_PLUGIN_ICON_PATH "${CMAKE_INSTALL_PREFIX}/share/ogitor/Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
         set(OGITOR_LIBOGREOFSPLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "libOgreOfsPlugin path" FORCE)
     endif(OGITOR_DIST)
+	
 	if (APPLE)
 	set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
 	endif(APPLE)
-	configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_BINARY_DIR}/RunPath/bin/resources.cfg)
+	
+	configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_RESOURCE_PATH}/resources.cfg)
 else(UNIX)
     # We are on Windows
     set(OGITOR_BIN_PATH "." CACHE PATH "Ogitor bin path" FORCE)
@@ -226,7 +219,7 @@ if(OGITOR_DOWNLOAD_SAMPLEPROJECT)
       URL https://bitbucket.org/ogitor/ogitor/downloads/projects.zip
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleProject" "${CMAKE_BINARY_DIR}/RunPath/Project"
+          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleProject" "${OGITOR_PROJECTS_PATH}"
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""
       INSTALL_COMMAND ""
@@ -240,7 +233,7 @@ if(OGITOR_DOWNLOAD_SAMPLEMEDIA)
       URL https://bitbucket.org/ogitor/ogitor/downloads/media.zip
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleMedia" "${CMAKE_BINARY_DIR}/RunPath/Media"
+          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleMedia" "${OGITOR_MEDIA_PATH}"
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""
       INSTALL_COMMAND ""

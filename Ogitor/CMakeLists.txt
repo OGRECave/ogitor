@@ -181,25 +181,6 @@ if(UNIX AND NOT APPLE)
 ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 endif()
 
-if(MSVC_IDE)
-	add_custom_command(TARGET Ogitor PRE_BUILD
-		COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
-	add_custom_command(TARGET Ogitor POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
-endif(MSVC_IDE)
-if(WIN32)
-	install(TARGETS Ogitor RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-endif(WIN32)
-
-if(UNIX)
-    install(TARGETS Ogitor
-        LIBRARY DESTINATION lib
-        FRAMEWORK DESTINATION "~/Library/Frameworks"
-        CONFIGURATIONS RelWithDebInfo Release)
-#    install(FILES
-#    ${Ogitor_hdrs}
-#    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/OGITOR)
-endif(UNIX)
-
+install(TARGETS Ogitor LIBRARY DESTINATION lib)
 
 # vim: set sw=2 ts=2 noet:

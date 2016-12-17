@@ -66,40 +66,13 @@ else(NOT Qt5Widgets_FOUND)
 		set_property(TARGET qtOfs PROPERTY WIN32_EXECUTABLE 1) 
 	endif(WIN32)
 
-	if(WIN32)
-	  target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Qt5::WinMain)
-	endif(WIN32)
-
-	if(UNIX)
-	  target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
-	endif(UNIX)
-
-	if(UNIX)
-
-	endif()
-
-        if(MSVC_IDE)
-		add_custom_command(TARGET qtOfs PRE_BUILD
-			COMMAND if not exist ..\\RunPath\\bin mkdir ..\\RunPath\\bin)
-		add_custom_command(TARGET qtOfs POST_BUILD
-			COMMAND copy \"$(TargetPath)\" ..\\RunPath\\bin)
-        endif(MSVC_IDE)
-
-	if(UNIX)
-		get_target_property(OFSFILE qtOfs LOCATION)
-		add_custom_command(TARGET qtOfs POST_BUILD
-			COMMAND cp -r ${OFSFILE} ../RunPath/bin/${TARGET})
-	endif(UNIX)
+	target_link_libraries(qtOfs ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS)
 
 	if(WIN32)
-		install(TARGETS qtOfs
-			RUNTIME DESTINATION bin
-			CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-    elseif(UNIX AND NOT APPLE)
-        install(TARGETS qtOfs
-            RUNTIME DESTINATION bin)
+	  target_link_libraries(qtOfs Qt5::WinMain)
 	endif(WIN32)
 
+	install(TARGETS qtOfs RUNTIME DESTINATION bin)
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:
