@@ -28,7 +28,8 @@ int CompareRelation(asIScriptEngine *engine, void *lobj, void *robj, int typeId,
 				f->GetParamCount() == 1 )
 			{
 				asDWORD flags;
-				int paramTypeId = f->GetParamTypeId(0, &flags);
+				int paramTypeId;
+				f->GetParam(0, &paramTypeId, &flags);
 				
 				// The parameter must be an input reference of the same type
 				if( flags != asTM_INREF || typeId != paramTypeId )
@@ -82,7 +83,8 @@ int CompareEquality(asIScriptEngine *engine, void *lobj, void *robj, int typeId,
 				f->GetParamCount() == 1 )
 			{
 				asDWORD flags;
-				int paramTypeId = f->GetParamTypeId(0, &flags);
+				int paramTypeId;
+				f->GetParam(0, &paramTypeId, &flags);
 				
 				// The parameter must be an input reference of the same type
 				if( flags != asTM_INREF || typeId != paramTypeId )

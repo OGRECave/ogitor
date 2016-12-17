@@ -17,7 +17,9 @@ using namespace std;
 BEGIN_AS_NAMESPACE
 
 // Helper functions
-static const char *GetCurrentDir(char *buf, size_t size);
+static string GetCurrentDir();
+static string GetAbsolutePath(const string &path);
+
 
 CScriptBuilder::CScriptBuilder()
 {
@@ -53,6 +55,20 @@ asIScriptModule *CScriptBuilder::GetModule()
 	return module;
 }
 
+unsigned int CScriptBuilder::GetSectionCount() const
+{
+	return (unsigned int)(includedScripts.size());
+}
+
+string CScriptBuilder::GetSectionName(unsigned int idx) const
+{
+	if( idx >= includedScripts.size() ) return "";
+
+	set<string>::const_iterator it = includedScripts.begin();
+	while( idx-- > 0 ) it++;
+	return *it;
+}
+
 int CScriptBuilder::AddSectionFromFile(const char *filename)
 {
 	// TODO: The file name stored in the set should be the fully resolved name because
@@ -70,11 +86,11 @@ int CScriptBuilder::AddSectionFromFile(const char *filename)
 	return 0;
 }
 
-int CScriptBuilder::AddSectionFromMemory(const char *sectionName, const char *scriptCode, unsigned int scriptLength)
+int CScriptBuilder::AddSectionFromMemory(const char *sectionName, const char *scriptCode, unsigned int scriptLength, int lineOffset)
 {
 	if( IncludeIfNotAlreadyIncluded(sectionName) )
 	{
-		int r = ProcessScriptSection(scriptCode, scriptLength, sectionName);
+		int r = ProcessScriptSection(scriptCode, scriptLength, sectionName, lineOffset);
 		if( r < 0 )
 			return r;
 		else
@@ -141,15 +157,14 @@ int CScriptBuilder::LoadScriptSection(const char *filename)
 	if( f == 0 )
 	{
 		// Write a message to the engine's message callback
-		char buf[256];
-		string msg = "Failed to open script file '" + string(GetCurrentDir(buf, 256)) + "\\" + scriptFile + "'";
+		string msg = "Failed to open script file '" + GetAbsolutePath(scriptFile) + "'";
 		engine->WriteMessage(filename, 0, 0, asMSGTYPE_ERROR, msg.c_str());
 
 		// TODO: Write the file where this one was included from
 
 		return -1;
 	}
-	
+
 	// Determine size of the file
 	fseek(f, 0, SEEK_END);
 	int len = ftell(f);
@@ -160,24 +175,28 @@ int CScriptBuilder::LoadScriptSection(const char *filename)
 
 	// Read the entire file
 	string code;
-	code.resize(len);
-	size_t c = fread(&code[0], len, 1, f);
+	size_t c = 0;
+	if( len > 0 )
+	{
+		code.resize(len);
+		c = fread(&code[0], len, 1, f);
+	}
 
 	fclose(f);
 
-	if( c == 0 ) 
+	if( c == 0 && len > 0 )
 	{
 		// Write a message to the engine's message callback
-		char buf[256];
-		string msg = "Failed to load script file '" + string(GetCurrentDir(buf, 256)) + scriptFile + "'";
+		string msg = "Failed to load script file '" + GetAbsolutePath(scriptFile) + "'";
 		engine->WriteMessage(filename, 0, 0, asMSGTYPE_ERROR, msg.c_str());
 		return -1;
 	}
 
-	return ProcessScriptSection(code.c_str(), (unsigned int)(code.length()), filename);
+	// Process the script section even if it is zero length so that the name is registered
+	return ProcessScriptSection(code.c_str(), (unsigned int)(code.length()), filename, 0);
 }
 
-int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length, const char *sectionname)
+int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length, const char *sectionname, int lineOffset)
 {
 	vector<string> includes;
 
@@ -244,7 +263,7 @@ int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length
 					OverwriteCode(start, pos-start);
 					nested--;
 				}
-			}			
+			}
 		}
 		else
 			pos += len;
@@ -274,7 +293,7 @@ int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length
 		if( currentClass == "" && modifiedScript.substr(pos,len) == "class" )
 		{
 			// Get the identifier after "class"
-			do 
+			do
 			{
 				pos += len;
 				if( pos >= modifiedScript.size() )
@@ -288,14 +307,14 @@ int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length
 			if( t == asTC_IDENTIFIER )
 			{
 				currentClass = modifiedScript.substr(pos,len);
-				
+
 				// Search until first { is encountered
 				while( pos < modifiedScript.length() )
 				{
 					engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
-				
+
 					// If start of class section encountered stop
-					if( modifiedScript[pos] == '{' ) 
+					if( modifiedScript[pos] == '{' )
 					{
 						pos += len;
 						break;
@@ -321,23 +340,23 @@ int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length
 		if( modifiedScript.substr(pos,len) == "namespace" )
 		{
 			// Get the identifier after "namespace"
-			do 
+			do
 			{
 				pos += len;
 				t = engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
 			} while(t == asTC_COMMENT || t == asTC_WHITESPACE);
-			
+
 			if( currentNamespace != "" )
 				currentNamespace += "::";
 			currentNamespace += modifiedScript.substr(pos,len);
-			
+
 			// Search until first { is encountered
 			while( pos < modifiedScript.length() )
 			{
 				engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
-			
+
 				// If start of namespace section encountered stop
-				if( modifiedScript[pos] == '{' ) 
+				if( modifiedScript[pos] == '{' )
 				{
 					pos += len;
 					break;
@@ -383,7 +402,7 @@ int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length
 				foundDeclarations.push_back(decl);
 			}
 		}
-		else 
+		else
 #endif
 		// Is this a preprocessor directive?
 		if( modifiedScript[pos] == '#' && (pos + 1 < modifiedScript.size()) )
@@ -422,7 +441,7 @@ int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length
 			}
 		}
 		// Don't search for metadata/includes within statement blocks or between tokens in statements
-		else 
+		else
 		{
 			pos = SkipStatement(pos);
 		}
@@ -430,7 +449,7 @@ int CScriptBuilder::ProcessScriptSection(const char *script, unsigned int length
 
 	// Build the actual script
 	engine->SetEngineProperty(asEP_COPY_SCRIPT_SECTIONS, true);
-	module->AddScriptSection(sectionname, modifiedScript.c_str(), modifiedScript.size());
+	module->AddScriptSection(sectionname, modifiedScript.c_str(), modifiedScript.size(), lineOffset);
 
 	if( includes.size() > 0 )
 	{
@@ -484,7 +503,7 @@ int CScriptBuilder::Build()
 		return r;
 
 #if AS_PROCESS_METADATA == 1
-	// After the script has been built, the metadata strings should be 
+	// After the script has been built, the metadata strings should be
 	// stored for later lookup by function id, type id, and variable index
 	for( int n = 0; n < (int)foundDeclarations.size(); n++ )
 	{
@@ -568,7 +587,7 @@ int CScriptBuilder::Build()
 			else
 			{
 				int typeId = module->GetTypeIdByDecl(decl->parentClass.c_str());
-				
+
 				// Add the classes if needed
 				map<int, SClassMetadata>::iterator it = classMetadataMap.find(typeId);
 				if( it == classMetadataMap.end() )
@@ -592,7 +611,7 @@ int CScriptBuilder::Build()
 						break;
 					}
 				}
-				
+
 				// If found, add it
 				if( idx >= 0 ) it->second.varMetadataMap.insert(map<int, string>::value_type(idx, decl->metadata));
 			}
@@ -649,14 +668,14 @@ int CScriptBuilder::ExcludeCode(int pos)
 	int nested = 0;
 	while( pos < (int)modifiedScript.size() )
 	{
-		asETokenClass t = engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
+		engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
 		if( modifiedScript[pos] == '#' )
 		{
 			modifiedScript[pos] = ' ';
 			pos++;
 
 			// Is it an #if or #endif directive?
-			t = engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
+			engine->ParseToken(&modifiedScript[pos], modifiedScript.size() - pos, &len);
 			string token;
 			token.assign(&modifiedScript[pos], len);
 			OverwriteCode(pos, len);
@@ -684,7 +703,7 @@ int CScriptBuilder::ExcludeCode(int pos)
 	return pos;
 }
 
-// Overwrite all characters except line breaks with blanks 
+// Overwrite all characters except line breaks with blanks
 void CScriptBuilder::OverwriteCode(int start, int len)
 {
 	char *code = &modifiedScript[start];
@@ -814,8 +833,8 @@ int CScriptBuilder::ExtractDeclaration(int pos, string &declaration, int &type)
 					}
 					else if( token == "(" )
 					{
-						// This is the first parenthesis we encounter. If the parenthesis isn't followed 
-						// by a statement block, then this is a variable declaration, in which case we 
+						// This is the first parenthesis we encounter. If the parenthesis isn't followed
+						// by a statement block, then this is a variable declaration, in which case we
 						// should only store the type and name of the variable, not the initialization parameters.
 						hasParenthesis = true;
 					}
@@ -884,7 +903,7 @@ const char *CScriptBuilder::GetMetadataStringForTypeMethod(int typeId, asIScript
 
 		map<int, string>::iterator methodIt = typeIt->second.funcMetadataMap.find(method->GetId());
 		if(methodIt == typeIt->second.funcMetadataMap.end()) return "";
-		
+
 		return methodIt->second.c_str();
 	}
 
@@ -892,8 +911,18 @@ const char *CScriptBuilder::GetMetadataStringForTypeMethod(int typeId, asIScript
 }
 #endif
 
-static const char *GetCurrentDir(char *buf, size_t size)
+string GetAbsolutePath(const string &file)
 {
+	if( (file.length() > 0 && (file[0] == '/' || file [0] == '\\')) ||
+		file.find(":") != string::npos )
+		return file;
+
+	return GetCurrentDir() + "/" + file;	
+}
+
+string GetCurrentDir()
+{
+	char buffer[1024];
 #ifdef _MSC_VER
 #ifdef _WIN32_WCE
     static TCHAR apppath[MAX_PATH] = TEXT("");
@@ -901,13 +930,12 @@ static const char *GetCurrentDir(char *buf, size_t size)
     {
         GetModuleFileName(NULL, apppath, MAX_PATH);
 
-        
         int appLen = _tcslen(apppath);
 
         // Look for the last backslash in the path, which would be the end
         // of the path itself and the start of the filename.  We only want
         // the path part of the exe's full-path filename
-        // Safety is that we make sure not to walk off the front of the 
+        // Safety is that we make sure not to walk off the front of the
         // array (in case the path is nothing more than a filename)
         while (appLen > 1)
         {
@@ -920,25 +948,26 @@ static const char *GetCurrentDir(char *buf, size_t size)
         apppath[appLen] = TEXT('\0');
     }
 #ifdef _UNICODE
-    wcstombs(buf, apppath, min(size, wcslen(apppath)*sizeof(wchar_t)));
+    wcstombs(buffer, apppath, min(1024, wcslen(apppath)*sizeof(wchar_t)));
 #else
-    memcpy(buf, apppath, min(size, strlen(apppath)));
+    memcpy(buffer, apppath, min(1024, strlen(apppath)));
 #endif
 
-    return buf;
+    return buffer;
 #elif defined(__S3E__)
 	// Marmalade uses its own portable C library
-	return getcwd(buf, (int)size);
+	return getcwd(buffer, (int)1024);
 #elif _XBOX_VER >= 200
 	// XBox 360 doesn't support the getcwd function, just use the root folder
-	assert( size >= 7 );
-	sprintf(buf, "game:\\");
-	return buf;
+	return "game:\\";
+#elif defined(_M_ARM)
+	// TODO: How to determine current working dir on Windows Phone?
+	return ""; 
 #else
-	return _getcwd(buf, (int)size);
+	return _getcwd(buffer, (int)1024);
 #endif // _MSC_VER
 #elif defined(__APPLE__)
-	return getcwd(buf, size);
+	return getcwd(buffer, 1024);
 #else
 	return "";
 #endif

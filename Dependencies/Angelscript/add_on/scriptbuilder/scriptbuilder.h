@@ -68,7 +68,8 @@ public:
 	//         <0 on error
 	int AddSectionFromMemory(const char *sectionName,
 							 const char *scriptCode, 
-							 unsigned int scriptLength = 0);
+							 unsigned int scriptLength = 0,
+							 int lineOffset = 0);
 
 	// Build the added script sections
 	int BuildModule();
@@ -81,6 +82,10 @@ public:
 
 	// Add a pre-processor define for conditional compilation
 	void DefineWord(const char *word);
+
+	// Enumerate included script sections
+	unsigned int GetSectionCount() const;
+	std::string  GetSectionName(unsigned int idx) const;
 
 #if AS_PROCESS_METADATA == 1
 	// Get metadata declared for class types and interfaces
@@ -102,7 +107,7 @@ public:
 protected:
 	void ClearAll();
 	int  Build();
-	int  ProcessScriptSection(const char *script, unsigned int length, const char *sectionname);
+	int  ProcessScriptSection(const char *script, unsigned int length, const char *sectionname, int lineOffset);
 	int  LoadScriptSection(const char *filename);
 	bool IncludeIfNotAlreadyIncluded(const char *filename);
 
