@@ -19,7 +19,7 @@ ogitor_add_library(OgreTerrainConverter SHARED ${OgreTerrainConverter_SOURCE} ${
 
 target_link_libraries(OgreTerrainConverter ${OGRE_LIBRARIES})
 
-set(LIBRARY_OUTPUT_PATH  ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set_target_properties(OgreTerrainConverter PROPERTIES COMPILE_DEFINITIONS "OgreTerrainConverter_EXPORT")
 
@@ -51,4 +51,3 @@ IF (APPLE)
         # Set the INSTALL_PATH so that Frameworks can be local
         set_target_properties(OgreTerrainConverter PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
 ENDIF(APPLE)
-

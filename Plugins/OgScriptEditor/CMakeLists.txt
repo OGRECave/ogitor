@@ -69,7 +69,7 @@ else(NOT Qt5Widgets_FOUND)
 
 	add_library(OgScriptEditor SHARED ${SRCS})
 	target_link_libraries(OgScriptEditor ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor GenericTextEditor)
-	set(LIBRARY_OUTPUT_PATH ../lib)
+	set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 	
 	qt5_use_modules(OgScriptEditor Widgets)
 

@@ -34,7 +34,7 @@ else()
     target_link_libraries(OgHydrax debug ${DEPENDENCIES_LIBPATH}/Hydrax_d.so optimized ${DEPENDENCIES_LIBPATH}/Hydrax.so)
 endif()
 #target_link_libraries(OgreMain Ogitor)
-set(LIBRARY_OUTPUT_PATH ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 if(NOT OGITOR_DIST)
     set_target_properties(OgHydrax PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)

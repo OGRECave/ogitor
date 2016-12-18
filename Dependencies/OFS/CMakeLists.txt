@@ -32,7 +32,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 ogitor_add_library(OFS SHARED ${OFS_SOURCE} ${OFS_HEADERS})
 target_link_libraries(OFS ${Boost_LIBRARIES})
 
-set(LIBRARY_OUTPUT_PATH  ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set_target_properties(OFS PROPERTIES COMPILE_DEFINITIONS "OFS_EXPORT")
 

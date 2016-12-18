@@ -138,7 +138,7 @@ set(Ogitor_srcs
 
 #add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
 ogitor_add_library(Ogitor SHARED ${Ogitor_hdrs} ${Ogitor_srcs})
-set(LIBRARY_OUTPUT_PATH ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 
 if(OGITOR_MESHMAGICK_INTERFACE)

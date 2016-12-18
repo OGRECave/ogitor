@@ -79,7 +79,7 @@ else(NOT Qt5Widgets_FOUND)
 
 	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
 	ogitor_add_library(OgModularZone SHARED ${SRCS})
-	set(LIBRARY_OUTPUT_PATH ../lib)
+	set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 	
 	qt5_use_modules(OgModularZone Widgets)
 

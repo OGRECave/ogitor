@@ -57,7 +57,7 @@ else(NOT QT4_FOUND)
 
 	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
 	add_library(ogQtExample SHARED ${SRCS})
-	set(LIBRARY_OUTPUT_PATH ../lib)
+	set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
     if(NOT OGITOR_DIST)
         set_target_properties(ogQtExample PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)

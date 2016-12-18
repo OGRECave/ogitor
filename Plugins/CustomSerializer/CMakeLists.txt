@@ -26,7 +26,7 @@ link_directories(${DEPENDENCIES_LIBPATH})
 
 link_libraries(${OGRE_LIBRARIES} Ogitor)
 ogitor_add_library(CustomSerializer SHARED ${HEADER_FILES} ${SOURCE_FILES})
-set(LIBRARY_OUTPUT_PATH ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 if(NOT OGITOR_DIST)
     set_target_properties(CustomSerializer PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)

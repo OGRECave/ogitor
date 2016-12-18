@@ -48,7 +48,7 @@ link_directories(${DEPENDENCIES_LIBPATH})
 
 link_libraries( ${OGRE_LIBRARIES} Ogitor Angelscript)
 add_library(OgAngelScript SHARED ${HEADER_FILES} ${SOURCE_FILES})
-set(LIBRARY_OUTPUT_PATH ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 add_dependencies(OgAngelScript Ogitor)
 add_dependencies(OgAngelScript Angelscript)

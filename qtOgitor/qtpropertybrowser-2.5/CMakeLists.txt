@@ -9,6 +9,8 @@ PROJECT(QtSolutions_PropertyBrowser)
 
 FIND_PACKAGE(Qt5Widgets REQUIRED)
 
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
+
 IF(NOT Qt5Widgets_FOUND)
     MESSAGE(SEND_ERROR "Failed to find Qt 5.0.0 or greater.")
 ELSE(NOT Qt5Widgets_FOUND)

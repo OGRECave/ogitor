@@ -34,7 +34,7 @@ else()
     target_link_libraries(OgSkyX debug ${DEPENDENCIES_LIBPATH}/SkyX_d.so optimized ${DEPENDENCIES_LIBPATH}/SkyX.so)
 endif()
 #target_link_libraries(OgreMain Ogitor)
-set(LIBRARY_OUTPUT_PATH ../lib)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 if(NOT OGITOR_DIST)
     set_target_properties(OgSkyX PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)

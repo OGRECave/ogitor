@@ -13,8 +13,7 @@ set(OgreOfsPlugin_srcs
 )
 
 ogitor_add_library(OgreOfsPlugin SHARED ${OgreOfsPlugin_hdrs} ${OgreOfsPlugin_srcs})
-set(LIBRARY_OUTPUT_PATH ../lib)
-
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPORT")
 

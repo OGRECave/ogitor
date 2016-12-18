@@ -64,7 +64,7 @@ else(NOT Qt5Widgets_FOUND)
 
     link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} OFS Ogitor ImageConverter)
     ogitor_add_library(GenericImageEditor SHARED ${SRCS})
-    set(LIBRARY_OUTPUT_PATH ../lib)	
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)	
 
 	add_dependencies(GenericImageEditor OFS)
 	add_dependencies(GenericImageEditor ImageConverter)
