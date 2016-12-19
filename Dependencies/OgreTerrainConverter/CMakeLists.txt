@@ -23,31 +23,4 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set_target_properties(OgreTerrainConverter PROPERTIES COMPILE_DEFINITIONS "OgreTerrainConverter_EXPORT")
 
-if(UNIX)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-endif(UNIX)
-
-if(MSVC_IDE)
-	add_custom_command(TARGET OgreTerrainConverter PRE_BUILD
-		COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
-	add_custom_command(TARGET OgreTerrainConverter POST_BUILD
-		COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
-endif(MSVC_IDE)
-if(WIN32)
-	install(TARGETS OgreTerrainConverter RUNTIME DESTINATION bin CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-endif(WIN32)
-
-IF(UNIX AND NOT APPLE)
-    set_target_properties( OgreTerrainConverter PROPERTIES OUTPUT_NAME "OgreTerrainConverter" VERSION
-    ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
-
-    install(TARGETS OgreTerrainConverter
-        LIBRARY DESTINATION lib
-        CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-ENDIF(UNIX AND NOT APPLE)
-
-IF (APPLE)
-        set_target_properties(OgreTerrainConverter PROPERTIES OUTPUT_NAME OgreTerrainConverter)
-        # Set the INSTALL_PATH so that Frameworks can be local
-        set_target_properties(OgreTerrainConverter PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
-ENDIF(APPLE)
+install(TARGETS OgreTerrainConverter LIBRARY DESTINATION lib)

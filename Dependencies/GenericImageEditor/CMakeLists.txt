@@ -68,52 +68,12 @@ else(NOT Qt5Widgets_FOUND)
 
 	add_dependencies(GenericImageEditor OFS)
 	add_dependencies(GenericImageEditor ImageConverter)
-
-    if(NOT OGITOR_DIST)
-        set_target_properties(GenericImageEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
-    endif(NOT OGITOR_DIST)
     
     set_target_properties(GenericImageEditor PROPERTIES VERSION ${GenericImageEditor_VERSION} SOVERSION ${GenericImageEditor_VERSION_MAJOR})
     set_target_properties(GenericImageEditor PROPERTIES COMPILE_DEFINITIONS GENERICIMAGEEDITOR_EXPORT)
 
 	qt5_use_modules(GenericImageEditor Widgets)
-	
-    if(UNIX AND NOT APPLE)
-        add_custom_command(TARGET GenericImageEditor PRE_BUILD
-            COMMAND mkdir -p ../../RunPath/lib)
-        add_custom_command(TARGET GenericImageEditor POST_BUILD
-            COMMAND cp -r ../lib/libGenericImageEditor_Ogitor.* ../../RunPath/lib/)
-    endif(UNIX AND NOT APPLE)
-
-    if(MSVC_IDE)
-        add_custom_command(TARGET GenericImageEditor PRE_BUILD
-            COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
-        add_custom_command(TARGET GenericImageEditor POST_BUILD
-            COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
-    endif(MSVC_IDE)
-    if(WIN32)
-        install(TARGETS GenericImageEditor
-            RUNTIME DESTINATION bin
-            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-    endif(WIN32)
-
-    IF(UNIX AND NOT APPLE)
-
-        set_target_properties( GenericImageEditor PROPERTIES OUTPUT_NAME "GenericImageEditor_Ogitor" VERSION
-        ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
-
-        install(TARGETS GenericImageEditor
-            LIBRARY DESTINATION lib
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-
-    ENDIF(UNIX AND NOT APPLE)
-
-   IF (APPLE)
-        set_target_properties(GenericImageEditor PROPERTIES OUTPUT_NAME GenericImageEditor)
-        # Set the INSTALL_PATH so that Frameworks can be local
-        set_target_properties(GenericImageEditor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
-   ENDIF(APPLE)
-
+	install(TARGETS GenericImageEditor LIBRARY DESTINATION lib)
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

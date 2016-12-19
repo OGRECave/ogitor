@@ -68,50 +68,8 @@ else(NOT Qt5Widgets_FOUND)
 	qt5_use_modules(GenericTextEditor Widgets)
 
     add_dependencies(GenericTextEditor OFS)
-
-    if(NOT OGITOR_DIST)
-        set_target_properties(GenericTextEditor PROPERTIES INSTALL_RPATH ${OGRE_INSTALL_DIR}/lib/OGRE)
-    endif(NOT OGITOR_DIST)
-
-    set_target_properties(GenericTextEditor PROPERTIES VERSION ${GenericTextEditor_VERSION} SOVERSION ${GenericTextEditor_VERSION_MAJOR})
     set_target_properties(GenericTextEditor PROPERTIES COMPILE_DEFINITIONS GENERICTEXTEDITOR_EXPORT)
-
-    if(UNIX AND NOT APPLE)
-        add_custom_command(TARGET GenericTextEditor PRE_BUILD
-            COMMAND mkdir -p ../../RunPath/lib)
-        add_custom_command(TARGET GenericTextEditor POST_BUILD
-            COMMAND cp -r ../lib/libGenericTextEditor_Ogitor.* ../../RunPath/lib/)
-    endif(UNIX AND NOT APPLE)
-
-    if(MSVC_IDE)
-        add_custom_command(TARGET GenericTextEditor PRE_BUILD
-            COMMAND if not exist ..\\..\\RunPath\\bin mkdir ..\\..\\RunPath\\bin)
-        add_custom_command(TARGET GenericTextEditor POST_BUILD
-            COMMAND copy \"$(TargetPath)\" ..\\..\\RunPath\\bin)
-    endif(MSVC_IDE)
-    if(WIN32)
-        install(TARGETS GenericTextEditor
-            RUNTIME DESTINATION bin
-            CONFIGURATIONS Debug Release RelWithDebInfo MinSizeRel)
-    endif(WIN32)
-
-    IF(UNIX AND NOT APPLE)
-
-        set_target_properties( GenericTextEditor PROPERTIES OUTPUT_NAME "GenericTextEditor_Ogitor" VERSION
-        ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
-
-        install(TARGETS GenericTextEditor
-            LIBRARY DESTINATION lib
-            CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-
-    ENDIF(UNIX AND NOT APPLE)
-
-    IF (APPLE)
-        set_target_properties(GenericTextEditor PROPERTIES OUTPUT_NAME GenericTextEditor)
-        # Set the INSTALL_PATH so that Frameworks can be local
-        set_target_properties(GenericTextEditor PROPERTIES BUILD_WITH_INSTALL_RPATH 1 INSTALL_NAME_DIR "@executable_path/../Plugins/Ogitor")
-    ENDIF(APPLE)
-
+	install(TARGETS GenericTextEditor LIBRARY DESTINATION lib)
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:
