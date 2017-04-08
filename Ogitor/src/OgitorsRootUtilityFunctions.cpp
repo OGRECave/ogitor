@@ -289,7 +289,7 @@ void OgitorsRoot::FillResourceGroup(Ogre::ResourceGroupManager *mngr, Ogre::Stri
     for(unsigned int i = 0;i < itemcount;i++)
     {
         strTemp = list[i];
-        mngr->addResourceLocation(ofspath + strTemp, "Ofs", group);
+        mngr->addResourceLocation(ofspath + strTemp, "Ofs", group, false, false);
     }
 }
 //-----------------------------------------------------------------------------------------
