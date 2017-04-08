@@ -94,42 +94,33 @@ namespace Ogre {
         void unload();
 
         /// @copydoc Archive::open
-#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
         DataStreamPtr open(const String& filename, bool readOnly = true) const;
-#else
-        virtual DataStreamPtr open(const String& filename, bool readOnly = true);
-#endif
 
 		/// @copydoc Archive::create
-		DataStreamPtr create(const String& filename) const;
+		DataStreamPtr create(const String& filename);
 
 		/// @copydoc Archive::delete
-		void remove(const String& filename) const;
+		void remove(const String& filename);
 
 		/// @copydoc Archive::list
-        StringVectorPtr list(bool recursive = true, bool dirs = false);
+        StringVectorPtr list(bool recursive = true, bool dirs = false) const;
 
         /// @copydoc Archive::listFileInfo
-        FileInfoListPtr listFileInfo(bool recursive = true, bool dirs = false);
+        FileInfoListPtr listFileInfo(bool recursive = true, bool dirs = false) const;
 
         /// @copydoc Archive::find
         StringVectorPtr find(const String& pattern, bool recursive = true,
-            bool dirs = false);
+            bool dirs = false) const;
 
         /// @copydoc Archive::findFileInfo
-#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
         FileInfoListPtr findFileInfo(const String& pattern, bool recursive = true,
             bool dirs = false) const;
-#else
-        virtual FileInfoListPtr findFileInfo(const String& pattern, 
-            bool recursive = true, bool dirs = false);
-#endif
 
         /// @copydoc Archive::exists
-        bool exists(const String& filename);
+        bool exists(const String& filename) const;
 
 		/// @copydoc Archive::getModifiedTime
-		time_t getModifiedTime(const String& filename);
+		time_t getModifiedTime(const String& filename) const;
 
 		/// Set whether filesystem enumeration will include hidden files or not.
 		/// This should be called prior to declaring and/or initializing filesystem

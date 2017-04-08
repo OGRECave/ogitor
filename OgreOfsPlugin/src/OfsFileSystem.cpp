@@ -251,11 +251,7 @@ namespace Ogre {
         mOfs.unmount();
     }
     //-----------------------------------------------------------------------
-#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
     DataStreamPtr OFSArchive::open(const String& filename, bool readOnly) const
-#else
-	DataStreamPtr OFSArchive::open(const String& filename, bool readOnly)
-#endif
     {
         String name = concatenate_path(mDir, filename);
 
@@ -284,7 +280,7 @@ namespace Ogre {
         return DataStreamPtr(stream);
     }
 	//---------------------------------------------------------------------
-	DataStreamPtr OFSArchive::create(const String& filename) const
+	DataStreamPtr OFSArchive::create(const String& filename)
 	{
 		if (isReadOnly())
 		{
@@ -315,7 +311,7 @@ namespace Ogre {
         return DataStreamPtr(stream);
 	}
 	//---------------------------------------------------------------------
-	void OFSArchive::remove(const String& filename) const
+	void OFSArchive::remove(const String& filename)
 	{
 		if (isReadOnly())
 		{
@@ -331,7 +327,7 @@ namespace Ogre {
         mOfs->deleteFile(name.c_str());
 	}
     //-----------------------------------------------------------------------
-    StringVectorPtr OFSArchive::list(bool recursive, bool dirs)
+    StringVectorPtr OFSArchive::list(bool recursive, bool dirs) const
     {
 		// directory change requires locking due to saved returns
 		// Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
@@ -342,7 +338,7 @@ namespace Ogre {
         return ret;
     }
     //-----------------------------------------------------------------------
-    FileInfoListPtr OFSArchive::listFileInfo(bool recursive, bool dirs)
+    FileInfoListPtr OFSArchive::listFileInfo(bool recursive, bool dirs) const
     {
 		// Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
         FileInfoListPtr ret(OGRE_NEW_T(FileInfoList, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
@@ -353,7 +349,7 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
     StringVectorPtr OFSArchive::find(const String& pattern,
-                                            bool recursive, bool dirs)
+                                            bool recursive, bool dirs) const
     {
 		// Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
 		StringVectorPtr ret(OGRE_NEW_T(StringVector, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
@@ -364,13 +360,8 @@ namespace Ogre {
 
     }
     //-----------------------------------------------------------------------
-#if OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR <= 9
     FileInfoListPtr OFSArchive::findFileInfo(const String& pattern, 
         bool recursive, bool dirs) const
-#else
-    FileInfoListPtr OFSArchive::findFileInfo(const String& pattern, 
-        bool recursive, bool dirs)
-#endif
     {
 		// Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
 		FileInfoListPtr ret(OGRE_NEW_T(FileInfoList, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
@@ -380,7 +371,7 @@ namespace Ogre {
         return ret;
     }
     //-----------------------------------------------------------------------
-	bool OFSArchive::exists(const String& filename)
+	bool OFSArchive::exists(const String& filename) const
 	{
 		String name = concatenate_path(mDir, filename);
 
@@ -389,7 +380,7 @@ namespace Ogre {
         return mOfs->exists(name.c_str());
 	}
 	//---------------------------------------------------------------------
-	time_t OFSArchive::getModifiedTime(const String& filename)
+	time_t OFSArchive::getModifiedTime(const String& filename) const
 	{
 		String name = concatenate_path(mDir, filename);
 
