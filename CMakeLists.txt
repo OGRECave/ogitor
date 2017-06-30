@@ -276,11 +276,6 @@ add_subdirectory(qtOgitor)
 
 add_subdirectory(qtOfs)
 
-# New version of OIS broke our SceneLoader..
-#if(NOT UNIX)
-#    add_subdirectory(SceneLoader)
-#endif(NOT UNIX)
-
 add_subdirectory(RunPath)
 
 #add_subdirectory(Help)
