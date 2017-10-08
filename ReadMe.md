@@ -4,6 +4,9 @@ _This is the repository for Ogitor SceneBuilder, the WYSIWYG scene editing envir
 
 <p align="center"><img alt="" src="Resources/screenshot.jpg"></p>
 
+## Fetching updates
+Please note that some of Dependencies are in submodules. Do not forget to update them before build.
+
 ## Building OGITOR
 
 By default, the build script will download and install the media and projects archives, so you don't have to worry about getting them yourself.
