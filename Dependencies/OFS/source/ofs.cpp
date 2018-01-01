@@ -293,7 +293,7 @@ namespace OFS
         if(it == mAllocatedHandles.end())
         {
             std::string extension = file_name.substr(file_name.size() - 4);
-#ifdef linux
+#ifdef __linux__
 	        int result = strcasecmp(extension.c_str(), ".ofs");
 #else
 	        int result = _strcmpi(extension.c_str(), ".ofs");

@@ -260,7 +260,7 @@ const char VERSION_FIX      = '0';
         static bool Compare(FileEntry elem1, FileEntry elem2)
         {
 
-#ifdef linux
+#ifdef __linux__
 
 	  return (strcasecmp( elem1.name.c_str(), elem2.name.c_str() ) < 0 ) ;
 #else
