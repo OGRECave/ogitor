@@ -827,12 +827,12 @@ TiXmlElement* CTerrainPageEditor::exportDotScene(TiXmlElement *pParent)
         pGrassPage->SetAttribute("densityMap", denmapname.c_str());
         idx = 0;
         while(idx < 4 && !mPGActive[idx]->get()) idx++;
-        if(idx < 4){
-            pGrassPage->SetAttribute("visibilityFlags", Ogre::StringConverter::toString(mPGLayers[idx]->getParentGrassLoader()->getVisibilityFlags()).c_str());
-        }else{
+        //if(idx < 4){
+        //    pGrassPage->SetAttribute("visibilityFlags", Ogre::StringConverter::toString(mPGLayers[idx]->getParentGrassLoader()->getVisibilityFlags()).c_str());
+        //}else{
             //0xFFFFFFFF == 4294967295
             pGrassPage->SetAttribute("visibilityFlags", Ogre::StringConverter::toString(UINT_MAX).c_str());
-        }
+        //}
         for(int i = 0; i < 4; i++) /* PGLayers array num == 4 */
         {
             if(mPGMaterial[i]->get() != "")
@@ -855,11 +855,11 @@ TiXmlElement* CTerrainPageEditor::exportDotScene(TiXmlElement *pParent)
 
                 // get the density map channel
                 MapChannel mapCh;
-                if(!mPGLayers[i]){
+                //if(!mPGLayers[i]){
                     mapCh = MapChannel(CHANNEL_RED + i);
-                }else{
-                    mapCh = mPGLayers[i]->getDensityMapChannel();
-                }
+                //}else{
+                //    mapCh = mPGLayers[i]->getDensityMapChannel();
+                //}
                 switch(mapCh){
                     case CHANNEL_ALPHA: tempStr = "ALPHA"; break;
                     case CHANNEL_BLUE:  tempStr = "BLUE";  break;

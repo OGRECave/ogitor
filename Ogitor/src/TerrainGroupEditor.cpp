@@ -298,7 +298,7 @@ bool CTerrainGroupEditor::setLayerImpl(unsigned int newlayer)
          static_cast<CTerrainPageEditor*>(it->second)->setLayer(newlayer);
     }
 
-    mGrassLoaderHandle->setVisibilityFlags(1 << mLayer->get());
+    //mGrassLoaderHandle->setVisibilityFlags(1 << mLayer->get());
 
     return true;
 }
@@ -400,7 +400,7 @@ bool CTerrainGroupEditor::load(bool async)
 
     //Create a GrassLoader object
     mGrassLoaderHandle = new GrassLoader(mPGHandle);
-    mGrassLoaderHandle->setVisibilityFlags(1 << mLayer->get());
+    //mGrassLoaderHandle->setVisibilityFlags(1 << mLayer->get());
 
     //Assign the "grassLoader" to be used to load geometry for the PagedGrass instance
     mPGHandle->setPageLoader(mGrassLoaderHandle);
