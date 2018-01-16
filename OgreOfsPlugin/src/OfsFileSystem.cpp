@@ -30,7 +30,6 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "OgreStableHeaders.h"
 #include "OfsFileSystem.h"
 #include "OgreLogManager.h"
 #include "OgreException.h"

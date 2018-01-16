@@ -30,7 +30,6 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 #include "OgitorsPrerequisites.h"
-#include "OgreStableHeaders.h"
 #include "Selection2D.h"
 
 #include "OgreSimpleRenderable.h"
