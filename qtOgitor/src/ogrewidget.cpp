@@ -134,7 +134,7 @@ bool OgreWidget::frameStarted(const Ogre::FrameEvent& evt)
         oldCamPos = campos;
     }
 
-    int tris = mRenderWindow->getTriangleCount();
+    int tris = mRenderWindow->getStatistics().triangleCount;
     if(oldTris != tris)
     {
         QString tritext = QApplication::translate("MainWindow","Triangles visible: %1").arg(tris);
