@@ -183,7 +183,7 @@ void CSceneManagerEditor::configureShadows()
             mHandle->setShadowTextureConfig(2, mShadowsResolutionFar->get(), mShadowsResolutionFar->get(), Ogre::PF_FLOAT32_R);
             mHandle->setShadowTextureSelfShadow(true);
             mHandle->setShadowCasterRenderBackFaces(true);
-            mHandle->setShadowTextureCasterMaterial("PSSM/shadow_caster");
+            mHandle->setShadowTextureCasterMaterial(Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster"));
         }
 
         // General scene setup

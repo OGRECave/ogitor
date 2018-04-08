@@ -64,6 +64,12 @@ public:
     
     void setPortalState(PortalState state);
 
+    using Ogre::SimpleRenderable::setMaterial;
+
+    void setMaterial(const Ogre::String& mat)
+    {
+        setMaterial(Ogre::MaterialManager::getSingleton().getByName(mat));
+    }
 protected:
     virtual void createPortalMaterials(void);
 

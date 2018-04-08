@@ -2099,7 +2099,7 @@ namespace Ogitors
 
         mSelRect = OGRE_NEW Selection2D(true);
         mSelRect->setCorners(size.x,size.y,size.z,size.w);
-        mSelRect->setMaterial("mtSELECTION");
+        mSelRect->setMaterial(Ogre::MaterialManager::getSingleton().getByName("mtSELECTION"));
         mSelRect->setRenderQueueGroup(Ogre::RENDER_QUEUE_OVERLAY);
         mSelRect->setBoundingBox(Ogre::AxisAlignedBox::BOX_INFINITE);
 

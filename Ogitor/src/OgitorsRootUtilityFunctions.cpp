@@ -1415,7 +1415,7 @@ void OgitorsRoot::UpdateMaterialInScene(Ogre::String materialName)
     {
         Ogre::SimpleRenderable *tmp = static_cast<Ogre::SimpleRenderable*>(it.peekNextValue());
         if(tmp->getMaterial()->getName() == materialName)
-            tmp->setMaterial(materialName);
+            tmp->setMaterial(Ogre::MaterialManager::getSingleton().getByName(materialName));
         it.moveNext();
     }
 
@@ -1761,7 +1761,11 @@ void OgitorsRoot::DestroyResourceGroup(const Ogre::String& resGrpName)
 
     while(it != list.end())
     {
+#if (OGRE_VERSION < ((1 << 16) | (11 << 8) | 0))
         arcMap.insert(ArchiveMap::value_type((*it)->archive, (*it)->archive));
+#else
+        arcMap.insert(ArchiveMap::value_type(it->archive, it->archive));
+#endif
         it++;
     }
     

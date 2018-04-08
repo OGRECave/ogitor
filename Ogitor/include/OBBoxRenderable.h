@@ -48,5 +48,12 @@ namespace Ogitors
         * @param xform handle to matrix into which to put world transformation
         */
         virtual void getWorldTransforms (Ogre::Matrix4 *xform)const;
+
+        using Ogre::SimpleRenderable::setMaterial;
+
+        void setMaterial(const Ogre::String& mat)
+        {
+            setMaterial(Ogre::MaterialManager::getSingleton().getByName(mat));
+        }
     };
 }

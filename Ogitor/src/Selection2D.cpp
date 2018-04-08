@@ -63,7 +63,7 @@ namespace Ogitors
         this->setQueryFlags(0); // set a query flag to exlude from queries (if necessary).
 
         // set basic white material
-        this->setMaterial("BaseWhiteNoLighting");
+        this->setMaterial(Ogre::MaterialManager::getSingleton().getDefaultMaterial(false));
     }
 
     Selection2D::~Selection2D() 
