@@ -581,7 +581,7 @@ QtProperty *CustomPropertiesViewWidget::getPropertyGroup(Ogre::String& name, QtP
         if(!newGroup)
         {
             newGroup = groupManager->addProperty(tmpName);
-            newGroup->setBold(true);
+            // newGroup->setBold(true);
             newGroup->setToolTip(groupNameCopy.c_str());
 
             if(lastGroup)

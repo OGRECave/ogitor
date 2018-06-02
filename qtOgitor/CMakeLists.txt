@@ -167,7 +167,7 @@ else(NOT Qt5Widgets_FOUND)
     set(SRCS ${SRCS} ${MOC_SRCS} ${UI_FILES})
 
     include_directories(../Ogitor/include
-        ./qtpropertybrowser-2.5/src
+        ./QtPropertyBrowser/src
     )
 
     #if(WIN32)
@@ -240,21 +240,14 @@ else(NOT Qt5Widgets_FOUND)
     endif(OGITOR_DOWNLOAD_SAMPLEMEDIA)
 
     if(OGITOR_MESHMAGICK_INTERFACE)
-        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor)
+        target_link_libraries(qtOgitor QtPropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor)
     else(OGITOR_MESHMAGICK_INTERFACE)
-        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor ImageConverter GenericTextEditor GenericImageEditor)
+        target_link_libraries(qtOgitor QtPropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor ImageConverter GenericTextEditor GenericImageEditor)
     endif(OGITOR_MESHMAGICK_INTERFACE)
 
     if(APPLE)
         find_package(Cocoa REQUIRED)
-        target_link_libraries(qtOgitor QtSolutions_PropertyBrowser ${Cocoa_LIBRARIES})
-    elseif(WIN32)
-        target_link_libraries(qtOgitor optimized QtSolutions_PropertyBrowser)
-    endif()
-
-    if(APPLE)
-        install(TARGETS qtOgitor BUNDLE DESTINATION ${PREFIX}bin CONFIGURATIONS Release RelWithDebInfo MinSizeRel)
-        install(TARGETS qtOgitor BUNDLE DESTINATION ${PREFIX}Debug CONFIGURATIONS Debug)
+        target_link_libraries(qtOgitor ${Cocoa_LIBRARIES})
     endif()
 
     if(WIN32)

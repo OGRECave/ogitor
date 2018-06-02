@@ -271,7 +271,7 @@ add_subdirectory(Plugins/CustomSerializer)
 
 add_subdirectory(OgreOfsPlugin)
 
-add_subdirectory(qtOgitor/qtpropertybrowser-2.5)
+add_subdirectory(qtOgitor/QtPropertyBrowser)
 
 add_subdirectory(qtOgitor)
 

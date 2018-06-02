@@ -1,3 +1,6 @@
 [submodule "Dependencies/pagedgeometry"]
 	path = Dependencies/pagedgeometry
 	url = https://github.com/OGRECave/ogre-pagedgeometry.git
+[submodule "qtOgitor/QtPropertyBrowser"]
+	path = qtOgitor/QtPropertyBrowser
+	url = https://github.com/bazhenovc/QtPropertyBrowser.git
