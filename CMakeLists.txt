@@ -217,7 +217,7 @@ include(ExternalProject)
 # download, unpack and copy sample project
 if(OGITOR_DOWNLOAD_SAMPLEPROJECT)
     ExternalProject_Add(SampleProject
-      URL https://bitbucket.org/ogitor/ogitor/downloads/projects.zip
+      URL https://github.com/OGRECave/ogitor/releases/download/v0.5.5/projects.zip
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
           "${CMAKE_CURRENT_BINARY_DIR}/src/SampleProject" "${OGITOR_PROJECTS_PATH}"
@@ -231,7 +231,7 @@ endif(OGITOR_DOWNLOAD_SAMPLEPROJECT)
 # download, unpack and copy sample media
 if(OGITOR_DOWNLOAD_SAMPLEMEDIA)
     ExternalProject_Add(SampleMedia
-      URL https://bitbucket.org/ogitor/ogitor/downloads/media.zip
+      URL https://github.com/OGRECave/ogitor/releases/download/v0.5.5/media.zip
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
           "${CMAKE_CURRENT_BINARY_DIR}/src/SampleMedia" "${OGITOR_MEDIA_PATH}"
