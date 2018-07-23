@@ -1,6 +1,6 @@
 #include "portalsizedialog.hxx"
 #include "ui_portalsizedialog.h"
-
+#include <QDoubleValidator>
 
 PortalSizeDialog::PortalSizeDialog(QWidget *parent,float x,float y):
         QDialog(parent),
