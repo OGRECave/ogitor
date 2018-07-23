@@ -1,5 +1,7 @@
 project(OgreOfsPlugin)
 
+find_package(Boost REQUIRED regex)
+
 include_directories("${CMAKE_SOURCE_DIR}/Dependencies/OFS/include")
 include_directories(include)
 
@@ -17,7 +19,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set_target_properties(OgreOfsPlugin PROPERTIES COMPILE_DEFINITIONS "PLUGIN_EXPORT")
 
-target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARIES} OFS ${Boost_regex_LIBRARY})
+target_link_libraries(OgreOfsPlugin ${OGRE_LIBRARIES} OFS ${Boost_REGEX_LIBRARY})
 
 install(TARGETS OgreOfsPlugin
         LIBRARY DESTINATION ${OGITOR_LIBOGREOFSPLUGIN_PATH}
