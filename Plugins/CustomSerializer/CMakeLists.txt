@@ -36,7 +36,10 @@ set_target_properties(CustomSerializer PROPERTIES VERSION ${CustomSerializer_VER
 set_target_properties(CustomSerializer PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(CustomSerializer PROPERTIES SOLUTION_FOLDER Plugins)
 
-install(TARGETS CustomSerializer LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
+install(TARGETS CustomSerializer
+        LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH}
+        ARCHIVE DESTINATION ${OGITOR_PLUGIN_PATH}
+        RUNTIME DESTINATION ${OGITOR_PLUGIN_PATH})
 
 
 # vim: set sw=2 ts=2 noet:

@@ -73,7 +73,10 @@ else(NOT Qt5Widgets_FOUND)
     set_target_properties(GenericImageEditor PROPERTIES COMPILE_DEFINITIONS GENERICIMAGEEDITOR_EXPORT)
 
 	qt5_use_modules(GenericImageEditor Widgets)
-	install(TARGETS GenericImageEditor LIBRARY DESTINATION lib)
+	install(TARGETS GenericImageEditor
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+            RUNTIME DESTINATION bin)
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:
