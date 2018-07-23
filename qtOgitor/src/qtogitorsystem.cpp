@@ -30,7 +30,6 @@
 /// THE SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////*/
 
-#include "qtogitorsystem.hxx"
 #include "mainwindow.hxx"
 #include "ogrewidget.hxx"
 #include "sceneview.hxx"
@@ -55,6 +54,8 @@
 
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QFileDialog>
+
+#include "qtogitorsystem.hxx"
 
 //-------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)

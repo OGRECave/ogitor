@@ -144,7 +144,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if( OGITOR_PLATFORM_X64 )
-	if (WIN32)
+	if (MSVC)
 		#enable_language(ASM_MASM) // not needed ?
 		ADD_CUSTOM_COMMAND(
 		  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/as_callfunc_x64_msvc_asm.obj

@@ -88,7 +88,7 @@ namespace Ogitors
         inline void setLoaded(bool value) { mLoaded->set(value); }
         inline void setLocked(bool value) { mLocked->set(value); }
         inline void setName(const Ogre::String& value) { mName->set(value); }
-        inline void setParent(CBaseEditor *value) { mParentEditor->set((unsigned long)value); }
+        inline void setParent(CBaseEditor *value) { mParentEditor->set((uintptr_t)value); }
         inline void setLayer(int value) { mLayer->set(value); }
         inline void setUpdateScript(const Ogre::String& value) { mUpdateScript->set(value); }
         inline void setShowHelper(bool value) { mShowHelper->set(value); }
