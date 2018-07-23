@@ -79,7 +79,10 @@ else(NOT Qt5Widgets_FOUND)
 	set_target_properties(OgAngelDialogManager PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(OgAngelDialogManager PROPERTIES SOLUTION_FOLDER Plugins)
 	
-	install(TARGETS OgAngelDialogManager LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
+	install(TARGETS OgAngelDialogManager
+            LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH}
+            ARCHIVE DESTINATION ${OGITOR_PLUGIN_PATH}
+            RUNTIME DESTINATION ${OGITOR_PLUGIN_PATH})
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

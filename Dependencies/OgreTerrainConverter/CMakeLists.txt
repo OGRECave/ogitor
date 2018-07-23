@@ -23,4 +23,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set_target_properties(OgreTerrainConverter PROPERTIES COMPILE_DEFINITIONS "OgreTerrainConverter_EXPORT")
 
-install(TARGETS OgreTerrainConverter LIBRARY DESTINATION lib)
+install(TARGETS OgreTerrainConverter
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin)

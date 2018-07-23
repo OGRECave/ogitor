@@ -69,7 +69,10 @@ else(NOT Qt5Widgets_FOUND)
 
     add_dependencies(GenericTextEditor OFS)
     set_target_properties(GenericTextEditor PROPERTIES COMPILE_DEFINITIONS GENERICTEXTEDITOR_EXPORT)
-	install(TARGETS GenericTextEditor LIBRARY DESTINATION lib)
+	install(TARGETS GenericTextEditor
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+            RUNTIME DESTINATION bin)
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

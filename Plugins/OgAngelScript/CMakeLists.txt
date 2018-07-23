@@ -61,6 +61,9 @@ set_target_properties(OgAngelScript PROPERTIES VERSION ${OgAngelScript_VERSION} 
 set_target_properties(OgAngelScript PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(OgAngelScript PROPERTIES SOLUTION_FOLDER Plugins)
 
-install(TARGETS OgAngelScript LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
+install(TARGETS OgAngelScript
+        LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH}
+        ARCHIVE DESTINATION ${OGITOR_PLUGIN_PATH}
+        RUNTIME DESTINATION ${OGITOR_PLUGIN_PATH})
 
 # vim: set sw=2 ts=2 noet:

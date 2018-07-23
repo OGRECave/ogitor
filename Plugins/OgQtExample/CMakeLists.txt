@@ -67,7 +67,10 @@ else(NOT QT4_FOUND)
 	set_target_properties(ogQtExample PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 	set_target_properties(ogQtExample PROPERTIES SOLUTION_FOLDER Plugins)
 		
-	install(TARGETS ogQtExample LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
+	install(TARGETS ogQtExample
+            LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH}
+            ARCHIVE DESTINATION ${OGITOR_PLUGIN_PATH}
+            RUNTIME DESTINATION ${OGITOR_PLUGIN_PATH})
 endif(NOT QT4_FOUND)
 
 # vim: set sw=2 ts=2 noet:

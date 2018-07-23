@@ -181,6 +181,9 @@ if(UNIX AND NOT APPLE)
 ${OGITOR_VERSION_STRING} SOVERSION ${abi_version} )
 endif()
 
-install(TARGETS Ogitor LIBRARY DESTINATION lib)
+install(TARGETS Ogitor
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin)
 
 # vim: set sw=2 ts=2 noet:

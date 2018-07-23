@@ -56,7 +56,10 @@ else(NOT Qt5Widgets_FOUND)
 	qt5_use_modules(ImageConverter Widgets)
 
     set_target_properties(ImageConverter PROPERTIES COMPILE_DEFINITIONS IMAGECONVERTER_EXPORT)
-	install(TARGETS ImageConverter LIBRARY DESTINATION lib)
+	install(TARGETS ImageConverter
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib
+            RUNTIME DESTINATION bin)
 endif(NOT Qt5Widgets_FOUND)
 
 # vim: set sw=2 ts=2 noet:

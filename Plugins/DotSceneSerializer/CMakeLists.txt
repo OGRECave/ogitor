@@ -40,7 +40,10 @@ set_target_properties(DotSceneSerializer PROPERTIES VERSION ${DotSceneSerializer
 set_target_properties(DotSceneSerializer PROPERTIES COMPILE_DEFINITIONS PLUGIN_EXPORT)
 set_target_properties(DotSceneSerializer PROPERTIES SOLUTION_FOLDER Plugins)
 
-install(TARGETS DotSceneSerializer LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH})
+install(TARGETS DotSceneSerializer
+        LIBRARY DESTINATION ${OGITOR_PLUGIN_PATH}
+        ARCHIVE DESTINATION ${OGITOR_PLUGIN_PATH}
+        RUNTIME DESTINATION ${OGITOR_PLUGIN_PATH})
 
 
 # vim: set sw=2 ts=2 noet:
