@@ -179,7 +179,7 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
             }
 
             pvalue.propType = PROP_UNSIGNED_LONG;
-            pvalue.val = Ogre::Any((unsigned long)dataptr);
+            pvalue.val = Ogre::Any(dataptr);
             creationparams["externaldatahandle"] = pvalue;
 
             CTerrainPageEditor* page = (CTerrainPageEditor*)mOgitorsRoot->CreateEditorObject(this, "Terrain Page", creationparams, true, true);

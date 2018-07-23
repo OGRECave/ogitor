@@ -572,7 +572,7 @@ namespace Ogitors
         */
         virtual void init(CBaseEditor* val)
         {
-            mValue = (unsigned long)val;
+            mValue = (uintptr_t)val;
         }
 
         /** Set the initial property value and signal the value change.
@@ -580,7 +580,7 @@ namespace Ogitors
         virtual void initAndSignal(CBaseEditor* val)
         {
             mOldValue = mValue;
-            mValue = (unsigned long)val;
+            mValue = (uintptr_t)val;
 
             Ogre::Any anyValue(mValue);
             mSignal.invoke(this, anyValue);

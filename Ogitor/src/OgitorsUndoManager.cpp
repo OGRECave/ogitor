@@ -72,7 +72,7 @@ bool PropertyUndo::apply()
         if(!parent)
             return false;
 
-        mValue.val = Ogre::Any((unsigned long)parent);
+        mValue.val = Ogre::Any((uintptr_t)parent);
     }
 
     OgitorsPropertyValueMap map;
