@@ -8,7 +8,7 @@ endif()
 project(QtOgitor)
 
 find_package(Qt5Widgets REQUIRED)
-find_package(Qt5LinguistTools REQUIRED)
+find_package(Qt5LinguistTools)
 
 if(UNIX AND NOT APPLE)
     if(EXISTS /usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
@@ -145,20 +145,24 @@ else(NOT Qt5Widgets_FOUND)
         ./include/userdefined.hxx
     )
     
-    SET(QTOGITOR_TS_FILES
-        languages/ogitor_da.ts
-        languages/ogitor_de.ts
-        languages/ogitor_es.ts
-        languages/ogitor_fr.ts
-        languages/ogitor_it.ts
-        languages/ogitor_nl.ts
-        languages/ogitor_pt_BR.ts
-        languages/ogitor_ru.ts
-        languages/ogitor_tr.ts
-        languages/ogitor_zh.ts
-    )
-    qt5_add_translation(QTOGITOR_TS_FILES ${QTOGITOR_TS_FILES})
-    add_custom_target(translations DEPENDS ${QTOGITOR_TS_FILES})
+    if(Qt5LinguistTools_FOUND)
+        SET(QTOGITOR_TS_FILES
+            languages/ogitor_da.ts
+            languages/ogitor_de.ts
+            languages/ogitor_es.ts
+            languages/ogitor_fr.ts
+            languages/ogitor_it.ts
+            languages/ogitor_nl.ts
+            languages/ogitor_pt_BR.ts
+            languages/ogitor_ru.ts
+            languages/ogitor_tr.ts
+            languages/ogitor_zh.ts
+        )
+        qt5_add_translation(QTOGITOR_TS_FILES ${QTOGITOR_TS_FILES})
+        add_custom_target(translations DEPENDS ${QTOGITOR_TS_FILES})
+    else()
+       SET(QTOGITOR_TS_FILES "")
+    endif()
 
     if(OGITOR_MESHMAGICK_INTERFACE)
         set(OGITOR_QT_PREPROCESSOR "${OGITOR_QT_PREPROCESSOR} -DOGITOR_MESHMAGICK_INTERFACE")
@@ -304,10 +308,15 @@ else(NOT Qt5Widgets_FOUND)
             endif(HAS_KDE)
 
         endif(OGITOR_DIST)
-        install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${OGITOR_LANGUAGE_PATH})
-    elseif(WIN32)
-        install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${PREFIX})
     endif(UNIX)
+    
+    if(Qt5LinguistTools_FOUND)
+        if(UNIX)
+            install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${OGITOR_LANGUAGE_PATH})
+        elseif(WIN32)
+            install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${PREFIX})
+        endif(UNIX)
+    endif()
 
     if(WIN32)
         if(OGITOR_MESHMAGICK_INTERFACE)
