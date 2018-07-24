@@ -221,7 +221,7 @@ if(OGITOR_DOWNLOAD_SAMPLEPROJECT)
       URL https://github.com/OGRECave/ogitor/releases/download/v0.5.5/projects.zip
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleProject" "${OGITOR_PROJECTS_PATH}"
+          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleProject" "${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects"
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""
       INSTALL_COMMAND ""
@@ -235,7 +235,7 @@ if(OGITOR_DOWNLOAD_SAMPLEMEDIA)
       URL https://github.com/OGRECave/ogitor/releases/download/v0.5.5/media.zip
       PREFIX ${CMAKE_CURRENT_BINARY_DIR}
       PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleMedia" "${OGITOR_MEDIA_PATH}"
+          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleMedia" "${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media"
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""
       INSTALL_COMMAND ""
