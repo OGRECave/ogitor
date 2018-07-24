@@ -305,7 +305,7 @@ else(NOT Qt5Widgets_FOUND)
 
         endif(OGITOR_DIST)
         install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${OGITOR_LANGUAGE_PATH})
-    elseif(WINDOWS)
+    elseif(WIN32)
         install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${PREFIX})
     endif(UNIX)
 
