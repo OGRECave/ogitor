@@ -165,8 +165,6 @@ if(UNIX)
 	if (APPLE)
 	set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
 	endif(APPLE)
-	
-	configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${OGITOR_RESOURCE_PATH}/resources.cfg)
 else(UNIX)
     # We are on Windows
     set(OGITOR_BIN_PATH "." CACHE PATH "Ogitor bin path" FORCE)
@@ -179,8 +177,8 @@ else(UNIX)
     set(OGITOR_PLUGIN_PATH "../Plugins" CACHE PATH "Ogitor plugins path" FORCE)
     set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
     set(OGITOR_LIBOGREOFSPLUGIN_PATH "." CACHE PATH "libOgreOfsPlugin path" FORCE)
-	configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_INSTALL_PREFIX}/bin/resources.cfg)
 endif(UNIX)
+configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/RunPath/bin/resources.cfg)
 
 # hide advanced options
 #mark_as_advanced(
