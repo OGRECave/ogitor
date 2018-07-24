@@ -8,6 +8,7 @@ endif()
 project(QtOgitor)
 
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
 
 if(UNIX AND NOT APPLE)
     if(EXISTS /usr/share/kde4/apps/cmake/modules/KDE4Macros.cmake)
@@ -143,6 +144,21 @@ else(NOT Qt5Widgets_FOUND)
         ./include/uiterrainsquare.hxx
         ./include/userdefined.hxx
     )
+    
+    SET(QTOGITOR_TS_FILES
+        languages/ogitor_da.ts
+        languages/ogitor_de.ts
+        languages/ogitor_es.ts
+        languages/ogitor_fr.ts
+        languages/ogitor_it.ts
+        languages/ogitor_nl.ts
+        languages/ogitor_pt_BR.ts
+        languages/ogitor_ru.ts
+        languages/ogitor_tr.ts
+        languages/ogitor_zh.ts
+    )
+    qt5_add_translation(QTOGITOR_TS_FILES ${QTOGITOR_TS_FILES})
+    add_custom_target(translations DEPENDS ${QTOGITOR_TS_FILES})
 
     if(OGITOR_MESHMAGICK_INTERFACE)
         set(OGITOR_QT_PREPROCESSOR "${OGITOR_QT_PREPROCESSOR} -DOGITOR_MESHMAGICK_INTERFACE")
@@ -175,7 +191,7 @@ else(NOT Qt5Widgets_FOUND)
     #endif(WIN32)
 
     if(NOT APPLE)
-        ogitor_add_executable(qtOgitor WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOgitor_res})
+        ogitor_add_executable(qtOgitor WIN32 ${SRCS} ${RESOURCE_SRCS} ${qtOgitor_res} ${QTOGITOR_TS_FILES})
     else()
         # The first time we build Ogitor.framework will not exist so create a dummy file if necessary
         find_file(OGITOR_FRAMEWORK_FILE Ogitor.framework "${CMAKE_BINARY_DIR}/Ogitor/lib/Debug/" NO_SYSTEM_ENVIRONMENT_PATH)
@@ -202,6 +218,7 @@ else(NOT Qt5Widgets_FOUND)
             ${SRCS}
             ${RESOURCE_SRCS}
             ${qtOgitor_res}
+            ${QTOGITOR_TS_FILES}
         )
         #add_dependencies(qtOgitor OgCaelum)
         #add_dependencies(qtOgitor OgHydrax)
@@ -287,26 +304,9 @@ else(NOT Qt5Widgets_FOUND)
             endif(HAS_KDE)
 
         endif(OGITOR_DIST)
-        
-        install(CODE "EXECUTE_PROCESS(COMMAND sh ${CMAKE_SOURCE_DIR}/gen-qt-projectfile ${CMAKE_SOURCE_DIR} OUTPUT_FILE ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-        install(CODE "EXECUTE_PROCESS(COMMAND lrelease ${CMAKE_SOURCE_DIR}/qtOgitor/languages/translate.pro)")
-        install(DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/languages
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
-            PATTERN     "*.qm"
-            PATTERN     "*.ts" EXCLUDE
-            PATTERN     "*.pro" EXCLUDE
-            PATTERN     "*.exe" EXCLUDE
-            PATTERN     "*.bat" EXCLUDE
-        )
+        install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${OGITOR_LANGUAGE_PATH})
     elseif(WINDOWS)
-        # ie Windows
-        install(DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/languages
-            DESTINATION ${PREFIX}
-            PATTERN "translate.pro" EXCLUDE
-            PATTERN "*.ts" EXCLUDE
-            PATTERN "*.exe" EXCLUDE
-            PATTERN "*.bat" EXCLUDE
-        )
+        install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${PREFIX})
     endif(UNIX)
 
     if(WIN32)
