@@ -48,6 +48,14 @@
 
 #include <QtWidgets/QSplashScreen>
 
+#if OGRE_RESOURCEMANAGER_STRICT != 0
+#error "Ogitor is not yet compatible with STRICT mode, use PEDANTIC mode (=1) for fixing"
+#endif
+
+#if OGRE_THREAD_PROVIDER != 0
+#error "Ogitor is not yet compatible with Ogre threading"
+#endif
+
 extern bool    ViewKeyboard[1024];
 extern QString ConvertToQString(Ogre::UTFString& value);
 
