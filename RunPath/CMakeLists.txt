@@ -39,20 +39,18 @@ if(UNIX)
 		PATTERN "Plugins/icon_backup" EXCLUDE
 	)
 
-    if(OGITOR_DIST)
-        install(FILES
-            ${CMAKE_BINARY_DIR}/RunPath/bin/resources.cfg
-            # Sample app only installed locally ?
-            #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
-            #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
-        )
-    else(OGITOR_DIST)
-        install(FILES ${CMAKE_SOURCE_DIR}/RunPath/bin/SampleAppConfig.xml
-            #${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
-            DESTINATION bin
-        )
-    endif(OGITOR_DIST)
+	install(FILES
+		${CMAKE_BINARY_DIR}/RunPath/bin/resources.cfg
+		# Sample app only installed locally ?
+		#${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
+		#${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
+		DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ogitor
+	)
+
+	install(FILES ${CMAKE_SOURCE_DIR}/RunPath/bin/SampleAppConfig.xml
+		#${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml
+		DESTINATION bin
+	)
 endif(UNIX)
 
 if (APPLE)
