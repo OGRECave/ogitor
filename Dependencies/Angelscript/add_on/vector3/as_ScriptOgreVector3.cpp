@@ -50,16 +50,19 @@
 
     static void DestructVector2(Ogre::Vector2 *thisPointer)
     {
+        using Ogre::Vector2;
 	    thisPointer->~Vector2();
     }
 
     static void DestructVector3(Ogre::Vector3 *thisPointer)
     {
+        using Ogre::Vector3;
 	    thisPointer->~Vector3();
     }
 
     static void DestructVector4(Ogre::Vector4 *thisPointer)
     {
+        using Ogre::Vector4;
 	    thisPointer->~Vector4();
     }
 
