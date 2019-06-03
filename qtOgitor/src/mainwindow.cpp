@@ -202,7 +202,7 @@ MainWindow::MainWindow(QString args, QWidget *parent)
     actPlayerStop = 0;
     actAddScriptToToolbar = 0;
 
-    mTargetRenderCount = 30;
+    mTargetRenderCount = 60;
 
     recentMapper = 0;
 
@@ -1200,8 +1200,8 @@ void MainWindow::setupStatusBar()
     mFPSSlider->setTickInterval(1);
     mFPSSlider->setTickPosition(QSlider::TicksBelow);
     mFPSSlider->setMaximumWidth(100);
-    mFPSSliderLabel = new QLabel(tr("FPS (30)"));
-    mFPSSlider->setSliderPosition(5);
+    mFPSSliderLabel = new QLabel(tr("FPS (60)"));
+    mFPSSlider->setSliderPosition(11);
     mSelectedObjectsCountLabel = new QLabel();
     setSelectedObjectsCount(0);
     mSelectedObjectsCountLabel->setMinimumWidth(150);
