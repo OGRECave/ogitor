@@ -858,8 +858,9 @@ namespace Ogitors
         {
             lib->load();
         }
-        catch(...)
+        catch(std::exception& e)
         {
+            Ogre::LogManager::getSingletonPtr()->logError( e.what() );
             OGRE_DELETE lib;
             return;
         }
