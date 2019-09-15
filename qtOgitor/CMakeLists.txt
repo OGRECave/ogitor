@@ -261,9 +261,9 @@ else(NOT Qt5Widgets_FOUND)
     endif(OGITOR_DOWNLOAD_SAMPLEMEDIA)
 
     if(OGITOR_MESHMAGICK_INTERFACE)
-        target_link_libraries(qtOgitor QtPropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor)
+        target_link_libraries(qtOgitor QtPropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor TinyXML)
     else(OGITOR_MESHMAGICK_INTERFACE)
-        target_link_libraries(qtOgitor QtPropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor ImageConverter GenericTextEditor GenericImageEditor)
+        target_link_libraries(qtOgitor QtPropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor ImageConverter GenericTextEditor GenericImageEditor TinyXML)
     endif(OGITOR_MESHMAGICK_INTERFACE)
 
     if(APPLE)

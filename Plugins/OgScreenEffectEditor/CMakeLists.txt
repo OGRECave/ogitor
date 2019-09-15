@@ -63,7 +63,7 @@ else(NOT Qt5Widgets_FOUND)
 	link_directories(${OGITOR_LIBPATH})
 	link_directories(${DEPENDENCIES_LIBPATH})
 
-	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor)
+	link_libraries(${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor TinyXML)
 	ogitor_add_library(OgScreenEffectEditor SHARED ${SRCS})
 	set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 	

@@ -37,3 +37,5 @@ add_subdirectory(pagedgeometry)
 #  BUILD_IN_SOURCE 1
 #)
 #set_target_properties(Skyx PROPERTIES FOLDER Dependencies)
+
+add_subdirectory(TinyXML)
