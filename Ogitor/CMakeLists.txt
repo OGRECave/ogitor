@@ -68,8 +68,6 @@ set(Ogitor_hdrs
 	./include/ViewGrid.h
 	./include/ViewportEditor.h
 	./include/VisualHelper.h
-	./include/tinystr.h
-	./include/tinyxml.h
 )
 
 set(Ogitor_srcs
@@ -129,10 +127,6 @@ set(Ogitor_srcs
 	./src/ViewportEditor.cpp
 	./src/ViewportEditorEvents.cpp
 	./src/VisualHelper.cpp
-	./src/tinystr.cpp
-	./src/tinyxml.cpp
-	./src/tinyxmlerror.cpp
-	./src/tinyxmlparser.cpp
 	${CMAKE_BINARY_DIR}/Ogitor/src/OgitorsGlobals.cpp	
 )
 
@@ -151,8 +145,7 @@ message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 
 message(STATUS ${OGRE_LIBRARY})
 
-find_package(Boost REQUIRED regex)
-target_link_libraries(Ogitor ${OGRE_LIBRARIES} OFS OgreTerrainConverter ${Boost_LIBRARIES} PagedGeometry)
+target_link_libraries(Ogitor ${OGRE_LIBRARIES} OFS OgreTerrainConverter PagedGeometry TinyXML)
 
 # specify a precompiled header to use
 use_precompiled_header(Ogitor 

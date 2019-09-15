@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 cmake_policy(SET CMP0003 NEW)
 
@@ -26,15 +26,15 @@ set(OFS_HEADERS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-find_package(Boost REQUIRED filesystem)
-include_directories(${Boost_INCLUDE_DIRS})
+find_package(Boost REQUIRED filesystem thread)
 
 ogitor_add_library(OFS SHARED ${OFS_SOURCE} ${OFS_HEADERS})
 target_link_libraries(OFS ${Boost_LIBRARIES})
+target_compile_definitions(OFS PUBLIC BOOST_ALL_NO_LIB PRIVATE OFS_EXPORT)
+target_include_directories(OFS PUBLIC ${Boost_INCLUDE_DIRS})
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
-set_target_properties(OFS PROPERTIES COMPILE_DEFINITIONS "OFS_EXPORT")
 install(TARGETS OFS 
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib

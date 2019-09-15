@@ -34,7 +34,7 @@
 #include "OgitorsRoot.h"
 #include "BaseEditor.h"
 
-#include <boost/regex.hpp>
+#include <regex>
 
 using namespace Ogre;
 
@@ -48,7 +48,7 @@ void OgitorsRoot::RegExpByName(const Ogre::String& nameregexp, bool inverse, con
     
     try
     {
-        const boost::regex e(nameregexp.c_str());
+        const std::regex e(nameregexp.c_str());
 
         for(unsigned int i = 0;i < list_in.size();i++)   
         {
@@ -70,7 +70,7 @@ void OgitorsRoot::RegExpByProperty(const Ogre::String& nameregexp, bool inverse,
 
     try
     {
-        const boost::regex e(nameregexp.c_str());
+        const std::regex e(nameregexp.c_str());
 
         OgitorsPropertyVector pvec;
 
@@ -105,7 +105,7 @@ void OgitorsRoot::RegExpByCustomProperty(const Ogre::String& nameregexp, bool in
 
     try
     {
-        const boost::regex e(nameregexp.c_str());
+        const std::regex e(nameregexp.c_str());
 
         OgitorsPropertyVector pvec;
 
@@ -140,7 +140,7 @@ void OgitorsRoot::GetObjectListByName(unsigned int type, const Ogre::String& nam
 
     try
     {
-        const boost::regex e(nameregexp.c_str());
+        const std::regex e(nameregexp.c_str());
 
         NameObjectPairList::iterator list_st, list_ed;
 
@@ -176,7 +176,7 @@ void OgitorsRoot::GetObjectListByProperty(unsigned int type, const Ogre::String&
 
     try
     {
-        const boost::regex e(nameregexp.c_str());
+        const std::regex e(nameregexp.c_str());
 
         NameObjectPairList::iterator list_st, list_ed;
 
@@ -224,7 +224,7 @@ void OgitorsRoot::GetObjectListByCustomProperty(unsigned int type, const Ogre::S
 
     try
     {
-        const boost::regex e(nameregexp.c_str());
+        const std::regex e(nameregexp.c_str());
 
         NameObjectPairList::iterator list_st, list_ed;
 

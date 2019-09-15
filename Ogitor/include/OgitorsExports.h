@@ -36,7 +36,7 @@
 #   if defined( __MINGW32__ )
 #      define OgitorExport
 #   else
-#      ifdef OGITOR_EXPORT
+#      ifdef Ogitor_EXPORTS
 #         define OgitorExport __declspec (dllexport)
 #      else
 #         define OgitorExport __declspec (dllimport)
