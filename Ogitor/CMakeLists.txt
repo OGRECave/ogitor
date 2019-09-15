@@ -145,8 +145,7 @@ message(STATUS "INFO OGITOR PREPROCESSOR: " ${OGITOR_PREPROCESSOR})
 
 message(STATUS ${OGRE_LIBRARY})
 
-find_package(Boost REQUIRED regex)
-target_link_libraries(Ogitor ${OGRE_LIBRARIES} OFS OgreTerrainConverter ${Boost_LIBRARIES} PagedGeometry TinyXML)
+target_link_libraries(Ogitor ${OGRE_LIBRARIES} OFS OgreTerrainConverter PagedGeometry TinyXML)
 
 # specify a precompiled header to use
 use_precompiled_header(Ogitor 

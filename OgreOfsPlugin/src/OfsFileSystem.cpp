@@ -36,7 +36,7 @@
 #include "OgreStringVector.h"
 #include "OgreRoot.h"
 
-#include <boost/regex.hpp>
+#include <regex>
 
 namespace Ogre {
 
@@ -118,7 +118,7 @@ namespace Ogre {
 
             try
             {
-                const boost::regex e(mod_pattern.c_str());
+                const std::regex e(mod_pattern.c_str());
 
                 for(unsigned int i = 0;i < retList.size();i++)   
                 {
