@@ -599,7 +599,7 @@ namespace Ogitors
         * Sets new parent for editor object
         * @param value new parent
         */
-        bool             _setParent(OgitorsPropertyBase* property, const unsigned long& value);
+        bool             _setParent(OgitorsPropertyBase* property, const std::uintptr_t& value);
         /**
         * Sets name for editor object
         * @param value new editor object name

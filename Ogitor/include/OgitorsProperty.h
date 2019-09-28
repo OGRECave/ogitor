@@ -526,12 +526,12 @@ namespace Ogitors
     class OgitorsParentProperty : public OgitorsPropertyBase
     {
     public:
-        typedef PropertySetterFunction<unsigned long> setter_func;
+        typedef PropertySetterFunction<std::uintptr_t> setter_func;
         
         /** Construct a property which is able to directly call a given 
         getter and setter on a specific object instance, via functors.
         */
-        OgitorsParentProperty(OgitorsPropertyDef* def, unsigned long value, setter_func *setter)
+        OgitorsParentProperty(OgitorsPropertyDef* def, std::uintptr_t value, setter_func *setter)
             : OgitorsPropertyBase(def, 0)
         {
             mValue = value;
@@ -543,7 +543,7 @@ namespace Ogitors
         /** Construct a property which is able to directly call a given 
         getter and setter on a specific object instance, via functors.
         */
-        OgitorsParentProperty(OgitorsPropertyDef* def, unsigned long value, setter_func setter)
+        OgitorsParentProperty(OgitorsPropertyDef* def, std::uintptr_t value, setter_func setter)
             : OgitorsPropertyBase(def, 0)
         {
             mValue = value;
@@ -554,7 +554,7 @@ namespace Ogitors
 
         /** Set the property value.
         */
-        virtual void set(unsigned long val)
+        virtual void set(std::uintptr_t val)
         {
             if(val == mValue)
                 return;
@@ -572,7 +572,7 @@ namespace Ogitors
         */
         virtual void init(CBaseEditor* val)
         {
-            mValue = (uintptr_t)val;
+            mValue = (std::uintptr_t)val;
         }
 
         /** Set the initial property value and signal the value change.
@@ -580,7 +580,7 @@ namespace Ogitors
         virtual void initAndSignal(CBaseEditor* val)
         {
             mOldValue = mValue;
-            mValue = (uintptr_t)val;
+            mValue = (std::uintptr_t)val;
 
             Ogre::Any anyValue(mValue);
             mSignal.invoke(this, anyValue);
@@ -599,13 +599,13 @@ namespace Ogitors
 
         virtual CBaseEditor* get() const
         {
-            unsigned long val = mValue;
+            std::uintptr_t val = mValue;
             return (CBaseEditor*)val;
         }
 
         virtual CBaseEditor* getOld() const
         {
-            unsigned long val = mOldValue;
+            std::uintptr_t val = mOldValue;
             return (CBaseEditor*)val;
         }
 
@@ -621,7 +621,7 @@ namespace Ogitors
 
         void setValue(const Ogre::Any& value)
         {
-            unsigned long val = Ogre::any_cast<unsigned long>(value);
+            std::uintptr_t val = Ogre::any_cast<std::uintptr_t>(value);
 
             if(val == mValue)
                 return;
@@ -640,8 +640,8 @@ namespace Ogitors
         }
 
     protected:
-        unsigned long mValue;
-        unsigned long mOldValue;
+        std::uintptr_t mValue;
+        std::uintptr_t mOldValue;
         setter_func  *mSetter;
 
         // disallow default construction
