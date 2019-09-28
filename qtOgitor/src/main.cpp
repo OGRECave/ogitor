@@ -64,10 +64,10 @@ Ogitors::OgitorsRoot *mOgitorsRoot;
 QtOgitorSystem       *mSystem;
 Shortcuts            *mShortCuts;
 //-------------------------------------------------------------------------------------
-void setupOgre(Ogre::String plugins, Ogre::String config, Ogre::String log)
+void setupOgre()
 {
     // Create the main ogre object
-    mOgreRoot = OGRE_NEW Ogre::Root(plugins);
+    mOgreRoot = OGRE_NEW Ogre::Root("plugins.cfg", "ogre.cfg", "Ogitor.log");
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     // load additional plugins
@@ -344,11 +344,7 @@ int main(int argc, char *argv[])
         splash->show();
     }
 
-#ifdef _DEBUG
-    setupOgre(Ogitors::Globals::OGRE_CONFIG_PATH + "/plugins_d.cfg", Ogre::String("ogre.cfg"), Ogre::String("ogitor.log"));
-#else
-    setupOgre(Ogitors::Globals::OGRE_CONFIG_PATH + "/plugins.cfg", Ogre::String("ogre.cfg"), Ogre::String("ogitor.log"));
-#endif
+    setupOgre();
 
     readRecentFiles(settings);
 
