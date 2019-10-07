@@ -48,6 +48,14 @@ class CustomPropertiesViewWidget;
 class CalculateBlendMapDialog;
 class QProgressDialog;
 
+#ifdef CopyFile
+#undef CopyFile
+#endif
+
+#ifdef DeleteFile
+#undef DeleteFile
+#endif
+
 class QtOgitorSystem : public Ogitors::OgitorsSystem
 {
 public:

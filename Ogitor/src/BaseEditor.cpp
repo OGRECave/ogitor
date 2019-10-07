@@ -81,7 +81,7 @@ namespace Ogitors
         OgitorsPropertyDefMap::iterator defi = mFactory->mPropertyDefs.find("parent");
         if (defi != mFactory->mPropertyDefs.end())
         {
-            mParentEditor = OGRE_NEW OgitorsParentProperty(&(defi->second), 0, SETTER(unsigned long, CBaseEditor, _setParent));
+            mParentEditor = OGRE_NEW OgitorsParentProperty(&(defi->second), 0, SETTER(std::uintptr_t, CBaseEditor, _setParent));
             mProperties.addProperty(mParentEditor);
         }
 
@@ -539,7 +539,7 @@ namespace Ogitors
         }
     }
     //-----------------------------------------------------------------------------------------
-    bool CBaseEditor::_setParent(OgitorsPropertyBase* property, const unsigned long& value)
+    bool CBaseEditor::_setParent(OgitorsPropertyBase* property, const std::uintptr_t& value)
     {
         CBaseEditor *oldparent = static_cast<const OgitorsParentProperty*>(property)->getOld();
 
