@@ -67,11 +67,13 @@ Shortcuts            *mShortCuts;
 void setupOgre()
 {
     // Create the main ogre object
-    mOgreRoot = OGRE_NEW Ogre::Root("plugins.cfg", "ogre.cfg", "Ogitor.log");
+    mOgreRoot = OGRE_NEW Ogre::Root(Ogitors::Globals::OGRE_CONFIG_PATH + "/plugins.cfg", "ogre.cfg", "Ogitor.log");
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     // load additional plugins
     mOgreRoot->loadPlugin(Ogitors::Globals::LIBOGREOFSPLUGIN_PATH + "/libOgreOfsPlugin.so");
+#else
+    mOgreRoot->loadPlugin("OgreOfsPlugin");
 #endif
 
     Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
