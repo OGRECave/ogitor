@@ -359,7 +359,7 @@ Ogre::Entity* PortalEditor::_createPlane()
     {
         mPlaneHandle->detachFromParent();
         mPlaneHandle->_getManager()->destroyEntity(mPlaneHandle);
-        Ogre::MeshManager::getSingletonPtr()->remove(mName->get());
+        Ogre::MeshManager::getSingletonPtr()->remove(mName->get(), PROJECT_RESOURCE_GROUP);
     }
 
     Ogre::Plane plane(Ogre::Vector3::UNIT_Z, 0.0);

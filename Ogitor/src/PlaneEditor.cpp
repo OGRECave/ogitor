@@ -59,7 +59,7 @@ Ogre::Entity *CPlaneEditor::_createPlane()
     {
         mPlaneHandle->detachFromParent();
         mPlaneHandle->_getManager()->destroyEntity(mPlaneHandle);
-        Ogre::MeshManager::getSingletonPtr()->remove(mName->get());        
+        Ogre::MeshManager::getSingletonPtr()->remove(mName->get(), PROJECT_RESOURCE_GROUP);
     }
 
     Ogre::Plane plane(mNormal->get(), mDistance->get());
@@ -261,7 +261,7 @@ bool CPlaneEditor::unLoad()
     {
         mPlaneHandle->detachFromParent();
         mPlaneHandle->_getManager()->destroyEntity(mPlaneHandle);
-        Ogre::MeshManager::getSingletonPtr()->remove(mName->get());        
+        Ogre::MeshManager::getSingletonPtr()->remove(mName->get(), PROJECT_RESOURCE_GROUP);
         mPlaneHandle = 0;
     }
     
