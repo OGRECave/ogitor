@@ -84,9 +84,6 @@ ImageConverter::~ImageConverter()
 {
     mRttTex->removeAllViewports();
 
-    Ogre::TextureManager::getSingletonPtr()->unload(mRttTex->getName());
-    Ogre::TextureManager::getSingletonPtr()->remove(mRttTex->getName());
-
     Ogre::TextureManager::getSingletonPtr()->unload("RenderTex");
     Ogre::TextureManager::getSingletonPtr()->remove("RenderTex");
 
