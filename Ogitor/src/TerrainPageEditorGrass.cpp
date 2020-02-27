@@ -238,7 +238,8 @@ void CTerrainPageEditor::_unloadGrassLayers()
 
     mPGDensityMap.freeMemory();
 
-    Ogre::TextureManager::getSingletonPtr()->remove(mName->get() + "_densitymap");
+    Ogre::TextureManager::getSingletonPtr()->remove(mName->get() + "_densitymap",
+                                                    PROJECT_TEMP_RESOURCE_GROUP);
 
     Ogre::AxisAlignedBox bBox = mHandle->getWorldAABB();
     TBounds bounds(bBox.getMinimum().x, bBox.getMinimum().z, bBox.getMaximum().x, bBox.getMaximum().z);

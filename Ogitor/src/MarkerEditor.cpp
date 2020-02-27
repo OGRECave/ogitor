@@ -112,7 +112,7 @@ bool CMarkerEditor::unLoad()
 
     if(!mMaterial.isNull())
     {
-        Ogre::MaterialManager::getSingletonPtr()->remove(mMaterial->getName());
+        Ogre::MaterialManager::getSingletonPtr()->remove(mMaterial->getName(), mMaterial->getGroup());
     }
     
     return CNodeEditor::unLoad();

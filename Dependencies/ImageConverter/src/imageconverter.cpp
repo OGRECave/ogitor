@@ -84,8 +84,8 @@ ImageConverter::~ImageConverter()
 {
     mRttTex->removeAllViewports();
 
-    Ogre::TextureManager::getSingletonPtr()->unload("RenderTex");
-    Ogre::TextureManager::getSingletonPtr()->remove("RenderTex");
+    Ogre::TextureManager::getSingletonPtr()->unload("RenderTex", "QTImageConverter");
+    Ogre::TextureManager::getSingletonPtr()->remove("RenderTex", "QTImageConverter");
 
     Ogre::Root::getSingletonPtr()->destroySceneManager(mSceneMgrPtr);
     mResourceManager->destroyResourceGroup("QTImageConverter");
