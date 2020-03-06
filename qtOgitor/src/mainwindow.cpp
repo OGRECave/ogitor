@@ -334,37 +334,7 @@ void MainWindow::initHiddenRenderWindow()
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     hiddenParams["externalWindowHandle"] = Ogre::StringConverter::toString((size_t) winId());
 #else
-#if QT_VERSION < 0x050000
-    const QX11Info info = this->x11Info();
-    Ogre::String winHandle;
-    winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned int)(info.screen()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned long)(this->winId()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned long)(info.visual()));
-
-    hiddenParams["externalWindowHandle"] = winHandle;
-
-#elif QT_VERSION >= 0x050100 && defined(Q_WS_X11)
-    const QX11Info info = this->x11Info();
-    Ogre::String winHandle;
-    winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned int)(info.appScreen()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned long)(this->winId()));
-
-    hiddenParams["externalWindowHandle"] = winHandle;
-#else // only for the time between Qt 5.0 and Qt 5.1 when QX11Info was not included
-    hiddenParams["externalWindowHandle"] = Ogre::StringConverter::toString((unsigned long)(this->winId()));
-#endif
-#endif
-
-#if defined(Q_OS_MAC)
-    hiddenParams["macAPICocoaUseNSView"] = "true";
-    hiddenParams["macAPI"] = "cocoa";
+    hiddenParams["parentWindowHandle"] = Ogre::StringConverter::toString(size_t(this->winId()));
 #endif
 
     hiddenParams["border"] = "none";

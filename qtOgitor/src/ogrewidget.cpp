@@ -56,6 +56,8 @@
 #include <QtCore/QTime>
 #include <QtCore/QDir>
 
+#include <QSettings>
+
 using namespace Ogitors;
 
 bool ViewKeyboard[1024];
@@ -158,38 +160,15 @@ void OgreWidget::initializeOGRE()
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     params["externalWindowHandle"] = Ogre::StringConverter::toString((size_t) (this->winId()));
 #else
-#if QT_VERSION < 0x050000
-    const QX11Info info = this->x11Info();
-    Ogre::String winHandle;
-    winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned int)(info.screen()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned long)(this->winId()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned long)(info.visual()));
-
-    params["externalWindowHandle"] = winHandle;
-
-#elif QT_VERSION >= 0x050100 && defined(Q_WS_X11)
-    const QX11Info info = this->x11Info();
-    Ogre::String winHandle;
-    winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned int)(info.appScreen()));
-    winHandle += ":";
-    winHandle += Ogre::StringConverter::toString((unsigned long)(this->winId()));
-
-    params["externalWindowHandle"] = winHandle;
-#else // only for the time between Qt 5.0 and Qt 5.1 when QX11Info was not included
-    params["externalWindowHandle"] = Ogre::StringConverter::toString((unsigned long)(this->winId()));
-#endif
+    params["parentWindowHandle"] = Ogre::StringConverter::toString(size_t(this->winId()));
 #endif
 
-#if defined(Q_OS_MAC)
-    params["macAPI"] = "cocoa";   
-    params["macAPICocoaUseNSView"] = "true";
-#endif
+    QSettings settings;
+    settings.beginGroup("preferences");
+    int antialias = settings.value("antiAliasing", 0).toInt();
+    bool vsync = settings.value("useVSync", false).toBool();
+    params["FSAA"] = Ogre::StringConverter::toString(antialias);
+    params["vsync"] = Ogre::StringConverter::toString(vsync);
 
     mRenderWindow = mOgreRoot->createRenderWindow( "QtOgitorRenderWindow",
         this->width(),
