@@ -72,7 +72,7 @@ bool CCaelumEditor::_createSky(Ogre::SceneManager *mngr, Ogre::Camera *cam)
     mSceneManager = mngr;
     mHandle = new Caelum::CaelumSystem(Ogre::Root::getSingletonPtr(), mngr,componentMask);
 
-    mHandle->setManageSceneFog(false);
+    mHandle->setManageSceneFog(Ogre::FOG_NONE);
     mHandle->notifyCameraChanged(cam);
     mHandle->getSkyDome()->setQueryFlags(0);
     mHandle->getSkyDome()->setVisibilityFlags(0x80000000);
@@ -83,7 +83,7 @@ bool CCaelumEditor::_createSky(Ogre::SceneManager *mngr, Ogre::Camera *cam)
     mHandle->getUniversalClock()->setTimeScale(mClockSpeed->get());
     mHandle->setObserverLongitude(Ogre::Degree(mLongitude->get()));
     mHandle->setObserverLatitude(Ogre::Degree(mLatitude->get()));
-    mHandle->setManageSceneFog(mFogManage->get());
+    mHandle->setManageSceneFog(mFogManage->get() ? Ogre::FOG_EXP2 : Ogre::FOG_NONE);
     mHandle->setGlobalFogDensityMultiplier(mFogDensityMultiplier->get());
     
     Caelum::BaseSkyLight *sun = mHandle->getSun();
@@ -147,7 +147,7 @@ bool CCaelumEditor::update(float timePassed)
     // FIXME - should this be implemented in property getters??
     if( mHandle->getSun() )
     {
-        mSunPosition->set( mHandle->getSun()->getSceneNode()->getPosition() );
+        //mSunPosition->set( mHandle->getSun()->getMainLight()->getParentSceneNode()->getPosition() );
         mSunColour->set( mHandle->getSun()->getBodyColour() );
         Caelum::LongReal mJulian = mHandle->getUniversalClock()->getJulianDay();
         Ogre::ColourValue mCol = mHandle->getSunLightColour(mJulian, mHandle->getSunDirection(mJulian));
@@ -217,7 +217,7 @@ bool CCaelumEditor::_setLatitude(OgitorsPropertyBase* property, const Ogre::Real
 //---------------------------------------------------------------------------------
 bool CCaelumEditor::_setFogManage(OgitorsPropertyBase* property, const bool& value)
 {
-    mHandle->setManageSceneFog(value);
+    mHandle->setManageSceneFog(value ? Ogre::FOG_EXP2 : Ogre::FOG_NONE);
     return true;
 }
 //---------------------------------------------------------------------------------

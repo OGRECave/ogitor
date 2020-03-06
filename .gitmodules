@@ -4,3 +4,6 @@
 [submodule "qtOgitor/QtPropertyBrowser"]
 	path = qtOgitor/QtPropertyBrowser
 	url = https://github.com/bazhenovc/QtPropertyBrowser.git
+[submodule "Dependencies/caelum"]
+	path = Dependencies/caelum
+	url = https://github.com/OGRECave/ogre-caelum.git

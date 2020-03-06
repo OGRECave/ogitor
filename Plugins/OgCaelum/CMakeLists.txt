@@ -16,8 +16,7 @@ set(OgCaelum_VERSION 0)
 set(OgCaelum_VERSION_MAJOR 1)
 
 include_directories(include)
-# Terrain Scene Manager
-#include_directories (${OGITOR_SM_INCLUDES})
+include_directories(${Ogitor_SOURCE_DIR}/Dependencies/caelum/main/include)
 include_directories(${DEPENDENCIES_INCLUDES})
 include_directories(${OGITOR_INCLUDES})
 message(STATUS "${OGITOR_INCLUDES}")
@@ -28,11 +27,7 @@ link_directories(${DEPENDENCIES_LIBPATH})
 
 link_libraries(${OGRE_LIBRARIES} Ogitor)
 add_library(OgCaelum SHARED ${HEADER_FILES} ${SOURCE_FILES})
-if(WIN32)
-    target_link_libraries(OgCaelum debug ${DEPENDENCIES_LIBPATH}/Caelum_d.lib optimized ${DEPENDENCIES_LIBPATH}/Caelum.lib)
-else()
-    target_link_libraries(OgCaelum debug ${DEPENDENCIES_LIBPATH}/Caelum_d.so optimized ${DEPENDENCIES_LIBPATH}/Caelum.so)
-endif()
+target_link_libraries(OgCaelum Caelum)
 #target_link_libraries(OgreMain Ogitor ETL)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 

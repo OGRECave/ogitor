@@ -107,6 +107,7 @@ set(OGITOR_LIBPATH  "${CMAKE_SOURCE_DIR}/Ogitor/lib")
 set(DEPENDENCIES_INCLUDES
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/pagedgeometry/include"
     "${CMAKE_BINARY_DIR}/Dependencies/pagedgeometry/include"
+    "${CMAKE_BINARY_DIR}/Dependencies/caelum/main/include"
     "${CMAKE_BINARY_DIR}/Dependencies/src/Meshmagick/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Angelscript/add_on/autowrapper"
@@ -254,6 +255,7 @@ add_subdirectory(Plugins/DotSceneSerializer)
 add_subdirectory(Plugins/OgModularZone)
 add_subdirectory(Plugins/OgMaterialEditor)
 add_subdirectory(Plugins/OgAngelScript)
+add_subdirectory(Plugins/OgCaelum)
 add_subdirectory(Plugins/OgScriptEditor)
 add_subdirectory(Plugins/OgAngelDialogManager)
 add_subdirectory(Plugins/OgScreenEffectEditor)

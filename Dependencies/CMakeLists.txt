@@ -9,13 +9,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/lib")
 # include(ExternalProject)
 
 # Caelum
-#ExternalProject_Add(Caelum
-#  PREFIX ${CMAKE_CURRENT_BINARY_DIR}
-#  HG_REPOSITORY https://bitbucket.org/ogreaddons/caelum
-#  CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/RunPath -DCMAKE_DEBUG_POSTFIX=${CMAKE_DEBUG_POSTFIX}
-#  BUILD_IN_SOURCE 1
-#)
-#set_target_properties(Caelum PROPERTIES FOLDER Dependencies)
+add_subdirectory(caelum)
 
 # Hydrax
 #ExternalProject_Add(Hydrax
