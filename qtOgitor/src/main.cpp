@@ -48,11 +48,6 @@
 
 #include <QtWidgets/QSplashScreen>
 
-
-#if OGRE_THREAD_PROVIDER != 0
-#error "Ogitor is not yet compatible with Ogre threading"
-#endif
-
 extern bool    ViewKeyboard[1024];
 extern QString ConvertToQString(Ogre::UTFString& value);
 
@@ -127,18 +122,8 @@ void setupOgre()
 
     Ogre::RenderSystem *rsys = *pRend;
 
-    int antialias = settings.value("antiAliasing", 0).toInt();
-    bool vsync = settings.value("useVSync", false).toBool();
     bool azerty = settings.value("useAZERTY", false).toBool();
     settings.endGroup();
-
-    // Some standard rendering system configurations
-    if(vsync)
-        rsys->setConfigOption("VSync", "Yes");
-    else
-        rsys->setConfigOption("VSync", "No");
-
-    rsys->setConfigOption("FSAA", Ogre::StringConverter::toString(antialias));
 
     // Set the rendering system and initialise OGRE
     mOgreRoot->setRenderSystem(rsys);
