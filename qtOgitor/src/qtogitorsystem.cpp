@@ -712,9 +712,9 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
         {
             Ogitors::PropertyOption opt = (*diffItr);
             Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
-            
+
             QPixmap pixmap;
-            if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainGroupDiffuseSpecular")))
+            if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainResources")))
                 continue;
 
             QIcon witem(pixmap);

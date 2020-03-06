@@ -1582,17 +1582,23 @@ void OgitorsRoot::ReloadUserResources()
 //-------------------------------------------------------------------------------------------
 void OgitorsRoot::PrepareTerrainResources()
 {
+    Ogre::String terrainDir = this->GetProjectOptions()->TerrainDirectory;
+    terrainDir = this->GetProjectFile()->getFileSystemName() + "::/" + terrainDir + "/";
+
     mTerrainDiffuseTextureNames.clear();
     mTerrainDiffuseTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
-    mTerrainDiffuseTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupDiffuseSpecular", "Ofs");
+    mTerrainDiffuseTextureNames = OgitorsUtils::GetResourceFilenames(
+        "TerrainResources", "Ofs", "", terrainDir + "textures/diffusespecular");
 
     mTerrainNormalTextureNames.clear();
     mTerrainNormalTextureNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
-    mTerrainNormalTextureNames = OgitorsUtils::GetResourceFilenames("TerrainGroupNormalHeight", "Ofs");
+    mTerrainNormalTextureNames = OgitorsUtils::GetResourceFilenames("TerrainResources", "Ofs", "",
+                                                                    terrainDir + "textures/normalheight");
 
     mTerrainPlantMaterialNames.clear();
     mTerrainPlantMaterialNames.push_back(PropertyOption("", Ogre::Any(Ogre::String(""))));
-    mTerrainPlantMaterialNames = OgitorsUtils::GetResourceFilenames("TerrainGroupPlants", "Ofs");
+    mTerrainPlantMaterialNames =
+        OgitorsUtils::GetResourceFilenames("TerrainResources", "Ofs", "", terrainDir + "plants");
 }
 //-------------------------------------------------------------------------------------------
 void OgitorsRoot::PrepareProjectResources()

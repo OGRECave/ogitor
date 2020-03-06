@@ -272,9 +272,9 @@ void TerrainToolsWidget::populateTextures()
     {
         Ogitors::PropertyOption opt = (*diffItr);
         Ogre::String name = Ogre::any_cast<Ogre::String>(opt.mValue);
-        
+
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainGroupDiffuseSpecular")))
+        if (!pixmap.convertFromImage(imageConverter.fromOgreImageName(name, "TerrainResources")))
             continue;
 
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
@@ -299,15 +299,30 @@ void TerrainToolsWidget::populatePlants()
     while (list.hasMoreElements())
     {
         Ogre::ResourcePtr resPtr = list.getNext();
-        if (resPtr->getGroup() != "TerrainGroupPlants")
+        if (resPtr->getGroup() != "TerrainResources")
             continue;
+
+        bool found = false;
+        for (PropertyOptionsVector::iterator it = plantList->begin(); it != plantList->end(); it++)
+        {
+            if (it->mKey == resPtr->getOrigin())
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            continue;
+        }
 
         Ogre::String name = resPtr->getName();
 
         QPixmap pixmap;
-        if (!pixmap.convertFromImage(imageConverter.fromOgreMaterialName(name, "TerrainGroupPlants")))
+        if (!pixmap.convertFromImage(imageConverter.fromOgreMaterialName(name, "TerrainResources")))
             continue;
-        
+
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
         witem->setWhatsThis(name.c_str());
         witem->setToolTip(name.c_str());
