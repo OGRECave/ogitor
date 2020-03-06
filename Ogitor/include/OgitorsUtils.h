@@ -196,12 +196,15 @@ namespace Ogitors
             *IndexBuffer = mIndexBuffer;
         }
         /**
-        * Get's a list of files in an OGRE resource
-        * @param resourceName the name of the OGRE resource to get the name list from
-        * @param resourceType optional parameter, whether the resource is from Ofs or FileSystem
-        * @param searchName optional parameter, will only return files that match this string
-        */
-        static Ogitors::PropertyOptionsVector GetResourceFilenames(const Ogre::String &resourceName, const Ogre::String resourceType="", const Ogre::String match="");
+         * Get's a list of files in an OGRE resource
+         * @param resourceName the name of the OGRE resource to get the name list from
+         * @param resourceType optional parameter, whether the resource is from Ofs or FileSystem
+         * @param searchName optional parameter, will only return files that match this string
+         * @param matchArchiveName optional parameter, will only return files that match this archive name
+         */
+        static Ogitors::PropertyOptionsVector
+        GetResourceFilenames(const Ogre::String& resourceName, const Ogre::String resourceType = "",
+                             const Ogre::String match = "", const Ogre::String matchArchiveName = "");
         /**
         * Frees internal vertex and index buffers
         */

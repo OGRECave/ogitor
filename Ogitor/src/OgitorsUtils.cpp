@@ -906,7 +906,10 @@ void OgitorsUtils::SphereQuery(const Ogre::Vector3& pos, Ogre::Real radius, Obje
     }
 }
 //----------------------------------------------------------------------------------------
-Ogitors::PropertyOptionsVector OgitorsUtils::GetResourceFilenames(const Ogre::String& resourceName, const Ogre::String resourceType, const Ogre::String match)
+Ogitors::PropertyOptionsVector OgitorsUtils::GetResourceFilenames(const Ogre::String& resourceName,
+                                                                  const Ogre::String resourceType,
+                                                                  const Ogre::String match,
+                                                                  const Ogre::String matchArchiveName)
 {
     Ogre::ResourceGroupManager *mngr = Ogre::ResourceGroupManager::getSingletonPtr();
     Ogre::FileInfoListPtr resList = Ogre::FileInfoListPtr();
@@ -926,6 +929,9 @@ Ogitors::PropertyOptionsVector OgitorsUtils::GetResourceFilenames(const Ogre::St
             continue;
 
         if (!match.empty() && fInfo.filename.find(match) == -1)
+            continue;
+
+        if (!matchArchiveName.empty() && fInfo.archive->getName() != matchArchiveName)
             continue;
 
         resourceList.push_back(PropertyOption(fInfo.filename, Ogre::Any(fInfo.filename)));
