@@ -103,9 +103,6 @@ CTerrainGroupEditor::~CTerrainGroupEditor()
 {
     OGRE_DELETE mTerrainGlobalOptions;
     mOgitorsRoot->DestroyResourceGroup("TerrainResources");
-    mOgitorsRoot->DestroyResourceGroup("TerrainGroupNormalHeight");
-    mOgitorsRoot->DestroyResourceGroup("TerrainGroupDiffuseSpecular");
-    mOgitorsRoot->DestroyResourceGroup("TerrainGroupPlants");
 }
 //-----------------------------------------------------------------------------------------
 PGHeightFunction *CTerrainGroupEditor::getHeightFunction()
@@ -315,14 +312,13 @@ bool CTerrainGroupEditor::load(bool async)
     Ogre::String terrainDir = OgitorsRoot::getSingletonPtr()->GetProjectOptions()->TerrainDirectory;
     terrainDir = mOgitorsRoot->GetProjectFile()->getFileSystemName() + "::/" + terrainDir + "/";
 
-    mngr->addResourceLocation(terrainDir + "textures/normalheight", "Ofs", "TerrainGroupNormalHeight");
-    mngr->initialiseResourceGroup("TerrainGroupNormalHeight");
+    mngr->addResourceLocation(terrainDir + "textures/normalheight", "Ofs", "TerrainResources");
 
-    mngr->addResourceLocation(terrainDir + "textures/diffusespecular", "Ofs", "TerrainGroupDiffuseSpecular");
-    mngr->initialiseResourceGroup("TerrainGroupDiffuseSpecular");
+    mngr->addResourceLocation(terrainDir + "textures/diffusespecular", "Ofs", "TerrainResources");
 
-    mngr->addResourceLocation(terrainDir + "plants", "Ofs", "TerrainGroupPlants");
-    mngr->initialiseResourceGroup("TerrainGroupPlants");
+    mngr->addResourceLocation(terrainDir + "plants", "Ofs", "TerrainResources");
+
+    mngr->initialiseResourceGroup("TerrainResources");
 
     OgitorsRoot::getSingletonPtr()->PrepareTerrainResources();
     OgitorsRoot::getSingletonPtr()->ReloadUserResources();
