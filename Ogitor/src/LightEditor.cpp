@@ -247,23 +247,27 @@ bool CLightEditor::load(bool async)
     if(!getParent()->load())
         return false;
 
-    mHandle = mOgitorsRoot->GetSceneManager()->createLight(mName->get());
-    getParent()->getNode()->attachObject(mHandle);
-    
-    mHandle->setPosition(mPosition->get());
-    mHandle->setDirection(mDirection->get());
-    mHandle->setDiffuseColour(mDiffuse->get());
-    mHandle->setSpecularColour(mSpecular->get());
-    mHandle->setType((Ogre::Light::LightTypes)mLightType->get());
+    if(!mHandle)
+    {
+        mHandle = mOgitorsRoot->GetSceneManager()->createLight(mName->get());
+        getParent()->getNode()->attachObject(mHandle);
+
+        mHandle->setPosition(mPosition->get());
+        mHandle->setDirection(mDirection->get());
+        mHandle->setDiffuseColour(mDiffuse->get());
+        mHandle->setSpecularColour(mSpecular->get());
+        mHandle->setType((Ogre::Light::LightTypes)mLightType->get());
+
+        if(mLightType->get() == Ogre::Light::LT_SPOTLIGHT)
+            mHandle->setSpotlightRange(Ogre::Degree(mRange->get().x), Ogre::Degree(mRange->get().y), mRange->get().z);
+
+        mHandle->setAttenuation(mAttenuation->get().x, mAttenuation->get().y, mAttenuation->get().z, mAttenuation->get().w);
+        mHandle->setCastShadows(mCastShadows->get());
+        mHandle->setPowerScale(mPower->get());
+    }
+
     mHandle->setQueryFlags(0);
     
-    if(mLightType->get() == Ogre::Light::LT_SPOTLIGHT)
-        mHandle->setSpotlightRange(Ogre::Degree(mRange->get().x), Ogre::Degree(mRange->get().y), mRange->get().z);
-
-    mHandle->setAttenuation(mAttenuation->get().x, mAttenuation->get().y, mAttenuation->get().z, mAttenuation->get().w);
-    mHandle->setCastShadows(mCastShadows->get());
-    mHandle->setPowerScale(mPower->get());
-
     CLightVisualHelper *helper = OGRE_NEW CLightVisualHelper(this);
     helper->setVisiblityFlags(1 << mLayer->get());
     helper->Show(mOgitorsRoot->GetLightVisiblity());
@@ -449,7 +453,6 @@ CBaseEditor *CLightEditorFactory::CreateObject(CBaseEditor **parent, OgitorsProp
 
     object->createProperties(params);
     object->mParentEditor->init(*parent);
-    object->load();
 
     mInstanceCount++;
     return object;

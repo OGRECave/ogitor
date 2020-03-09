@@ -332,8 +332,11 @@ bool CNodeEditor::load(bool async)
     if(!getParent()->load())
         return false;
     
-    mHandle = getParent()->getNode()->createChildSceneNode(mName->get(), mPosition->get(), mOrientation->get());
-    mHandle->setScale(mScale->get());
+    if(!mHandle)
+    {
+        mHandle = getParent()->getNode()->createChildSceneNode(mName->get(), mPosition->get(), mOrientation->get());
+        mHandle->setScale(mScale->get());
+    }
 
     mLoaded->set(true);
     return true;

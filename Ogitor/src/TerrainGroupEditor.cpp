@@ -741,7 +741,7 @@ void CTerrainGroupEditor::setSelectedImpl(bool bSelected)
 //-----------------------------------------------------------------------------------------
 TiXmlElement* CTerrainGroupEditor::exportDotScene(TiXmlElement *pParent)
 {
-    TiXmlElement *pTerrain = pParent->InsertEndChild(TiXmlElement("terrain"))->ToElement();
+    TiXmlElement *pTerrain = pParent->InsertEndChild(TiXmlElement("terrainGroup"))->ToElement();
     pTerrain->SetAttribute("worldSize", Ogre::StringConverter::toString(mWorldSize->get()).c_str());
     pTerrain->SetAttribute("mapSize", Ogre::StringConverter::toString(mMapSize->get()).c_str());
     pTerrain->SetAttribute("pagenameprefix", mPageNamePrefix->get().c_str());
@@ -754,12 +754,11 @@ TiXmlElement* CTerrainGroupEditor::exportDotScene(TiXmlElement *pParent)
     pTerrain->SetAttribute("tuningSkirtSize", Ogre::StringConverter::toString(mSkirtSize->get()).c_str());
     pTerrain->SetAttribute("tuningUseRayBoxDistancealculation", Ogre::StringConverter::toString(mUseRayBoxDistanceCalculation->get()).c_str());
 
-    TiXmlElement *pTerrainPages = pTerrain->InsertEndChild(TiXmlElement("terrainPages"))->ToElement();
     NameObjectPairList::const_iterator it = mChildren.begin();
     while(it != mChildren.end())
     {
         CTerrainPageEditor *terrain = static_cast<CTerrainPageEditor*>(it->second);
-        terrain->exportDotScene(pTerrainPages);
+        terrain->exportDotScene(pTerrain);
         it++;
     }
 

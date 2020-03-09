@@ -801,10 +801,10 @@ TiXmlElement* CTerrainPageEditor::exportDotScene(TiXmlElement *pParent)
     Ogre::TerrainGroup *terGroup = static_cast<Ogre::TerrainGroup*>(mParentEditor->get()->getHandle());
     Ogre::String name = terGroup->generateFilename(mPageX->get(), mPageY->get());
 
-    TiXmlElement *pTerrainPage = pParent->InsertEndChild(TiXmlElement("terrainPage"))->ToElement();
-    pTerrainPage->SetAttribute("name", name.c_str());
-    pTerrainPage->SetAttribute("pageX", Ogre::StringConverter::toString(mPageX->get()).c_str());
-    pTerrainPage->SetAttribute("pageY", Ogre::StringConverter::toString(mPageY->get()).c_str());
+    TiXmlElement *pTerrainPage = pParent->InsertEndChild(TiXmlElement("terrain"))->ToElement();
+    pTerrainPage->SetAttribute("dataFile", name.c_str());
+    pTerrainPage->SetAttribute("x", Ogre::StringConverter::toString(mPageX->get()).c_str());
+    pTerrainPage->SetAttribute("y", Ogre::StringConverter::toString(mPageY->get()).c_str());
 
     CTerrainGroupEditor *parentEditor = static_cast<CTerrainGroupEditor*>(mParentEditor->get());
     pTerrainPage->SetAttribute("pagedGeometryPageSize", Ogre::StringConverter::toString(static_cast<OgitorsProperty<int>*>(parentEditor->getProperties()->getProperty("pg::pagesize"))->get()).c_str());

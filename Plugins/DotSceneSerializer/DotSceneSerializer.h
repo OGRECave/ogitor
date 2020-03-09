@@ -61,13 +61,6 @@ namespace Ogitors
         /// The function to Import Data
         virtual int  Import(Ogre::String importfile = "");
     protected:
-        int RecurseReadObjects(TiXmlElement *parentelement,CBaseEditor* parentobject);
-
-        int ReadSceneNode(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret);
-        int ReadEntity(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret);
-        int ReadSubEntity(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret);
-        int ReadLight(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret);
-        int ReadCamera(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret);
         int ReadParticle(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret);
         int ReadPlane(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret);
     };
