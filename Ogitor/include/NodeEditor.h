@@ -59,6 +59,8 @@ namespace Ogitors
         /** @copydoc CBaseEditor::isNodeType() */
         virtual bool     isNodeType() {return true;};
 
+        void _setHandle(Ogre::SceneNode* node) { mHandle = node; }
+
         virtual TiXmlElement*        exportDotScene(TiXmlElement *pParent);
         /// This function is called when user right clicks a property to get that property specific popup menu
         /// returns false if no menu present (Disabled Menu Items has a "D" prefix where Enabled Menu Items have "E" prefix

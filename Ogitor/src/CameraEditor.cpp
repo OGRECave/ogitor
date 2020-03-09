@@ -400,17 +400,19 @@ bool CCameraEditor::load(bool async)
     if(!getParent()->load())
         return false;
 
-    mHandle = mOgitorsRoot->GetSceneManager()->createCamera(mName->get());
+    if (!mHandle) {
+      mHandle = mOgitorsRoot->GetSceneManager()->createCamera(mName->get());
 
-    mHandle->setPosition(mPosition->get());
-    mHandle->setOrientation(mOrientation->get());
-    mHandle->setNearClipDistance(mClipDistance->get().x);
-    mHandle->setFarClipDistance(mClipDistance->get().y);
-    mHandle->setFOVy(Ogre::Radian(mFOV->get()));
-    mHandle->setAutoAspectRatio(mAutoAspectRatio->get());
+      mHandle->setPosition(mPosition->get());
+      mHandle->setOrientation(mOrientation->get());
+      mHandle->setNearClipDistance(mClipDistance->get().x);
+      mHandle->setFarClipDistance(mClipDistance->get().y);
+      mHandle->setFOVy(Ogre::Radian(mFOV->get()));
+      mHandle->setAutoAspectRatio(mAutoAspectRatio->get());
+      getParent()->getNode()->attachObject(mHandle);
+    }
+
     mHandle->setQueryFlags(0);
-
-    getParent()->getNode()->attachObject(mHandle);
 
     CCameraVisualHelper *helper = OGRE_NEW CCameraVisualHelper(this);
     helper->setVisiblityFlags(1 << mLayer->get());

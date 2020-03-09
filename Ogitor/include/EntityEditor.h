@@ -60,6 +60,8 @@ namespace Ogitors
         /** @copydoc CBaseEditor::getHandle() */
         inline virtual void    *getHandle() {return static_cast<void*>(mEntityHandle);};
 
+        void _setEntity(Ogre::Entity* entity) { mEntityHandle = entity; }
+
         inline bool  isUsingPlaceHolderMesh() { return mUsingPlaceHolderMesh; };
 
         inline int          getSubEntityCount() { return mSubEntityCount->get(); };

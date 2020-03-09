@@ -149,6 +149,8 @@ namespace Ogitors
         /** @copydoc CBaseEditor::getDerivedOrientation() */
         virtual Ogre::Quaternion     getDerivedOrientation();
 
+        void _setHandle(Ogre::Camera* camera) { mHandle = camera; }
+
     protected:
         Ogre::Camera					   *mHandle;               /** Camera handle */
         OgitorsProperty<Ogre::Vector3>     *mPosition;             /** Camera position (wrapper) */

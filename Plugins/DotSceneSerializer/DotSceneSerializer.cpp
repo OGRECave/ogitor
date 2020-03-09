@@ -32,74 +32,11 @@
 
 #include "DotSceneSerializer.h"
 #include "ofs.h"
+#include "OgreSceneLoaderManager.h"
+#include "OgreTerrain.h"
 
 using namespace Ogitors;
 
-//----------------------------------------------------------------------------
-OgitorsPropertyValue parseQuaternion(TiXmlElement *XMLNode)
-{
-    OgitorsPropertyValue value;
-    Ogre::Quaternion orientation;
-    
-    value.propType = PROP_QUATERNION;
-
-    if(XMLNode->Attribute("qx"))
-    {
-        orientation.x = Ogre::StringConverter::parseReal(XMLNode->Attribute("qx"));
-        orientation.y = Ogre::StringConverter::parseReal(XMLNode->Attribute("qy"));
-        orientation.z = Ogre::StringConverter::parseReal(XMLNode->Attribute("qz"));
-        orientation.w = Ogre::StringConverter::parseReal(XMLNode->Attribute("qw"));
-    }
-    else if(XMLNode->Attribute("axisX"))
-    {
-        Ogre::Vector3 axis;
-        axis.x = Ogre::StringConverter::parseReal(XMLNode->Attribute("axisX"));
-        axis.y = Ogre::StringConverter::parseReal(XMLNode->Attribute("axisY"));
-        axis.z = Ogre::StringConverter::parseReal(XMLNode->Attribute("axisZ"));
-        Ogre::Real angle = Ogre::StringConverter::parseReal(XMLNode->Attribute("angle"));;
-        orientation.FromAngleAxis(Ogre::Angle(angle), axis);
-    }
-    else if(XMLNode->Attribute("angleX"))
-    {
-        Ogre::Vector3 axis;
-        axis.x = Ogre::StringConverter::parseReal(XMLNode->Attribute("angleX"));
-        axis.y = Ogre::StringConverter::parseReal(XMLNode->Attribute("angleY"));
-        axis.z = Ogre::StringConverter::parseReal(XMLNode->Attribute("angleZ"));
-        
-        Ogre::Quaternion q1(Ogre::Radian(axis.x),Ogre::Vector3(1,0,0));
-        Ogre::Quaternion q2(Ogre::Radian(axis.y),Ogre::Vector3(0,1,0));
-        Ogre::Quaternion q3(Ogre::Radian(axis.z),Ogre::Vector3(0,0,1));
-        orientation = q1 * q2 * q3;
-    }
-
-    value.val = Ogre::Any(orientation);
-    
-    return value;
-}
-//----------------------------------------------------------------------------
-OgitorsPropertyValue parseColourValue(TiXmlElement *XMLNode)
-{
-    OgitorsPropertyValue value;
-    Ogre::ColourValue val = Ogre::ColourValue(0,0,0,1);
-    
-    value.propType = PROP_COLOUR;
-
-    if(XMLNode->Attribute("r"))
-        val.r = Ogre::StringConverter::parseReal(XMLNode->Attribute("r"));
-
-    if(XMLNode->Attribute("g"))
-        val.g = Ogre::StringConverter::parseReal(XMLNode->Attribute("g"));
-
-    if(XMLNode->Attribute("b"))
-        val.b = Ogre::StringConverter::parseReal(XMLNode->Attribute("b"));
-
-    if(XMLNode->Attribute("a"))
-        val.a = Ogre::StringConverter::parseReal(XMLNode->Attribute("a"));
-
-    value.val = Ogre::Any(val);
-    
-    return value;
-}
 //----------------------------------------------------------------------------
 OgitorsPropertyValue parseVector3(TiXmlElement *XMLNode)
 {
@@ -125,6 +62,51 @@ OgitorsPropertyValue parseVector3(TiXmlElement *XMLNode)
 CDotSceneSerializer::CDotSceneSerializer() : CBaseSerializer("DotScene Serializer", CAN_EXPORT | CAN_IMPORT) 
 {
 }
+
+static void connectElements(Ogre::SceneNode* node, CBaseEditor* editorNode)
+{
+    OgitorsPropertyValueMap params;
+    OgitorsPropertyValue propValue;
+    propValue.propType = PROP_STRING;
+
+    auto eroot = Ogitors::OgitorsRoot::getSingletonPtr();
+    for(auto mo : node->getAttachedObjects())
+    {
+        propValue.val = mo->getName();
+        if(mo->getName().empty() || Ogitors::OgitorsRoot::getSingletonPtr()->FindObject(mo->getName()))
+            propValue.val = mo->getMovableType() + eroot->CreateUniqueID(mo->getMovableType(),"");
+        params["name"] = propValue;
+
+        if(mo->getMovableType() == "Entity")
+        {
+            auto e = static_cast<CEntityEditor*>(eroot->CreateEditorObject(editorNode, "Entity", params, false, false));
+            e->_setEntity(static_cast<Ogre::Entity*>(mo));
+        }
+        else if(mo->getMovableType() == "Light")
+        {
+            auto e = static_cast<CLightEditor*>(eroot->CreateEditorObject(editorNode, "Light", params, false, false));
+            e->_setHandle(static_cast<Ogre::Light*>(mo));
+        }
+        else if(mo->getMovableType() == "Camera")
+        {
+            auto e = static_cast<CCameraEditor*>(eroot->CreateEditorObject(editorNode, "Camera", params, false, false));
+            e->_setHandle(static_cast<Ogre::Camera*>(mo));
+        }
+    }
+
+    for(auto n : node->getChildren())
+    {
+        propValue.val = n->getName();
+        if(n->getName().empty() || Ogitors::OgitorsRoot::getSingletonPtr()->FindObject(n->getName()))
+            propValue.val = "Node" + eroot->CreateUniqueID("Node","");
+        params["name"] = propValue;
+
+        auto e = static_cast<CNodeEditor*>(eroot->CreateEditorObject(editorNode, "Node", params, false, false));
+        e->_setHandle(static_cast<Ogre::SceneNode*>(n));
+        connectElements(static_cast<Ogre::SceneNode*>(n), e);
+    }
+}
+
 //----------------------------------------------------------------------------
 int CDotSceneSerializer::Import(Ogre::String importfile)
 {
@@ -164,53 +146,17 @@ int CDotSceneSerializer::Import(Ogre::String importfile)
     pOpt->ProjectName = fileName;
     if(typepos != -1)
         pOpt->ProjectName.erase(typepos,pOpt->ProjectName.length() - typepos);
-
-    TiXmlDocument docImport((filePath + fileName).c_str());
-
-    if(!docImport.LoadFile()) return SCF_ERRFILE;
-
-    TiXmlElement* element = 0;
-    element = docImport.FirstChildElement("scene");
-    if(!element)
-        return SCF_ERRFILE;
-
-    float version = Ogre::StringConverter::parseReal(ValidAttr(element->Attribute("formatVersion")));
-    if(version != 1.0f)
-    {
-        mSystem->DisplayMessageDialog(OTR("Only File Version 1.0 is supported!"),DLGTYPE_OK);
-        return SCF_ERRFILE;
-    }
     
     pOpt->SceneManagerName = "OctreeSceneManager";
-
     pOpt->ResourceDirectories.push_back("/");
-    TiXmlElement* resLoc = element->FirstChildElement("resourceLocations");
-    if(resLoc)
-    {
-        resLoc = resLoc->FirstChildElement();
-        while(resLoc)
-        {
-            Ogre::String resType = ValidAttr(resLoc->Attribute("type"));
-            Ogre::String resName = ValidAttr(resLoc->Attribute("name"));
-            if(resType == "FileSystem")
-            {
-                OgitorsUtils::CleanPath(resName);
-                
-                if(resName[0] == '.')
-                    resName.erase(0, 1);
-
-                pOpt->ResourceDirectories.push_back(resName);
-            }
-
-            resLoc = resLoc->NextSiblingElement();
-        }
-    }
-
-    TiXmlElement* configData = element->FirstChildElement("terrain");
-    if(configData)
-    {
-        pOpt->SceneManagerConfigFile = ValidAttr(configData->Attribute("dataFile"));
-    }
+    pOpt->ResourceDirectories.push_back(filePath);
+    // compatibility with ogitor export structure
+    pOpt->ResourceDirectories.push_back(filePath+"Models/");
+    pOpt->ResourceDirectories.push_back(filePath+"Materials/");
+    pOpt->TerrainDirectory = "Terrain";
+    pOpt->ResourceDirectories.push_back(filePath+"Terrain/terrain/");
+    pOpt->ResourceDirectories.push_back(filePath+"Terrain/textures/diffusespecular/");
+    pOpt->ResourceDirectories.push_back(filePath+"Terrain/textures/normalheight/");
 
     pOpt->CameraPositions[0] = Ogre::Vector3(0,10,0);
     pOpt->CameraOrientations[0] = Ogre::Quaternion::IDENTITY;
@@ -243,385 +189,29 @@ int CDotSceneSerializer::Import(Ogre::String importfile)
     params["configfile"] = propValue;
         
     Ogre::Vector2 vClipping(1,1000);
-    TiXmlElement* environment = element->FirstChildElement("environment");
-    if(environment)
-    {
-        TiXmlElement* current = environment->FirstChildElement("clipping");
-        if(current)
-        {
-            vClipping.x = Ogre::StringConverter::parseReal(ValidAttr(current->Attribute("near"),"1"));
-            vClipping.y = Ogre::StringConverter::parseReal(ValidAttr(current->Attribute("far"),"1000"));
-        }
-
-        current = environment->FirstChildElement("colourAmbient");
-        if(current)
-        {
-            params["ambient"] = parseColourValue(current);
-        }
-        
-        current = environment->FirstChildElement("skyBox");
-        if(current)
-        {
-            propValue.propType = PROP_BOOL;
-            propValue.val = Ogre::Any(Ogre::StringConverter::parseBool(ValidAttr(current->Attribute("enable"),"0")));
-            params["skybox::active"] = propValue;
-            propValue.propType = PROP_STRING;
-            propValue.val = Ogre::Any(Ogre::String(ValidAttr(current->Attribute("material"))));
-            params["skybox::material"] = propValue;
-            propValue.propType = PROP_REAL;
-            propValue.val = Ogre::Any(Ogre::StringConverter::parseReal(ValidAttr(current->Attribute("distance"),"0")));
-            params["skybox::distance"] = propValue;
-        }
-
-        current = environment->FirstChildElement("skyDome");
-        if(current)
-        {
-            propValue.propType = PROP_BOOL;
-            propValue.val = Ogre::Any(Ogre::StringConverter::parseBool(ValidAttr(current->Attribute("enable"),"0")));
-            params["skydome::active"] = propValue;
-            propValue.propType = PROP_STRING;
-            propValue.val = Ogre::Any(Ogre::String(ValidAttr(current->Attribute("material"))));
-            params["skydome::material"] = propValue;
-        }
-
-        current = environment->FirstChildElement("fog");
-        if(current)
-        {
-            propValue.propType = PROP_INT;
-            Ogre::String fogmode = ValidAttr(current->Attribute("mode"),"None");
-            if(fogmode == "Linear" || fogmode == "linear" )
-                propValue.val = Ogre::Any((int)Ogre::FOG_LINEAR);
-            else if(fogmode == "Exp" || fogmode == "exp" )
-                propValue.val = Ogre::Any((int)Ogre::FOG_EXP);
-            else if(fogmode == "Exp2" || fogmode == "exp2" )
-                propValue.val = Ogre::Any((int)Ogre::FOG_EXP2);
-            else
-                propValue.val = Ogre::Any(Ogre::StringConverter::parseInt(fogmode));
-
-            params["fog::mode"] = propValue;
-            Ogre::Real start = Ogre::StringConverter::parseReal(ValidAttr(current->Attribute("linearStart"),"0"));
-            Ogre::Real end = Ogre::StringConverter::parseReal(ValidAttr(current->Attribute("linearEnd"),"1"));
-
-            propValue.propType = PROP_REAL;
-            propValue.val = Ogre::Any((Ogre::Real)(start * (vClipping.y - vClipping.x)));
-            params["fog::start"] = propValue;
-            propValue.val = Ogre::Any((Ogre::Real)(end * (vClipping.y - vClipping.x)));
-            params["fog::end"] = propValue;
-            propValue.val = Ogre::Any(Ogre::StringConverter::parseReal(ValidAttr(current->Attribute("expDensity"),"0")));
-            params["fog::density"] = propValue;
-            current = current->FirstChildElement("colourDiffuse");
-            if(current)
-            {
-                params["fogcolour"] = parseColourValue(current);
-            }
-        }
-    }
 
     propValue.propType = PROP_STRING;
     propValue.val = Ogre::Any(Ogre::String("SceneManager1"));
     params["name"] = propValue;
     CSceneManagerEditor *mngred = static_cast<CSceneManagerEditor*>(ogRoot->CreateEditorObject(0, pOpt->SceneManagerName,params,false,false));
 
-    // read cameras placed outside nodes
-    TiXmlElement* otherElems = element->FirstChildElement("camera");
-    Ogitors::CBaseEditor* cbeTemp;
-    while(otherElems){
-        ReadCamera(otherElems, mngred, &cbeTemp);
-        otherElems = otherElems->NextSiblingElement("camera");
+    // required to load terrain. TODO connect with CTerrainGroupEditor
+    new Ogre::TerrainGlobalOptions();
+
+    try
+    {
+        Ogre::SceneLoaderManager::getSingleton().load(importfile, PROJECT_RESOURCE_GROUP, mngred->getSceneManager()->getRootSceneNode());
+    }
+    catch(const Ogre::Exception& e)
+    {
+        Ogre::LogManager::getSingleton().logError(e.getDescription());
+        return SCF_ERROGRE;
     }
 
-    // read lights placed outside nodes
-    otherElems = element->FirstChildElement("light");
-    while(otherElems){
-        ReadLight(otherElems, mngred, &cbeTemp);
-        otherElems = otherElems->NextSiblingElement("light");
-    }
+    connectElements(mngred->getSceneManager()->getRootSceneNode(), mngred);
 
-    element = element->FirstChildElement("nodes");
-
-    RecurseReadObjects(element, mngred);
     ogRoot->AfterLoadScene();
     ogRoot->GetViewport()->getCameraEditor()->setClipDistance(vClipping);
-    return SCF_OK;
-}
-//----------------------------------------------------------------------------
-int CDotSceneSerializer::RecurseReadObjects(TiXmlElement *parentelement,CBaseEditor* parentobject)
-{
-    CBaseEditor *newobj;
-    TiXmlElement* element = 0;
-    Ogre::String eType;
-    element = parentelement->FirstChildElement();
-    if(!element) return SCF_OK;
-    do
-    {
-        newobj = 0;
-        eType = element->Value();
-        if(eType == "node") 
-        {
-            ReadSceneNode(element, parentobject, &newobj);
-            int ret = RecurseReadObjects(element, newobj);
-            
-            if(ret != SCF_OK) 
-                return ret;
-
-            NameObjectPairList& childlist = newobj->getChildren();
-            if(childlist.size() == 1)
-            {
-                CBaseEditor *childobj = childlist.begin()->second;
-                childobj->setParent(newobj->getParent());
-                OgitorsPropertyValueMap vmapn = newobj->getProperties()->getValueMap();
-                OgitorsPropertyValueMap vmapo;
-
-                OgitorsPropertyValueMap::iterator vit;
-
-                vit = vmapn.find("autotracktarget");
-                vmapo.insert(OgitorsPropertyValueMap::value_type(vit->first, vit->second));
-                vit = vmapn.find("position");
-                vmapo.insert(OgitorsPropertyValueMap::value_type(vit->first, vit->second));
-                vit = vmapn.find("scale");
-                vmapo.insert(OgitorsPropertyValueMap::value_type(vit->first, vit->second));
-                vit = vmapn.find("orientation");
-                vmapo.insert(OgitorsPropertyValueMap::value_type(vit->first, vit->second));
-
-                OgitorsRoot::getSingletonPtr()->DestroyEditorObject(newobj);
-                newobj = childobj;
-                childobj->getProperties()->setValueMap(vmapo);
-            }
-        }
-        else if(eType == "entity") ReadEntity(element, parentobject, &newobj);
-        else if(eType == "subentities") ReadSubEntity(element, parentobject, &newobj);
-        else if(eType == "light") ReadLight(element, parentobject, &newobj);
-        else if(eType == "camera") ReadCamera(element, parentobject, &newobj);
-        else if(eType == "particle") ReadParticle(element, parentobject, &newobj);
-        else if(eType == "plane") ReadPlane(element, parentobject, &newobj);
-        else 
-            continue;
-    } while(element = element->NextSiblingElement());
-    return SCF_OK;
-}
-//----------------------------------------------------------------------------
-int CDotSceneSerializer::ReadSceneNode(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret)
-{
-    OgitorsPropertyValueMap params;
-    OgitorsPropertyValue propValue;
- 
-    propValue.propType = PROP_STRING;
-    Ogre::String name = ValidAttr(element->Attribute("name"));
-    if(Ogitors::OgitorsRoot::getSingletonPtr()->FindObject(name))
-        propValue.val = Ogre::Any(Ogre::String("Node") + Ogitors::OgitorsRoot::getSingletonPtr()->CreateUniqueID("Node",""));
-    else
-        propValue.val = Ogre::Any(name);
-
-    params["name"] = propValue;
-
-    TiXmlElement* subs = 0;
-    Ogre::String eType;
-    subs = element->FirstChildElement();
-    if(!subs) return SCF_OK;
-    do
-    {
-        eType = subs->Value();
-        if(eType == "scale")
-            params["scale"] = parseVector3(subs);
-        else if(eType == "position")
-            params["position"] = parseVector3(subs);
-        else if(eType == "rotation")
-            params["orientation"] = parseQuaternion(subs);
-    } while(subs = subs->NextSiblingElement());
-    
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Node", params, false, false);
-    return SCF_OK;
-}
-//----------------------------------------------------------------------------
-int CDotSceneSerializer::ReadEntity(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret)
-{
-    OgitorsPropertyValueMap params;
-    OgitorsPropertyValue propValue;
- 
-    propValue.propType = PROP_STRING;
-    Ogre::String name = ValidAttr(element->Attribute("name"));
-    if(Ogitors::OgitorsRoot::getSingletonPtr()->FindObject(name))
-        propValue.val = Ogre::Any(Ogre::String("Entity") + Ogitors::OgitorsRoot::getSingletonPtr()->CreateUniqueID("Entity",""));
-    else
-        propValue.val = Ogre::Any(name);
-
-    params["name"] = propValue;
-
-    propValue.val = Ogre::String(ValidAttr(element->Attribute("meshFile")));
-    params["meshfile"] = propValue;
-    propValue.val = Ogre::String(ValidAttr(element->Attribute("materialFile")));
-    params["material"] = propValue;
-    propValue.propType = PROP_BOOL;
-    propValue.val = Ogre::Any(Ogre::StringConverter::parseBool(ValidAttr(element->Attribute("castShadows"))));
-    params["castshadows"] = propValue;
-    propValue.val = Ogre::Any(Ogre::StringConverter::parseBool(ValidAttr(element->Attribute("receiveShadows"))));
-    params["receiveshadows"] = propValue;
-    
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Entity", params, false, false);
-    return SCF_OK;
-}
-//----------------------------------------------------------------------------
-int CDotSceneSerializer::ReadSubEntity(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret)
-{
-    OgitorsPropertyValueMap params;
-    OgitorsPropertyValue propValue;
- 
-    propValue.propType = PROP_STRING;
-
-    TiXmlElement* subs = 0;
-    Ogre::String eType;
-    subs = element->FirstChildElement();
-    if(!subs) return SCF_OK;
-    do
-    {
-        eType = subs->Value();
-        if(eType == "subentity")
-        {
-            Ogre::String idx = ValidAttr(subs->Attribute("index"),"0");
-            Ogre::String matname = ValidAttr(subs->Attribute("materialName"));
-            propValue.val = Ogre::Any(matname);
-            params["subentity" + idx + "::material"] = propValue;
-        }
-    } while(subs = subs->NextSiblingElement());
-
-    parent->getProperties()->initValueMap(params);
-
-    return SCF_OK;
-}
-//----------------------------------------------------------------------------
-int CDotSceneSerializer::ReadLight(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret)
-{
-    OgitorsPropertyValueMap params;
-    OgitorsPropertyValue propValue;
- 
-    propValue.propType = PROP_STRING;
-    Ogre::String name = ValidAttr(element->Attribute("name"));
-    if(Ogitors::OgitorsRoot::getSingletonPtr()->FindObject(name))
-        propValue.val = Ogre::Any(Ogre::String("Light") + Ogitors::OgitorsRoot::getSingletonPtr()->CreateUniqueID("Light",""));
-    else
-        propValue.val = Ogre::Any(name);
-
-    params["name"] = propValue;
- 
-    int ltype = Ogre::Light::LT_POINT;
-    Ogre::String lighttype = ValidAttr(element->Attribute("type"),"point");
-    
-    if(lighttype == "directional")
-        ltype = Ogre::Light::LT_DIRECTIONAL;
-    else if(lighttype == "spot")
-        ltype = Ogre::Light::LT_SPOTLIGHT;
-
-    propValue.propType = PROP_INT;
-    propValue.val = Ogre::Any(ltype);
-    params["lighttype"] = propValue;
-
-    propValue.propType = PROP_BOOL;
-    propValue.val = Ogre::Any(Ogre::StringConverter::parseBool(ValidAttr(element->Attribute("castShadows"))));
-    params["castshadows"] = propValue;
-    propValue.propType = PROP_REAL;
-    propValue.val = Ogre::Any(Ogre::StringConverter::parseReal(ValidAttr(element->Attribute("power"), "1")));
-    params["power"] = propValue;
-
-    TiXmlElement* subs = 0;
-    Ogre::String eType;
-    subs = element->FirstChildElement();
-    if(!subs) return SCF_OK;
-    do
-    {
-        eType = subs->Value();
-        if(eType == "colourDiffuse")
-        {
-            params["diffuse"] = parseColourValue(subs);
-        }
-        else if(eType == "colourSpecular")
-        {
-            params["specular"] = parseColourValue(subs);
-        }
-        else if(eType == "lightAttenuation")
-        {
-            Ogre::Vector4 att;
-            att.x = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("range")));
-            att.y = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("constant")));
-            att.z = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("linear")));
-            att.w = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("quadric")));
-            propValue.propType = PROP_VECTOR4;
-            propValue.val = Ogre::Any(att);
-            params["attenuation"] = propValue;
-        }
-        else if(eType == "lightRange")
-        {
-            Ogre::Vector3 range;
-            range.x = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("inner"),"15"));
-            range.y = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("outer"),"30"));
-            range.z = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("falloff"),"1"));
-            propValue.propType = PROP_VECTOR3;
-            propValue.val = Ogre::Any(range);
-            params["lightrange"] = propValue;
-        }
-        else if(eType == "position")
-        {
-            params["position"] = parseVector3(subs);
-        }
-        else if(eType == "directionVector")
-        {
-            params["direction"] = parseVector3(subs);
-            /* Orientation is not stored for lights in the .scene files.
-              If we don't set orientation for the spotlights/directional
-              lights they will face to the default direction             */
-            Ogre::Vector3 normal = Ogre::Vector3::UNIT_Z;
-            Ogitors::OgitorsPropertyValue pOrient;
-
-            pOrient.propType = PROP_QUATERNION;
-            pOrient.val = normal.getRotationTo(Ogre::any_cast<Ogre::Vector3>(parseVector3(subs).val));
-            params["orientation"] = pOrient;
-        }
-    } while(subs = subs->NextSiblingElement());
-    
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Light", params, false, false);
-    return SCF_OK;
-}
-//----------------------------------------------------------------------------
-int CDotSceneSerializer::ReadCamera(TiXmlElement *element, CBaseEditor *parent, CBaseEditor **ret)
-{
-    OgitorsPropertyValueMap params;
-    OgitorsPropertyValue propValue;
- 
-    propValue.propType = PROP_STRING;
-    Ogre::String name = ValidAttr(element->Attribute("name"));
-    if(Ogitors::OgitorsRoot::getSingletonPtr()->FindObject(name))
-        propValue.val = Ogre::Any(Ogre::String("Camera") + Ogitors::OgitorsRoot::getSingletonPtr()->CreateUniqueID("Camera",""));
-    else
-        propValue.val = Ogre::Any(name);
-
-    params["name"] = propValue;
-
-    TiXmlElement* subs = 0;
-    Ogre::String eType;
-    subs = element->FirstChildElement();
-    if(!subs) return SCF_OK;
-    do
-    {
-        eType = subs->Value();
-        if(eType == "clipping")
-        {
-            Ogre::Vector2 clip;
-            clip.x = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("near"),"0"));
-            clip.y = Ogre::StringConverter::parseReal(ValidAttr(subs->Attribute("far"),"0"));
-            propValue.propType = PROP_VECTOR2;
-            propValue.val = Ogre::Any(clip);
-            params["clipdistance"] = propValue;
-        }
-        else if(eType == "position")
-        {
-            params["position"] = parseVector3(subs);
-        }
-        else if(eType == "rotation")
-        {
-            params["orientation"] = parseQuaternion(subs);
-        }
-    } while(subs = subs->NextSiblingElement());
-    
-    *ret = Ogitors::OgitorsRoot::getSingletonPtr()->CreateEditorObject(parent, "Camera", params, false, false);
     return SCF_OK;
 }
 //----------------------------------------------------------------------------

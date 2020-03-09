@@ -94,6 +94,8 @@ namespace Ogitors
         /** @copydoc CBaseEditor::setDerivedPosition(Ogre::Vector3) */
         virtual void             setDerivedPosition(Ogre::Vector3 val);
 
+        void _setHandle(Ogre::Light* light) { mHandle = light; }
+
     protected:
         Ogre::Light *mHandle;             /** Actual light handle */
 

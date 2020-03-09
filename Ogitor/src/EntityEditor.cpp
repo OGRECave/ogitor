@@ -197,24 +197,28 @@ bool CEntityEditor::load(bool async)
     {
         CSceneManagerEditor *mSceneMgr = mOgitorsRoot->GetSceneManagerEditor();
 
-        try
+        if(!mEntityHandle)
         {
-            mEntityHandle = mOgitorsRoot->GetSceneManager()->createEntity(mName->get(), mMeshFile->get() + ".mesh");
-            mUsingPlaceHolderMesh = false;
-        }
-        catch(...)
-        {
-            mUsingPlaceHolderMesh = true;
-            mEntityHandle = mOgitorsRoot->GetSceneManager()->createEntity(mName->get(), "missing_mesh.mesh");
-            mEntityHandle->setMaterialName("MAT_GIZMO_X_L");
-        }
+            try
+            {
+                mEntityHandle = mOgitorsRoot->GetSceneManager()->createEntity(mName->get(), mMeshFile->get() + ".mesh");
+                mUsingPlaceHolderMesh = false;
+            }
+            catch(...)
+            {
+                mUsingPlaceHolderMesh = true;
+                mEntityHandle = mOgitorsRoot->GetSceneManager()->createEntity(mName->get(), "missing_mesh.mesh");
+                mEntityHandle->setMaterialName("MAT_GIZMO_X_L");
+            }
 
-        mHandle->attachObject(mEntityHandle);
-        mEntityHandle->setQueryFlags(QUERYFLAG_MOVABLE);
-        mEntityHandle->setCastShadows(mCastShadows->get());
-        mEntityHandle->setVisibilityFlags(1 << mLayer->get());
-        mEntityHandle->setRenderingDistance(mRenderingDistance->get());
+            mHandle->attachObject(mEntityHandle);
+            mEntityHandle->setCastShadows(mCastShadows->get());
+            mEntityHandle->setRenderingDistance(mRenderingDistance->get());
+        }
         
+        mEntityHandle->setQueryFlags(QUERYFLAG_MOVABLE);
+        mEntityHandle->setVisibilityFlags(1 << mLayer->get());
+
         OgitorsPropertyDef *definition;
         if(mSubEntityCount->get() == -1)
         {

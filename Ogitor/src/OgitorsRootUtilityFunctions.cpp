@@ -278,18 +278,12 @@ Vector3 OgitorsRoot::GetGizmoIntersectCameraPlane(Ogre::Vector3& pos, Ogre::Quat
 //-----------------------------------------------------------------------------------------
 void OgitorsRoot::FillResourceGroup(Ogre::ResourceGroupManager *mngr, Ogre::StringVector &list, Ogre::String path, Ogre::String group)
 {
-    Ogre::String strTemp;
-    unsigned int itemcount;
-    Ogre::String stype;
-
-    itemcount = list.size();
-
     Ogre::String ofspath = path + "::";
 
-    for(unsigned int i = 0;i < itemcount;i++)
+    for(unsigned int i = 0;i < list.size();i++)
     {
-        strTemp = list[i];
-        mngr->addResourceLocation(ofspath + strTemp, "Ofs", group, false, false);
+        mngr->addResourceLocation(list[i], "FileSystem", group, false, false);
+        mngr->addResourceLocation(ofspath + list[i], "Ofs", group, false, false);
     }
 }
 //-----------------------------------------------------------------------------------------
