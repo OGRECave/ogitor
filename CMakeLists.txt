@@ -290,14 +290,10 @@ add_custom_target(lupdate
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/qtOgitor/languages
 )
 
-if(WIN32)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/windows.cmake)
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install.cmake)
 
 if(UNIX)
     # apple and linux
-    include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install.cmake)
-
     if(OGITOR_DIST)
         FILE(GLOB ogitor_cmake_scripts "${CMAKE_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
         install(FILES ${ogitor_cmake_scripts}
