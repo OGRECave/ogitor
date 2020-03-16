@@ -296,7 +296,7 @@ endif()
 
 if(UNIX)
     # apple and linux
-    include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install/unix.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules/install.cmake)
 
     if(OGITOR_DIST)
         FILE(GLOB ogitor_cmake_scripts "${CMAKE_SOURCE_DIR}/CMakeModules/findscripts/*.cmake")
