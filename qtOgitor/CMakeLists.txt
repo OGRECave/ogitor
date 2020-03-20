@@ -300,7 +300,7 @@ else(NOT Qt5Widgets_FOUND)
         if(OGITOR_DIST)
             install(
                 DIRECTORY ${CMAKE_SOURCE_DIR}/qtOgitor/share
-                DESTINATION ${PREFIX}
+                DESTINATION ${CMAKE_INSTALL_PREFIX}
             )
 
             if(HAS_KDE)
