@@ -312,11 +312,7 @@ else(NOT Qt5Widgets_FOUND)
     endif(UNIX)
     
     if(Qt5LinguistTools_FOUND)
-        if(UNIX)
-            install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${OGITOR_LANGUAGE_PATH})
-        elseif(WIN32)
-            install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${PREFIX})
-        endif(UNIX)
+        install(FILES ${QTOGITOR_TS_FILES} DESTINATION ${OGITOR_LANGUAGE_INSTALL_PATH})
     endif()
 
     if(WIN32)
