@@ -55,13 +55,6 @@ option(OGITOR_MESHMAGICK_INTERFACE "Use MeshMagick widget" FALSE)
 option(OGITOR_DOWNLOAD_SAMPLEPROJECT "Download and install sample project" TRUE)
 option(OGITOR_DOWNLOAD_SAMPLEMEDIA "Download and install sample media" TRUE)
 
-# Somehow, relative paths doesn't work on Linux when installing files..
-if(UNIX)
-    set(PREFIX ${CMAKE_INSTALL_PREFIX})
-else()
-    set(PREFIX "./")
-endif()
-
 if(CMAKE_BUILD_TYPE STREQUAL "")
     # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
     # differentiation between debug and release builds.
