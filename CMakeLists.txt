@@ -182,6 +182,13 @@ else(UNIX)
     set(OGITOR_PLUGIN_ICON_PATH "../Plugins/Icons" CACHE PATH "Ogitor plugins icon path" FORCE)
     set(OGITOR_LIBOGREOFSPLUGIN_PATH "." CACHE PATH "libOgreOfsPlugin path" FORCE)
 endif(UNIX)
+
+if(NOT IS_ABSOLUTE ${OGITOR_PLUGIN_PATH})
+    set(OGITOR_PLUGIN_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/bin/${OGITOR_PLUGIN_PATH}")
+else()
+    set(OGITOR_PLUGIN_INSTALL_PATH "${OGITOR_PLUGIN_PATH}")
+endif()
+
 configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/RunPath/bin/resources.cfg)
 
 # hide advanced options
