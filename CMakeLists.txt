@@ -53,7 +53,6 @@ endif(WIN32)
 option(OGITOR_MESHMAGICK_INTERFACE "Use MeshMagick widget" FALSE)
 
 option(OGITOR_DOWNLOAD_SAMPLEPROJECT "Download and install sample project" TRUE)
-option(OGITOR_DOWNLOAD_SAMPLEMEDIA "Download and install sample media" TRUE)
 
 if(CMAKE_BUILD_TYPE STREQUAL "")
     # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
@@ -210,16 +209,6 @@ configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMA
 #    OGITOR_LIBOGREOFSPLUGIN_PATH
 #)
 
-# Error out if old Media folder is detected
-if(UNIX AND NOT APPLE AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/RunPath/Media/EditorResources)
-  message(SEND_ERROR "An old version of the Media folder was detected in: ${CMAKE_CURRENT_SOURCE_DIR}/RunPath .\nMake sure that you've downloaded the latest version of 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
-endif()
-if(NOT OGITOR_DOWNLOAD_SAMPLEMEDIA)
-    # Error out if Source_Dir/RunPath/Media and Source_Dir/RunPath/Projects isn't present on the users system
-    if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
-      message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media.\nMake sure that you've downloaded 'media.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Media'.")
-    endif(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media)
-endif(NOT OGITOR_DOWNLOAD_SAMPLEMEDIA)
 if(NOT OGITOR_DOWNLOAD_SAMPLEPROJECT)
     if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects)
       message(SEND_ERROR "Failed to find ${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Projects.\nMake sure that you've downloaded 'projects.zip' from Ogitor.org and extracted it into ${CMAKE_CURRENT_SOURCE_DIR}/RunPath as 'Projects'.")
@@ -242,20 +231,6 @@ if(OGITOR_DOWNLOAD_SAMPLEPROJECT)
     )
     set_target_properties(SampleProject PROPERTIES FOLDER Assets)
 endif(OGITOR_DOWNLOAD_SAMPLEPROJECT)
-
-# download, unpack and copy sample media
-if(OGITOR_DOWNLOAD_SAMPLEMEDIA)
-    ExternalProject_Add(SampleMedia
-      URL https://github.com/OGRECave/ogitor/releases/download/v0.5.5/media.zip
-      PREFIX ${CMAKE_CURRENT_BINARY_DIR}
-      PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${CMAKE_CURRENT_BINARY_DIR}/src/SampleMedia" "${CMAKE_CURRENT_SOURCE_DIR}/RunPath/Media"
-      CONFIGURE_COMMAND ""
-      BUILD_COMMAND ""
-      INSTALL_COMMAND ""
-    )
-    set_target_properties(SampleMedia PROPERTIES FOLDER Assets)
-endif(OGITOR_DOWNLOAD_SAMPLEMEDIA)
 
 # Generate OgitorsGlobals.cpp
 configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/OgitorsGlobals.cpp.in ${CMAKE_BINARY_DIR}/Ogitor/src/OgitorsGlobals.cpp)
