@@ -67,6 +67,7 @@ endif(WIN32)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 include (FindPkgMacros)
 
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(OGRE 1.10 REQUIRED)
 link_directories(${OGRE_LIBRARY_DIRS})
 

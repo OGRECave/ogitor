@@ -7,7 +7,6 @@ endif()
 
 project(QtOgitor)
 
-find_package(Qt5Widgets REQUIRED)
 find_package(Qt5LinguistTools)
 
 if(UNIX AND NOT APPLE)

@@ -9,7 +9,6 @@ endif()
 
 project(OgScreenEffectEditor)
 
-find_package(Qt5Widgets REQUIRED)
 
 if(NOT Qt5Widgets_FOUND)
 	message(SEND_ERROR "Failed to find Qt 5.0.0 or greater.")
