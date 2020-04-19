@@ -40,7 +40,7 @@ if(UNIX)
 	)
 
 	install(FILES
-		${CMAKE_BINARY_DIR}/RunPath/bin/resources.cfg
+		${CMAKE_SOURCE_DIR}/RunPath/bin/resources.cfg
 		# Sample app only installed locally ?
 		#${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig.xml
 		#${CMAKE_CURRENT_SOURCE_DIR}/bin/SampleAppConfig_dist.xml

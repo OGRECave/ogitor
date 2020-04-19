@@ -68,8 +68,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
 include (FindPkgMacros)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
-find_package(OGRE 1.10 REQUIRED)
-link_directories(${OGRE_LIBRARY_DIRS})
+find_package(OGRE 1.12 REQUIRED)
 
 if(UNIX AND NOT OGITOR_DIST)
  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
@@ -194,7 +193,7 @@ else()
     set(OGITOR_LIBOGREOFSPLUGIN_INSTALL_PATH "${OGITOR_LIBOGREOFSPLUGIN_PATH}")
 endif()
 
-configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/RunPath/bin/resources.cfg)
+configure_file(${CMAKE_SOURCE_DIR}/CMakeModules/Templates/resources.cfg.in ${CMAKE_SOURCE_DIR}/RunPath/bin/resources.cfg)
 
 # hide advanced options
 #mark_as_advanced(

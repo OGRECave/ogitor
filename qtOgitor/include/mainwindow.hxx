@@ -404,7 +404,6 @@ private:
     void createScriptActionsToolbar();
     void closeEvent(QCloseEvent *event);
     bool eventFilter(QObject *obj,  QEvent *event);
-    void initHiddenRenderWindow();
     void updateRecentFiles();
     bool mHasFileArgs;
     std::string mLastLoadedScene;

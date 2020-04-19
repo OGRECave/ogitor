@@ -256,6 +256,8 @@ else(NOT Qt5Widgets_FOUND)
         add_dependencies(qtOgitor SampleProject)
     endif(OGITOR_DOWNLOAD_SAMPLEPROJECT)
 
+    list(APPEND OGRE_LIBRARIES OgreBitesQt)
+
     if(OGITOR_MESHMAGICK_INTERFACE)
         target_link_libraries(qtOgitor QtPropertyBrowser ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES} ${OGRE_LIBRARIES} Ogitor meshmagick_shared_lib ImageConverter GenericTextEditor GenericImageEditor TinyXML)
     else(OGITOR_MESHMAGICK_INTERFACE)

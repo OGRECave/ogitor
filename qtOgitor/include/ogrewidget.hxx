@@ -145,8 +145,6 @@ protected:
 
     unsigned int  mLastKeyEventTime;
     volatile bool mScreenResize;
-    int           mFrameCounter;
-    double        mTotalFrameTime;
     bool          mCursorHidden;
     bool          mDoLoadFile;
 

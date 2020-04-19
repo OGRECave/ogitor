@@ -289,8 +289,6 @@ MainWindow::MainWindow(QString args, QWidget *parent)
 
     mOgitorAssistant = new OgitorAssistant;
 
-    initHiddenRenderWindow();
-
     mApplicationObject = 0;
 
     readSettings();
@@ -325,27 +323,6 @@ void MainWindow::setApplicationObject(QObject *obj)
     mApplicationObject = obj;
     mAppActive = true;
     obj->installEventFilter(this);
-}
-//------------------------------------------------------------------------------
-void MainWindow::initHiddenRenderWindow()
-{
-    Ogre::NameValuePairList hiddenParams;
-
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
-    hiddenParams["externalWindowHandle"] = Ogre::StringConverter::toString((size_t) winId());
-#else
-    hiddenParams["parentWindowHandle"] = Ogre::StringConverter::toString(size_t(this->winId()));
-#endif
-
-    hiddenParams["border"] = "none";
-    Ogre::RenderWindow* pPrimary = Ogre::Root::getSingletonPtr()->createRenderWindow("Primary1", 1, 1, false, &hiddenParams);
-    pPrimary->setVisible(false);
-    pPrimary->setAutoUpdated(false);
-
-    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-
-    // Load resources
-    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 //------------------------------------------------------------------------------------
 void MainWindow::showSubWindows()

@@ -40,6 +40,7 @@
 #include "ViewportEditor.h"
 #include "OgitorsRoot.h"
 #include "OgitorsGlobals.h"
+#include "ogrewidget.hxx"
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QLibraryInfo>
@@ -48,6 +49,8 @@
 
 #include <QtWidgets/QSplashScreen>
 
+#include <OgreApplicationContextQt.h>
+
 extern bool    ViewKeyboard[1024];
 extern QString ConvertToQString(Ogre::UTFString& value);
 
@@ -55,83 +58,115 @@ Ogre::Root           *mOgreRoot;
 Ogitors::OgitorsRoot *mOgitorsRoot;
 QtOgitorSystem       *mSystem;
 Shortcuts            *mShortCuts;
-//-------------------------------------------------------------------------------------
-void setupOgre()
+
+static void setupOgitors();
+static void readRecentFiles(QSettings& settings);
+
+struct OgreContext : public OgreBites::ApplicationContextQt
 {
-    // Create the main ogre object
-    mOgreRoot = OGRE_NEW Ogre::Root(Ogitors::Globals::OGRE_CONFIG_PATH + "/plugins.cfg", "ogre.cfg", "Ogitor.log");
+    OgreContext() : OgreBites::ApplicationContextQt("Ogitor") {}
+
+    void createRoot()
+    {
+        OgreBites::ApplicationContextQt::createRoot();
+        mOgreRoot = getRoot();
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    // load additional plugins
-    mOgreRoot->loadPlugin(Ogitors::Globals::LIBOGREOFSPLUGIN_PATH + "/libOgreOfsPlugin.so");
+        // load additional plugins
+        mOgreRoot->loadPlugin(Ogitors::Globals::LIBOGREOFSPLUGIN_PATH + "/libOgreOfsPlugin.so");
 #else
-    mOgreRoot->loadPlugin("OgreOfsPlugin");
+        mOgreRoot->loadPlugin("OgreOfsPlugin");
 #endif
 
-    Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
+        QSettings settings;
+        setupOgitors();
+        readRecentFiles(settings);
+        useQtEventLoop(true);
+        mOgitorMainWindow = new MainWindow();
+        mOgitorMainWindow->show();
+        injectMainWindow(mOgitorMainWindow->getOgreWidget()->windowHandle());
+    }
 
-    Ogre::ConfigFile cf;
-    std::string cfPath = resourcePath();
-	cfPath.append("resources.cfg");
-    cf.load(cfPath);
-
-    // Go through all sections & settings in the file
-    Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
-    Ogre::ResourceGroupManager::getSingletonPtr()->setLoadingListener(new Ogitors::ResourceLoadingListener());
-
-    Ogre::String secName, typeName, archName;
-    while (seci.hasMoreElements())
+    bool oneTimeConfig()
     {
-        secName = seci.peekNextKey();
-        Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
-        Ogre::ConfigFile::SettingsMultiMap::iterator i;
-        for (i = settings->begin(); i != settings->end(); ++i)
+        Ogre::LogManager::getSingleton().setLogDetail(Ogre::LL_NORMAL);
+
+        QSettings settings;
+        settings.beginGroup("preferences");
+        QString renderer = settings.value("renderSystem", "").toString();
+
+        Ogre::RenderSystemList::const_iterator pRend = mOgreRoot->getAvailableRenderers().begin();
+        Ogre::RenderSystem *rsys = *pRend;
+
+        while (pRend != mOgreRoot->getAvailableRenderers().end())
         {
-            typeName = i->first;
-            // Resource locations are using absolute paths now
-            archName = /*resourcePath() +*/ i->second;
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
+            Ogre::String rName = (*pRend)->getName();
+
+            if (rName == renderer.toStdString())
+            {
+                rsys = *pRend;
+                break;
+            }
+
+            pRend++;
+        }
+
+        // Set the rendering system and initialise OGRE
+        mOgreRoot->setRenderSystem(rsys);
+        mOgreRoot->getRenderSystem()->setConfigOption("Full Screen", "No");
+
+        int antialias = settings.value("antiAliasing", 4).toInt();
+        bool vsync = settings.value("useVSync", true).toBool();
+        mOgreRoot->getRenderSystem()->setConfigOption(
+            "VSync", Ogre::StringConverter::toString(vsync));
+        mOgreRoot->getRenderSystem()->setConfigOption("FSAA", std::to_string(antialias));
+        settings.endGroup();
+
+        return true;
+    }
+
+    void setupReal()
+    {
+        OgreBites::ApplicationContextQt::setup();
+    }
+
+    void locateResources()
+    {
+        OgreBites::ApplicationContextQt::locateResources();
+
+        Ogre::ConfigFile cf;
+        std::string cfPath = resourcePath();
+        cfPath.append("resources.cfg");
+        cf.load(cfPath);
+
+        // Go through all sections & settings in the file
+        Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
+        Ogre::ResourceGroupManager::getSingletonPtr()->setLoadingListener(new Ogitors::ResourceLoadingListener());
+
+        Ogre::String secName, typeName, archName;
+        while (seci.hasMoreElements())
+        {
+            secName = seci.peekNextKey();
+            Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
+            Ogre::ConfigFile::SettingsMultiMap::iterator i;
+            for (i = settings->begin(); i != settings->end(); ++i)
+            {
+                typeName = i->first;
+                // Resource locations are using absolute paths now
+                archName = /*resourcePath() +*/ i->second;
+                Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
+            }
         }
     }
+};
 
+//-------------------------------------------------------------------------------------
+static void setupOgitors()
+{
     QSettings settings;
     settings.beginGroup("preferences");
-
-    QString renderer = settings.value("renderSystem", "").toString();
-
-    if(renderer.isEmpty())
-    {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-        renderer = "Direct3D9 Rendering Subsystem";
-#else
-        renderer = "OpenGL Rendering Subsystem";
-#endif
-        settings.setValue("renderSystem", renderer);
-    }
-
-    Ogre::RenderSystemList::const_iterator pRend = mOgreRoot->getAvailableRenderers().begin();
-    while (pRend != mOgreRoot->getAvailableRenderers().end())
-    {
-        Ogre::String rName = (*pRend)->getName();
-
-        if (rName == renderer.toStdString())
-            break;
-
-        pRend++;
-    }
-
-    Ogre::RenderSystem *rsys = *pRend;
-
     bool azerty = settings.value("useAZERTY", false).toBool();
     settings.endGroup();
-
-    // Set the rendering system and initialise OGRE
-    mOgreRoot->setRenderSystem(rsys);
-
-    // initialize without creating window
-    mOgreRoot->getRenderSystem()->setConfigOption("Full Screen", "No");
-    //mOgreRoot->saveConfig();
-    mOgreRoot->initialise(false); // don't create a window
 
     Ogitors::OgitorsSpecialKeys keys;
     /* Shortcuts class was created only with getInstance() and because of this it's destructor never ran */
@@ -192,7 +227,7 @@ void setupOgre()
     mOgitorsRoot = OGRE_NEW Ogitors::OgitorsRoot(&disabledPluginPaths);
 }
 //------------------------------------------------------------------------------------
-void readRecentFiles(QSettings& settings)
+static void readRecentFiles(QSettings& settings)
 {
     int recentFileCount = settings.value("recentfiles/count").toInt();
     Ogitors::UTFStringVector recentList;
@@ -246,6 +281,8 @@ void writeRecentFiles()
 int main(int argc, char *argv[])
 {
     Application app(argc, argv);
+
+    OgreContext ogreCtx;
 
     QDir::setCurrent(app.applicationDirPath());
 
@@ -328,12 +365,9 @@ int main(int argc, char *argv[])
         splash->show();
     }
 
-    setupOgre();
-
-    readRecentFiles(settings);
-
-    mOgitorMainWindow = new MainWindow();
-    mOgitorMainWindow->show();
+    ogreCtx.initApp();
+    mOgitorsRoot->SetRenderWindow(ogreCtx.getRenderWindow());
+    mOgitorMainWindow->getOgreWidget()->initializeOGRE();
 
     mOgitorMainWindow->setApplicationObject(&app);
 
@@ -378,7 +412,6 @@ int main(int argc, char *argv[])
     delete mShortCuts;
     OGRE_DELETE mOgitorsRoot;
     OGRE_DELETE mSystem;
-    OGRE_DELETE mOgreRoot;
 
     return retval;
 }

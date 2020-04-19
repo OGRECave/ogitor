@@ -77,8 +77,6 @@ OgreWidget::OgreWidget(QWidget *parent, bool doLoadFile, Qt::WindowFlags f): QWi
 mOgreRoot(0), mRenderWindow(0), mOgreInitialised(false), mLastKeyEventTime(0),
 mRenderStop(false), mScreenResize(false), mCursorHidden(false), mDoLoadFile(doLoadFile)
 {
-    mFrameCounter = 0;
-    mTotalFrameTime = 0;
     mSwitchingScene = false;
 
     for(int i = 0;i < 1024;i++)
@@ -97,8 +95,6 @@ mRenderStop(false), mScreenResize(false), mCursorHidden(false), mDoLoadFile(doLo
     layout->setMargin(0);
     layout->addWidget(mOverlayWidget);
     setLayout(layout);
-
-    initializeOGRE();
     
     EventManager::getSingletonPtr()->connectEvent(EventManager::LOAD_STATE_CHANGE, this, true, 0, true, 0, EVENT_CALLBACK(OgreWidget, onSceneLoadStateChange));
 }
@@ -121,6 +117,8 @@ int oldTris = 0;
 
 bool OgreWidget::frameStarted(const Ogre::FrameEvent& evt)
 {
+    if(!mRenderWindow || !OgitorsRoot::getSingletonPtr()->GetViewport()) return true;
+
     displayFPS(evt.timeSinceLastFrame);
     OgitorsRoot::getSingletonPtr()->GetViewport()->UpdateAutoCameraPosition(evt.timeSinceLastFrame);
 
@@ -149,37 +147,10 @@ bool OgreWidget::frameStarted(const Ogre::FrameEvent& evt)
 //----------------------------------------------------------------------------------------
 void OgreWidget::initializeOGRE()
 {
-    //== Creating and Acquiring Ogre Window ==//
-
-    // Get the parameters of the window QT created
-
     mOgreRoot = Ogre::Root::getSingletonPtr();
-
-    Ogre::NameValuePairList params;
-
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
-    params["externalWindowHandle"] = Ogre::StringConverter::toString((size_t) (this->winId()));
-#else
-    params["parentWindowHandle"] = Ogre::StringConverter::toString(size_t(this->winId()));
-#endif
-
-    QSettings settings;
-    settings.beginGroup("preferences");
-    int antialias = settings.value("antiAliasing", 0).toInt();
-    bool vsync = settings.value("useVSync", false).toBool();
-    params["FSAA"] = Ogre::StringConverter::toString(antialias);
-    params["vsync"] = Ogre::StringConverter::toString(vsync);
-
-    mRenderWindow = mOgreRoot->createRenderWindow( "QtOgitorRenderWindow",
-        this->width(),
-        this->height(),
-        false,
-        &params );
-
-    mRenderWindow->resize(width(), height());
+    mRenderWindow = OgitorsRoot::getSingletonPtr()->GetRenderWindow();
 
     mOgreRoot->getRenderSystem()->addListener(this);
-    OgitorsRoot::getSingletonPtr()->SetRenderWindow(mRenderWindow);
     Ogre::Root::getSingletonPtr()->addFrameListener(this);
     Ogre::MeshManager::getSingletonPtr()->setListener(this);
 
@@ -206,9 +177,6 @@ void OgreWidget::paintEvent(QPaintEvent* evt)
     if(!isVisible())
         return;
 
-    if(!mRenderWindow)
-        initializeOGRE();
-
     if(mOgreInitialised && OgitorsRoot::getSingletonPtr()->IsSceneLoaded() && !mRenderStop)
     {
         if(this->width() > 0 && this->height() > 0)
@@ -231,9 +199,6 @@ void OgreWidget::paintEvent(QPaintEvent* evt)
                 mOgreRoot->renderOneFrame();
 
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-            mRenderWindow->update();
-#endif
             if(OgitorsRoot::getSingletonPtr()->IsClearScreenNeeded())
             {
                 OgitorsRoot::getSingletonPtr()->GetRenderWindow()->removeViewport(0);
@@ -265,12 +230,7 @@ void OgreWidget::paintEvent(QPaintEvent* evt)
 //------------------------------------------------------------------------------------
 void OgreWidget::resizeEvent(QResizeEvent* evt)
 {
-    if(!mRenderWindow)
-        return;
-
     mScreenResize = true;
-
-    mRenderWindow->resize(width(), height());
 
     if(OgitorsRoot::getSingletonPtr()->IsSceneLoaded())
         OgitorsRoot::getSingletonPtr()->RenderWindowResized();
@@ -457,17 +417,7 @@ void OgreWidget::ProcessKeyActions()
 //------------------------------------------------------------------------------------
 void OgreWidget::displayFPS(float time)
 {
-    mFrameCounter++;
-    mTotalFrameTime += time;
-    mFrameRate = (float)mFrameCounter / (float)mTotalFrameTime ;
-    if(mTotalFrameTime > 2.0f)
-    {
-        mTotalFrameTime = 0;
-        mFrameCounter = 0;
-        char temp[500];
-        sprintf(temp,"Ogre FPS: %.1f  ", mFrameRate);
-        mOgitorMainWindow->mFPSLabel->setText(QString(temp));
-    }
+    mOgitorMainWindow->mFPSLabel->setText(QString::asprintf("Ogre FPS: %.1f  ", mRenderWindow->getStatistics().lastFPS));
 }
 //----------------------------------------------------------------------------------
 void OgreWidget::processMaterialName(Ogre::Mesh *mesh, Ogre::String *name)
