@@ -38,7 +38,11 @@
 
 #include "OgitorsExports.h"
 #include "OgitorsGlobals.h"
-#include "OgreUTFString.h"
+
+namespace Ogre
+{
+    typedef String UTFString;
+}
 
 namespace Ogitors
 {

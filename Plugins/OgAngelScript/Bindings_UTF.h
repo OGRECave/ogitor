@@ -60,6 +60,7 @@ namespace Ogitors
     //-----------------------------------------------------------------------------------------
     static void DestructUTFString(Ogre::UTFString *thisPointer)
     {
+        using Ogre::UTFString;
 	    thisPointer->~UTFString();
     }
     //-----------------------------------------------------------------------------------------
@@ -97,6 +98,10 @@ namespace Ogitors
 	    else if( a > b ) cmp = 1;
 	    return cmp;
     }
+    static bool StringEquals(const Ogre::UTFString& lhs, Ogre::UTFString& rhs)
+    {
+        return lhs == rhs;
+    }
     //-----------------------------------------------------------------------------------------
     void RegisterUTFBindings(asIScriptEngine *engine)
     {
@@ -111,7 +116,7 @@ namespace Ogitors
 	    r = engine->RegisterObjectBehaviour("UTFString", asBEHAVE_DESTRUCT,   "void f()",                    asFUNCTION(DestructUTFString),  asCALL_CDECL_OBJLAST); assert( r >= 0 );
         r = engine->RegisterObjectMethod("UTFString", "UTFString &opAssign(const UTFString &in)", asMETHODPR(Ogre::UTFString, operator =, (const Ogre::UTFString&), Ogre::UTFString&), asCALL_THISCALL); assert( r >= 0 );
 
-	    r = engine->RegisterObjectMethod("UTFString", "bool opEquals(const UTFString &in) const", asMETHODPR(Ogre::UTFString, operator ==, (const Ogre::UTFString&) const, bool), asCALL_THISCALL); assert( r >= 0 );
+	    r = engine->RegisterObjectMethod("UTFString", "bool opEquals(const UTFString &in) const", asFUNCTION(StringEquals), asCALL_CDECL_OBJFIRST); assert( r >= 0 );
 	    r = engine->RegisterObjectMethod("UTFString", "int opCmp(const UTFString &in) const", asFUNCTION(UTFStringCmp), asCALL_CDECL_OBJFIRST); assert( r >= 0 );
 	    r = engine->RegisterObjectMethod("UTFString", "UTFString opAdd(const UTFString &in) const", asFUNCTION(AddUTFString), asCALL_CDECL_OBJFIRST); assert( r >= 0 );
 

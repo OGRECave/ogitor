@@ -234,20 +234,12 @@ static void readRecentFiles(QSettings& settings)
     recentList.clear();
     for(int i = 0;i < recentFileCount;i++)
     {
-        QTextCodec *codec = QTextCodec::codecForName("UTF-16");
         QString value = settings.value(QString("recentfiles/entry%1").arg(i)).toString();
 
         if(!QFile::exists(value))
             continue;
 
-        QByteArray encodedString = codec->fromUnicode(value);
-
-        Ogre::ushort *data = (Ogre::ushort*)encodedString.data();
-        data++;
-
-        Ogre::UTFString retStr(data,(encodedString.size() / 2) - 1);
-
-        recentList.push_back(retStr);
+        recentList.push_back(value.toStdString());
     }
 
     Ogitors::OgitorsRoot::getSingletonPtr()->InitRecentFiles(recentList);

@@ -60,14 +60,12 @@
 //-------------------------------------------------------------------------------
 QString ConvertToQString(Ogre::UTFString& value)
 {
-    QByteArray encodedString((const char*)value.data(), value.size() * 2);
-    QTextCodec *codec = QTextCodec::codecForName("UTF-16");
-    return codec->toUnicode(encodedString);
+    return QString::fromStdString(value);
 }
 //-------------------------------------------------------------------------------
 Ogre::UTFString ConvertFromQString(QString& value)
 {
-    return Ogre::UTFString(value.toUtf8().constData());
+    return Ogre::UTFString(value.toStdString());
 }
 //-------------------------------------------------------------------------------
 //---PLACE ALL CORE MESSAGES HERE SO LINGUIST CAN PICK THEM----------------------
@@ -590,29 +588,13 @@ void QtOgitorSystem::UpdateLoadProgress(float percentage, Ogre::UTFString msg)
 Ogre::UTFString QtOgitorSystem::Translate(Ogre::String& str)
 {
     QString result = QApplication::translate("QtOgitorSystem", str.c_str(), 0);
-
-    QTextCodec *codec = QTextCodec::codecForName("UTF-16");
-    QByteArray encodedString = codec->fromUnicode(result);
-
-    Ogre::ushort *data = (Ogre::ushort*)encodedString.data();
-    data++;
-
-    Ogre::UTFString retStr(data,(encodedString.size() / 2) - 1);
-    return retStr;
+    return result.toStdString();
 }
 //-------------------------------------------------------------------------------
 Ogre::UTFString QtOgitorSystem::Translate(const char * str)
 {
     QString result =  QApplication::translate("QtOgitorSystem", str, 0);
-
-    QTextCodec *codec = QTextCodec::codecForName("UTF-16");
-    QByteArray encodedString = codec->fromUnicode(result);
-
-    Ogre::ushort *data = (Ogre::ushort*)encodedString.data();
-    data++;
-
-    Ogre::UTFString retStr(data,(encodedString.size() / 2) - 1);
-    return retStr;
+    return result.toStdString();
 }
 //-------------------------------------------------------------------------------
 void QtOgitorSystem::SetMouseCursor(unsigned int cursor)
