@@ -18,11 +18,9 @@ You can choose not to by setting `OGITOR_DOWNLOAD_SAMPLEMEDIA` and `OGITOR_DOWNL
 
 To be able to run Ogitor, you will need the media.zip archive downloaded and extracted into the OGITOR ```"RunPath"``` folder. The projects.zip archive is optional but advised, since it offers a sample scene to get you started. Both archives can be downloaded under the following links:
 
-* [https://bitbucket.org/ogitor/ogitor/downloads/media.zip](https://bitbucket.org/ogitor/ogitor/downloads/media.zip)
-* [https://bitbucket.org/ogitor/ogitor/downloads/projects.zip](https://bitbucket.org/ogitor/ogitor/downloads/projects.zip)
+* https://github.com/OGRECave/ogitor/releases/download/v0.5.5/media.zip
+* https://github.com/OGRECave/ogitor/releases/download/v0.5.5/projects.zip
 
 # Links
 
-* [Mercurial repository](https://bitbucket.org/ogitor/ogitor)
-* [google.com/+OgitorOrg](https://www.google.com/+OgitorOrg)
-* [@ogitors](https://twitter.com/ogitors)
+* https://twitter.com/ogitors
