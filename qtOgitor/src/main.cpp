@@ -132,31 +132,10 @@ struct OgreContext : public OgreBites::ApplicationContextQt
 
     void locateResources()
     {
-        OgreBites::ApplicationContextQt::locateResources();
-
-        Ogre::ConfigFile cf;
-        std::string cfPath = resourcePath();
-        cfPath.append("resources.cfg");
-        cf.load(cfPath);
-
-        // Go through all sections & settings in the file
-        Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
+        // ogre.cfg already resolved, so:
+        mFSLayer->setConfigPaths({resourcePath()});
         Ogre::ResourceGroupManager::getSingletonPtr()->setLoadingListener(new Ogitors::ResourceLoadingListener());
-
-        Ogre::String secName, typeName, archName;
-        while (seci.hasMoreElements())
-        {
-            secName = seci.peekNextKey();
-            Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
-            Ogre::ConfigFile::SettingsMultiMap::iterator i;
-            for (i = settings->begin(); i != settings->end(); ++i)
-            {
-                typeName = i->first;
-                // Resource locations are using absolute paths now
-                archName = /*resourcePath() +*/ i->second;
-                Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
-            }
-        }
+        OgreBites::ApplicationContextQt::locateResources();
     }
 };
 
