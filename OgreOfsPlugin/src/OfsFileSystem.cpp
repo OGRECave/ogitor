@@ -90,9 +90,9 @@ namespace Ogre {
 
         OFS::FileList retList = mOfs->listFiles(mDir.c_str(), OFS::OFS_FILE);
 
-        if(pattern == "*")
+        for(unsigned int i = 0;i < retList.size();i++)   
         {
-            for(unsigned int i = 0;i < retList.size();i++)
+            if(StringUtil::match(retList[i].name, mod_pattern))
             {
                 if (simpleList)
                 {
@@ -111,111 +111,6 @@ namespace Ogre {
                 }
             }
         }
-        else
-        {
-            if(mod_pattern[0] == '*')
-                mod_pattern = "." + mod_pattern;
-
-            try
-            {
-                const std::regex e(mod_pattern.c_str());
-
-                for(unsigned int i = 0;i < retList.size();i++)   
-                {
-                    if(regex_match(retList[i].name.c_str(), e))
-                    {
-                        if (simpleList)
-                        {
-                            simpleList->push_back(directory + retList[i].name);
-                        }
-                        else if (detailList)
-                        {
-                            FileInfo fi;
-                            fi.archive = (Archive*)this;
-                            fi.filename = directory + retList[i].name;
-                            fi.basename = retList[i].name;
-                            fi.path = directory;
-                            fi.compressedSize = retList[i].file_size;
-                            fi.uncompressedSize = retList[i].file_size;
-                            detailList->push_back(fi);
-                        }
-                    }
-                }
-            }
-            catch(...)
-            {
-            }
-        }
-/*
-        lHandle = _findfirst(full_pattern.c_str(), &tagData);
-        res = 0;
-        while (lHandle != -1 && res != -1)
-        {
-            if ((dirs == ((tagData.attrib & _A_SUBDIR) != 0)) &&
-				( !ms_IgnoreHidden || (tagData.attrib & _A_HIDDEN) == 0 ) &&
-                (!dirs || !is_reserved_dir (tagData.name)))
-            {
-                if (simpleList)
-                {
-                    simpleList->push_back(directory + tagData.name);
-                }
-                else if (detailList)
-                {
-                    FileInfo fi;
-                    fi.archive = this;
-                    fi.filename = directory + tagData.name;
-                    fi.basename = tagData.name;
-                    fi.path = directory;
-                    fi.compressedSize = tagData.size;
-                    fi.uncompressedSize = tagData.size;
-                    detailList->push_back(fi);
-                }
-            }
-            res = _findnext( lHandle, &tagData );
-        }
-        // Close if we found any files
-        if(lHandle != -1)
-            _findclose(lHandle);
-
-        // Now find directories
-        if (recursive)
-        {
-            String base_dir = mName;
-            if (!directory.empty ())
-            {
-                base_dir = concatenate_path(mName, directory);
-                // Remove the last '/'
-                base_dir.erase (base_dir.length () - 1);
-            }
-            base_dir.append ("/*");
-
-            // Remove directory name from pattern
-            String mask ("/");
-            if (pos1 != pattern.npos)
-                mask.append (pattern.substr (pos1 + 1));
-            else
-                mask.append (pattern);
-
-            lHandle = _findfirst(base_dir.c_str (), &tagData);
-            res = 0;
-            while (lHandle != -1 && res != -1)
-            {
-                if ((tagData.attrib & _A_SUBDIR) &&
-					( !ms_IgnoreHidden || (tagData.attrib & _A_HIDDEN) == 0 ) &&
-                    !is_reserved_dir (tagData.name))
-                {
-                    // recurse
-                    base_dir = directory;
-                    base_dir.append (tagData.name).append (mask);
-                    findFiles(base_dir, recursive, dirs, simpleList, detailList);
-                }
-                res = _findnext( lHandle, &tagData );
-            }
-            // Close if we found any files
-            if(lHandle != -1)
-                _findclose(lHandle);
-        }
-*/
     }
     //-----------------------------------------------------------------------
     OFSArchive::~OFSArchive()
