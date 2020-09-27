@@ -1554,7 +1554,7 @@ CBaseEditor *CTerrainPageEditorFactory::CreateObject(CBaseEditor **parent, Ogito
 
     if ((ni = params.find("externaldatahandle")) != params.end())
     {
-        object->mExternalDataHandle = (float*)(Ogre::any_cast<unsigned long>(ni->second.val));
+        object->mExternalDataHandle = Ogre::any_cast<float*>(ni->second.val);
     }
 
     object->createProperties(params);
