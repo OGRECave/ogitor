@@ -95,7 +95,7 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
         Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW Ogre::FileStreamDataStream(&fstr, false));
 
         Ogre::Image img;
-        img.load(stream);
+        img.load(stream,"png");
 
         data = OGRE_ALLOC_T(float, img.getWidth() * img.getHeight(), Ogre::MEMCATEGORY_GEOMETRY);
         Ogre::PixelBox pb(img.getWidth(), img.getHeight(), 1, Ogre::PF_FLOAT32_R, data);
