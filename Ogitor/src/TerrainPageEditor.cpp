@@ -465,6 +465,8 @@ int CTerrainPageEditor::_getLayerID(Ogre::String& texture, Ogre::String& normal,
     }
     if(layerID == -1 && !dontcreate)
     {
+        if (normal.empty())
+            return layerID;
         layerID = _createNewLayer(texture, normal);
     }
     return layerID;
