@@ -278,6 +278,11 @@ void TerrainToolsWidget::populateTextures()
             continue;
 
         QListWidgetItem *witem = new QListWidgetItem(QIcon(pixmap), name.c_str());
+        
+        Ogre::String namenormal = Ogre::StringUtil::replaceAll(name, "diffusespecular", "normalheight");
+        name.append(";");
+        name.append(namenormal);        
+        
         witem->setWhatsThis(name.c_str());
         witem->setToolTip(name.c_str());
         texturesWidget->addItem(witem);
