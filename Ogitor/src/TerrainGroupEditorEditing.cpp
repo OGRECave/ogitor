@@ -301,6 +301,14 @@ void CTerrainGroupEditor::setTexture(const Ogre::String& texture)
     {
         mTextureNormal = mTextureDiffuse.substr(pos + 1,mTextureDiffuse.length() - pos + 1);
         mTextureDiffuse = mTextureDiffuse.erase(pos,mTextureDiffuse.length() - pos);
+        
+        if (!mTextureNormal.empty())
+        {
+            Ogre::ResourceGroupManager* mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+            if (!mngr->findResourceNames("TerrainResources", mTextureNormal))
+                mTextureNormal = Ogre::StringUtil::BLANK;
+        }
+        
     }
 }
 //-----------------------------------------------------------------------------------------
