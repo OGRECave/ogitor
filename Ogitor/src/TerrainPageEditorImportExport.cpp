@@ -194,7 +194,7 @@ bool CTerrainPageEditor::importHeightMap(Ogre::String filename, Ogre::Real fBias
         Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW Ogre::FileStreamDataStream(&fstr, false));
 
         Ogre::Image img;
-        img.load(stream);
+        img.load(stream,"png");
         img.resize(mHandle->getSize(), mHandle->getSize());
         
         if(flipV)
