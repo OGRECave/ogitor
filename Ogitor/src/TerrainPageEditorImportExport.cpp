@@ -107,7 +107,7 @@ bool CTerrainPageEditor::importHeightMap(Ogre::String filename, Ogre::Real fBias
     {
         UTFStringVector extlist;
         extlist.push_back(OTR("Raw 32bit Float File"));
-        extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
+        extlist.push_back("*.raw *.ohm *.f32 *.r32");
         extlist.push_back(OTR("PNG Grayscale"));
         extlist.push_back("*.png");
 
@@ -240,7 +240,7 @@ bool CTerrainPageEditor::importBlendMap(int layerID, Ogre::String filename)
     {
         UTFStringVector extlist;
         extlist.push_back(OTR("Image Files"));
-        extlist.push_back("*.png;*.jpg;*.tga");
+        extlist.push_back("*.png *.jpg *.tga");
 
         Ogre::UTFString defaultPath = mSystem->GetSetting("system", "ExportTerrainPath", "");
 
@@ -263,11 +263,15 @@ bool CTerrainPageEditor::importBlendMap(int layerID, Ogre::String filename)
     mBlendMap = mHandle->getLayerBlendMap(layerID);
     mBlendData = mBlendMap->getBlendPointer();
 
+    Ogre::String outname;
+    Ogre::String outextension;
+    Ogre::StringUtil::splitBaseFilename(filename, outname, outextension);   
+    
     std::fstream fstr(filename.c_str(), std::ios::in|std::ios::binary);
     Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW Ogre::FileStreamDataStream(&fstr, false));
 
     Ogre::Image img;
-    img.load(stream);
+    img.load(stream,outextension);
     img.resize(mHandle->getLayerBlendMapSize(), mHandle->getLayerBlendMapSize());
     
     Ogre::ColourValue cval;
@@ -307,7 +311,7 @@ bool CTerrainPageEditor::importBlendMap(Ogre::String filename)
     {
         UTFStringVector extlist;
         extlist.push_back(OTR("Image Files"));
-        extlist.push_back("*.png;*.jpg;*.tga");
+        extlist.push_back("*.png *.jpg *.tga");
 
         Ogre::UTFString defaultPath = mSystem->GetSetting("system", "ExportTerrainPath", "");
 
@@ -318,11 +322,15 @@ bool CTerrainPageEditor::importBlendMap(Ogre::String filename)
         mSystem->SetSetting("system", "ExportTerrainPath", OgitorsUtils::ExtractFilePath(filename));
     }
 
+    Ogre::String outname;
+    Ogre::String outextension;
+    Ogre::StringUtil::splitBaseFilename(filename, outname, outextension);
+    
     std::fstream fstr(filename.c_str(), std::ios::in|std::ios::binary);
     Ogre::DataStreamPtr stream = Ogre::DataStreamPtr(OGRE_NEW Ogre::FileStreamDataStream(&fstr, false));
 
     Ogre::Image img;
-    img.load(stream);
+    img.load(stream,outextension);
     img.resize(mHandle->getLayerBlendMapSize(), mHandle->getLayerBlendMapSize());
     
     Ogre::ColourValue cval;
@@ -621,7 +629,7 @@ bool CTerrainPageEditor::exportHeightMap(Ogre::String path, Ogre::String filenam
     {
         UTFStringVector extlist;
         extlist.push_back(OTR("Raw 32bit Float File"));
-        extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
+        extlist.push_back("*.raw *.ohm *.f32 *.r32");
         extlist.push_back(OTR("PNG Grayscale"));
         extlist.push_back("*.png");
 
