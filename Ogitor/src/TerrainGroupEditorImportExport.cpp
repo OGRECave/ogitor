@@ -60,7 +60,7 @@ void CTerrainGroupEditor::importFullTerrainFromHeightMap()
     extlist.push_back(OTR("PNG Grayscale"));
     extlist.push_back("*.png");
     extlist.push_back(OTR("Raw 32bit Float File"));
-    extlist.push_back("*.raw;*.ohm;*.f32;*.r32");
+    extlist.push_back("*.raw *.ohm *.f32 *.r32");
 
     Ogre::UTFString defaultPath = mSystem->GetSetting("system", "ExportTerrainPath", "");
 
