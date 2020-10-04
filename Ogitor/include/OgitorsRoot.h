@@ -277,6 +277,11 @@ namespace Ogitors
         * @param obj editor associated with an object
         */
         void            UnRegisterObjectName(Ogre::String name,CBaseEditor *obj);
+	/**
+	* Refresh terrain editor widget event
+        * @param terrainobject
+        */
+        void            OnTerrainEditorChange(CBaseEditor* terrainobject);
         /**
         * A delegate function between Terrain and Hydrax that is used when ETL material changes
         * @param terrainobject terrain editor for which material has been changed
