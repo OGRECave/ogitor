@@ -425,9 +425,17 @@ void CTerrainGroupEditor::_paint(CTerrainPageEditor *handle, Ogre::Vector3 &edit
     if(!_getEditRect(editpos, brushrect, maprect, ColourMapSize))
         return;
 
+    Ogre::Terrain* terrain = static_cast<Ogre::Terrain*>(handle->getHandle());
+    if (!terrain->getGlobalColourMap())
+    {
+        Ogre::String msg = "No colourmap instance exist; set to false and true again the coulor map option of terrain group.";
+        mSystem->DisplayMessageDialog(OTR(msg), DLGTYPE_OK);
+        return;
+    }
+    
     handle->_notifyModification(0, maprect);
 
-    Ogre::Terrain *terrain = static_cast<Ogre::Terrain*>(handle->getHandle());
+   
 
     float mRatio = (float)BRUSH_DATA_SIZE / (float)mBrushSize;
     float brushPos;
