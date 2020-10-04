@@ -397,6 +397,8 @@ bool CTerrainPageEditor::_setColourMapEnabled(OgitorsPropertyBase* property, con
             OGRE_FREE(data, Ogre::MEMCATEGORY_RESOURCE);
             _notifyEndModification();
         }
+        
+        mOgitorsRoot->OnTerrainEditorChange(mOgitorsRoot->GetTerrainEditorObject());
     }
 
     return true;
