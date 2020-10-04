@@ -1015,6 +1015,15 @@ namespace Ogitors
             }
         }
     }
+//----------------	
+    void OgitorsRoot::OnTerrainEditorChange(CBaseEditor* terrainobject)
+    {
+        if (terrainobject->isTerrainType())
+        {
+            TerrainEditorChangeEvent evt(true, terrainobject->getTerrainEditor());
+            EventManager::getSingletonPtr()->sendEvent(this, 0, &evt);
+        }
+    }	
     //-----------------------------------------------------------------------------------------
     void OgitorsRoot::OnTerrainMaterialChange(CBaseEditor *terrainobject)
     {
