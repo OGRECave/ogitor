@@ -200,6 +200,7 @@ namespace Ogitors
         OgitorsProperty<int>          *mMinBatchSize;
         OgitorsProperty<int>          *mMaxBatchSize;
         OgitorsProperty<int>          *mSkirtSize;
+        OgitorsProperty<int>          *mInputScale;
 
         OgitorsProperty<int>          *mPGPageSize;
         OgitorsProperty<int>          *mPGDetailDistance;
@@ -256,6 +257,13 @@ namespace Ogitors
         * @return true if terrain handle is valid 
         */
         bool _setMinBatchSize(OgitorsPropertyBase* property, const int& value);
+        /**
+        * Property setter for inputscale
+        * @param property Handle to property responsible for skirt size
+        * @param value new inputscale
+        * @return true if terrain handle is valid
+        */
+        bool _setInputScale(OgitorsPropertyBase* property, const int& value);
         /**
         * Property setter for skirt size (internal)
         * @param property Handle to property responsible for skirt size
