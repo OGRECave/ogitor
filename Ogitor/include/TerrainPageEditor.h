@@ -216,6 +216,7 @@ namespace Ogitors
         OgitorsProperty<Ogre::String>  *mLayerNormal[16];
         OgitorsProperty<int>           *mMinBatchSize;
         OgitorsProperty<int>           *mMaxBatchSize;
+        OgitorsProperty<int>           *mInputScale;
 
         /// Grass Related Properties
         OgitorsProperty<bool>          *mPGActive[4];
@@ -295,7 +296,14 @@ namespace Ogitors
         * @return true if terrain handle is valid 
         */
         bool _setMaxBatchSize(OgitorsPropertyBase* property, const int& value);
-
+        /**
+        * Property setter for input scale (internal)
+        * @param property Handle to property responsible for max batch size
+        * @param value new input scale
+        * @return true if terrain handle is valid
+        */
+        bool _setInputScale(OgitorsPropertyBase* property, const int& value);
+        
         bool _setPGActive(OgitorsPropertyBase* property, const bool& value);
         bool _setPGMaterial(OgitorsPropertyBase* property, const Ogre::String& value);
         bool _setPGMinSize(OgitorsPropertyBase* property, const Ogre::Vector2& value);
