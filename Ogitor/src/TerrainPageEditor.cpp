@@ -658,6 +658,17 @@ bool CTerrainPageEditor::_setMaxBatchSize(OgitorsPropertyBase* property, const i
     return true;
 }
 //-----------------------------------------------------------------------------------------
+bool CTerrainPageEditor::_setInputScale(OgitorsPropertyBase* property, const int& value)
+{
+    bool loaded = mLoaded->get();
+
+    unLoad();
+
+    if (loaded)
+        load();
+    return true;
+}
+//-----------------------------------------------------------------------------------------
 void CTerrainPageEditor::_checkTerrainSizes()
 {
     CTerrainGroupEditor *parentEditor = static_cast<CTerrainGroupEditor*>(mParentEditor->get());
@@ -725,7 +736,7 @@ bool CTerrainPageEditor::load(bool async)
         imp.constantHeight = 0.0f;
         imp.terrainSize = parentEditor->getMapSize();
         imp.worldSize = terGroup->getTerrainWorldSize();
-        imp.inputScale = 1.0f;
+        imp.inputScale = mInputScale->get();
         imp.minBatchSize = mMinBatchSize->get();
         imp.maxBatchSize = mMaxBatchSize->get();
         // textures
@@ -986,6 +997,7 @@ void CTerrainPageEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mPosition, "position", Ogre::Vector3, Ogre::Vector3::ZERO, 0, SETTER(Ogre::Vector3, CTerrainPageEditor, _setPosition));
     PROPERTY_PTR(mMinBatchSize, "tuning::minbatchsize",int, 33, 0, SETTER(int, CTerrainPageEditor, _setMinBatchSize));
     PROPERTY_PTR(mMaxBatchSize, "tuning::maxbatchsize",int, 65, 0, SETTER(int, CTerrainPageEditor, _setMaxBatchSize));
+    PROPERTY_PTR(mInputScale, "tuning::inputscale", int, 65, 0, SETTER(int, CTerrainPageEditor, _setInputScale));
     PROPERTY_PTR(mColourMapEnabled, "colourmap::enabled", bool, false, 0, SETTER(bool, CTerrainPageEditor, _setColourMapEnabled));
     PROPERTY_PTR(mColourMapTextureSize, "colourmap::texturesize",int, 128, 0, SETTER(int, CTerrainPageEditor, _setColourMapTextureSize));
     PROPERTY_PTR(mLayerCount, "layercount", int, 1, 0, 0);
@@ -1486,6 +1498,7 @@ CTerrainPageEditorFactory::CTerrainPageEditorFactory(OgitorsView *view) : CBaseE
     AddPropertyDefinition("colourmap::texturesize","", "The size of colourmap texture.",PROP_INT, false, false);
     AddPropertyDefinition("tuning::minbatchsize","Tuning::Min Batch Size", "Minimum Batch Size.",PROP_INT, false);
     AddPropertyDefinition("tuning::maxbatchsize","Tuning::Max Batch Size", "Maximum Batch Size.",PROP_INT, false);
+    AddPropertyDefinition("tuning::inputscale", "Tuning::Input Scale", "Input Scale.", PROP_INT, false);
 
     int i;
     for(i = 0;i < 32;i++)
@@ -1566,6 +1579,7 @@ CBaseEditor *CTerrainPageEditorFactory::CreateObject(CBaseEditor **parent, Ogito
     object->mColourMapTextureSize->connectTo(manager->getProperties()->getProperty("colourmap::texturesize"));
     object->mMinBatchSize->connectTo(manager->getProperties()->getProperty("tuning::minbatchsize"));
     object->mMaxBatchSize->connectTo(manager->getProperties()->getProperty("tuning::maxbatchsize"));
+    object->mInputScale->connectTo(manager->getProperties()->getProperty("tuning::inputscale"));
 
     mInstanceCount++;
     return object;
