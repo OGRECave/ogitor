@@ -514,7 +514,7 @@ void CTerrainGroupEditor::createProperties(OgitorsPropertyValueMap &params)
     PROPERTY_PTR(mMaxPixelError, "tuning::maxpixelerror",int, 3, 0, SETTER(int, CTerrainGroupEditor, _setMaxPixelError));
     PROPERTY_PTR(mMinBatchSize, "tuning::minbatchsize",int, 33, 0, SETTER(int, CTerrainGroupEditor, _setMinBatchSize));
     PROPERTY_PTR(mMaxBatchSize, "tuning::maxbatchsize",int, 65, 0, SETTER(int, CTerrainGroupEditor, _setMaxBatchSize));
-    PROPERTY_PTR(mInputScale, "tuning::inputscale", int, 1, 0, SETTER(int, CTerrainGroupEditor, _setInputScale));
+    PROPERTY_PTR(mInputScale, "tuning::inputscale", Ogre::Real, 1, 0, SETTER(Ogre::Real, CTerrainGroupEditor, _setInputScale));
     PROPERTY_PTR(mSkirtSize, "tuning::skirtsize",int, 10, 0, SETTER(int, CTerrainGroupEditor, _setSkirtSize));
     PROPERTY_PTR(mUseRayBoxDistanceCalculation, "tuning::userayboxdistancecalculation",bool, false, 0, SETTER(bool, CTerrainGroupEditor, _setUseRayBoxDistanceCalculation));
     PROPERTY_PTR(mPGDensityMapSize, "pg::densitymapsize",int, 1024, 0, 0);
@@ -662,7 +662,7 @@ bool CTerrainGroupEditor::_setMaxBatchSize(OgitorsPropertyBase* property, const 
     return true;
 }
 //-----------------------------------------------------------------------------------------
-bool CTerrainGroupEditor::_setInputScale(OgitorsPropertyBase* property, const int& value)
+bool CTerrainGroupEditor::_setInputScale(OgitorsPropertyBase* property, const Ogre::Real& value)
 {
     if (value < 0)
         return false;
@@ -891,7 +891,7 @@ CTerrainGroupEditorFactory::CTerrainGroupEditorFactory(OgitorsView *view) : CBas
     definition->setOptions(&mMinBatchSizes);
     definition = AddPropertyDefinition("tuning::maxbatchsize","Tuning::Max Batch Size", "Maximum Batch Size.",PROP_INT);
     definition->setOptions(&mMaxBatchSizes);
-    AddPropertyDefinition("tuning::inputscale", "Tuning::Input Scale", "Input Scale", PROP_INT);
+    AddPropertyDefinition("tuning::inputscale", "Tuning::Input Scale", "Input Scale", PROP_REAL);
     AddPropertyDefinition("tuning::skirtsize","Tuning::Skirt Size", "Skirt Size.",PROP_INT);
     AddPropertyDefinition("tuning::userayboxdistancecalculation","Tuning::Adv. Dist. Calc.", "Use Ray Box Distance Calculation for LOD.",PROP_BOOL);
 
