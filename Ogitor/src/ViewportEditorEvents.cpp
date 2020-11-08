@@ -973,13 +973,16 @@ namespace Ogitors
 
         if(mOgitorsRoot->GetSelection()->getAsSingle()->supports(CAN_FOCUS))
         {
-            CBaseEditor *focus_object = mOgitorsRoot->GetSelection()->getAsSingle();
-
+            CBaseEditor *focus_object = mOgitorsRoot->GetSelection()->getAsSingle();        
+            
             if( focus_object->getEditorType() == ETYPE_TERRAIN_PAGE )
             {
-                Ogre::Vector3 pos;
-
+                Ogre::Vector3 pos;                  
+                
                 Ogre::Terrain *ter = static_cast<Ogre::Terrain*>(focus_object->getHandle());
+                if (!ter)
+                    return; 
+                
                 pos = ter->getWorldAABB().getCenter();
                 pos.y = ter->getHeightAtTerrainPosition( 0.5f, 0.5f ) + 50.0f;
 
