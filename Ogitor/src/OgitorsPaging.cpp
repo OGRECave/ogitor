@@ -323,7 +323,7 @@ CPagingManagerFactory::CPagingManagerFactory(OgitorsView *view) : CBaseEditorFac
     it->second.setAccess(false, false);
 
     AddPropertyDefinition("cellSize","General Section::Cell Size", "The size of grid cells.",PROP_REAL);
-    AddPropertyDefinition("loadRadius","General Section::Hold Radius", "The distance till which pages will be kept in memory.",PROP_REAL);
+    AddPropertyDefinition("loadRadius","General Section::Load Radius", "The distance till which pages will be kept in memory.",PROP_REAL);
     AddPropertyDefinition("holdRadius","General Section::Hold Radius", "The distance till which pages will be kept in memory.",PROP_REAL);
     AddPropertyDefinition("terrainCellSize","Terrain Section::Cell Size", "The size of grid cells.",PROP_REAL,true,false);
     AddPropertyDefinition("terrainLoadRadius","Terrain Section::Load Radius", "The distance till which pages will be kept in memory.",PROP_REAL);
