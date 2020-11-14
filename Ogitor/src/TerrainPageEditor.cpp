@@ -101,6 +101,9 @@ mPageX(0), mPageY(0), mFirstTimeInit(false), mExternalDataHandle(0), mPGModified
 
     mTempFileName = "";
     mTempDensityFileName = "";
+    
+    mTempFileName_noprefix = "";
+    
 }
 //-----------------------------------------------------------------------------------------
 CTerrainPageEditor::~CTerrainPageEditor()
@@ -120,6 +123,7 @@ void CTerrainPageEditor::_saveTerrain(Ogre::String pathPrefix)
     {
         mTempFileName = pathPrefix + Ogre::StringConverter::toString(mObjectID->get()) + ".ogt";
         filename = mTempFileName;
+        mTempFileName_noprefix = "tmp" + Ogre::StringConverter::toString(mObjectID->get()) + ".ogt";
     }
 
     Ogre::String tmpCompressFile = mOgitorsRoot->GetProjectFile()->getFileSystemDirectory() + "/Temp/";
@@ -762,9 +766,10 @@ bool CTerrainPageEditor::load(bool async)
             {
                 mTempFileName = mOgitorsRoot->GetProjectOptions()->ProjectDir + "/Temp/tmp" + Ogre::StringConverter::toString(mObjectID->get()) + ".ogt";
                 mTempFileName = OgitorsUtils::QualifyPath(mTempFileName);
+                mTempFileName_noprefix = "tmp" + Ogre::StringConverter::toString(mObjectID->get()) + ".ogt";
             }
 
-            terGroup->defineTerrain(mPageX->get(), mPageY->get(), mTempFileName);
+            terGroup->defineTerrain(mPageX->get(), mPageY->get(), mTempFileName_noprefix);
         }
         else
             terGroup->defineTerrain(mPageX->get(), mPageY->get());
