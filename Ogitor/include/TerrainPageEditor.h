@@ -190,6 +190,7 @@ namespace Ogitors
         bool                            mPGModified;            /** Is the paged geometry modified? */
         Ogre::String                    mTempFileName;          /** Temporary terrain data file name */
         Ogre::String                    mTempDensityFileName;   /** Temporary density map file name */
+        Ogre::String                    mTempFileName_noprefix;          /** Temporary terrain data file name without /temp prefix*/
 
         Ogre::Rect                      mHeightDirtyRect;
         Ogre::Rect                      mBlendMapDirtyRect;
