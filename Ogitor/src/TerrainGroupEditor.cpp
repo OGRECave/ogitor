@@ -315,6 +315,10 @@ bool CTerrainGroupEditor::load(bool async)
     mngr->addResourceLocation(terrainDir + "textures/normalheight", "Ofs", "TerrainResources");
 
     mngr->addResourceLocation(terrainDir + "textures/diffusespecular", "Ofs", "TerrainResources");
+    
+    Ogre::String tempDir = "/Temp";
+    std::string main_resource_path = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName();
+    mngr->addResourceLocation(main_resource_path + "::" + tempDir, "Ofs", "TerrainResources",false,false);
 
     mngr->addResourceLocation(terrainDir + "plants", "Ofs", "TerrainResources");
 
