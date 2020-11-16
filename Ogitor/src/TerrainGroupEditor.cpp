@@ -101,6 +101,14 @@ mHandle(0), mBrushData(0), mModificationRect(0,0,0,0)
 //-----------------------------------------------------------------------------------------
 CTerrainGroupEditor::~CTerrainGroupEditor()
 {
+    /*cancel of terrain group, I remove the temp directory before the resource distruction
+    because this is linked also to project temp resource */
+    Ogre::ResourceGroupManager* mngr = Ogre::ResourceGroupManager::getSingletonPtr();
+    Ogre::String tempDir = "/Temp";
+    std::string main_resource_path = OgitorsRoot::getSingletonPtr()->GetProjectFile()->getFileSystemName();
+    mngr->removeResourceLocation(main_resource_path + "::" + tempDir, "TerrainResources");
+    
+    
     OGRE_DELETE mTerrainGlobalOptions;
     mOgitorsRoot->DestroyResourceGroup("TerrainResources");
 }
