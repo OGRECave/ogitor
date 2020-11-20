@@ -200,7 +200,7 @@ namespace Ogitors
         OgitorsProperty<int>          *mMinBatchSize;
         OgitorsProperty<int>          *mMaxBatchSize;
         OgitorsProperty<int>          *mSkirtSize;
-        OgitorsProperty<int>          *mInputScale;
+        OgitorsProperty<Ogre::Real>   *mInputScale;
 
         OgitorsProperty<int>          *mPGPageSize;
         OgitorsProperty<int>          *mPGDetailDistance;
@@ -263,7 +263,7 @@ namespace Ogitors
         * @param value new inputscale
         * @return true if terrain handle is valid
         */
-        bool _setInputScale(OgitorsPropertyBase* property, const int& value);
+        bool _setInputScale(OgitorsPropertyBase* property, const Ogre::Real& value);
         /**
         * Property setter for skirt size (internal)
         * @param property Handle to property responsible for skirt size
