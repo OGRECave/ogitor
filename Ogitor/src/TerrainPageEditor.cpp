@@ -86,6 +86,14 @@ mPageX(0), mPageY(0), mFirstTimeInit(false), mExternalDataHandle(0), mPGModified
         mLayerWorldSize[i] = 0;
         mLayerDiffuse[i] = 0;
         mLayerNormal[i] = 0;
+        mLayerHeightStart[i] = 0;
+        mLayerHeightEnd[i] = 0;
+        mLayerHeightRelease[i] = 0;
+        mLayerSlopeStart[i] = 0;
+        mLayerSlopeEnd[i] = 0;
+        mLayerSlopeRelease[i] = 0;
+        mLayerSkew[i] = 0;
+        mLayerSkewAzimuth[i] = 0;        
     }
 
     mHeightDirtyRect = Ogre::Rect(0,0,0,0);
@@ -528,7 +536,7 @@ int CTerrainPageEditor::_createNewLayer(Ogre::String &texture,  Ogre::String& no
     return layerID;
 }
 //-----------------------------------------------------------------------------------------
-void CTerrainPageEditor::_createLayer(int layerID, Ogre::String &texture,  Ogre::String& normal, Ogre::Real worldSize)
+void CTerrainPageEditor::_createLayer(int layerID, Ogre::String &texture,  Ogre::String& normal, Ogre::Real worldSize, Ogre::Real hs, Ogre::Real he, Ogre::Real hr, Ogre::Real ss, Ogre::Real se, Ogre::Real sr, Ogre::Real skw, Ogre::Real skwazm)
 {
     OgitorsUndoManager::getSingletonPtr()->AddUndo(OGRE_NEW TerrainLayerUndo(mObjectID->get(), layerID, TerrainLayerUndo::LU_CREATE, texture, normal, worldSize));
 
@@ -552,17 +560,41 @@ void CTerrainPageEditor::_createLayer(int layerID, Ogre::String &texture,  Ogre:
     PROPERTY_PTR(mLayerWorldSize[mLayerCount->get()], sCount2 + "::worldsize", Ogre::Real, worldSize, mLayerCount->get(), SETTER(Ogre::Real, CTerrainPageEditor, _setLayerWorldSize));
     PROPERTY_PTR(mLayerDiffuse[mLayerCount->get()], sCount2 + "::diffusespecular", Ogre::String, "", mLayerCount->get(), SETTER(Ogre::String, CTerrainPageEditor, _setLayerDiffuseMap));
     PROPERTY_PTR(mLayerNormal[mLayerCount->get()], sCount2 + "::normalheight", Ogre::String, "", mLayerCount->get(), SETTER(Ogre::String, CTerrainPageEditor, _setLayerNormalMap));
+    PROPERTY_PTR(mLayerHeightStart[mLayerCount->get()], sCount2 + "::heightstart", Ogre::Real, 0, mLayerCount->get(), 0);
+    PROPERTY_PTR(mLayerHeightEnd[mLayerCount->get()], sCount2 + "::heightend", Ogre::Real, 0, mLayerCount->get(), 0);
+    PROPERTY_PTR(mLayerHeightRelease[mLayerCount->get()], sCount2 + "::heightrelease", Ogre::Real, 10, mLayerCount->get(), 0);
+    PROPERTY_PTR(mLayerSlopeStart[mLayerCount->get()], sCount2 + "::slopestart", Ogre::Real, 0, mLayerCount->get(), 0);
+    PROPERTY_PTR(mLayerSlopeEnd[mLayerCount->get()], sCount2 + "::slopeend", Ogre::Real, 0, mLayerCount->get(), 0);
+    PROPERTY_PTR(mLayerSlopeRelease[mLayerCount->get()], sCount2 + "::sloperelease", Ogre::Real, 10, mLayerCount->get(), 0);
+    PROPERTY_PTR(mLayerSkew[mLayerCount->get()], sCount2 + "::skew", Ogre::Real, 0, mLayerCount->get(), 0);
+    PROPERTY_PTR(mLayerSkewAzimuth[mLayerCount->get()], sCount2 + "::skewazimuth", Ogre::Real, 90, mLayerCount->get(), 0);
 
     for(int i = mLayerCount->get();i > layerID;i--)
     {
         mLayerWorldSize[i]->initAndSignal(mLayerWorldSize[i - 1]->get());
         mLayerDiffuse[i]->initAndSignal(mLayerDiffuse[i - 1]->get());
         mLayerNormal[i]->initAndSignal(mLayerNormal[i - 1]->get());
+        mLayerHeightStart[i]->initAndSignal(mLayerHeightStart[i - 1]->get());
+        mLayerHeightEnd[i]->initAndSignal(mLayerHeightEnd[i - 1]->get());
+        mLayerHeightRelease[i]->initAndSignal(mLayerHeightRelease[i - 1]->get());
+        mLayerSlopeStart[i]->initAndSignal(mLayerSlopeStart[i - 1]->get());
+        mLayerSlopeEnd[i]->initAndSignal(mLayerSlopeEnd[i - 1]->get());
+        mLayerSlopeRelease[i]->initAndSignal(mLayerSlopeRelease[i - 1]->get());
+        mLayerSkew[i]->initAndSignal(mLayerSkew[i - 1]->get());
+        mLayerSkewAzimuth[i]->initAndSignal(mLayerSkewAzimuth[i - 1]->get());        
     }
 
     mLayerWorldSize[layerID]->initAndSignal(worldSize);
     mLayerDiffuse[layerID]->initAndSignal(texture);
     mLayerNormal[layerID]->initAndSignal(normal);
+    mLayerHeightStart[layerID]->initAndSignal(hs);
+    mLayerHeightEnd[layerID]->initAndSignal(he);
+    mLayerHeightRelease[layerID]->initAndSignal(hr);
+    mLayerSlopeStart[layerID]->initAndSignal(ss);
+    mLayerSlopeEnd[layerID]->initAndSignal(se);
+    mLayerSlopeRelease[layerID]->initAndSignal(sr);
+    mLayerSkew[layerID]->initAndSignal(skw);
+    mLayerSkewAzimuth[layerID]->initAndSignal(skwazm);    
 
     if(unload)
         unLoad();
@@ -572,7 +604,7 @@ void CTerrainPageEditor::_createLayer(int layerID, Ogre::String &texture,  Ogre:
     OgitorsUndoManager::getSingletonPtr()->EndCollection(false, true);
 }
 //-----------------------------------------------------------------------------------------
-void CTerrainPageEditor::_changeLayer(int layerID, Ogre::String &texture,  Ogre::String& normal, Ogre::Real worldSize)
+void CTerrainPageEditor::_changeLayer(int layerID, Ogre::String &texture,  Ogre::String& normal, Ogre::Real worldSize, Ogre::Real hs, Ogre::Real he, Ogre::Real hr, Ogre::Real ss, Ogre::Real se, Ogre::Real sr, Ogre::Real skw, Ogre::Real skwazm)
 {
     assert(layerID < mLayerCount->get());
 
@@ -592,6 +624,14 @@ void CTerrainPageEditor::_changeLayer(int layerID, Ogre::String &texture,  Ogre:
     mLayerWorldSize[layerID]->initAndSignal(worldSize);
     mLayerDiffuse[layerID]->initAndSignal(texture);
     mLayerNormal[layerID]->initAndSignal(normal);
+    mLayerHeightStart[layerID]->initAndSignal(hs);
+    mLayerHeightEnd[layerID]->initAndSignal(he);
+    mLayerHeightRelease[layerID]->initAndSignal(hr);
+    mLayerSlopeStart[layerID]->initAndSignal(ss);
+    mLayerSlopeEnd[layerID]->initAndSignal(se);
+    mLayerSlopeRelease[layerID]->initAndSignal(sr);
+    mLayerSkew[layerID]->initAndSignal(skw);
+    mLayerSkewAzimuth[layerID]->initAndSignal(skwazm);    
 
     if(unload)
         unLoad();
@@ -623,6 +663,14 @@ void  CTerrainPageEditor::_deleteLayer(int layerID)
         mLayerWorldSize[i - 1]->initAndSignal(mLayerWorldSize[i]->get());
         mLayerDiffuse[i - 1]->initAndSignal(mLayerDiffuse[i]->get());
         mLayerNormal[i - 1]->initAndSignal(mLayerNormal[i]->get());
+        mLayerHeightStart[i - 1]->initAndSignal(mLayerHeightStart[i]->get());
+        mLayerHeightEnd[i - 1]->initAndSignal(mLayerHeightEnd[i]->get());
+        mLayerHeightRelease[i - 1]->initAndSignal(mLayerHeightRelease[i]->get());
+        mLayerSlopeStart[i - 1]->initAndSignal(mLayerSlopeStart[i]->get());
+        mLayerSlopeEnd[i - 1]->initAndSignal(mLayerSlopeEnd[i]->get());
+        mLayerSlopeRelease[i - 1]->initAndSignal(mLayerSlopeRelease[i]->get());
+        mLayerSkew[i - 1]->initAndSignal(mLayerSkew[i]->get());
+        mLayerSkewAzimuth[i - 1]->initAndSignal(mLayerSkewAzimuth[i]->get());        
     }
 
     mProperties.removeProperty(mLayerWorldSize[mLayerCount->get()]);
@@ -631,6 +679,22 @@ void  CTerrainPageEditor::_deleteLayer(int layerID)
     mLayerDiffuse[mLayerCount->get()] = 0;
     mProperties.removeProperty(mLayerNormal[mLayerCount->get()]);
     mLayerNormal[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerHeightStart[mLayerCount->get()]);
+    mLayerHeightStart[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerHeightEnd[mLayerCount->get()]);
+    mLayerHeightEnd[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerHeightRelease[mLayerCount->get()]);
+    mLayerHeightRelease[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerSlopeStart[mLayerCount->get()]);
+    mLayerSlopeStart[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerSlopeEnd[mLayerCount->get()]);
+    mLayerSlopeEnd[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerSlopeRelease[mLayerCount->get()]);
+    mLayerSlopeRelease[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerSkew[mLayerCount->get()]);
+    mLayerSkew[mLayerCount->get()] = 0;
+    mProperties.removeProperty(mLayerSkewAzimuth[mLayerCount->get()]);
+    mLayerSkewAzimuth[mLayerCount->get()] = 0;    
 
     if(unload)
         unLoad();
@@ -1023,6 +1087,14 @@ void CTerrainPageEditor::createProperties(OgitorsPropertyValueMap &params)
         PROPERTY_PTR(mLayerWorldSize[i], propStr1 + "::worldsize", Ogre::Real, 0, i, SETTER(Ogre::Real, CTerrainPageEditor, _setLayerWorldSize));
         PROPERTY_PTR(mLayerDiffuse[i], propStr1 + "::diffusespecular", Ogre::String, "", i, SETTER(Ogre::String, CTerrainPageEditor, _setLayerDiffuseMap));
         PROPERTY_PTR(mLayerNormal[i], propStr1 + "::normalheight", Ogre::String, "", i, SETTER(Ogre::String, CTerrainPageEditor, _setLayerNormalMap));
+        PROPERTY_PTR(mLayerHeightStart[i], propStr1 + "::heightstart", Ogre::Real, 0, i, 0);
+        PROPERTY_PTR(mLayerHeightEnd[i], propStr1 + "::heightend", Ogre::Real, 0, i, 0);
+        PROPERTY_PTR(mLayerHeightRelease[i], propStr1 + "::heightrelease", Ogre::Real, 10, i, 0);
+        PROPERTY_PTR(mLayerSlopeStart[i], propStr1 + "::slopestart", Ogre::Real, 0, i, 0);
+        PROPERTY_PTR(mLayerSlopeEnd[i], propStr1 + "::slopeend", Ogre::Real, 0, i, 0);
+        PROPERTY_PTR(mLayerSlopeRelease[i], propStr1 + "::sloperelease", Ogre::Real, 10, i, 0);
+        PROPERTY_PTR(mLayerSkew[i], propStr1 + "::skew", Ogre::Real, 0, i, 0);
+        PROPERTY_PTR(mLayerSkewAzimuth[i], propStr1 + "::skewazimuth", Ogre::Real, 90, i, 0);        
     }
 
     Ogre::Vector2 v1(1,1);
@@ -1516,6 +1588,15 @@ CTerrainPageEditorFactory::CTerrainPageEditorFactory(OgitorsView *view) : CBaseE
         definition->setOptions(OgitorsRoot::GetTerrainDiffuseTextureNames());
         definition = AddPropertyDefinition(propStr1 + "::normalheight", propStr2 + "::Normal Map", "Layer's Normal Texture Map", PROP_STRING);
         definition->setOptions(OgitorsRoot::GetTerrainNormalTextureNames());
+        AddPropertyDefinition(propStr1 + "::heightstart", propStr2 + "::Height Start", "Height Start", PROP_REAL, false, false);
+        AddPropertyDefinition(propStr1 + "::heightend", propStr2 + "::Height End", "Height End", PROP_REAL, false, false);
+        AddPropertyDefinition(propStr1 + "::heightrelease", propStr2 + "::Height Release", "Height Release", PROP_REAL, false, false);
+        AddPropertyDefinition(propStr1 + "::slopestart", propStr2 + "::Slope Start", "Slope Start", PROP_REAL, false, false);
+        AddPropertyDefinition(propStr1 + "::slopeend", propStr2 + "::Slope End", "Slope End", PROP_REAL, false, false);
+        AddPropertyDefinition(propStr1 + "::sloperelease", propStr2 + "::Slope Release", "Slope Release", PROP_REAL, false, false);
+        AddPropertyDefinition(propStr1 + "::skew", propStr2 + "::Skew", "Skew", PROP_REAL, false, false);
+        AddPropertyDefinition(propStr1 + "::skewazimuth", propStr2 + "::Skew Azimuth", "Skew Azimuth", PROP_REAL, false, false);
+        
     }
 
     for(i = 0;i < 4;i++)
