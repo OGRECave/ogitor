@@ -172,7 +172,7 @@ namespace Ogitors
         * @param normal normal texture name
         * @param worldSize worldsize of layer
         */
-        void                         _changeLayer(int layerID, Ogre::String &texture, Ogre::String& normal, Ogre::Real worldSize);
+       void                         _changeLayer(int layerID, Ogre::String &texture, Ogre::String& normal, Ogre::Real worldSize, Ogre::Real hs=0, Ogre::Real he=0, Ogre::Real hr=10, Ogre::Real ss=0, Ogre::Real se=0, Ogre::Real sr=10, Ogre::Real skw=0, Ogre::Real skwazm=90);
         /**
         * Deletes a terrain layer
         * @param layerID index of the layer
@@ -215,6 +215,14 @@ namespace Ogitors
         OgitorsProperty<Ogre::Real>    *mLayerWorldSize[16];
         OgitorsProperty<Ogre::String>  *mLayerDiffuse[16];
         OgitorsProperty<Ogre::String>  *mLayerNormal[16];
+        OgitorsProperty<Ogre::Real>    *mLayerHeightStart[16];
+        OgitorsProperty<Ogre::Real>    *mLayerHeightEnd[16];
+        OgitorsProperty<Ogre::Real>    *mLayerHeightRelease[16];
+        OgitorsProperty<Ogre::Real>    *mLayerSlopeStart[16];
+        OgitorsProperty<Ogre::Real>    *mLayerSlopeEnd[16];
+        OgitorsProperty<Ogre::Real>    *mLayerSlopeRelease[16];
+        OgitorsProperty<Ogre::Real>    *mLayerSkew[16];
+        OgitorsProperty<Ogre::Real>    *mLayerSkewAzimuth[16];        
         OgitorsProperty<int>           *mMinBatchSize;
         OgitorsProperty<int>           *mMaxBatchSize;
         OgitorsProperty<Ogre::Real>    *mInputScale;
@@ -341,7 +349,7 @@ namespace Ogitors
         * @param normal normal texture name
         * @param worldSize worldsize of layer
         */
-        void  _createLayer(int layerID, Ogre::String &texture, Ogre::String& normal, Ogre::Real worldSize);
+        void  _createLayer(int layerID, Ogre::String& texture, Ogre::String& normal, Ogre::Real worldSize, Ogre::Real hs=0, Ogre::Real he=0, Ogre::Real hr=10, Ogre::Real ss=0, Ogre::Real se=0, Ogre::Real sr=10, Ogre::Real skw=0, Ogre::Real skwazm=90);
         /**
         * Creates new grass layer (internal)
         * @param texture texture name
