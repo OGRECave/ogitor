@@ -492,6 +492,29 @@ bool CTerrainPageEditor::calculateBlendMap()
         return false;
 
     Ogre::NameValuePairList params;
+ 
+    for (int i = 1; i < 6; i++)
+    {
+        Ogre::String keyst = Ogre::StringConverter::toString(i) + "::";
+        Ogre::String ilayer = "layer" + Ogre::StringConverter::toString(i);
+
+        if (!this->hasProperty(ilayer + "::diffusespecular"))
+            continue;
+
+        params[keyst + "img"] = static_cast<OgitorsProperty<Ogre::String>*>(this->getProperty(ilayer + "::diffusespecular"))->get();
+        params[keyst + "hs"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::heightstart"))->get());
+        params[keyst + "he"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::heightend"))->get());
+        params[keyst + "ss"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::slopestart"))->get());
+        params[keyst + "se"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::slopeend"))->get());
+        params[keyst + "skw"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::skew"))->get());
+        params[keyst + "skwazm"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::skewazimuth"))->get());
+        params[keyst + "hr"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::heightrelease"))->get());
+        params[keyst + "sr"] = Ogre::StringConverter::toString(static_cast<OgitorsProperty<Ogre::Real>*>(this->getProperty(ilayer + "::sloperelease"))->get());
+
+
+    }
+    
+    
     
     if(mSystem->DisplayCalculateBlendMapDialog(params))
     {
@@ -521,11 +544,6 @@ bool CTerrainPageEditor::calculateBlendMap()
                     mTextureDiffuse = mTextureDiffuse.erase(pos,mTextureDiffuse.length() - pos);
                 }
 
-                if(i < mLayerCount->get())
-                    _changeLayer(i, mTextureDiffuse, mTextureNormal, 20.0f);
-                else
-                    _createLayer(i, mTextureDiffuse, mTextureNormal, 20.0f);
-
                 CalcBlendData data;
 
                 data.hs = Ogre::StringConverter::parseReal(params[ids + "hs"]);
@@ -543,6 +561,12 @@ bool CTerrainPageEditor::calculateBlendMap()
                 if(data.ss > data.se)
                     std::swap(data.ss, data.se);
 
+                if (i < mLayerCount->get())
+                    _changeLayer(i, mTextureDiffuse, mTextureNormal, 20.0f, data.hs,data.he,data.hr,data.ss,data.se,data.sr,data.skw,data.skwazm);
+                else
+                    _createLayer(i, mTextureDiffuse, mTextureNormal, 20.0f, data.hs, data.he, data.hr, data.ss, data.se, data.sr, data.skw, data.skwazm);
+
+                
                 layerdata.push_back(data);
 
             }
