@@ -707,97 +707,125 @@ bool QtOgitorSystem::DisplayCalculateBlendMapDialog(Ogre::NameValuePairList &par
             mCalcBlendmapDlg->tex3->addItem(witem, QString(texname), data);
             mCalcBlendmapDlg->tex4->addItem(witem, QString(texname), data);
             mCalcBlendmapDlg->tex5->addItem(witem, QString(texname), data);
-        }
-        
-        		int i = 0;
-
-		i++;
-		Ogre::String keyst = Ogre::StringConverter::toString(i) + "::";
-		if (params.find(keyst + "hs") != params.end())
-		{
-			QVariant data(params[keyst + "img"].c_str());
-			mCalcBlendmapDlg->tex1->setCurrentIndex(mCalcBlendmapDlg->tex1->findData(data));
-			mCalcBlendmapDlg->enable1->setChecked(true);
-			mCalcBlendmapDlg->hs1->setText(QString(params[keyst + "hs"].c_str()));
-			mCalcBlendmapDlg->he1->setText(QString(params[keyst + "he"].c_str()));
-			mCalcBlendmapDlg->hr1->setText(QString(params[keyst + "hr"].c_str()));
-			mCalcBlendmapDlg->ss1->setText(QString(params[keyst + "ss"].c_str()));
-			mCalcBlendmapDlg->se1->setText(QString(params[keyst + "se"].c_str()));
-			mCalcBlendmapDlg->sr1->setText(QString(params[keyst + "sr"].c_str()));
-			mCalcBlendmapDlg->sk1->setText(QString(params[keyst + "skw"].c_str()));
-			mCalcBlendmapDlg->ska1->setText(QString(params[keyst + "skwazm"].c_str()));
-		}
-
-
-		i++;
-		keyst = Ogre::StringConverter::toString(i) + "::";
-		if (params.find(keyst + "hs") != params.end())
-		{
-			QVariant data(params[keyst + "img"].c_str());
-			mCalcBlendmapDlg->tex2->setCurrentIndex(mCalcBlendmapDlg->tex2->findData(data));
-			mCalcBlendmapDlg->enable2->setChecked(true);
-			mCalcBlendmapDlg->hs2->setText(QString(params[keyst + "hs"].c_str()));
-			mCalcBlendmapDlg->he2->setText(QString(params[keyst + "he"].c_str()));
-			mCalcBlendmapDlg->hr2->setText(QString(params[keyst + "hr"].c_str()));
-			mCalcBlendmapDlg->ss2->setText(QString(params[keyst + "ss"].c_str()));
-			mCalcBlendmapDlg->se2->setText(QString(params[keyst + "se"].c_str()));
-			mCalcBlendmapDlg->sr2->setText(QString(params[keyst + "sr"].c_str()));
-			mCalcBlendmapDlg->sk2->setText(QString(params[keyst + "skw"].c_str()));
-			mCalcBlendmapDlg->ska2->setText(QString(params[keyst + "skwazm"].c_str()));
-		}
-
-		i++;
-		keyst = Ogre::StringConverter::toString(i) + "::";
-		if (params.find(keyst + "hs") != params.end())
-		{
-			QVariant data(params[keyst + "img"].c_str());
-			mCalcBlendmapDlg->tex3->setCurrentIndex(mCalcBlendmapDlg->tex3->findData(data));
-			mCalcBlendmapDlg->enable3->setChecked(true);
-			mCalcBlendmapDlg->hs3->setText(QString(params[keyst + "hs"].c_str()));
-			mCalcBlendmapDlg->he3->setText(QString(params[keyst + "he"].c_str()));
-			mCalcBlendmapDlg->hr3->setText(QString(params[keyst + "hr"].c_str()));
-			mCalcBlendmapDlg->ss3->setText(QString(params[keyst + "ss"].c_str()));
-			mCalcBlendmapDlg->se3->setText(QString(params[keyst + "se"].c_str()));
-			mCalcBlendmapDlg->sr3->setText(QString(params[keyst + "sr"].c_str()));
-			mCalcBlendmapDlg->sk3->setText(QString(params[keyst + "skw"].c_str()));
-			mCalcBlendmapDlg->ska3->setText(QString(params[keyst + "skwazm"].c_str()));
-		}
-
-		i++;
-		keyst = Ogre::StringConverter::toString(i) + "::";
-		if (params.find(keyst + "hs") != params.end())
-		{
-			QVariant data(params[keyst + "img"].c_str());
-			mCalcBlendmapDlg->tex4->setCurrentIndex(mCalcBlendmapDlg->tex4->findData(data));
-			mCalcBlendmapDlg->enable4->setChecked(true);
-			mCalcBlendmapDlg->hs4->setText(QString(params[keyst + "hs"].c_str()));
-			mCalcBlendmapDlg->he4->setText(QString(params[keyst + "he"].c_str()));
-			mCalcBlendmapDlg->hr4->setText(QString(params[keyst + "hr"].c_str()));
-			mCalcBlendmapDlg->ss4->setText(QString(params[keyst + "ss"].c_str()));
-			mCalcBlendmapDlg->se4->setText(QString(params[keyst + "se"].c_str()));
-			mCalcBlendmapDlg->sr4->setText(QString(params[keyst + "sr"].c_str()));
-			mCalcBlendmapDlg->sk4->setText(QString(params[keyst + "skw"].c_str()));
-			mCalcBlendmapDlg->ska4->setText(QString(params[keyst + "skwazm"].c_str()));
-		}
-
-		i++;
-		keyst = Ogre::StringConverter::toString(i) + "::";
-		if (params.find(keyst + "hs") != params.end())
-		{
-			QVariant data(params[keyst + "img"].c_str());
-			mCalcBlendmapDlg->tex5->setCurrentIndex(mCalcBlendmapDlg->tex5->findData(data));
-			mCalcBlendmapDlg->enable5->setChecked(true);
-			mCalcBlendmapDlg->hs5->setText(QString(params[keyst + "hs"].c_str()));
-			mCalcBlendmapDlg->he5->setText(QString(params[keyst + "he"].c_str()));
-			mCalcBlendmapDlg->hr5->setText(QString(params[keyst + "hr"].c_str()));
-			mCalcBlendmapDlg->ss5->setText(QString(params[keyst + "ss"].c_str()));
-			mCalcBlendmapDlg->se5->setText(QString(params[keyst + "se"].c_str()));
-			mCalcBlendmapDlg->sr5->setText(QString(params[keyst + "sr"].c_str()));
-			mCalcBlendmapDlg->sk5->setText(QString(params[keyst + "skw"].c_str()));
-			mCalcBlendmapDlg->ska5->setText(QString(params[keyst + "skwazm"].c_str()));
-		}
+        }     
+ 
         
     }
+
+	int i = 0;
+
+	i++;
+	Ogre::String keyst = Ogre::StringConverter::toString(i) + "::";
+	if (params.find(keyst + "hs") != params.end())
+	{
+		QVariant data(params[keyst + "img"].c_str());
+		mCalcBlendmapDlg->tex1->setCurrentIndex(mCalcBlendmapDlg->tex1->findData(data));
+		mCalcBlendmapDlg->enable1->setChecked(true);
+		mCalcBlendmapDlg->hs1->setText(QString(params[keyst + "hs"].c_str()));
+		mCalcBlendmapDlg->he1->setText(QString(params[keyst + "he"].c_str()));
+		mCalcBlendmapDlg->hr1->setText(QString(params[keyst + "hr"].c_str()));
+		mCalcBlendmapDlg->ss1->setText(QString(params[keyst + "ss"].c_str()));
+		mCalcBlendmapDlg->se1->setText(QString(params[keyst + "se"].c_str()));
+		mCalcBlendmapDlg->sr1->setText(QString(params[keyst + "sr"].c_str()));
+		mCalcBlendmapDlg->sk1->setText(QString(params[keyst + "skw"].c_str()));
+		mCalcBlendmapDlg->ska1->setText(QString(params[keyst + "skwazm"].c_str()));    
+	}
+	else
+	{
+		mCalcBlendmapDlg->tex1->setCurrentIndex(0);
+		mCalcBlendmapDlg->enable1->setChecked(false);
+	}
+		
+
+
+	i++;
+	keyst = Ogre::StringConverter::toString(i) + "::";
+	if (params.find(keyst + "hs") != params.end())
+	{
+		QVariant data(params[keyst + "img"].c_str());
+		mCalcBlendmapDlg->tex2->setCurrentIndex(mCalcBlendmapDlg->tex2->findData(data));
+		mCalcBlendmapDlg->enable2->setChecked(true);
+		mCalcBlendmapDlg->hs2->setText(QString(params[keyst + "hs"].c_str()));
+		mCalcBlendmapDlg->he2->setText(QString(params[keyst + "he"].c_str()));
+		mCalcBlendmapDlg->hr2->setText(QString(params[keyst + "hr"].c_str()));
+		mCalcBlendmapDlg->ss2->setText(QString(params[keyst + "ss"].c_str()));
+		mCalcBlendmapDlg->se2->setText(QString(params[keyst + "se"].c_str()));
+		mCalcBlendmapDlg->sr2->setText(QString(params[keyst + "sr"].c_str()));
+		mCalcBlendmapDlg->sk2->setText(QString(params[keyst + "skw"].c_str()));
+		mCalcBlendmapDlg->ska2->setText(QString(params[keyst + "skwazm"].c_str()));
+	}
+	else
+	{
+		mCalcBlendmapDlg->tex2->setCurrentIndex(0);
+		mCalcBlendmapDlg->enable2->setChecked(false);
+	}
+
+	i++;
+	keyst = Ogre::StringConverter::toString(i) + "::";
+	if (params.find(keyst + "hs") != params.end())
+	{
+		QVariant data(params[keyst + "img"].c_str());
+		mCalcBlendmapDlg->tex3->setCurrentIndex(mCalcBlendmapDlg->tex3->findData(data));
+		mCalcBlendmapDlg->enable3->setChecked(true);
+		mCalcBlendmapDlg->hs3->setText(QString(params[keyst + "hs"].c_str()));
+		mCalcBlendmapDlg->he3->setText(QString(params[keyst + "he"].c_str()));
+		mCalcBlendmapDlg->hr3->setText(QString(params[keyst + "hr"].c_str()));
+		mCalcBlendmapDlg->ss3->setText(QString(params[keyst + "ss"].c_str()));
+		mCalcBlendmapDlg->se3->setText(QString(params[keyst + "se"].c_str()));
+		mCalcBlendmapDlg->sr3->setText(QString(params[keyst + "sr"].c_str()));
+		mCalcBlendmapDlg->sk3->setText(QString(params[keyst + "skw"].c_str()));
+		mCalcBlendmapDlg->ska3->setText(QString(params[keyst + "skwazm"].c_str()));
+	}
+	else
+	{
+		mCalcBlendmapDlg->tex3->setCurrentIndex(0);
+		mCalcBlendmapDlg->enable3->setChecked(false);
+	}
+
+	i++;
+	keyst = Ogre::StringConverter::toString(i) + "::";
+	if (params.find(keyst + "hs") != params.end())
+	{
+		QVariant data(params[keyst + "img"].c_str());
+		mCalcBlendmapDlg->tex4->setCurrentIndex(mCalcBlendmapDlg->tex4->findData(data));
+		mCalcBlendmapDlg->enable4->setChecked(true);
+		mCalcBlendmapDlg->hs4->setText(QString(params[keyst + "hs"].c_str()));
+		mCalcBlendmapDlg->he4->setText(QString(params[keyst + "he"].c_str()));
+		mCalcBlendmapDlg->hr4->setText(QString(params[keyst + "hr"].c_str()));
+		mCalcBlendmapDlg->ss4->setText(QString(params[keyst + "ss"].c_str()));
+		mCalcBlendmapDlg->se4->setText(QString(params[keyst + "se"].c_str()));
+		mCalcBlendmapDlg->sr4->setText(QString(params[keyst + "sr"].c_str()));
+		mCalcBlendmapDlg->sk4->setText(QString(params[keyst + "skw"].c_str()));
+		mCalcBlendmapDlg->ska4->setText(QString(params[keyst + "skwazm"].c_str()));
+	}
+	else
+	{
+		mCalcBlendmapDlg->tex4->setCurrentIndex(0);
+		mCalcBlendmapDlg->enable4->setChecked(false);
+	}
+
+	i++;
+	keyst = Ogre::StringConverter::toString(i) + "::";
+	if (params.find(keyst + "hs") != params.end())
+	{
+		QVariant data(params[keyst + "img"].c_str());
+		mCalcBlendmapDlg->tex5->setCurrentIndex(mCalcBlendmapDlg->tex5->findData(data));
+		mCalcBlendmapDlg->enable5->setChecked(true);
+		mCalcBlendmapDlg->hs5->setText(QString(params[keyst + "hs"].c_str()));
+		mCalcBlendmapDlg->he5->setText(QString(params[keyst + "he"].c_str()));
+		mCalcBlendmapDlg->hr5->setText(QString(params[keyst + "hr"].c_str()));
+		mCalcBlendmapDlg->ss5->setText(QString(params[keyst + "ss"].c_str()));
+		mCalcBlendmapDlg->se5->setText(QString(params[keyst + "se"].c_str()));
+		mCalcBlendmapDlg->sr5->setText(QString(params[keyst + "sr"].c_str()));
+		mCalcBlendmapDlg->sk5->setText(QString(params[keyst + "skw"].c_str()));
+		mCalcBlendmapDlg->ska5->setText(QString(params[keyst + "skwazm"].c_str()));
+	}
+	else
+	{
+		mCalcBlendmapDlg->tex5->setCurrentIndex(0);
+		mCalcBlendmapDlg->enable5->setChecked(false);
+	}	
+	
 
     params.clear();
 
