@@ -262,15 +262,6 @@ bool CCameraEditor::_setClipDistance(OgitorsPropertyBase* property, const Ogre::
         mClipDistance->init(val);
     }
 
-    if (val.y == 0.0f)
-    {
-        if(!Ogre::Root::getSingletonPtr()->getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_INFINITE_FAR_PLANE))
-        {
-            val.y = 50000;
-            mClipDistance->init(val);
-        }
-    }
-
     if(mHandle)
     {
         mHandle->setNearClipDistance(val.x);

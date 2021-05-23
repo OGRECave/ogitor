@@ -90,6 +90,9 @@ namespace Ogitors
 
 
 #include <Ogre.h>
+#if OGRE_MIN_VERSION(13, 0, 0)
+#include <OgreDeprecated.h>
+#endif
 #include "OgitorsDefinitions.h"
 #include "StringId.h"
 #include "Event.h"

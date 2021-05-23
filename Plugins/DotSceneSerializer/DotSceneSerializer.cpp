@@ -32,7 +32,6 @@
 
 #include "DotSceneSerializer.h"
 #include "ofs.h"
-#include "OgreSceneLoaderManager.h"
 #include "OgreTerrain.h"
 
 using namespace Ogitors;
@@ -198,9 +197,10 @@ int CDotSceneSerializer::Import(Ogre::String importfile)
     // required to load terrain. TODO connect with CTerrainGroupEditor
     new Ogre::TerrainGlobalOptions();
 
+    Ogre::ResourceGroupManager::getSingleton().setWorldResourceGroupName(PROJECT_RESOURCE_GROUP);
     try
     {
-        Ogre::SceneLoaderManager::getSingleton().load(importfile, PROJECT_RESOURCE_GROUP, mngred->getSceneManager()->getRootSceneNode());
+        mngred->getSceneManager()->getRootSceneNode()->loadChildren(importfile);
     }
     catch(const Ogre::Exception& e)
     {

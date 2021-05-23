@@ -143,7 +143,7 @@ int COFSSceneSerializer::Import(Ogre::String importfile)
             if(iter->name.size() <= ogsceneFileExtensionLength) 
                 continue;
 
-			if(stricmp(iter->name.c_str() + (iter->name.size() - (ogsceneFileExtensionLength)), Globals::OGSCENE_FORMAT_EXTENSION.c_str()) == 0)
+			if(Ogre::StringUtil::startsWith(iter->name.c_str() + (iter->name.size() - (ogsceneFileExtensionLength)), Globals::OGSCENE_FORMAT_EXTENSION))
 			{
 				mFile->renameFile(iter->name.c_str(), fileName.c_str());
 				break;

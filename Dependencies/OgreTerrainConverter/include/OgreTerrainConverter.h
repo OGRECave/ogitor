@@ -54,7 +54,7 @@ public:
     bool Upgrade(Ogre::StreamSerialiser& stream_in, Ogre::StreamSerialiser& stream_out);
 
 protected:
-    typedef Ogre::vector<Ogre::uint8*>::type BytePointerList;
+    typedef std::vector<Ogre::uint8*> BytePointerList;
 
 	float* mHeightData;
     Ogre::uint8 mAlign;

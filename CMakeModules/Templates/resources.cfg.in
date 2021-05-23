@@ -1,7 +1,6 @@
 # Resource locations to be added to the 'bootstrap' path
 [Bootstrap]
 Zip=@OGITOR_MEDIA_PATH@/packs/OgreCore.zip
-Zip=@OGITOR_MEDIA_PATH@/packs/SdkTrays.zip
 
 # Resource locations to be added to the default path
 [General]

@@ -66,10 +66,7 @@ namespace Ogitors
         Ogre::ColourValue       mColour;                /** Camera helper colour */
 
         // frustum properties
-        Ogre::Real              mFrustumLeft;           /** Camera' frustum left boundary */
-        Ogre::Real              mFrustumRight;          /** Camera' frustum right boundary */
-        Ogre::Real              mFrustumTop;            /** Camera' frustum top boundary */
-        Ogre::Real              mFrustumBottom;         /** Camera' frustum bottom boundary */
+        Ogre::RealRect          mFrustumBounds;         /** Camera' frustum boundary */
         Ogre::Real              mNearClipDistance;      /** Camera' frustum clipping distance (near)*/
         Ogre::Real              mFarClipDistance;       /** Camera' frustum clipping distance (far)*/
 

@@ -61,7 +61,7 @@ CCameraVisualHelper::CCameraVisualHelper(CBaseEditor *parent)
     Ogre::Camera *cam = static_cast<CCameraEditor*>(mParent)->getCamera();
     if(cam)
     {
-        cam->getFrustumExtents(mFrustumLeft,mFrustumRight,mFrustumTop,mFrustumBottom);
+        mFrustumBounds = cam->getFrustumExtents();
         mNearClipDistance = cam->getNearClipDistance();
         mFarClipDistance = cam->getFarClipDistance();
     }
@@ -131,10 +131,10 @@ void CCameraVisualHelper::Show(bool bShow)
 void CCameraVisualHelper::_createCamera()
 {
    //// Near Quad ////
-   Ogre::Real frustumLeftNear    = mFrustumLeft;
-   Ogre::Real frustumRightNear   = mFrustumRight;
-   Ogre::Real frustumTopNear     = mFrustumTop;
-   Ogre::Real frustumBottomNear  = mFrustumBottom;
+   Ogre::Real frustumLeftNear    = mFrustumBounds.left;
+   Ogre::Real frustumRightNear   = mFrustumBounds.right;
+   Ogre::Real frustumTopNear     = mFrustumBounds.top;
+   Ogre::Real frustumBottomNear  = mFrustumBounds.bottom;
 
    mVisualHelperObject->beginUpdate(0);
    mVisualHelperObject->position(frustumLeftNear, frustumBottomNear, -mQuadNearOffset - mNearClipDistance);
@@ -150,10 +150,10 @@ void CCameraVisualHelper::_createCamera()
    mVisualHelperObject->end();
 
    //// Far Quad ////
-   Ogre::Real frustumLeftFar    = mFrustumLeft   * (mFarClipDistance / mNearClipDistance);
-   Ogre::Real frustumRightFar   = mFrustumRight  * (mFarClipDistance / mNearClipDistance);
-   Ogre::Real frustumTopFar     = mFrustumTop    * (mFarClipDistance / mNearClipDistance);
-   Ogre::Real frustumBottomFar  = mFrustumBottom * (mFarClipDistance / mNearClipDistance);
+   Ogre::Real frustumLeftFar    = mFrustumBounds.left   * (mFarClipDistance / mNearClipDistance);
+   Ogre::Real frustumRightFar   = mFrustumBounds.right  * (mFarClipDistance / mNearClipDistance);
+   Ogre::Real frustumTopFar     = mFrustumBounds.top    * (mFarClipDistance / mNearClipDistance);
+   Ogre::Real frustumBottomFar  = mFrustumBounds.bottom * (mFarClipDistance / mNearClipDistance);
 
    mVisualHelperObject->beginUpdate(1);
    mVisualHelperObject->position(frustumLeftFar, frustumBottomFar, -mQuadNearOffset - mFarClipDistance);
@@ -195,7 +195,7 @@ void CCameraVisualHelper::_createCamera()
 
 void CCameraVisualHelper::OnFOVChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
-    static_cast<Ogre::Camera*>(mParent->getHandle())->getFrustumExtents(mFrustumLeft,mFrustumRight,mFrustumTop,mFrustumBottom);
+    mFrustumBounds = static_cast<Ogre::Camera*>(mParent->getHandle())->getFrustumExtents();
     _createCamera();
 }
 
