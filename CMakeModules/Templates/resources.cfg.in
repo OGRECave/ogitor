@@ -5,6 +5,7 @@ Zip=@OGITOR_MEDIA_PATH@/packs/OgreCore.zip
 # Resource locations to be added to the default path
 [General]
 FileSystem=@OGITOR_MEDIA_PATH@/particle
+FileSystem=@OGITOR_MEDIA_PATH@/editorResources/PG
 FileSystem=@OGRE_MEDIA_DIR@/Terrain
 
 [EditorResources]
