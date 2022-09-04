@@ -1,9 +1,3 @@
-cmake_minimum_required(VERSION 2.8.11)
-set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
-cmake_policy(SET CMP0003 NEW)
-
-project(OFS)
-
 set(OFS_SOURCE
         source/file_ops.cpp
         source/ofs.cpp
@@ -26,12 +20,8 @@ set(OFS_HEADERS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-find_package(Boost REQUIRED filesystem thread)
-
 ogitor_add_library(OFS SHARED ${OFS_SOURCE} ${OFS_HEADERS})
-target_link_libraries(OFS ${Boost_LIBRARIES})
-target_compile_definitions(OFS PUBLIC BOOST_ALL_NO_LIB PRIVATE OFS_EXPORT)
-target_include_directories(OFS PUBLIC ${Boost_INCLUDE_DIRS})
+target_compile_definitions(OFS PRIVATE OFS_EXPORT)
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 

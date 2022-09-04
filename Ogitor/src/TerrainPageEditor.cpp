@@ -31,6 +31,9 @@
 ////////////////////////////////////////////////////////////////////////////////*/
 
 #include "OgitorsPrerequisites.h"
+
+#include <climits>
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
 #include "OgreTerrain.h"
 #include "OgreTerrainMaterialGenerator.h"

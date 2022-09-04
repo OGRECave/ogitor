@@ -32,35 +32,35 @@
 
 #include "ofs_base.h"
 #include "file_ops.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 bool OfsDirectoryExists(const char *path)
 {
-    return boost::filesystem::is_directory(path);
+    return std::filesystem::is_directory(path);
 }
 
 bool OfsCreateDirectory(const char *path)
 {
-    bool exists = boost::filesystem::is_directory(path);
+    bool exists = std::filesystem::is_directory(path);
     if( !exists )
-        exists = boost::filesystem::create_directory(path);
+        exists = std::filesystem::create_directory(path);
 
     return exists;
 }
 
 bool OfsDeleteFile(const char *path)
 {
-    return boost::filesystem::remove(path);
+    return std::filesystem::remove(path);
 }
 
 bool OfsDeleteDirectory(const char *path)
 {
-    return boost::filesystem::remove_all(path) > 0;
+    return std::filesystem::remove_all(path) > 0;
 }
 
 bool OfsRenameFile(const char *path, const char *new_path)
 {
-    boost::filesystem::rename(path, new_path);
+    std::filesystem::rename(path, new_path);
     return true;
 }
 
@@ -69,7 +69,7 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
 {
       OFS::_OfsBase::OfsEntryDesc *newdesc;
 
-      if (boost::filesystem::is_regular_file(name))        // is name a regular file?
+      if (std::filesystem::is_regular_file(name))        // is name a regular file?
       {
           newdesc = new OFS::_OfsBase::OfsEntryDesc();
 
@@ -78,8 +78,8 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
           newdesc->ParentId = desc->Id;
           newdesc->Parent = desc;
           newdesc->Flags = OFS::OFS_FILE;
-          newdesc->Name = boost::filesystem::path(name).filename().string();
-          newdesc->FileSize = boost::filesystem::file_size(name);
+          newdesc->Name = std::filesystem::path(name).filename().string();
+          newdesc->FileSize = std::filesystem::file_size(name);
           newdesc->OldParentId = desc->Id;
           newdesc->UseCount = 0;
           newdesc->WriteLocked = false;
@@ -89,7 +89,7 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
           if(linkmode)
               newdesc->Flags |= OFS::OFS_LINK;
       }
-      else if (boost::filesystem::is_directory(name))      // is p a directory?
+      else if (std::filesystem::is_directory(name))      // is p a directory?
       {
           newdesc = new OFS::_OfsBase::OfsEntryDesc();
 
@@ -98,7 +98,7 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
           newdesc->ParentId = desc->Id;
           newdesc->Parent = desc;
           newdesc->Flags = OFS::OFS_DIR;
-          newdesc->Name = boost::filesystem::path(name).filename().string();
+          newdesc->Name = std::filesystem::path(name).filename().string();
           newdesc->FileSize = 0;
           newdesc->OldParentId = desc->Id;
           newdesc->UseCount = 0;
@@ -109,8 +109,8 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
           if(linkmode)
               newdesc->Flags |= OFS::OFS_LINK;
           
-          boost::filesystem::directory_iterator it(name);
-          boost::filesystem::directory_iterator end;
+          std::filesystem::directory_iterator it(name);
+          std::filesystem::directory_iterator end;
 
           while( it != end )
           {
@@ -122,10 +122,10 @@ void OfsListContentsRecursive(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc 
 
 void OfsListContents(OFS::_OfsBase *owner, OFS::_OfsBase::OfsEntryDesc *desc, int &id, const char *path, bool linkmode)
 {
-      if (boost::filesystem::is_directory(path))      // is p a directory?
+      if (std::filesystem::is_directory(path))      // is p a directory?
       {
-          boost::filesystem::directory_iterator it(path);
-          boost::filesystem::directory_iterator end;
+          std::filesystem::directory_iterator it(path);
+          std::filesystem::directory_iterator end;
 
           while( it != end )
           {

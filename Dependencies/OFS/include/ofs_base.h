@@ -38,9 +38,10 @@
 #include <sstream>
 #include <string>
 #include <cassert>
+#include <cstring>
 #include <exception>
 #include <time.h>
-#include <boost/thread.hpp>
+#include <mutex>
 
 #if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
    #ifdef OFS_EXPORT
@@ -66,11 +67,11 @@ const int ROOT_DIRECTORY_ID = -1;
 const int RECYCLEBIN_DIRECTORY_ID = -2;
 
 
-#define AUTO_MUTEX mutable boost::recursive_mutex OfsMutex;
-#define LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsMutex);
-#define STATIC_AUTO_MUTEX_DECL(a) boost::recursive_mutex a::OfsStaticMutex;
-#define STATIC_AUTO_MUTEX static boost::recursive_mutex OfsStaticMutex;
-#define STATIC_LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsStaticMutex);
+#define AUTO_MUTEX mutable std::recursive_mutex OfsMutex;
+#define LOCK_AUTO_MUTEX std::scoped_lock ofsAutoMutexLock(OfsMutex);
+#define STATIC_AUTO_MUTEX_DECL(a) std::recursive_mutex a::OfsStaticMutex;
+#define STATIC_AUTO_MUTEX static std::recursive_mutex OfsStaticMutex;
+#define STATIC_LOCK_AUTO_MUTEX std::scoped_lock ofsAutoMutexLock(OfsStaticMutex);
 
 #if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
 typedef __int64 ofs64;

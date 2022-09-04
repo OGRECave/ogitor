@@ -38,9 +38,10 @@
 #include <sstream>
 #include <string>
 #include <cassert>
+#include <cstring>
 #include <exception>
 #include <time.h>
-#include <boost/thread.hpp>
+#include <mutex>
 
 #if (defined( __WIN32__ ) || defined( _WIN32 )) && ! defined( __GNUC__ )
    #ifdef OFS_EXPORT
@@ -62,11 +63,11 @@ const char VERSION_MAJOR_1  = '1';
 const char VERSION_MINOR    = '3';
 const char VERSION_FIX      = '0';
 
-#define AUTO_MUTEX mutable boost::recursive_mutex OfsMutex;
-#define LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsMutex);
-#define STATIC_AUTO_MUTEX_DECL(a) boost::recursive_mutex a::OfsStaticMutex;
-#define STATIC_AUTO_MUTEX static boost::recursive_mutex OfsStaticMutex;
-#define STATIC_LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock ofsAutoMutexLock(OfsStaticMutex);
+#define AUTO_MUTEX mutable std::recursive_mutex OfsMutex;
+#define LOCK_AUTO_MUTEX std::scoped_lock ofsAutoMutexLock(OfsMutex);
+#define STATIC_AUTO_MUTEX_DECL(a) std::recursive_mutex a::OfsStaticMutex;
+#define STATIC_AUTO_MUTEX static std::recursive_mutex OfsStaticMutex;
+#define STATIC_LOCK_AUTO_MUTEX std::scoped_lock ofsAutoMutexLock(OfsStaticMutex);
 
     extern const unsigned int MAX_BUFFER_SIZE;
 
