@@ -191,7 +191,7 @@ namespace Ogitors
             setMinValue(min);
             setMaxValue(max);
 
-            if(!stepSize.isEmpty())
+            if(stepSize.has_value())
                 setStepSize(stepSize);
         }
 
@@ -688,9 +688,9 @@ namespace Ogitors
             case PROP_UNSIGNED_INT:
                 propVal.val =  Ogre::Any(Ogre::StringConverter::parseUnsignedInt(value));break;
             case PROP_LONG:
-                propVal.val =  Ogre::Any(Ogre::StringConverter::parseLong(value));break;
+                propVal.val =  Ogre::Any((long)Ogre::StringConverter::parseInt(value));break;
             case PROP_UNSIGNED_LONG:
-                propVal.val =  Ogre::Any(Ogre::StringConverter::parseUnsignedLong(value));break;
+                propVal.val =  Ogre::Any((unsigned long)Ogre::StringConverter::parseUnsignedInt(value));break;
             case PROP_REAL:
                 propVal.val =  Ogre::Any(Ogre::StringConverter::parseReal(value));break;
             case PROP_STRING:
