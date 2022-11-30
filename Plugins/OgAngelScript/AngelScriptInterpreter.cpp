@@ -476,7 +476,7 @@ Ogre::StringVector AngelScriptInterpreter::runUpdateFunction(std::string &sectio
         ctx = newdef.context;
     }
 
-    if( def->funcID < 0 )
+    if( def->funcID == 0 )
     {
         // The function couldn't be found. Instruct the script writer
         // to include the expected function in the script.
