@@ -54,23 +54,10 @@ namespace Ogre
 		// We expect terrain textures to have no alpha, so we use the alpha channel
 		// in the albedo texture to store specular reflection
 		// similarly we double-up the normal and height (for parallax)
-		mLayerDecl.samplers.push_back(TerrainLayerSampler("albedo_specular", PF_BYTE_RGBA));
-		mLayerDecl.samplers.push_back(TerrainLayerSampler("normal_height", PF_BYTE_RGBA));
-		
-		mLayerDecl.elements.push_back(
-			TerrainLayerSamplerElement(0, TLSS_ALBEDO, 0, 3));
-		mLayerDecl.elements.push_back(
-			TerrainLayerSamplerElement(0, TLSS_SPECULAR, 3, 1));
-		mLayerDecl.elements.push_back(
-			TerrainLayerSamplerElement(1, TLSS_NORMAL, 0, 3));
-		mLayerDecl.elements.push_back(
-			TerrainLayerSamplerElement(1, TLSS_HEIGHT, 3, 1));
+		mLayerDecl.push_back(TerrainLayerSampler("albedo_specular", PF_BYTE_RGBA));
+		mLayerDecl.push_back(TerrainLayerSampler("normal_height", PF_BYTE_RGBA));
 
-
-		mProfiles.push_back(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
-		// TODO - check hardware capabilities & use fallbacks if required (more profiles needed)
-		setActiveProfile("SM2");
-
+		mSM2Profile.reset(OGRE_NEW SM2Profile(this, "SM2", "Profile for rendering on Shader Model 2 capable cards"));
 	}
 	//---------------------------------------------------------------------
 	TerrainMaterialGeneratorB::~TerrainMaterialGeneratorB()
@@ -80,7 +67,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
     MaterialPtr TerrainMaterialGeneratorB::generate(const Terrain* terrain)
     {
-        MaterialPtr ptrMat = TerrainMaterialGenerator::generate(terrain);
+        MaterialPtr ptrMat = mSM2Profile->generate(terrain);
         if(!ptrMat.isNull())
         {
             Technique *t = ptrMat->getTechnique(0);
@@ -126,7 +113,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	//---------------------------------------------------------------------
 	TerrainMaterialGeneratorB::SM2Profile::SM2Profile(TerrainMaterialGenerator* parent, const String& name, const String& desc)
-		: Profile(parent, name, desc)
+		: mParent(parent)
 		, mShaderGen(0)
 		, mLayerNormalMappingEnabled(true)
 		, mLayerParallaxMappingEnabled(true)

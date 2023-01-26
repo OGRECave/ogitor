@@ -89,33 +89,31 @@ bool OgreTerrainConverter::readLayerDeclaration(StreamSerialiser& stream, Terrai
 	//  samplers
 	uint8 numSamplers;
 	stream.read(&numSamplers);
-	targetdecl.samplers.resize(numSamplers);
+	targetdecl.resize(numSamplers);
 	for (uint8 s = 0; s < numSamplers; ++s)
 	{
 		if (!stream.readChunkBegin(OLDTERRAINLAYERSAMPLER_CHUNK_ID, OLDTERRAINLAYERSAMPLER_CHUNK_VERSION))
 			return false;
 
-		stream.read(&(targetdecl.samplers[s].alias));
+		stream.read(&(targetdecl[s].alias));
 		uint8 pixFmt;
 		stream.read(&pixFmt);
-		targetdecl.samplers[s].format = (PixelFormat)pixFmt;
+		targetdecl[s].format = (PixelFormat)pixFmt;
 		stream.readChunkEnd(OLDTERRAINLAYERSAMPLER_CHUNK_ID);
 	}
 	//  elements
 	uint8 numElems;
 	stream.read(&numElems);
-	targetdecl.elements.resize(numElems);
 	for (uint8 e = 0; e < numElems; ++e)
 	{
 		if (!stream.readChunkBegin(OLDTERRAINLAYERSAMPLERELEMENT_CHUNK_ID, OLDTERRAINLAYERSAMPLERELEMENT_CHUNK_VERSION))
 			return false;
 
-		stream.read(&(targetdecl.elements[e].source));
-		uint8 sem;
-		stream.read(&sem);
-		targetdecl.elements[e].semantic = (TerrainLayerSamplerSemantic)sem;
-		stream.read(&(targetdecl.elements[e].elementStart));
-		stream.read(&(targetdecl.elements[e].elementCount));
+		uint8 unused;
+		stream.read(&unused); // source
+		stream.read(&unused); // semantic
+		stream.read(&unused); // start
+		stream.read(&unused); // count
 		stream.readChunkEnd(OLDTERRAINLAYERSAMPLERELEMENT_CHUNK_ID);
 	}
 	stream.readChunkEnd(OLDTERRAINLAYERDECLARATION_CHUNK_ID);
@@ -176,7 +174,7 @@ bool OgreTerrainConverter::Upgrade(StreamSerialiser& stream_in, StreamSerialiser
 		return false;
 
 	// Layers
-	if (!readLayerInstanceList(stream_in, mLayerDecl.samplers.size(), mLayers))
+	if (!readLayerInstanceList(stream_in, mLayerDecl.size(), mLayers))
 		return false;
 
 	// Packed layer blend data

@@ -457,7 +457,7 @@ const Ogre::String& CTerrainPageEditor::getMaterialName()
 //-----------------------------------------------------------------------------------------
 int CTerrainPageEditor::_getLayerID(Ogre::String& texture, Ogre::String& normal, bool dontcreate)
 {
-    Ogre::TerrainLayerSamplerList list = mHandle->getLayerDeclaration().samplers;
+    Ogre::TerrainLayerDeclaration list = mHandle->getLayerDeclaration();
     int id = -1;
     for(unsigned int samplerid = 0;samplerid < list.size();samplerid++)
     {
@@ -553,7 +553,7 @@ void CTerrainPageEditor::_createLayer(int layerID, Ogre::String &texture,  Ogre:
     Ogre::StringVector vTextures;
     vTextures.push_back(texture);
     vTextures.push_back(normal);
-    for(unsigned int ll = 2;ll < mHandle->getLayerDeclaration().samplers.size();ll++)
+    for(unsigned int ll = 2;ll < mHandle->getLayerDeclaration().size();ll++)
         vTextures.push_back("");
 
     mHandle->addLayer(layerID, worldSize, &vTextures);

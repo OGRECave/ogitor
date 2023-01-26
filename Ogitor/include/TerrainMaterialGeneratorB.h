@@ -70,6 +70,7 @@ namespace Ogre
 		public:
 			SM2Profile(TerrainMaterialGenerator* parent, const String& name, const String& desc);
 			~SM2Profile();
+			TerrainMaterialGenerator* getParent() const { return mParent; }
 			MaterialPtr generate(const Terrain* terrain);
 			MaterialPtr generateForCompositeMap(const Terrain* terrain);
 			uint8 getMaxLayers(const Terrain* terrain) const;
@@ -250,7 +251,7 @@ namespace Ogre
 				void generateVpFooter(const SM2Profile* prof, const Terrain* terrain, TechniqueType tt, StringStream& outStream) {}
 				void generateFpFooter(const SM2Profile* prof, const Terrain* terrain, TechniqueType tt, StringStream& outStream) {}
 			};
-
+			TerrainMaterialGenerator*   mParent;
 			ShaderHelper* mShaderGen;
 			bool mLayerNormalMappingEnabled;
 			bool mLayerParallaxMappingEnabled;
@@ -269,9 +270,8 @@ namespace Ogre
 
 		};
 
-
-
-
+		std::unique_ptr<SM2Profile> mSM2Profile;
+		MaterialPtr generateForCompositeMap(const Terrain* terrain) { return mSM2Profile->generateForCompositeMap(terrain); }
 	};
 
 
