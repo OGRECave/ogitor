@@ -574,7 +574,7 @@ bool OgitorsUtils::PickEntity(Ogre::Ray &ray, Ogre::Entity **result, Ogre::Vecto
     // we need to test every triangle of every object.
     Ogre::Real closest_distance = max_distance;
     Ogre::Vector3 closest_result;
-    Ogre::RaySceneQueryResult &query_result = mRaySceneQuery->getLastResults();
+    const Ogre::RaySceneQueryResult &query_result = mRaySceneQuery->getLastResults();
 
     for (size_t qr_idx = 0; qr_idx < query_result.size(); qr_idx++)
     {
@@ -672,7 +672,7 @@ bool OgitorsUtils::PickEntity(Ogre::Ray &ray, Ogre::Entity **result, Ogre::Vecto
     // we need to test every triangle of every object.
     Ogre::Real closest_distance = max_distance;
     Ogre::Vector3 closest_result;
-    Ogre::RaySceneQueryResult &query_result = mRaySceneQuery->getLastResults();
+    const Ogre::RaySceneQueryResult &query_result = mRaySceneQuery->getLastResults();
     
     for (size_t qr_idx = 0; qr_idx < query_result.size(); qr_idx++)
     {
@@ -815,22 +815,6 @@ int OgitorsUtils::PickSubMesh(Ogre::Ray& ray, Ogre::Entity* pEntity)
         }
     }
     return -1;
-}
-//-----------------------------------------------------------------------------------------
-bool OgitorsUtils::WorldIntersect(Ogre::Ray &ray, Ogre::Vector3 &hitposition)
-{
-    Ogre::RaySceneQuery *mRaySceneQuery = OgitorsRoot::getSingletonPtr()->GetSceneManagerEditor()->getRayQuery();
-    mRaySceneQuery->setRay(ray);
-    mRaySceneQuery->setQueryTypeMask(Ogre::SceneManager::WORLD_GEOMETRY_TYPE_MASK);
-    mRaySceneQuery->setWorldFragmentType(Ogre::SceneQuery::WFT_SINGLE_INTERSECTION);
-    Ogre::RaySceneQueryResult& qryResult = mRaySceneQuery->execute();
-    Ogre::RaySceneQueryResult::iterator i = qryResult.begin();
-    if (i != qryResult.end() && i->worldFragment)
-    {
-        hitposition = i->worldFragment->singleIntersection;
-        return true;
-    }
-    return false;
 }
 //----------------------------------------------------------------------------------------
 void OgitorsUtils::SphereQuery(CBaseEditor *object, Ogre::Real radius, ObjectVector &results)

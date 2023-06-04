@@ -178,14 +178,6 @@ namespace Ogitors
         */
         static int PickSubMesh(Ogre::Ray& ray, Ogre::Entity* pEntity);
         /**
-        * Test if specified ray has intersected with anything on the scene
-        * @param mRaySceneQuery ray scene query object helper 
-        * @param ray a ray that is to be tested
-        * @param hitposition location of an intersect (if any)
-        * @return true if ray had intersected with anything, otherwise false
-        */
-        static bool WorldIntersect(Ogre::Ray &ray, Ogre::Vector3 &hitposition);
-        /**
         * Fetches internal vertex and index buffers
         * @param VertexBuffer address of pointer to vertex buffers to be set
         * @param IndexBuffer address of pointer to index buffers to be set

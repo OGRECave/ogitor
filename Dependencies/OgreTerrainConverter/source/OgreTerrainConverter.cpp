@@ -275,7 +275,7 @@ bool OgreTerrainConverter::Export(Ogre::StreamSerialiser& stream)
     mTerrainGlobalOptions->setLightMapSize(mLightMapSize);
     mTerrainGlobalOptions->setCompositeMapSize(mCompositeMapSize);
 
-    SceneManager *OSM = Root::getSingletonPtr()->getSceneManagerIterator().begin()->second;
+    SceneManager *OSM = Root::getSingletonPtr()->getSceneManagers().begin()->second;
     
     Terrain *terrain = OGRE_NEW Terrain(OSM);
 

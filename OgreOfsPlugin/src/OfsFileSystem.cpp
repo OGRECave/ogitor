@@ -35,6 +35,7 @@
 #include "OgreException.h"
 #include "OgreStringVector.h"
 #include "OgreRoot.h"
+#include "OgreDeprecated.h"
 
 #include <regex>
 
