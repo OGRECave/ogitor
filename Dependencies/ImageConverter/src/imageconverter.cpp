@@ -64,16 +64,18 @@ ImageConverter::ImageConverter(const size_t& width/*=128*/, const size_t& height
     // attach the plane to the scene manager and rotate it so the camera can see it
     mEntityTerrain = mSceneMgrPtr->createEntity("terrainEntity", "terrain");
     Ogre::SceneNode* node = mSceneMgrPtr->getRootSceneNode()->createChildSceneNode();
+    Ogre::SceneNode* camera_node = mSceneMgrPtr->getRootSceneNode()->createChildSceneNode();
     node->attachObject(mEntityTerrain);
     mEntityTerrain->setCastShadows(false);    
     
     Ogre::Camera* RTTCam = mSceneMgrPtr->createCamera("QTImageConverterCam");
+    camera_node->attachObject(RTTCam);
     RTTCam->setNearClipDistance(0.01F);
     RTTCam->setFarClipDistance(0);
     RTTCam->setAspectRatio(1);
     RTTCam->setFOVy(Ogre::Degree(90));
-    RTTCam->setPosition(0, 0, 50);
-    RTTCam->lookAt(0, 0, 0);
+    camera_node->setPosition(0, 0, 50);
+    camera_node->lookAt(Ogre::Vector3(0, 0, 0), Ogre::Node::TS_PARENT);
     
     Ogre::Viewport *v = mRttTex->addViewport(RTTCam);
     v->setBackgroundColour(Ogre::ColourValue(1, 1, 1));

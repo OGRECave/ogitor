@@ -52,6 +52,7 @@ CCameraEditor::CCameraEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
 {
     mHandle = 0;
     mHelper = 0;
+    mCameraNode = 0;
 }
 //-----------------------------------------------------------------------------------------
 CCameraEditor::~CCameraEditor()
@@ -189,10 +190,10 @@ void CCameraEditor::lookAt(const Ogre::Vector3 &value)
     if(mAutoTrackTargetPtr || mViewMode->get())
         return;
 
-    if(mHandle)
+    if(mCameraNode)
     {
-        mHandle->lookAt(value);
-        mOrientation->set(mHandle->getOrientation());
+        mCameraNode->lookAt(value, Ogre::Node::TS_PARENT);
+        mOrientation->set(mCameraNode->getOrientation());
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -230,11 +231,11 @@ bool CCameraEditor::_setPosition(OgitorsPropertyBase* property, const Ogre::Vect
 {
     if(mHandle)
     {
-        mHandle->setPosition(position);
+        mCameraNode->setPosition(position);
         if(mAutoTrackTargetPtr)
         {
-            mHandle->lookAt(mAutoTrackTargetPtr->getNode()->_getDerivedPosition());
-            mOrientation->initAndSignal(mHandle->getOrientation());
+            mCameraNode->lookAt(mAutoTrackTargetPtr->getNode()->_getDerivedPosition(), Ogre::Node::TS_PARENT);
+            mOrientation->initAndSignal(mCameraNode->getOrientation());
         }
     }    
     return true;
@@ -245,9 +246,9 @@ bool CCameraEditor::_setOrientation(OgitorsPropertyBase* property, const Ogre::Q
     if(mAutoTrackTargetPtr || mViewMode->get())
         return false;
 
-    if(mHandle)
+    if(mCameraNode)
     {
-        mHandle->setOrientation(orientation);
+        mCameraNode->setOrientation(orientation);
     }
     return true;
 }
@@ -359,12 +360,12 @@ bool CCameraEditor::_setAutoTrackTarget(OgitorsPropertyBase* property, const Ogr
         CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"name", CCameraEditor, onTrackTargetNameChange, mAutoTrackTargetConnection[1]); 
         CONNECT_PROPERTY_MEMFN(mAutoTrackTargetPtr,"position", CCameraEditor, onTrackTargetPositionChange, mAutoTrackTargetConnection[2]); 
 
-        if(mHandle)
+        if(mCameraNode)
         {
-            mHandle->setAutoTracking(true, mAutoTrackTargetPtr->getNode());
+            mCameraNode->setAutoTracking(true, mAutoTrackTargetPtr->getNode());
             mHelper->getNode()->setAutoTracking(true, mAutoTrackTargetPtr->getNode());
-            mHandle->lookAt(mAutoTrackTargetPtr->getNode()->_getDerivedPosition());
-            mOrientation->set(mHandle->getOrientation());
+            mCameraNode->lookAt(mAutoTrackTargetPtr->getNode()->_getDerivedPosition(), Ogre::Node::TS_PARENT);
+            mOrientation->set(mCameraNode->getOrientation());
         }
         return true;
     }
@@ -372,7 +373,7 @@ bool CCameraEditor::_setAutoTrackTarget(OgitorsPropertyBase* property, const Ogr
     {
         if(mHandle)
         {
-            mHandle->setAutoTracking(false);
+            mCameraNode->setAutoTracking(false);
             mHelper->getNode()->setAutoTracking(false);
         }
 
@@ -393,14 +394,17 @@ bool CCameraEditor::load(bool async)
 
     if (!mHandle) {
       mHandle = mOgitorsRoot->GetSceneManager()->createCamera(mName->get());
+      Ogre::SceneNode *parent = getParent()->getNode();
+      if (!mCameraNode)
+      mCameraNode = parent->createChildSceneNode();
 
-      mHandle->setPosition(mPosition->get());
-      mHandle->setOrientation(mOrientation->get());
+      mCameraNode->setPosition(mPosition->get());
+      mCameraNode->setOrientation(mOrientation->get());
       mHandle->setNearClipDistance(mClipDistance->get().x);
       mHandle->setFarClipDistance(mClipDistance->get().y);
       mHandle->setFOVy(Ogre::Radian(mFOV->get()));
       mHandle->setAutoAspectRatio(mAutoAspectRatio->get());
-      getParent()->getNode()->attachObject(mHandle);
+      mCameraNode->attachObject(mHandle);
     }
 
     mHandle->setQueryFlags(0);
@@ -481,8 +485,8 @@ void CCameraEditor::onTrackTargetDestroyed(const OgitorsPropertyBase* property, 
 //-----------------------------------------------------------------------------------------
 void CCameraEditor::onTrackTargetPositionChange(const OgitorsPropertyBase* property, Ogre::Any value)
 {
-    if(mHandle)
-        mOrientation->set(mHandle->getOrientation());
+    if(mCameraNode)
+        mOrientation->set(mCameraNode->getOrientation());
 }
 //-----------------------------------------------------------------------------------------
 void CCameraEditor::onTrackTargetNameChange(const OgitorsPropertyBase* property, Ogre::Any value)

@@ -98,6 +98,7 @@ namespace Ogitors
 
     protected:
         Ogre::Light *mHandle;             /** Actual light handle */
+	Ogre::SceneNode                    *mLightNode;
 
         OgitorsProperty<Ogre::Vector3>     *mPosition;           /** Light position (wrapper) */
         OgitorsProperty<Ogre::Quaternion>  *mOrientation;        /** Light orientation (wrapper) */

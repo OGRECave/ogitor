@@ -153,6 +153,7 @@ namespace Ogitors
 
     protected:
         Ogre::Camera					   *mHandle;               /** Camera handle */
+	Ogre::SceneNode                    *mCameraNode;
         OgitorsProperty<Ogre::Vector3>     *mPosition;             /** Camera position (wrapper) */
         OgitorsProperty<Ogre::Quaternion>  *mOrientation;          /** Camera orientation (wrapper) */
         OgitorsProperty<Ogre::Vector2>     *mClipDistance;         /** Camera clipping distance (wrapper) */

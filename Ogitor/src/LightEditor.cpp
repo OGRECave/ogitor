@@ -47,6 +47,7 @@ CLightEditor::CLightEditor(CBaseEditorFactory *factory) : CBaseEditor(factory)
 {
     mHandle = 0;
     mHelper = 0;
+    mLightNode = 0;
 }
 //-----------------------------------------------------------------------------------------
 CLightEditor::~CLightEditor()
@@ -129,9 +130,9 @@ void CLightEditor::_calculateOrientation()
 //-----------------------------------------------------------------------------------------
 bool CLightEditor::_setPosition(OgitorsPropertyBase* property, const Ogre::Vector3& position)
 {
-    if(mHandle)
+    if(mLightNode)
     {
-        mHandle->setPosition(position);
+        mLightNode->setPosition(position);
     }
     return true;
 }
@@ -141,9 +142,9 @@ bool CLightEditor::_setOrientation(OgitorsPropertyBase* property, const Ogre::Qu
     Ogre::Vector3 direction(0,0,1);
     direction = orientation * direction;
  
-    if(mHandle)
+    if(mLightNode)
     {
-        mHandle->setDirection(direction);
+        mLightNode->setDirection(direction);
     }    
     
     mDirection->initAndSignal(direction);
@@ -156,9 +157,9 @@ bool CLightEditor::_setDirection(OgitorsPropertyBase* property, const Ogre::Vect
     if(value == Ogre::Vector3::ZERO)
         mDirection->init(mDirection->getOld());
 
-    if(mHandle)
+    if(mLightNode)
     {
-        mHandle->setDirection(value.normalisedCopy());
+        mLightNode->setDirection(value.normalisedCopy());
         _calculateOrientation();
     }
     return true;
@@ -250,10 +251,11 @@ bool CLightEditor::load(bool async)
     if(!mHandle)
     {
         mHandle = mOgitorsRoot->GetSceneManager()->createLight(mName->get());
-        getParent()->getNode()->attachObject(mHandle);
+	mLightNode = getParent()->getNode()->createChildSceneNode();
+        mLightNode->attachObject(mHandle);
 
-        mHandle->setPosition(mPosition->get());
-        mHandle->setDirection(mDirection->get());
+        mLightNode->setPosition(mPosition->get());
+        mLightNode->setDirection(mDirection->get());
         mHandle->setDiffuseColour(mDiffuse->get());
         mHandle->setSpecularColour(mSpecular->get());
         mHandle->setType((Ogre::Light::LightTypes)mLightType->get());
