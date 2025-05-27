@@ -184,9 +184,12 @@ void OgreWidget::paintEvent(QPaintEvent* evt)
             if(OgitorsRoot::getSingletonPtr()->IsClearScreenNeeded())
             {
                 Ogre::Camera *clearcam = OgitorsRoot::getSingletonPtr()->GetSceneManager()->createCamera("sbtClearCam");
+		Ogre::SceneNode *cam_node = OgitorsRoot::getSingletonPtr()
+			->GetSceneManager()->getRootSceneNode()->createChildSceneNode();
+		cam_node->attachObject(clearcam);
                 clearcam->setNearClipDistance(0.0001f);
                 clearcam->setFarClipDistance(0.0002f);
-                clearcam->lookAt(0,-1,0);
+                cam_node->lookAt(Ogre::Vector3(0,-1,0), Ogre::Node::TS_PARENT);
                 OgitorsRoot::getSingletonPtr()->GetRenderWindow()->addViewport(clearcam,0);
             }
 

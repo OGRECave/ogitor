@@ -144,17 +144,21 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
     Ogre::SceneManager *mSceneMgr = Ogre::Root::getSingletonPtr()->createSceneManager("OctreeSceneManager", "EntityTexMgr");
 
     Ogre::Light *dirl = mSceneMgr->createLight("DisplayLight");
-    dirl->setDirection(-1, -1, -1);
+    Ogre::SceneNode *light_node = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+    light_node->attachObject(dirl);
+    light_node->setDirection(-1, -1, -1);
     dirl->setDiffuseColour(1, 1, 1);
     dirl->setType(Ogre::Light::LT_DIRECTIONAL);
 
     Ogre::Camera* RTTCam = mSceneMgr->createCamera("EntityCam");
+    Ogre::SceneNode *cam_node = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+    cam_node->attachObject(RTTCam);
     RTTCam->setNearClipDistance(0.01F);
     RTTCam->setFarClipDistance(0);
     RTTCam->setAspectRatio(1);
     RTTCam->setFOVy(Ogre::Degree(90));
-    RTTCam->setPosition(0, 0, 1);
-    RTTCam->lookAt(0, 0, 0);
+    cam_node->setPosition(0, 0, 1);
+    cam_node->lookAt(Ogre::Vector3(0, 0, 0), Ogre::Node::TS_PARENT);
 
     Ogre::Viewport *v = rttTex->addViewport(RTTCam);
     v->setClearEveryFrame(true);
@@ -204,8 +208,8 @@ void EntityViewWidget::_createImages(ImageMap& retlist)
     
         vSize = Ogre::Vector3(0, 0, maxsize * 1.1f) + vCenter;
     
-        RTTCam->setPosition(vSize.x, vSize.y, vSize.z);
-        RTTCam->lookAt(vCenter.x, vCenter.y, vCenter.z);
+        RTTCam->getParentSceneNode()->setPosition(vSize.x, vSize.y, vSize.z);
+        RTTCam->getParentSceneNode()->lookAt(Ogre::Vector3(vCenter.x, vCenter.y, vCenter.z), Ogre::Node::TS_PARENT);
 
         try
         {

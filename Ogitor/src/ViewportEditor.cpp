@@ -95,7 +95,7 @@ void CViewportEditor::renderWindowResized()
     if (mHandle && mActiveCamera) 
     {
         mActiveCamera->getCamera()->setAspectRatio((Ogre::Real)mHandle->getActualWidth() / (Ogre::Real)mHandle->getActualHeight()); 
-        mActiveCamera->getCamera()->yaw(Ogre::Radian(0));
+        mActiveCamera->getCamera()->getParentNode()->yaw(Ogre::Radian(0));
     }
 }
 //-------------------------------------------------------------------------------
